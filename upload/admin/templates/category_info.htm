@@ -1,4 +1,4 @@
-<!-- $Id: category_info.htm 13961 2008-01-07 06:54:44Z dolphin $ -->
+<!-- $Id: category_info.htm 14911 2008-09-23 05:18:39Z testyang $ -->
 {include file="pageheader.htm"}
 <!-- start add new category form -->
 <div class="main-div">
@@ -45,6 +45,14 @@
         <td>
           <input type="radio" name="show_in_nav" value="1" {if $cat_info.show_in_nav neq 0} checked="true"{/if}/> {$lang.yes}
           <input type="radio" name="show_in_nav" value="0" {if $cat_info.show_in_nav eq 0} checked="true"{/if} /> {$lang.no}
+        </td>
+      </tr>
+      <tr>
+        <td class="label">{$lang.show_in_index}:</td>
+        <td>
+          <input type="checkbox" name="cat_recommend[]" value="1" {if $cat_recommend[1] eq 1} checked="true"{/if}/> {$lang.index_best}
+          <input type="checkbox" name="cat_recommend[]" value="2" {if $cat_recommend[2] eq 1} checked="true"{/if} /> {$lang.index_new}
+          <input type="checkbox" name="cat_recommend[]" value="3" {if $cat_recommend[3] eq 1} checked="true"{/if} /> {$lang.index_hot}
         </td>
       </tr>
       <tr>

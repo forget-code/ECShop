@@ -3,15 +3,14 @@
 /**
  * ECSHOP
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-11-14 10:39:40 +0800 (星期三, 14 十一月 2007) $
- * $Id: phpwind.php 13625 2007-11-14 02:39:40Z wj $
+ * $Author: sunxiaodong $
+ * $Id: phpwind.php 15470 2008-12-19 07:18:17Z sunxiaodong $
 */
 
 if (!defined('IN_ECS'))
@@ -120,10 +119,11 @@ class phpwind extends integrate
         }
         else
         {
+            /*
             if ($this->charset != 'UTF8')
             {
                 $username = ecs_iconv('UTF8', $this->charset, $username);
-            }
+            }*/
 
 
             $sql = "SELECT " . $this->field_id . " AS user_id, " . $this->field_pass . " As password ".
@@ -184,10 +184,12 @@ class phpwind extends integrate
             return '';
         }
 
+        /*
         if ($this->charset != 'UTF8')
         {
             $row['user_name'] = ecs_iconv($this->charset, 'UTF8', $row['user_name']);
         }
+        */
 
         return $row['user_name'];
 
@@ -214,10 +216,12 @@ class phpwind extends integrate
                 return array();
             }
 
+            /*
             if ($this->charset != 'UTF8')
             {
                 $str = empty($str) ? '' : ecs_iconv($this->charset, 'UTF8', $str);
             }
+            */
 
             list($ava_credits['money']['title'], $ava_credits['money']['unit'],$ava_credits['rvrc']['title'],$ava_credits['rvrc']['unit'],$ava_credits['credit']['title'], $ava_credits['credit']['unit'])=explode("\t",$str);
         }
@@ -240,10 +244,12 @@ class phpwind extends integrate
 
         if ($fileds)
         {
+            /*
             if ($this->charset != 'UTF8')
             {
                 $username = ecs_iconv('UTF8', $this->charset,  $username);
             }
+            */
             $sql = "SELECT ud." . $this->field_id . ', ' . implode(', ',$fileds).
                    " FROM " . $this->table('memberdata'). "AS ud, ".
                    $this->table($this->user_table). " AS u ".
@@ -271,10 +277,12 @@ class phpwind extends integrate
      */
     function set_points ($username, $credits)
     {
+        /*
         If ($this->charset != 'UTF8')
         {
             $username = ecs_iconv('UTF8', $this->charset,  $username);
         }
+        */
 
         if (isset($credits['rvrc']))
         {

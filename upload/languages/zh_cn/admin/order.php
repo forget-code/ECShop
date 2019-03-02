@@ -3,15 +3,14 @@
 /**
  * ECSHOP 订单管理语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-02-15 11:22:13 +0800 (星期五, 15 二月 2008) $
- * $Id: order.php 14139 2008-02-15 03:22:13Z fenghl $
+ * $Author: sunxiaodong $
+ * $Id: order.php 15570 2009-01-17 02:11:08Z sunxiaodong $
  */
 
 /* 订单搜索 */
@@ -23,6 +22,7 @@ $_LANG['cs'][OS_UNCONFIRMED] = '待确认';
 $_LANG['cs'][CS_AWAIT_PAY] = '待付款';
 $_LANG['cs'][CS_AWAIT_SHIP] = '待发货';
 $_LANG['cs'][CS_FINISHED] = '已完成';
+$_LANG['cs'][PS_PAYING] = '付款中';
 $_LANG['cs'][OS_CANCELED] = '取消';
 $_LANG['cs'][OS_INVALID] = '无效';
 $_LANG['cs'][OS_RETURNED] = '退货';
@@ -30,9 +30,9 @@ $_LANG['cs'][OS_RETURNED] = '退货';
 /* 订单状态 */
 $_LANG['os'][OS_UNCONFIRMED] = '未确认';
 $_LANG['os'][OS_CONFIRMED] = '已确认';
-$_LANG['os'][OS_CANCELED] = '取消';
-$_LANG['os'][OS_INVALID] = '无效';
-$_LANG['os'][OS_RETURNED] = '退货';
+$_LANG['os'][OS_CANCELED] = '<font color="red"> 取消</font>';
+$_LANG['os'][OS_INVALID] = '<font color="red">无效</font>';
+$_LANG['os'][OS_RETURNED] = '<font color="red">退货</font>';
 
 $_LANG['ss'][SS_UNSHIPPED] = '未发货';
 $_LANG['ss'][SS_PREPARING] = '配货中';
@@ -78,6 +78,8 @@ $_LANG['order_time'] = '下单时间';
 $_LANG['detail'] = '查看';
 $_LANG['phone'] = '电话';
 $_LANG['group_buy'] = '（团购）';
+$_LANG['error_get_goods_info'] = '获取订单商品信息错误';
+$_LANG['exchange_goods'] = '（积分兑换）';
 
 $_LANG['js_languages']['remove_confirm'] = '删除订单将清除该订单的所有信息。您确定要这么做吗？';
 
@@ -103,9 +105,11 @@ $_LANG['label_time'] = '下单时间：';
 $_LANG['prev'] = '前一个订单';
 $_LANG['next'] = '后一个订单';
 $_LANG['print_order'] = '打印订单';
+$_LANG['print_shipping'] = '打印快递单';
 $_LANG['print_order_sn'] = '订单编号：';
 $_LANG['print_buy_name'] = '购 货 人：';
 $_LANG['label_consignee_address'] = '收货地址：';
+$_LANG['no_print_shipping'] = '很抱歉,目前您还没有设置打印快递单模板.不能进行打印';
 
 $_LANG['order_info'] = '订单信息';
 $_LANG['base_info'] = '基本信息';
@@ -230,6 +234,7 @@ $_LANG['edit_template_success'] = '编辑订单打印模板操作成功!';
 $_LANG['remark_fittings'] = '（配件）';
 $_LANG['remark_gift'] = '（赠品）';
 $_LANG['remark_favourable'] = '（特惠品）';
+$_LANG['remark_package'] = '（礼包）';
 
 /* 订单来源统计 */
 $_LANG['from_order'] = '订单来源：';
@@ -316,6 +321,7 @@ $_LANG['js_languages']['pls_input_cancel'] = '请您填写取消原因！';
 $_LANG['js_languages']['pls_select_refund'] = '请选择退款方式！';
 $_LANG['js_languages']['pls_select_agency'] = '请选择办事处！';
 $_LANG['js_languages']['pls_select_other_agency'] = '该订单现在就属于这个办事处，请选择其他办事处！';
+$_LANG['js_languages']['loading'] = '加载中...';
 
 /* 订单操作 */
 $_LANG['order_operate'] = '订单操作：';

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: fenghl $
- * $Date: 2008-02-28 14:50:19 +0800 (星期四, 28 二月 2008) $
- * $Id: affiliate_ck.php 14194 2008-02-28 06:50:19Z fenghl $
+ * $Author: testyang $
+ * $Id: affiliate_ck.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -166,7 +165,7 @@ elseif ($_REQUEST['act'] == 'separate')
                 }
                 else
                 {
-                    $info = sprintf($_LANG['separate_info'], $order_sn, $oid, $row['user_name'], $setmoney, $setpoint);
+                    $info = sprintf($_LANG['separate_info'], $order_sn, $up_uid, $row['user_name'], $setmoney, $setpoint);
                     log_account_change($up_uid, $setmoney, 0, 0, $setpoint, $info);
                     write_affiliate_log($oid, $up_uid, $row['user_name'], $setmoney, $setpoint, $separate_by);
                 }
@@ -182,7 +181,7 @@ elseif ($_REQUEST['act'] == 'separate')
             $up_uid = $row['parent_id'];
             if(!empty($up_uid) && $up_uid > 0)
             {
-                $info = sprintf($_LANG['separate_info'], $order_sn, $oid, $row['user_name'], $money, $point);
+                $info = sprintf($_LANG['separate_info'], $order_sn, $up_uid, $row['user_name'], $money, $point);
                 log_account_change($up_uid, $money, 0, 0, $point, $info);
                 write_affiliate_log($oid, $up_uid, $row['user_name'], $money, $point, $separate_by);
             }

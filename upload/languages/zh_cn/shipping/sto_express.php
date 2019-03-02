@@ -3,20 +3,72 @@
 /**
  * ECSHOP 申通快递插件的语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: sto_express.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: sunxiaodong $
+ * $Id: sto_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
 */
 
 $_LANG['sto_express']            = '申通快递';
 $_LANG['sto_express_desc']       = '江、浙、沪地区首重为15元/KG，其他地区18元/KG， 续重均为5-6元/KG， 云南地区为8元';
-$_LANG['basic_fee']              = '1000克以内费用';
+$_LANG['item_fee']              = '单件商品费用：';
+$_LANG['base_fee']              = '1000克以内费用';
 $_LANG['step_fee']               = '续重每1000克或其零数的费用';
+$_LANG['shipping_print']         = '<table border="0" cellspacing="0" cellpadding="0" style="width:18.9cm;">
+  <tr>
+    <td colspan="3" style="height:2cm;">&nbsp;</td>
+  </tr>
+  <tr>
+    <td style="width:8cm; height:4cm; padding-top:0.3cm;" align="center" valign="middle">
+     <table border="0" cellspacing="0" cellpadding="0" style="width:7.5cm;" align="center">
+  <tr>
+    <td style="width:2.3cm;">&nbsp;</td>
+    <td style="height:1.5cm;">{$shop_address}</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td style="height:0.9cm;">{$shop_name}</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td style="height:0.9cm;">{$shop_name}</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td style="height:0.9cm;">{$service_phone}</td>
+  </tr>
+</table>
+
+    </td>
+    <td style="width:8cm; height:4cm; padding-top:0.3cm;" align="center" valign="middle">
+    <table border="0" cellspacing="0" cellpadding="0" style="width:7.5cm;" align="center">
+  <tr>
+    <td style="width:2.3cm;">&nbsp;</td>
+    <td style="height:1.5cm;">{$order.address}</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td style="height:0.9cm;"></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td style="height:0.9cm;">{$order.consignee}</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td style="height:0.9cm;">{$order.tel}</td>
+  </tr>
+</table>
+    </td>
+    <td rowspan="2" style="width:3cm;">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="height:3.5cm;">&nbsp;</td>
+  </tr>
+</table>';
 
 ?>

@@ -3,20 +3,19 @@
 /**
  * ECSHOP 管理中心共用语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-16 11:07:18 +0800 (星期三, 16 一月 2008) $
- * $Id: common.php 13979 2008-01-16 03:07:18Z fenghl $
+ * $Author: sunxiaodong $
+ * $Id: common.php 15548 2009-01-09 12:18:44Z sunxiaodong $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
 $_LANG['cp_home'] = 'ECSHOP 管理中心';
-$_LANG['copyright'] = '版权所有 &copy; 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。';
+$_LANG['copyright'] = '版权所有 &copy; 2005-2008 上海商派网络科技有限公司，并保留所有权利。';
 $_LANG['query_info'] = '共执行 %d 个查询，用时 %s 秒';
 $_LANG['memory_info'] = '，内存占用 %0.3f MB';
 $_LANG['gzip_enabled'] = '，Gzip 已启用';
@@ -183,6 +182,9 @@ $_LANG['10_auction'] = '拍卖活动';
 $_LANG['12_favourable'] = '优惠活动';
 $_LANG['13_wholesale'] = '批发管理';
 $_LANG['ebao_commend'] = '易宝推荐';
+$_LANG['14_package_list'] = '超值礼包';
+$_LANG['package_add'] = '添加超值礼包';
+
 
 /* 订单管理 */
 $_LANG['02_order_list'] = '订单列表';
@@ -225,6 +227,7 @@ $_LANG['04_users_add'] = '添加会员';
 $_LANG['05_user_rank_list'] = '会员等级';
 $_LANG['06_list_integrate'] = '会员整合';
 $_LANG['09_user_account'] = '充值和提现申请';
+$_LANG['10_user_account_manage'] = '资金管理';
 
 /* 权限管理 */
 $_LANG['admin_list'] = '管理员列表';
@@ -244,6 +247,9 @@ $_LANG['shipping_area_list'] = '配送区域';
 $_LANG['sitemap'] = '站点地图';
 $_LANG['check_file_priv'] = '文件权限检测';
 $_LANG['captcha_manage'] = '验证码管理';
+$_LANG['fckfile_manage'] = 'Fck上传文件管理';
+$_LANG['ucenter_setup'] = 'UCenter设置';
+$_LANG['file_check'] = '文件校验';
 
 /* 模板管理 */
 $_LANG['02_template_select'] = '模板选择';
@@ -274,6 +280,11 @@ $_LANG['email_list'] = '邮件订阅管理';
 $_LANG['magazine_list'] = '杂志管理';
 $_LANG['attention_list'] = '关注管理';
 $_LANG['view_sendlist'] = '邮件队列管理';
+
+/* 积分兑换管理 */
+$_LANG['15_exchange_goods'] = '积分商城商品';
+$_LANG['15_exchange_goods_list'] = '积分商城商品列表';
+$_LANG['exchange_goods_add'] = '添加新商品';
 
 /* cls_image类的语言项 */
 $_LANG['directory_readonly'] = '目录 % 不存在或不可写';

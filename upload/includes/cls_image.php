@@ -13,15 +13,14 @@
  *  define('ROOT_PATH',                     '网站根目录')
  *
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2006-11-13 19:00:17 +0800 (星期一, 13 十一月 2006) $
- * $Id: cls_image.php 2684 2006-11-13 11:00:17Z wj $
+ * $Author: testyang $
+ * $Id: cls_image.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -33,8 +32,8 @@ class cls_image
 {
     var $error_no    = 0;
     var $error_msg   = '';
-    var $images_dir  = 'images';
-    var $data_dir    = 'data';
+    var $images_dir  = IMAGE_DIR;
+    var $data_dir    = DATA_DIR;
     var $bgcolor     = '';
     var $type_maping = array(1 => 'image/gif', 2 => 'image/jpeg', 3 => 'image/png');
 
@@ -106,7 +105,15 @@ class cls_image
         {
             $this->error_msg = $GLOBALS['_LANG']['invalid_upload_image_type'];
             $this->error_no  =  ERR_INVALID_IMAGE_TYPE;
+            return false;
+        }
 
+        /* 允许上传的文件类型 */
+        $allow_file_types = '|GIF|JPG|JEPG|PNG|BMP|SWF|';
+        if (!check_file_type($upload['tmp_name'], $img_name, $allow_file_types))
+        {
+            $this->error_msg = $GLOBALS['_LANG']['invalid_upload_image_type'];
+            $this->error_no  =  ERR_INVALID_IMAGE_TYPE;
             return false;
         }
 
@@ -382,9 +389,15 @@ class cls_image
                 $y = $source_info[1]/2 - $watermark_info[1]/2;
         }
 
-        imagecopymerge($source_handle, $watermark_handle, $x, $y, 0, 0,
-                        $watermark_info[0], $watermark_info[1], $watermark_alpha);
-
+        if (strpos(strtolower($watermark_info['mime']), 'png') !== false)
+        {
+            imageAlphaBlending($watermark_handle, true);
+            imagecopy($source_handle, $watermark_handle, $x, $y, 0, 0,$watermark_info[0], $watermark_info[1]);
+        }
+        else
+        {
+            imagecopymerge($source_handle, $watermark_handle, $x, $y, 0, 0,$watermark_info[0], $watermark_info[1], $watermark_alpha);
+        }
         $target = empty($target_file) ? $filename : $target_file;
 
         switch ($source_info[2] )

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 配送区域管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: shipping_area.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: shipping_area.php 15515 2008-12-29 05:14:36Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -77,7 +76,7 @@ elseif ($_REQUEST['act'] == 'add' && !empty($_REQUEST['shipping']))
     $shipping_area['free_money']    = 0;
 
     $smarty->assign('ur_here',          $shipping['shipping_name'] .' - '. $_LANG['new_area']);
-    $smarty->assign('shipping_area',    array('shipping_id' => $_REQUEST['shipping']));
+    $smarty->assign('shipping_area',    array('shipping_id' => $_REQUEST['shipping'], 'shipping_code' => $shipping['shipping_code']));
     $smarty->assign('fields',           $fields);
     $smarty->assign('form_action',      'insert');
     $smarty->assign('countries',        get_regions());
@@ -123,7 +122,9 @@ elseif ($_REQUEST['act'] == 'insert')
         $count = count($config);
         $config[$count]['name']     = 'free_money';
         $config[$count]['value']    = $_POST['free_money'];
-
+        $count++;
+        $config[$count]['name']     = 'fee_compute_mode';
+        $config[$count]['value']    = $_POST['fee_compute_mode'];
         /* 如果支持货到付款，则允许设置货到付款支付费用 */
         if ($modules[0]['cod'])
         {
@@ -185,7 +186,40 @@ elseif ($_REQUEST['act'] == 'edit')
 
     foreach ($fields AS $key => $val)
     {
-        $fields[$key]['label']  = $_LANG[$val['name']];
+       /* 替换更改的语言项 */
+       if ($val['name'] == 'basic_fee')
+       {
+            $val['name'] = 'base_fee';
+       }
+       if ($val['name'] == 'step_fee1')
+       {
+            $val['name'] = 'step_fee';
+       }
+       if ($val['name'] == 'step_fee2')
+       {
+            $val['name'] = 'step_fee1';
+       }
+
+       if ($val['name'] == 'item_fee')
+       {
+           $item_fee = 1;
+       }
+       if ($val['name'] == 'fee_compute_mode')
+       {
+           $smarty->assign('fee_compute_mode',$val['value']);
+           unset($fields[$key]);
+       }
+       else
+       {
+           $fields[$key]['name'] = $val['name'];
+           $fields[$key]['label']  = $_LANG[$val['name']];
+       }
+    }
+
+    if(!$item_fee)
+    {
+        $field = array('name'=>'item_fee', 'value'=>'0', 'label'=>$_LANG['item_fee']);
+        array_unshift($fields,$field);
     }
 
     /* 获得该区域下的所有地区 */
@@ -250,7 +284,9 @@ elseif ($_REQUEST['act'] == 'update')
         $count = count($config);
         $config[$count]['name']     = 'free_money';
         $config[$count]['value']    = $_POST['free_money'];
-
+        $count++;
+        $config[$count]['name']     = 'fee_compute_mode';
+        $config[$count]['value']    = $_POST['fee_compute_mode'];
         if ($modules[0]['cod'])
         {
             $count++;
@@ -351,7 +387,7 @@ elseif ($_REQUEST['act'] == 'edit_area')
 
     /* 取得参数 */
     $id  = intval($_POST['id']);
-    $val = trim($_POST['val']);
+    $val = json_str_iconv(trim($_POST['val']));
 
     /* 取得该区域所属的配送id */
     $shipping_id = $exc->get_name($id, 'shipping_id');

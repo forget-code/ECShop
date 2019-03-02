@@ -3,15 +3,14 @@
 /**
  * ECSHOP 時間JS語言文件
  * ============================================================================
- * 版權所有 (C) 2005-2007 北京億商互動科技發展有限公司，並保留所有權利。
- * 網站地址: http://www.ecshop.com
+ * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 這是一個免費開源的軟件；這意味著您可以在不用於商業目的的前提下對程序代碼
- * 進行修改、使用和再發佈。
+ * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
+ * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: refly $
- * $Date: 2007-10-01 15:17:07 +0800 (星期一, 01 十月 2007) $
- * $Id: calendar.php 12648 2007-10-01 07:17:07Z refly $
+ * $Author: testyang $
+ * $Id: calendar.php 15086 2008-10-27 06:21:49Z testyang $
 */
 
 /* 時間JS語言項 */
@@ -53,22 +52,22 @@ $_LANG['calendar_lang']['Sep'] = '九月';
 $_LANG['calendar_lang']['Oct'] = '十月';
 $_LANG['calendar_lang']['Nov'] = '十一月';
 $_LANG['calendar_lang']['Dec'] = '十二月';
-$_LANG['calendar_lang']['calendar_help'] = '說明';
-$_LANG['calendar_lang']['calendar_about1'] = "選擇日期:\\r\\n- 點選 \\xab, \\xbb 按鈕選擇年份\\r\\n- 點選 ";
-$_LANG['calendar_lang']['calendar_about2'] = " 按鈕選擇月份\\r\\n- 長按以上按鈕可從選單中快速選擇年份或月份";
-$_LANG['calendar_lang']['calendar_about_time'] = "\\r\\n\\r\\n選擇時間:\\r\\n- 點選小時或分鐘可使改數值加一\\r\\n- 按住Shift鍵點選小時或分鐘可使改數值減一\\r\\n- 點選拖動游標可進行快速選擇";
-$_LANG['calendar_lang']['prev_year'] = "上一年 (按住顯示選單)";
-$_LANG['calendar_lang']['prev_month'] = "上一月 (按住顯示選單)";
+$_LANG['calendar_lang']['calendar_help'] = '幫助';
+$_LANG['calendar_lang']['calendar_about1'] = "選擇日期:\\r\\n- 點擊 \\xab, \\xbb 按鈕選擇年份\\r\\n- 點擊 ";
+$_LANG['calendar_lang']['calendar_about2'] = " 按鈕選擇月份\\r\\n- 長按以上按鈕可從菜單中快速選擇年份或月份";
+$_LANG['calendar_lang']['calendar_about_time'] = "\\r\\n\\r\\n選擇時間:\\r\\n- 點擊小時或分鐘可使改數值加一\\r\\n- 按住Shift鍵點擊小時或分鐘可使改數值減一\\r\\n- 點擊拖動鼠標可進行快速選擇";
+$_LANG['calendar_lang']['prev_year'] = "上一年 (按住出菜單)";
+$_LANG['calendar_lang']['prev_month'] = "上一月 (按住出菜單)";
 $_LANG['calendar_lang']['go_today'] = "轉到今日";
-$_LANG['calendar_lang']['next_month'] = "下一月 (按住顯示選單)";
-$_LANG['calendar_lang']['next_year'] = "下一年 (按住顯示選單)";
+$_LANG['calendar_lang']['next_month'] = "下一月 (按住出菜單)";
+$_LANG['calendar_lang']['next_year'] = "下一年 (按住出菜單)";
 $_LANG['calendar_lang']['sel_date'] = "選擇日期";
 $_LANG['calendar_lang']['drag_to_move'] = "拖動";
 $_LANG['calendar_lang']['part_today'] = "(今日)";
 $_LANG['calendar_lang']['day_first'] = "最左邊顯示";
 $_LANG['calendar_lang']['calendar_close'] = "關閉";
 $_LANG['calendar_lang']['calendar_today'] = "今日";
-$_LANG['calendar_lang']['time_part'] = "(Shift-)點選游標或拖動改變值";
+$_LANG['calendar_lang']['time_part'] = "(Shift-)點擊鼠標或拖動改變值";
 $_LANG['calendar_lang']['calendar_wk'] = "周";
 $_LANG['calendar_lang']['calendar_day'] = "日";
 $_LANG['calendar_lang']['calendar_time'] = "時間";

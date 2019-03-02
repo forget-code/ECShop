@@ -56,6 +56,13 @@
 </div>
 </form>
 <script type="Text/Javascript" language="JavaScript">
+listTable.recordCount = {$record_count};
+listTable.pageCount = {$page_count};
+
+{foreach from=$filter item=item key=key}
+listTable.filter.{$key} = '{$item}';
+{/foreach}
+
 <!-- {literal} -->
 onload = function()
 {

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 用户中心语言项
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2007-12-26 16:22:08 +0800 (星期三, 26 十二月 2007) $
- * $Id: user.php 13900 2007-12-26 08:22:08Z fenghl $
+ * $Author: zblikai $
+ * $Id: user.php 15544 2009-01-09 01:54:28Z zblikai $
 */
 
 
@@ -19,6 +18,7 @@
 $_LANG['require_login'] = '非法入口。<br />必须登录才能完成操作。';
 
 $_LANG['no_records'] = '没有记录';
+$_LANG['shot_message'] = "短消息";
 
 /* 用户菜单 */
 $_LANG['label_welcome'] = '欢迎页';
@@ -230,7 +230,7 @@ $_LANG['upload_file_limit'] = '文件大小超过了限制 %dKB';
 $_LANG['img_type_tips'] = '<font color="red">小提示：</font>';
 $_LANG['img_type_list'] = '您可以上传以下格式的文件：<br />gif、jpg、png、word、excel、txt、zip、ppt、pdf';
 $_LANG['view_upload_file'] = '查看上传的文件';
-$_LANG['upload_file_type'] = '您上傳的文件类型不正确,请重新上传！';
+$_LANG['upload_file_type'] = '您上传的文件类型不正确,请重新上传！';
 $_LANG['upload_file_error'] = '文件上传出现错误,请重新上传！';
 $_LANG['message_empty'] = '您现在还没有留言！';
 $_LANG['msg_success'] = '您的留言已成功提交！';
@@ -272,6 +272,7 @@ $_LANG['order_sn_empty'] = '合并主订单号不能为空';
 $_LANG['merge_order_notice'] = '订单合并是在发货前将相同状态的订单合并成一新的订单。<br />收货地址，送货方式等以主定单为准。';
 $_LANG['order_exist'] = '该订单不存在！';
 $_LANG['order_is_group_buy'] = '[团购]';
+$_LANG['order_is_exchange'] = '[积分商城]';
 $_LANG['gb_deposit'] = '（保证金）';
 $_LANG['notice_gb_order_amount'] = '（备注：团购如果有保证金，第一次只需支付保证金和相应的支付费用）';
 $_LANG['business_message'] = '发送/查看商家留言';
@@ -356,7 +357,7 @@ $_LANG['shipping_time'] = '发货于 %s';
 
 $_LANG['select_payment'] = '所选支付方式';
 $_LANG['order_amount'] = '应付款金额';
-$_LANG['update_address'] = '更新收货地址';
+$_LANG['update_address'] = '更新收货人信息';
 $_LANG['virtual_card_info'] = '虚拟卡信息';
 
 /* 取回密码 */
@@ -401,6 +402,7 @@ $_LANG['logout'] = '您已经成功的退出了。';
 $_LANG['username_empty'] = '用户名为空';
 $_LANG['username_invalid'] = '用户名 %s 含有敏感字符';
 $_LANG['username_exist'] = '用户名 %s 已经存在';
+$_LANG['username_not_allow'] = '用户名 %s 不允许注册';
 $_LANG['confirm_register'] = '确认注册';
 
 $_LANG['agreement'] = "我已看过并接受《<a href=\"article.php?cat_id=-1\" style=\"color:blue\" target=\"_blank\">用户协议</a>》";
@@ -408,6 +410,7 @@ $_LANG['agreement'] = "我已看过并接受《<a href=\"article.php?cat_id=-1\"
 $_LANG['email_empty'] = 'email为空';
 $_LANG['email_invalid'] = '%s 不是合法的email地址';
 $_LANG['email_exist'] = '%s 已经存在';
+$_LANG['email_not_allow'] = 'Email %s 不允许注册';
 $_LANG['register'] = '注册新用户名';
 $_LANG['register_success'] = '用户名 %s 注册成功';
 
@@ -435,6 +438,7 @@ $_LANG['horizontal'] = '横排';
 $_LANG['verticle'] = '竖排';
 $_LANG['generate'] = '生成代码';
 $_LANG['label_goods_num'] = '显示商品数量：';
+$_LANG['label_rows_num'] = '排列显示条目数：';
 $_LANG['label_arrange'] = '选择商品排列方式：';
 $_LANG['label_charset'] = '选择编码：';
 $_LANG['charset']['utf8'] = '国际化编码（utf8）';
@@ -442,6 +446,8 @@ $_LANG['charset']['zh_cn'] = '简体中文';
 $_LANG['charset']['zh_tw'] = '繁体中文';
 $_LANG['goods_num_must_be_int'] = '商品数量应该是整数';
 $_LANG['goods_num_must_over_0'] = '商品数量应该大于0';
+$_LANG['rows_num_must_be_int'] = '排列显示条目数应该是整数';
+$_LANG['rows_num_must_over_0'] = '排列显示条目数应该大于0';
 
 $_LANG['last_month_order'] = '您最近30天内提交了';
 $_LANG['order_unit'] = '个订单';
@@ -513,6 +519,10 @@ $_LANG['had_use'] = '已使用';
 
 /* 用户推荐 */
 $_LANG['affiliate_mode'] = '分成模式';
+$_LANG['affiliate_detail'] = '分成明细';
+$_LANG['affiliate_member'] = '我推荐的会员';
+$_LANG['affiliate_code'] = '推荐代码';
+$_LANG['firefox_copy_alert'] = "您的firefox安全限制限制您进行剪贴板操作，请打开’about:config’将signed.applets.codebase_principal_support’设置为true’之后重试";
 $_LANG['affiliate_type'][0] = '推荐注册分成';
 $_LANG['affiliate_type'][1] = '推荐订单分成';
 $_LANG['affiliate_type'][-1] = '推荐注册分成';
@@ -547,6 +557,7 @@ $_LANG['affiliate_stats'][0] = '等待处理';
 $_LANG['affiliate_stats'][1] = '已分成';
 $_LANG['affiliate_stats'][2] = '取消分成';
 $_LANG['affiliate_stats'][3] = '已撤销';
+$_LANG['affiliate_stats'][4] = '等待买家付款';
 
 $_LANG['level_point'] = '积分分成百分比';
 $_LANG['level_money'] = '现金分成百分比';
@@ -572,7 +583,7 @@ $_LANG['validate_fail'] = '验证失败，请确认你的验证链接是否正�
 $_LANG['validate_mail_ok'] = '验证邮件发送成功';
 
 $_LANG['not_validated'] = '您还没有通过邮件认证';
-$_LANG['resend_hash_mail'] = '重新发送认证邮件';
+$_LANG['resend_hash_mail'] = '点此发送认证邮件';
 
 $_LANG['query_status'] = '查询状态';
 
@@ -605,13 +616,32 @@ $_LANG['rule'] = '兑换规则';
 $_LANG['transform_num'] = '兑换数量';
 $_LANG['transform_result'] = '兑换结果';
 $_LANG['bbs'] = '论坛';
-$_LANG['pay_points'] = '商城消费积分';
+$_LANG['exchange_amount'] = '支出';
+$_LANG['exchange_desamount'] = '收入';
+$_LANG['exchange_ratio'] = '兑换比率';
+$_LANG['exchange_points'][0] = '商城等级积分';
+$_LANG['exchange_points'][1] = '商城消费积分';
+$_LANG['exchange_action'] = '换';
+$_LANG['exchange_js']['deny'] = '禁止兑换';
+$_LANG['exchange_js']['balance'] = '您的{%s}余额不足，请重新输入';
+$_LANG['exchange_deny'] = '该积分不允许兑换';
+$_LANG['exchange_success'] = '恭喜您， 你用%s个%s兑换了%s个%s';
+$_LANG['exchange_error_1'] = 'UCenter提交积分兑换时发生错误';
 $_LANG['rank_points'] = '商城等级积分';
-
+$_LANG['pay_points'] = '商城消费积分';
 
 /* 密码强度 */
 $_LANG['pwd_lower'] = '弱';
 $_LANG['pwd_middle'] = '中';
 $_LANG['pwd_high'] = '强';
+$_LANG['user_reg_info'][0] = '如果您不是会员，请注册';
+$_LANG['user_reg_info'][1] = '友情提示';
+$_LANG['user_reg_info'][2] = '不注册为会员也可在本店购买商品';
+$_LANG['user_reg_info'][3] = '但注册之后您可以';
+$_LANG['user_reg_info'][4] = '保存您的个人资料';
+$_LANG['user_reg_info'][5] = '收藏您关注的商品';
+$_LANG['user_reg_info'][6] = '享受会员积分制度';
+$_LANG['user_reg_info'][7] = '订阅本店商品信息';
+$_LANG['add_bonus'] = '添加红包';
 
 ?>

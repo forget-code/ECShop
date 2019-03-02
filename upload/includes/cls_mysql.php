@@ -3,15 +3,14 @@
 /**
  * ECSHOP MYSQL 公用类库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-11-07 16:07:29 +0800 (星期三, 07 十一月 2007) $
- * $Id: cls_mysql.php 13466 2007-11-07 08:07:29Z paulgao $
+ * $Author: testyang $
+ * $Id: cls_mysql.php 15025 2008-10-24 02:11:59Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -31,7 +30,7 @@ class cls_mysql
 
     var $max_cache_time = 300; // 最大的缓存时间，以秒为单位
 
-    var $cache_data_dir = 'templates/caches/';
+    var $cache_data_dir = 'temp/query_caches/';
     var $root_path      = '';
 
     var $error_message  = array();
@@ -46,13 +45,18 @@ class cls_mysql
 
     var $mysql_disable_cache_tables = array(); // 不允许被缓存的表，遇到将不会进行缓存
 
-    function __construct($dbhost, $dbuser, $dbpw, $dbname = '', $charset = 'utf8', $pconnect = 0, $quiet = 0)
+    function __construct($dbhost, $dbuser, $dbpw, $dbname = '', $charset = 'gbk', $pconnect = 0, $quiet = 0)
     {
         $this->cls_mysql($dbhost, $dbuser, $dbpw, $dbname, $charset, $pconnect, $quiet);
     }
 
-    function cls_mysql($dbhost, $dbuser, $dbpw, $dbname = '', $charset = 'utf8', $pconnect = 0, $quiet = 0)
+    function cls_mysql($dbhost, $dbuser, $dbpw, $dbname = '', $charset = 'gbk', $pconnect = 0, $quiet = 0)
     {
+        if (defined('EC_CHARSET'))
+        {
+            $charset = strtolower(str_replace('-', '', EC_CHARSET));
+        }
+
         if (defined('ROOT_PATH') && !$this->root_path)
         {
             $this->root_path = ROOT_PATH;
@@ -274,7 +278,7 @@ class cls_mysql
 
         if (defined('DEBUG_MODE') && (DEBUG_MODE & 8) == 8)
         {
-            $logfilename = $this->root_path . 'data/mysql_query_' . $this->dbhash . '_' . date('Y_m_d') . '.log';
+            $logfilename = $this->root_path . DATA_DIR . '/mysql_query_' . $this->dbhash . '_' . date('Y_m_d') . '.log';
             $str = $sql . "\n\n";
 
             if (PHP_VERSION >= '5.0')
@@ -383,12 +387,14 @@ class cls_mysql
     {
         if ($message)
         {
-            echo "<b>ECSHOP info</b>: $message\n\n";
+            echo "<b>ECSHOP info</b>: $message\n\n<br /><br />";
+            //print('<a href="http://faq.comsenz.com/?type=mysql&dberrno=2003&dberror=Can%27t%20connect%20to%20MySQL%20server%20on" target="_blank">http://faq.comsenz.com/</a>');
         }
         else
         {
             echo "<b>MySQL server error report:";
             print_r($this->error_message);
+            //echo "<br /><br /><a href='http://faq.comsenz.com/?type=mysql&dberrno=" . $this->error_message[3]['errno'] . "&dberror=" . urlencode($this->error_message[2]['error']) . "' target='_blank'>http://faq.comsenz.com/</a>";
         }
 
         exit;

@@ -53,7 +53,7 @@ if (window.parent != window)
       </td>
       </tr>
       {/if}
-      <tr><td colspan="2"><label><input type="checkbox" value="1" name="remember" />{$lang.remember}</label></td></tr>
+      <tr><td colspan="2"><input type="checkbox" value="1" name="remember" id="remember" /><label for="remember">{$lang.remember}</label></td></tr>
       <tr><td>&nbsp;</td><td><input type="submit" value="{$lang.signin_now}" class="button" /></td></tr>
       <tr>
         <td colspan="2" align="right">&raquo; <a href="../" style="color:white">{$lang.back_home}</a> &raquo; <a href="get_password.php?act=forget_pwd" style="color:white">{$lang.forget_pwd}</a></td>

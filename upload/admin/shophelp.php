@@ -3,15 +3,14 @@
 /**
  * ECSHOP 帮助信息管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: shophelp.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: shophelp.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -182,7 +181,7 @@ elseif ($_REQUEST['act'] == 'edit_catname')
     check_authz_json('shophelp_manage');
 
     $id       = intval($_POST['id']);
-    $cat_name = trim($_POST['val']);
+    $cat_name = json_str_iconv(trim($_POST['val']));
 
     /* 检查分类名称是否重复 */
     if ($exc_cat->num("cat_name", $cat_name, $id) != 0)
@@ -212,7 +211,7 @@ elseif ($_REQUEST['act'] == 'edit_cat_order')
     check_authz_json('shophelp_manage');
 
     $id    = intval($_POST['id']);
-    $order = trim($_POST['val']);
+    $order = json_str_iconv(trim($_POST['val']));
 
     /* 检查输入的值是否合法 */
     if (!preg_match("/^[0-9]+$/", $order))
@@ -327,7 +326,7 @@ elseif ($_REQUEST['act'] == 'edit_title')
     check_authz_json('shophelp_manage');
 
     $id    = intval($_POST['id']);
-    $title = trim($_POST['val']);
+    $title = json_str_iconv(trim($_POST['val']));
 
     /* 检查文章标题是否有重名 */
     if ($exc_article->num('title', $title, $id) == 0)

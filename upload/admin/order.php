@@ -3,15 +3,14 @@
 /**
  * ECSHOP 订单管理
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-02-28 14:50:19 +0800 (星期四, 28 二月 2008) $
- * $Id: order.php 14194 2008-02-28 06:50:19Z fenghl $
+ * $Author: sunxiaodong $
+ * $Id: order.php 15654 2009-02-24 05:57:05Z sunxiaodong $
  */
 
 define('IN_ECS', true);
@@ -151,16 +150,53 @@ elseif ($_REQUEST['act'] == 'info')
     }
 
     /* 取得上一个、下一个订单号 */
-    $sql = "SELECT MAX(order_id) FROM " . $ecs->table('order_info') . " WHERE order_id < '$order[order_id]'";
+    if (!empty($_COOKIE['ECSCP']['lastfilter']))
+    {
+        $filter = unserialize(urldecode($_COOKIE['ECSCP']['lastfilter']));
+        if (!empty($filter['composite_status']))
+        {
+            $where = '';
+            //综合状态
+            switch($filter['composite_status'])
+            {
+                case CS_AWAIT_PAY :
+                    $where .= order_query_sql('await_pay');
+                    break;
+
+                case CS_AWAIT_SHIP :
+                    $where .= order_query_sql('await_ship');
+                    break;
+
+                case CS_FINISHED :
+                    $where .= order_query_sql('finished');
+                    break;
+
+                default:
+                    if ($filter['composite_status'] != -1)
+                    {
+                        $where .= " AND o.order_status = '$filter[composite_status]' ";
+                    }
+            }
+        }
+    }
+    $sql = "SELECT MAX(order_id) FROM " . $ecs->table('order_info') . " as o WHERE order_id < '$order[order_id]'";
     if ($agency_id > 0)
     {
         $sql .= " AND agency_id = '$agency_id'";
     }
+    if (!empty($where))
+    {
+        $sql .= $where;
+    }
     $smarty->assign('prev_id', $db->getOne($sql));
-    $sql = "SELECT MIN(order_id) FROM " . $ecs->table('order_info') . " WHERE order_id > '$order[order_id]'";
+    $sql = "SELECT MIN(order_id) FROM " . $ecs->table('order_info') . " as o WHERE order_id > '$order[order_id]'";
     if ($agency_id > 0)
     {
         $sql .= " AND agency_id = '$agency_id'";
+    }
+    if (!empty($where))
+    {
+        $sql .= $where;
     }
     $smarty->assign('next_id', $db->getOne($sql));
 
@@ -296,6 +332,12 @@ elseif ($_REQUEST['act'] == 'info')
         $row['formated_goods_price']    = price_format($row['goods_price']);
 
         $goods_attr[] = explode(' ', trim($row['goods_attr'])); //将商品属性拆分为一个数组
+
+        if ($row['extension_code'] == 'package_buy')
+        {
+            $row['package_goods_list'] = get_package_goods($row['goods_id']);
+        }
+
         $goods_list[] = $row;
     }
 
@@ -344,8 +386,49 @@ elseif ($_REQUEST['act'] == 'info')
         $smarty->assign('print_time',   local_date($_CFG['time_format']));
         $smarty->assign('action_user',  $_SESSION['admin_name']);
 
-        $smarty->template_dir = '../data';
+        $smarty->template_dir = '../' . DATA_DIR;
         $smarty->display('order_print.html');
+    }
+    elseif (isset($_GET['shipping_print']))
+    {
+        //$smarty->assign('print_time',   local_date($_CFG['time_format']));
+        //发货地址所在地
+        $region_array = array();
+        $region_id = !empty($_CFG['shop_country']) ? $_CFG['shop_country'] . ',' : '';
+        $region_id .= !empty($_CFG['shop_province']) ? $_CFG['shop_province'] . ',' : '';
+        $region_id .= !empty($_CFG['shop_city']) ? $_CFG['shop_city'] . ',' : '';
+        $region_id = substr($region_id, 0, -1);
+        $region = $db->getAll("SELECT region_id, region_name FROM " . $ecs->table("region") . " WHERE region_id IN ($region_id)");
+        if (!empty($region))
+        {
+            foreach($region as $region_data)
+            {
+                $region_array[$region_data['region_id']] = $region_data['region_name'];
+            }
+        }
+        $smarty->assign('shop_name',    $_CFG['shop_name']);
+        $smarty->assign('province', $region_array[$_CFG['shop_province']]);
+        $smarty->assign('city', $region_array[$_CFG['shop_city']]);
+        $smarty->assign('shop_address', $_CFG['shop_address']);
+        $smarty->assign('service_phone',$_CFG['service_phone']);
+        $shipping_print = $db->getOne("SELECT shipping_print FROM " . $ecs->table("shipping") . " WHERE shipping_id=" . $order['shipping_id']);
+        if (!empty($shipping_print))
+        {
+            echo $smarty->fetch("str:$shipping_print");
+        }
+        else
+        {
+            $shipping_code = $db->getOne("SELECT shipping_code FROM " . $ecs->table('shipping') . " WHERE shipping_id=" . $order['shipping_id']);
+            include_once(ROOT_PATH . 'includes/modules/shipping/' . $shipping_code . '.php');
+            if (!empty($_LANG['shipping_print']))
+            {
+                echo $smarty->fetch("str:$_LANG[shipping_print]");
+            }
+            else
+            {
+                echo $_LANG['no_print_shipping'];
+            }
+        }
     }
     else
     {
@@ -528,6 +611,15 @@ elseif ($_REQUEST['act'] == 'step_post')
                 " WHERE goods_id = '$goods_id' LIMIT 1";
         $db->query($sql);
 
+        /* 如果使用库存，且下订单时减库存，则修改库存 */
+        if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
+        {
+            $sql = "UPDATE " . $ecs->table('goods') .
+                    " SET `goods_number` = goods_number - '" . $goods_number . "' " .
+                    " WHERE `goods_id` = '" . $goods_id . "' LIMIT 1";
+             $db->query($sql);
+        }
+
         /* 更新商品总金额和订单总金额 */
         update_order($order_id, array('goods_amount' => order_amount($order_id)));
         update_order_amount($order_id);
@@ -675,7 +767,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         $shipping_id = $_POST['shipping'];
         $shipping = shipping_area_info($shipping_id, $region_id_list);
         $weight_amount = order_weight_price($order_id);
-        $shipping_fee = shipping_fee($shipping['shipping_code'], $shipping['configure'], $weight_amount['weight'], $weight_amount['amount']);
+        $shipping_fee = shipping_fee($shipping['shipping_code'], $shipping['configure'], $weight_amount['weight'], $weight_amount['amount'], $weight_amount['number']);
         $order = array(
             'shipping_id' => $shipping_id,
             'shipping_name' => addslashes($shipping['shipping_name']),
@@ -1171,19 +1263,23 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     {
         /* 取得订单商品 */
         $goods_list = order_goods($order_id);
-        foreach ($goods_list AS $key => $goods)
+        if (!empty($goods_list))
         {
-            /* 计算属性数 */
-            $attr = $goods['goods_attr'];
-            if ($attr == '')
+            foreach ($goods_list AS $key => $goods)
             {
-                $goods_list[$key]['rows'] = 1;
-            }
-            else
-            {
-                $goods_list[$key]['rows'] = count(explode(chr(13), $attr));
+                /* 计算属性数 */
+                $attr = $goods['goods_attr'];
+                if ($attr == '')
+                {
+                    $goods_list[$key]['rows'] = 1;
+                }
+                else
+                {
+                    $goods_list[$key]['rows'] = count(explode(chr(13), $attr));
+                }
             }
         }
+
         $smarty->assign('goods_list', $goods_list);
 
         /* 取得商品总金额 */
@@ -1267,7 +1363,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
         foreach ($shipping_list AS $key => $shipping)
         {
             $shipping_fee = shipping_fee($shipping['shipping_code'],
-                unserialize($shipping['configure']), $total['weight'], $total['amount']);
+                unserialize($shipping['configure']), $total['weight'], $total['amount'], $total['number']);
             $shipping_list[$key]['shipping_fee'] = $shipping_fee;
             $shipping_list[$key]['format_shipping_fee'] = price_format($shipping_fee);
             $shipping_list[$key]['free_money'] = price_format($shipping['configure']['free_money']);
@@ -1373,7 +1469,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
 //        foreach ($shipping_list AS $key => $shipping)
 //        {
 //            $shipping_fee = shipping_fee($shipping['shipping_code'],
-//                unserialize($shipping['configure']), $total['weight'], $total['amount']);
+//                unserialize($shipping['configure']), $total['weight'], $total['amount'], $total['number']);
 //            $shipping_list[$key]['shipping_fee'] = $shipping_fee;
 //            $shipping_list[$key]['format_shipping_fee'] = price_format($shipping_fee);
 //            $shipping_list[$key]['free_money'] = price_format($shipping['configure']['free_money']);
@@ -1405,6 +1501,16 @@ elseif ($_REQUEST['act'] == 'process')
         $rec_id = intval($_GET['rec_id']);
         $step_act = $_GET['step_act'];
         $order_id = intval($_GET['order_id']);
+
+        /* 如果使用库存，且下订单时减库存，则修改库存 */
+        if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
+        {
+             $goods = $db->getRow("SELECT goods_id, goods_number FROM " . $ecs->table('order_goods') . " WHERE rec_id = " . $rec_id );
+             $sql = "UPDATE " . $ecs->table('goods') .
+                    " SET `goods_number` = goods_number + '" . $goods['goods_number'] . "' " .
+                    " WHERE `goods_id` = '" . $goods['goods_id'] . "' LIMIT 1";
+             $db->query($sql);
+        }
 
         /* 删除 */
         $sql = "DELETE FROM " . $ecs->table('order_goods') .
@@ -1525,7 +1631,7 @@ elseif ($_REQUEST['act'] == 'templates')
     admin_priv('order_os_edit');
 
     /* 读入订单打印模板文件 */
-    $file_path    = ROOT_PATH.'data/order_print.html';
+    $file_path    = ROOT_PATH. DATA_DIR . '/order_print.html';
     $file_content = file_get_contents($file_path);
     @fclose($file_content);
 
@@ -1558,7 +1664,7 @@ elseif ($_REQUEST['act'] == 'templates')
 elseif ($_REQUEST['act'] == 'edit_templates')
 {
     /* 更新模板文件的内容 */
-    $file_name = @fopen("../data/order_print.html", 'w+');
+    $file_name = @fopen('../' . DATA_DIR . '/order_print.html', 'w+');
     @fwrite($file_name, stripslashes($_POST['FCKeditor1']));
     @fclose($file_name);
 
@@ -1877,7 +1983,7 @@ elseif ($_REQUEST['act'] == 'operate')
             $smarty->assign('goods_attr', $attr);
             $smarty->assign('goods_list', $goods_list);
 
-            $smarty->template_dir = '../data';
+            $smarty->template_dir = '../' . DATA_DIR;
             $html .= $smarty->fetch('order_print.html') .
                 '<div style="PAGE-BREAK-AFTER:always"></div>';
         }
@@ -1975,6 +2081,7 @@ elseif ($_REQUEST['act'] == 'batch_operate_post')
                 if ($_CFG['send_confirm_email'] == '1')
                 {
                     $tpl = get_mail_template('order_confirm');
+                    $order['formated_add_time'] = local_date($GLOBALS['_CFG']['time_format'], $order['add_time']);
                     $smarty->assign('order', $order);
                     $smarty->assign('shop_name', $_CFG['shop_name']);
                     $smarty->assign('send_date', local_date($_CFG['date_format']));
@@ -2319,7 +2426,8 @@ elseif ($_REQUEST['act'] == 'operate_post')
         {
             if (!virtual_goods_ship($virtual_goods, $msg, $order['order_sn']))
             {
-                sys_msg($msg);
+                $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=info&order_id=' . $order_id);
+                sys_msg($msg, 0, $links);
             }
         }
 
@@ -2348,7 +2456,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
 
             /* 计算并发放积分 */
             $integral = integral_to_give($order);
-            
+
             log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($_LANG['order_gift_integral'], $order['order_sn']));
 
             /* 发放红包 */
@@ -2645,8 +2753,8 @@ elseif ($_REQUEST['act'] == 'ajax_merge_order')
     include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON();
 
-    $from_order_sn = empty($_POST['from_order_sn']) ? '' : substr($_POST['from_order_sn'], 1);
-    $to_order_sn = empty($_POST['to_order_sn']) ? '' : substr($_POST['to_order_sn'], 1);
+    $from_order_sn = empty($_POST['from_order_sn']) ? '' : json_str_iconv(substr($_POST['from_order_sn'], 1));
+    $to_order_sn = empty($_POST['to_order_sn']) ? '' : json_str_iconv(substr($_POST['to_order_sn'], 1));
 
     $m_result = merge_order($from_order_sn, $to_order_sn);
     $result = array('error'=>0,  'content'=>'');
@@ -2706,7 +2814,7 @@ elseif ($_REQUEST['act'] == 'search_users')
     include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON();
 
-    $id_name = empty($_GET['id_name']) ? '' : trim($_GET['id_name']);
+    $id_name = empty($_GET['id_name']) ? '' : json_str_iconv(trim($_GET['id_name']));
 
     $result = array('error'=>0, 'message'=>'', 'content'=>'');
     if ($id_name != '')
@@ -2740,7 +2848,7 @@ elseif ($_REQUEST['act'] == 'search_goods')
     include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON();
 
-    $keyword = empty($_GET['keyword']) ? '' : trim($_GET['keyword']);
+    $keyword = empty($_GET['keyword']) ? '' : json_str_iconv(trim($_GET['keyword']));
 
     $result = array('error'=>0, 'message'=>'', 'content'=>'');
 
@@ -2778,7 +2886,7 @@ elseif ($_REQUEST['act'] == 'edit_invoice_no')
     /* 检查权限 */
     check_authz_json('order_edit');
 
-    $no = empty($_POST['val']) ? 'N/A' : trim($_POST['val']);
+    $no = empty($_POST['val']) ? 'N/A' : json_str_iconv(trim($_POST['val']));
     $no = $no=='N/A' ? '' : $no;
     $order_id = empty($_POST['id']) ? 0 : intval($_POST['id']);
 
@@ -2814,7 +2922,7 @@ elseif ($_REQUEST['act'] == 'edit_pay_note')
     /* 检查权限 */
     check_authz_json('order_edit');
 
-    $no = empty($_POST['val']) ? 'N/A' : trim($_POST['val']);
+    $no = empty($_POST['val']) ? 'N/A' : json_str_iconv(trim($_POST['val']));
     $no = $no=='N/A' ? '' : $no;
     $order_id = empty($_POST['id']) ? 0 : intval($_POST['id']);
 
@@ -2840,6 +2948,68 @@ elseif ($_REQUEST['act'] == 'edit_pay_note')
     {
         make_json_error($GLOBALS['db']->errorMsg());
     }
+}
+
+/*------------------------------------------------------ */
+//-- 获取订单商品信息
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'get_goods_info')
+{
+    /* 取得订单商品 */
+    $order_id = isset($_REQUEST['order_id'])?intval($_REQUEST['order_id']):0;
+    if (empty($order_id))
+    {
+        make_json_response('', 1, $_LANG['error_get_goods_info']);
+    }
+    $goods_list = array();
+    $goods_attr = array();
+    $sql = "SELECT o.*, g.goods_thumb, g.goods_number AS storage, o.goods_attr, IFNULL(b.brand_name, '') AS brand_name " .
+            "FROM " . $ecs->table('order_goods') . " AS o ".
+            "LEFT JOIN " . $ecs->table('goods') . " AS g ON o.goods_id = g.goods_id " .
+            "LEFT JOIN " . $ecs->table('brand') . " AS b ON g.brand_id = b.brand_id " .
+            "WHERE o.order_id = '{$order_id}' ";
+    $res = $db->query($sql);
+    while ($row = $db->fetchRow($res))
+    {
+        /* 虚拟商品支持 */
+        if ($row['is_real'] == 0)
+        {
+            /* 取得语言项 */
+            $filename = ROOT_PATH . 'plugins/' . $row['extension_code'] . '/languages/common_' . $_CFG['lang'] . '.php';
+            if (file_exists($filename))
+            {
+                include_once($filename);
+                if (!empty($_LANG[$row['extension_code'].'_link']))
+                {
+                    $row['goods_name'] = $row['goods_name'] . sprintf($_LANG[$row['extension_code'].'_link'], $row['goods_id'], $order['order_sn']);
+                }
+            }
+        }
+
+        $row['formated_subtotal']       = price_format($row['goods_price'] * $row['goods_number']);
+        $row['formated_goods_price']    = price_format($row['goods_price']);
+        $_goods_thumb = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $_goods_thumb = (strpos($_goods_thumb, 'http://') === 0) ? $_goods_thumb : $ecs->url() . $_goods_thumb;
+        $row['goods_thumb'] = $_goods_thumb;
+        $goods_attr[] = explode(' ', trim($row['goods_attr'])); //将商品属性拆分为一个数组
+        $goods_list[] = $row;
+    }
+    $attr = array();
+    $arr  = array();
+    foreach ($goods_attr AS $index => $array_val)
+    {
+        foreach ($array_val AS $value)
+        {
+            $arr = explode(':', $value);//以 : 号将属性拆开
+            $attr[$index][] =  @array('name' => $arr[0], 'value' => $arr[1]);
+        }
+    }
+
+    $smarty->assign('goods_attr', $attr);
+    $smarty->assign('goods_list', $goods_list);
+    $str = $smarty->fetch('order_goods_info.htm');
+    $goods[] = array('order_id' => $order_id, 'str' => $str);
+    make_json_result($goods);
 }
 
 /**
@@ -2890,7 +3060,9 @@ function return_user_surplus_integral_bonus($order)
     /* 处理余额、积分、红包 */
     if ($order['user_id'] > 0 && $order['surplus'] > 0)
     {
-        log_account_change($order['user_id'], $order['surplus'], 0, 0, 0, sprintf($GLOBALS['_LANG']['return_order_surplus'], $order['order_sn']));
+        $surplus = $order['money_paid'] < 0 ? $order['surplus'] + $order['money_paid'] : $order['surplus'];
+        log_account_change($order['user_id'], $surplus, 0, 0, 0, sprintf($GLOBALS['_LANG']['return_order_surplus'], $order['order_sn']));
+        $GLOBALS['db']->query("UPDATE ". $GLOBALS['ecs']->table('order_info') . " SET `order_amount` = '0' WHERE `order_id` =". $order['order_id']);
     }
 
     if ($order['user_id'] > 0 && $order['integral'] > 0)
@@ -2922,6 +3094,7 @@ function return_user_surplus_integral_bonus($order)
 function update_order_amount($order_id)
 {
     include_once(ROOT_PATH . 'includes/lib_order.php');
+    //更新订单总金额
     $sql = "UPDATE " . $GLOBALS['ecs']->table('order_info') .
             " SET order_amount = " . order_due_field() .
             " WHERE order_id = '$order_id' LIMIT 1";
@@ -3196,6 +3369,11 @@ function order_list()
     {
         /* 过滤信息 */
         $filter['order_sn'] = empty($_REQUEST['order_sn']) ? '' : trim($_REQUEST['order_sn']);
+        if (!empty($_GET['is_ajax']) && $_GET['is_ajax'] == 1)
+        {
+            $_REQUEST['consignee'] = json_str_iconv($_REQUEST['consignee']);
+            //$_REQUEST['address'] = json_str_iconv($_REQUEST['address']);
+        }
         $filter['consignee'] = empty($_REQUEST['consignee']) ? '' : trim($_REQUEST['consignee']);
         $filter['email'] = empty($_REQUEST['email']) ? '' : trim($_REQUEST['email']);
         $filter['address'] = empty($_REQUEST['address']) ? '' : trim($_REQUEST['address']);
@@ -3317,6 +3495,13 @@ function order_list()
 
             case CS_FINISHED :
                 $where .= order_query_sql('finished');
+                break;
+
+            case PS_PAYING :
+                if ($filter['composite_status'] != -1)
+                {
+                    $where .= " AND o.pay_status = '$filter[composite_status]' ";
+                }
                 break;
 
             default:

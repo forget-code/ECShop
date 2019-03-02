@@ -326,6 +326,8 @@ function check_conform_password( conform_password )
 function is_registered( username )
 {
     var submit_disabled = false;
+	var unlen = username.replace(/[^\x00-\xff]/g, "**").length;
+
     if ( username == '' )
     {
         document.getElementById('username_notice').innerHTML = msg_un_blank;
@@ -337,12 +339,12 @@ function is_registered( username )
         document.getElementById('username_notice').innerHTML = msg_un_format;
         var submit_disabled = true;
     }
-    if ( username.length < 3 )
-    {
+    if ( unlen < 3 )
+    { 
         document.getElementById('username_notice').innerHTML = username_shorter;
         var submit_disabled = true;
     }
-    if ( username.length > 14 )
+    if ( unlen > 14 )
     {
         document.getElementById('username_notice').innerHTML = msg_un_length;
         var submit_disabled = true;

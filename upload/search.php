@@ -3,15 +3,14 @@
 /**
  * ECSHOP 搜索程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2008-02-11 23:46:28 +0800 (星期一, 11 二月 2008) $
- * $Id: search.php 14129 2008-02-11 15:46:28Z paulgao $
+ * $Author: testyang $
+ * $Id: search.php 15183 2008-11-17 09:01:24Z testyang $
 */
 
 define('IN_ECS', true);
@@ -21,7 +20,8 @@ if (empty($_GET['encode']))
     $string = array_merge($_GET, $_POST);
     if (get_magic_quotes_gpc())
     {
-        require(dirname(__FILE__) . '/includes/lib_common.php');
+        require(dirname(__FILE__) . '/includes/lib_base.php');
+        //require(dirname(__FILE__) . '/includes/lib_common.php');
 
         $string = stripslashes_deep($string);
     }
@@ -438,8 +438,8 @@ else
         $arr[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $arr[$row['goods_id']]['promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';
         $arr[$row['goods_id']]['goods_brief']   = $row['goods_brief'];
-        $arr[$row['goods_id']]['goods_thumb']   = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
-        $arr[$row['goods_id']]['goods_img']     = empty($row['goods_img'])   ? $GLOBALS['_CFG']['no_picture'] : $row['goods_img'];
+        $arr[$row['goods_id']]['goods_thumb']   = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']     = get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['url']           = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
     }
 
@@ -472,28 +472,8 @@ else
 
     $url_format .= "$attr_url&amp;order=$order&amp;page=";
 
-    $pager = array(
-                'page'  => $page,
-                'size'  => $size,
-                'sort'  => $sort,
-                'order' => $order,
-                'record_count' => $count,
-                'page_count'   => $max_page,
-                'page_first'   => $url_format. '1',
-                'page_prev'    => $page > 1 ? $url_format.($page - 1) : "javascript:;",
-                'page_next'    => $page < $max_page ? $url_format.($page + 1) : "javascript:;",
-                'page_last'    => $url_format. $max_page,
-                'array'        => array(),
-                'display'    => $display
-            );
-
-    for ($i = 1; $i <= $max_page; $i++)
-    {
-        $pager['array'][$i] = $i;
-    }
-
     $pager['search'] = array(
-        'keywords'   => stripslashes($_REQUEST['keywords']),
+        'keywords'   => stripslashes(urlencode($_REQUEST['keywords'])),
         'category'   => $category,
         'brand'      => $_REQUEST['brand'],
         'sort'       => $sort,
@@ -507,10 +487,14 @@ else
     );
     $pager['search'] = array_merge($pager['search'], $attr_arg);
 
+    $pager = get_pager('search.php', $pager['search'], $count, $page, $size);
+    $pager['display'] = $display;
+
     $smarty->assign('url_format', $url_format);
     $smarty->assign('pager', $pager);
 
     assign_template();
+    assign_dynamic('search');
     $position = assign_ur_here(0, $ur_here);
     $smarty->assign('page_title', $position['title']);    // 页面标题
     $smarty->assign('ur_here',    $position['ur_here']);  // 当前位置
@@ -613,5 +597,4 @@ function get_seachable_attributes($cat_id = 0)
 
     return $attributes;
 }
-
 ?>

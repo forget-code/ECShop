@@ -1,4 +1,4 @@
-<!-- $Id: account_list.htm 9136 2007-06-08 10:59:53Z scottye $ -->
+<!-- $Id: account_list.htm 14928 2008-10-06 09:25:48Z testyang $ -->
 {if $full_page}
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
@@ -38,41 +38,41 @@
       <td>{$account.change_time}</td>
       <td>{$account.change_desc|escape:html}</td>
       <td align="right">
-	    {if $account.user_money gt 0}
-		  <span style="color:#0000FF">+{$account.user_money}</span>
-		{elseif $account.user_money lt 0}
-		  <span style="color:#FF0000">{$account.user_money}</span>
-		{else}
-		  {$account.user_money}
-		{/if}
-	  </td>
+        {if $account.user_money gt 0}
+          <span style="color:#0000FF">+{$account.user_money}</span>
+        {elseif $account.user_money lt 0}
+          <span style="color:#FF0000">{$account.user_money}</span>
+        {else}
+          {$account.user_money}
+        {/if}
+      </td>
       <td align="right">
-	    {if $account.frozen_money gt 0}
-		  <span style="color:#0000FF">+{$account.frozen_money}</span>
-		{elseif $account.frozen_money lt 0}
-		  <span style="color:#FF0000">{$account.frozen_money}</span>
-		{else}
-		  {$account.frozen_money}
-		{/if}
-	  </td>
+        {if $account.frozen_money gt 0}
+          <span style="color:#0000FF">+{$account.frozen_money}</span>
+        {elseif $account.frozen_money lt 0}
+          <span style="color:#FF0000">{$account.frozen_money}</span>
+        {else}
+          {$account.frozen_money}
+        {/if}
+      </td>
       <td align="right">
-	    {if $account.rank_points gt 0}
-		  <span style="color:#0000FF">+{$account.rank_points}</span>
-		{elseif $account.rank_points lt 0}
-		  <span style="color:#FF0000">{$account.rank_points}</span>
-		{else}
-		  {$account.rank_points}
-		{/if}
-	  </td>
+        {if $account.rank_points gt 0}
+          <span style="color:#0000FF">+{$account.rank_points}</span>
+        {elseif $account.rank_points lt 0}
+          <span style="color:#FF0000">{$account.rank_points}</span>
+        {else}
+          {$account.rank_points}
+        {/if}
+      </td>
       <td align="right">
-	    {if $account.pay_points gt 0}
-		  <span style="color:#0000FF">+{$account.pay_points}</span>
-		{elseif $account.pay_points lt 0}
-		  <span style="color:#FF0000">{$account.pay_points}</span>
-		{else}
-		  {$account.pay_points}
-		{/if}
-	  </td>
+        {if $account.pay_points gt 0}
+          <span style="color:#0000FF">+{$account.pay_points}</span>
+        {elseif $account.pay_points lt 0}
+          <span style="color:#FF0000">{$account.pay_points}</span>
+        {else}
+          {$account.pay_points}
+        {/if}
+      </td>
     </tr>
     {foreachelse}
     <tr><td class="no-records" colspan="6">{$lang.no_records}</td></tr>

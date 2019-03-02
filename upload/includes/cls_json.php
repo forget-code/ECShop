@@ -3,20 +3,24 @@
 /**
  * ECSHOP JSON 类
  * ===========================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author$
- * $Date$
- * $Id$
+ * $Author: testyang $
+ * $Id: cls_json.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
+}
+
+if (!defined('EC_CHARSET'))
+{
+    define('EC_CHARSET', 'utf-8');
 }
 
 class JSON
@@ -25,9 +29,15 @@ class JSON
     var $ch   = '';
     var $text = '';
 
-    function encode($arg)
+    function encode($arg, $force = true)
     {
-        if (function_exists('json_encode'))
+        static $_force;
+        if (is_null($_force))
+        {
+            $_force = $force;
+        }
+
+        if ($_force && EC_CHARSET == 'utf-8' && function_exists('json_encode'))
         {
             return json_encode($arg);
         }
@@ -116,7 +126,7 @@ class JSON
                 break;
 
             case 'boolean':
-                $returnValue = (string) $arg;
+                $returnValue = $arg?'true':'false';
                 break;
 
             default:
@@ -137,7 +147,7 @@ class JSON
             return false;
         }
 
-        if (function_exists('json_decode'))
+        if (EC_CHARSET === 'utf-8' && function_exists('json_decode'))
         {
             return addslashes_deep_obj(json_decode(stripslashes($text),$type));
         }
@@ -159,7 +169,7 @@ class JSON
         $this->next();
         $return = $this->val();
 
-        $result = empty($type) ? $return : get_object_vars($return);
+        $result = empty($type) ? $return : $this->object_to_array($return);
 
         return addslashes_deep_obj($result);
     }
@@ -561,6 +571,24 @@ class JSON
             default:
                 return ($this->ch >= '0' && $this->ch <= '9') ? $this->num() : $this->word();
         }
+    }
+
+    /**
+     * Gets the properties of the given object recursion
+     *
+     * @access private
+     *
+     * @return array
+     */
+    function object_to_array($obj)
+    {
+        $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
+        foreach ($_arr as $key => $val)
+        {
+            $val = (is_array($val) || is_object($val)) ? $this->object_to_array($val) : $val;
+            $arr[$key] = $val;
+        }
+        return $arr;
     }
 }
 

@@ -3,28 +3,66 @@
 /**
  * ECSHOP 升级程序 之 控制器
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: luhengqi $
- * $Date: 2007-02-12 14:56:05 +0800 (星期一, 12 二月 2007) $
- * $Id: index.php 5721 2007-02-12 06:56:05Z luhengqi $
+ * $Author: testyang $
+ * $Date: 2008-10-29 16:46:41 +0800 (星期三, 29 十月 2008) $
+ * $Id: index.php 15130 2008-10-29 08:46:41Z testyang $
  */
 
 require_once('./includes/init.php');
 
-/* 初始化语言变量 */
-$updater_lang = get_current_lang();
-if ($updater_lang === false)
+/* 初始化EC的字符集与语言变量*/
+$updater_lang = $ec_charset = '';
+if (!empty($_POST['lang']))
 {
-    die('Please set system\'s language!');
+    $lang_charset = explode('_', $_POST['lang']);
+    $updater_lang = $lang_charset[0].'_'.$lang_charset[1];
+    $ec_charset = $lang_charset[2];
 }
-
+if (empty($updater_lang))
+{
+    if (defined('EC_LANGUAGE'))
+    {
+        $updater_lang = EC_LANGUAGE;
+    }
+    else
+    {
+        $updater_lang = get_current_lang();
+        if ($updater_lang === false)
+        {
+            die('Please set system\'s language!');
+        }
+    }
+}
+if (empty($ec_charset))
+{
+    if (isset($_COOKIE['ECCC']))
+    {
+        $ec_charset = $_COOKIE['ECCC'];
+    }
+    elseif (defined('EC_CHARSET'))
+    {
+        $ec_charset = EC_CHARSET;
+    }
+    elseif (get_current_version() < 'v2.6.0')
+    {
+        $ec_charset = 'utf-8';
+    }
+    else
+    {
+        $ec_charset = 'utf-8';
+    }
+}
+/* 发送HTTP头部，保证浏览器识别UTF8编码 */
+@header('Content-type: text/html; charset='.$ec_charset);
+//echo $updater_lang . '_' . $ec_charset;
 /* 加载升级程序所使用的语言包 */
-$updater_lang_package_path = ROOT_PATH . 'upgrade/languages/' . $updater_lang . '.php';
+$updater_lang_package_path = ROOT_PATH . 'upgrade/languages/' . $updater_lang . '_' . $ec_charset .'.php';
 if (file_exists($updater_lang_package_path))
 {
     include_once($updater_lang_package_path);
@@ -36,7 +74,8 @@ else
 }
 
 /* 初始化流程控制变量 */
-$step = isset($_REQUEST['step']) ? $_REQUEST['step'] : 'readme';
+
+$step = isset($_REQUEST['step']) ? $_REQUEST['step'] : 'sel_lang';
 if ($step !== 'done' && get_current_version() === get_new_version())
 {
     $step = 'error';
@@ -48,23 +87,240 @@ if ($step !== 'done' && get_current_version() === get_new_version())
         die(implode(',', $err->get_all()));
     }
 }
+$smarty->assign('ec_charset', $ec_charset);
+$smarty->assign('updater_lang', $updater_lang);
 switch($step)
 {
+/* 选择语言编码页面 */
+case 'sel_lang' :
+    $smarty->display('lang.php');
+    break;
+
 /* 说明页面 */
 case 'readme' :
+    write_charset_config($updater_lang, $ec_charset);
     $smarty->assign('new_version', VERSION);
     $smarty->assign('old_version', get_current_version());
-    $smarty->assign('updater_lang', $updater_lang);
+    $smarty->assign('ui', empty($_REQUEST['ui'])?'ecshop':$_REQUEST['ui']);
+    $smarty->assign('mysql_charset', $mysql_charset);
+    $smarty->assign('ecshop_charset', $ecshop_charset);
     $smarty->display('readme.php');
 
     break;
+
+/* UC 安装配置检测 */
+case 'uccheck' :
+    $smarty->assign('ucapi', $_POST['ucapi']);
+    $smarty->assign('ucfounderpw', $_POST['ucfounderpw']);
+    $smarty->assign('installer_lang', $installer_lang);
+    $smarty->display('uc_check.php');
+
+    break;
+
+case 'setup_ucenter' :
+
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON();
+    $result = array('error' => 0, 'message' => '');
+
+    $app_type   = 'ECSHOP';
+    $app_name   = $db->getOne('SELECT value FROM ' . $ecs->table('shop_config') . " WHERE code = 'shop_name'");
+    $app_url    = url();
+    $app_charset = EC_CHARSET;
+    $app_dbcharset = strtolower((str_replace('-', '', EC_CHARSET)));
+    $ucapi = !empty($_POST['ucapi']) ? trim($_POST['ucapi']) : '';
+    $ucip = !empty($_POST['ucip']) ? trim($_POST['ucip']) : '';
+    $dns_error = false;
+    if(!$ucip)
+    {
+        $temp = @parse_url($ucapi);
+        $ucip = gethostbyname($temp['host']);
+        if(ip2long($ucip) == -1 || ip2long($ucip) === FALSE)
+        {
+            $ucip = '';
+            $dns_error = true;
+        }
+    }
+    if($dns_error){
+        $result['error'] = 2;
+        $result['message'] = '';
+        die($json->encode($result));
+    }
+
+    $ucfounderpw = trim($_POST['ucfounderpw']);
+    $app_tagtemplates = 'apptagtemplates[template]='.urlencode('<a href="{url}" target="_blank">{goods_name}</a>').'&'.
+        'apptagtemplates[fields][goods_name]='.urlencode($_LANG['tagtemplates_goodsname']).'&'.
+        'apptagtemplates[fields][uid]='.urlencode($_LANG['tagtemplates_uid']).'&'.
+        'apptagtemplates[fields][username]='.urlencode($_LANG['tagtemplates_username']).'&'.
+        'apptagtemplates[fields][dateline]='.urlencode($_LANG['tagtemplates_dateline']).'&'.
+        'apptagtemplates[fields][url]='.urlencode($_LANG['tagtemplates_url']).'&'.
+        'apptagtemplates[fields][image]='.urlencode($_LANG['tagtemplates_image']).'&'.
+        'apptagtemplates[fields][goods_price]='.urlencode($_LANG['tagtemplates_price']);
+    $postdata ="m=app&a=add&ucfounder=&ucfounderpw=".urlencode($ucfounderpw)."&apptype=".urlencode($app_type).
+        "&appname=".urlencode($app_name)."&appurl=".urlencode($app_url)."&appip=&appcharset=".$app_charset.
+        '&appdbcharset='.$app_dbcharset.'&apptagtemplates='.$app_tagtemplates;
+
+    $ucconfig = dfopen($ucapi.'/index.php', 500, $postdata, '', 1, $ucip);
+    if(empty($ucconfig))
+    {
+        //ucenter 验证失败
+        $result['error'] = 1;
+        $result['message'] = '验证失败';
+
+    }
+    elseif($ucconfig == '-1')
+    {
+        //管理员密码无效
+        $result['error'] = 1;
+        $result['message'] = '创始人密码错误';
+    }
+    else
+    {
+        list($appauthkey, $appid) = explode('|', $ucconfig);
+        if(empty($appauthkey) || empty($appid))
+        {
+            //ucenter 安装数据错误
+            $result['error'] = 1;
+            $result['message'] = '安装数据错误';
+        }
+        elseif(($succeed = save_uc_config($ucconfig."|$ucapi|$ucip")))
+        {
+            $result['error'] = 0;
+            $result['message'] = 'OK';
+        }
+        else
+        {
+            //config文件写入错误
+            $result['error'] = 1;
+            $result['message'] = '配置文件写入错误';
+        }
+    }
+
+    die($json->encode($result));
+
+    break;
+
+/* 会员数据合并界面 */
+case 'usersmerge' :
+
+    include(ROOT_PATH . 'data/config.php');
+    if (UC_CHARSET != EC_CHARSET)
+    {
+        $smarty->assign('not_match', true);
+    }
+    else
+    {
+        $link = @mysql_connect(UC_DBHOST, UC_DBUSER, UC_DBPW);
+        if (!$link)
+        {
+            $smarty->assign('noucdb', true);
+        }
+        else
+        {
+            @mysql_close($link);
+            $ucdb = new cls_mysql(UC_DBHOST, UC_DBUSER, UC_DBPW, UC_DBNAME, UC_DBCHARSET);
+            $maxuid = intval($ucdb->getOne("SELECT MAX(uid)+1 FROM ".UC_DBTABLEPRE."members LIMIT 1"));
+            $smarty->assign('maxuid', $maxuid);
+        }
+    }
+    $smarty->display('usermerge.php');
+
+    break;
+
+/*将会员数据导入到uc*/
+case 'userimporttouc' :
+    include(ROOT_PATH . 'data/config.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $ucdb = new cls_mysql(UC_DBHOST, UC_DBUSER, UC_DBPW, UC_DBNAME, UC_DBCHARSET);
+    $json = new JSON();
+    $result = array('error' => 0, 'message' => '');
+    $maxuid = intval($ucdb->getOne("SELECT MAX(uid)+1 FROM ".UC_DBTABLEPRE."members LIMIT 1"));
+    $merge_method = intval($_POST['merge']);
+    $merge_uid = array();
+    $uc_uid = array();
+    $repeat_user = array();
+
+    $query = $db->query("SELECT * FROM " . $ecs->table('users') . " ORDER BY `user_id` ASC");
+    while($data = $db->fetch_array($query))
+    {
+        $salt = rand(100000, 999999);
+        $password = md5($data['password'].$salt);
+        $data['username'] = addslashes($data['user_name']);
+        $lastuid = $data['user_id'] + $maxuid;
+        $uc_userinfo = $ucdb->getRow("SELECT `uid`, `password`, `salt` FROM ".UC_DBTABLEPRE."members WHERE `username`='$data[username]'");
+        if(!$uc_userinfo)
+        {
+            $ucdb->query("INSERT LOW_PRIORITY INTO ".UC_DBTABLEPRE."members SET uid='$lastuid', username='$data[username]', password='$password', email='$data[email]', regip='$data[regip]', regdate='$data[regdate]', salt='$salt'", 'SILENT');
+            $ucdb->query("INSERT LOW_PRIORITY INTO ".UC_DBTABLEPRE."memberfields SET uid='$lastuid'",'SILENT');
+        }
+        else
+        {
+            if ($merge_method == 1)
+            {
+                if (md5($data['password'].$uc_userinfo['salt']) == $uc_userinfo['password'])
+                {
+                    $merge_uid[] = $data['user_id'];
+                    $uc_uid[] = array('user_id' => $data['user_id'], 'uid' => $uc_userinfo['uid']);
+                    continue;
+                }
+            }
+            $ucdb->query("REPLACE INTO ".UC_DBTABLEPRE."mergemembers SET appid='".UC_APPID."', username='$data[username]'", 'SILENT');
+            $repeat_user[] = $data;
+        }
+    }
+    $ucdb->query("ALTER TABLE ".UC_DBTABLEPRE."members AUTO_INCREMENT=".($lastuid + 1), 'SILENT');
+
+    //需要更新user_id的表
+    $up_user_table = array('account_log', 'affiliate_log', 'booking_goods', 'collect_goods', 'comment', 'feedback', 'order_info', 'snatch_log', 'tag', 'users', 'user_account', 'user_address', 'user_bonus');
+    // 清空的表
+    $truncate_user_table = array('cart', 'sessions', 'sessions_data');
+
+    if (!empty($merge_uid))
+    {
+        $merge_uid = implode(',', $merge_uid);
+    }
+    else
+    {
+        $merge_uid = 0;
+    }
+    // 更新ECSHOP表
+    foreach ($up_user_table as $table)
+    {
+        $db->query("UPDATE " . $ecs->table($table) . " SET `user_id`=`user_id`+ $maxuid ORDER BY `user_id` DESC");
+        foreach ($uc_uid as $uid)
+        {
+            $db->query("UPDATE " . $ecs->table($table) . " SET `user_id`='" . $uid['uid'] . "' WHERE `user_id`='" . ($uid['user_id'] + $maxuid) . "'");
+        }
+    }
+    foreach ($truncate_user_table as $table)
+    {
+        $db->query("TRUNCATE TABLE " . $ecs->table($table));
+    }
+    // 保存重复的用户信息
+    if (!empty($repeat_user))
+    {
+        @file_put_contents(ROOT_PATH . 'data/repeat_user.php', $json->encode($repeat_user));
+    }
+    $result['error'] = 0;
+    $result['message'] = 'OK';
+    die($json->encode($result));
+
+    break;
+
+
 
 /* 检查环境页面 */
 case 'check' :
     include_once(ROOT_PATH . 'upgrade/includes/lib_env_checker.php');
     include_once(ROOT_PATH . 'upgrade/includes/checking_dirs.php');
 
+    $ui = isset($_REQUEST['ui']) ? $_REQUEST['ui'] : 'ecshop';
+    if ($ui == 'ecshop')
+    {
+        array_shift($checking_dirs);
+    }
     $dir_checking = check_dirs_priv($checking_dirs);
+
 
     $templates_root = array(
         'dwt' => ROOT_PATH . 'themes/default/',
@@ -252,7 +508,14 @@ case 'update_version' :
 
 /* 成功页面 */
 case 'done' :
+    $ui = isset($_REQUEST['ui']) ? $_REQUEST['ui'] : 'ecshop';
+    if ($ui == 'ucenter')
+    {
+        change_ucenter_config();
+    }
     clear_all_files();
+    remove_ucenter_config();
+    remove_lang_config();
     $smarty->display('done.php');
 
     break;

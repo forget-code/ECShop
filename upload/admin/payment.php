@@ -3,15 +3,14 @@
 /**
  * ECSHOP 支付方式管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-31 11:28:42 +0800 (星期四, 31 一月 2008) $
- * $Id: payment.php 14098 2008-01-31 03:28:42Z fenghl $
+ * $Author: testyang $
+ * $Id: payment.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -61,12 +60,27 @@ if ($_REQUEST['act'] == 'list')
             $modules[$i]['desc'] = $_LANG[$modules[$i]['desc']];
             $modules[$i]['install'] = '0';
         }
+
+        //将财富通显示到第一个
+        if ($modules[$i]['code'] == 'tenpay')
+        {
+            $tenpay = $modules[$i];
+            unset($modules[$i]);
+            array_unshift($modules,$tenpay);
+            //$modules['i']['name'] = '<font color="red">' .  $modules['i']['name'] . '</font>';
+       }
+       elseif ($modules[$i]['code'] == 'tenpayc2c')
+       {
+            $tenpayc2c = $modules[$i];
+            //unset($modules[$i]);
+       }
     }
 
     assign_query_info();
 
     $smarty->assign('ur_here', $_LANG['02_payment_list']);
     $smarty->assign('modules', $modules);
+    $smarty->assign('tenpayc2c', $tenpayc2c);
     $smarty->display('payment_list.htm');
 }
 
@@ -367,8 +381,8 @@ elseif ($_REQUEST['act'] == 'edit_name')
     check_authz_json('payment');
 
     /* 取得参数 */
-    $code = trim($_POST['id']);
-    $name = trim($_POST['val']);
+    $code = json_str_iconv(trim($_POST['id']));
+    $name = json_str_iconv(trim($_POST['val']));
 
     /* 检查名称是否为空 */
     if (empty($name))
@@ -397,8 +411,8 @@ elseif ($_REQUEST['act'] == 'edit_desc')
     check_authz_json('payment');
 
     /* 取得参数 */
-    $code = trim($_POST['id']);
-    $desc = trim($_POST['val']);
+    $code = json_str_iconv(trim($_POST['id']));
+    $desc = json_str_iconv(trim($_POST['val']));
 
     /* 更新描述 */
     $exc->edit("pay_desc = '$desc'", $code);
@@ -415,7 +429,7 @@ elseif ($_REQUEST['act'] == 'edit_order')
     check_authz_json('payment');
 
     /* 取得参数 */
-    $code = trim($_POST['id']);
+    $code = json_str_iconv(trim($_POST['id']));
     $order = intval($_POST['val']);
 
     /* 更新排序 */
@@ -433,8 +447,8 @@ elseif ($_REQUEST['act'] == 'edit_pay_fee')
     check_authz_json('payment');
 
     /* 取得参数 */
-    $code = trim($_POST['id']);
-    $pay_fee = trim($_POST['val']);
+    $code = json_str_iconv(trim($_POST['id']));
+    $pay_fee = json_str_iconv(trim($_POST['val']));
     if (empty($pay_fee))
     {
         $pay_fee = 0;

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 团购商品前台文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: group_buy.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: group_buy.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -71,23 +70,7 @@ if ($_REQUEST['act'] == 'list')
             $smarty->assign('gb_list',  $gb_list);
 
             /* 设置分页链接 */
-            $url = 'group_buy.php?act=list&amp;page=';
-            $pager = array(
-                'search'       => array('act' => 'list'),
-                'page'         => $page,
-                'size'         => $size,
-                'record_count' => $count,
-                'page_count'   => $page_count,
-                'page_first'   => $url . '1',
-                'page_prev'    => $page > 1 ? $url . ($page - 1) : 'javascript:;',
-                'page_next'    => $page < $page_count ? $url . ($page + 1) : 'javascript:;',
-                'page_last'    => $url . $page_count,
-                'array'        => array()
-            );
-            for ($i = 1; $i <= $page_count; $i++)
-            {
-                $pager['array'][$i] = $i;
-            }
+            $pager = get_pager('group_buy.php', array('act' => 'list'), $count, $page, $size);
             $smarty->assign('pager', $pager);
         }
 
@@ -184,6 +167,7 @@ elseif ($_REQUEST['act'] == 'view')
            "WHERE goods_id = '" . $group_buy['goods_id'] . "'";
     $db->query($sql);
 
+    $smarty->assign('now_time',  gmtime());           // 当前系统时间
     $smarty->display('group_buy_goods.dwt', $cache_id);
 }
 
@@ -358,7 +342,7 @@ function group_buy_list($size, $page)
         /* 处理图片 */
         if (empty($group_buy['goods_thumb']))
         {
-            $group_buy['goods_thumb'] = $GLOBALS['_CFG']['no_picture'];
+            $group_buy['goods_thumb'] = get_image_path($group_buy['goods_id'], $group_buy['goods_thumb'], true);
         }
         /* 处理链接 */
         $group_buy['url'] = build_uri('group_buy', array('gbid'=>$group_buy['group_buy_id']));

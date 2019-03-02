@@ -3,20 +3,20 @@
 /**
  * ECSHOP v2.1.2 升级程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-02-07 16:03:51 +0800 (星期三, 07 二月 2007) $
- * $Id: v2.1.2.php 5342 2007-02-07 08:03:51Z paulgao $
+ * $Author: testyang $
+ * $Date: 2008-10-29 16:46:41 +0800 (星期三, 29 十月 2008) $
+ * $Id: v2.1.2.php 15130 2008-10-29 08:46:41Z testyang $
  */
 
 class up_v2_1_2
 {
-	var $sql_files = array('structure' => 'structure.sql',
+    var $sql_files = array('structure' => 'structure.sql',
                            'data' => 'data.sql');
 
     var $auto_match = true;
@@ -24,18 +24,18 @@ class up_v2_1_2
     function __construct(){}
     function up_v2_1_2(){}
 
-	function update_database_optionally()
+    function update_database_optionally()
     {
-		include_once(ROOT_PATH . 'includes/lib_code.php');
+        include_once(ROOT_PATH . 'includes/lib_code.php');
         global $ecs, $db, $prefix;
-		
+        
         $lang = $db->getOne("SELECT value FROM ". $ecs->table('shop_config'). " WHERE code = 'lang'");
 
         if ($db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('plugins') . " WHERE `code` = 'group_buy'") > 0);
-		{
-			$db->query('DELETE FROM ' . $ecs->table('plugins') . " WHERE `code` = 'group_buy'");
-		}
-		
+        {
+            $db->query('DELETE FROM ' . $ecs->table('plugins') . " WHERE `code` = 'group_buy'");
+        }
+        
         $tables = $db->getCol('SHOW TABLES');
         $virtual_card = $ecs->table('virtual_card');
         $virtual_card = preg_replace('/`.*?`\.`(.*?)`/', '\1', $virtual_card);
@@ -56,7 +56,7 @@ class up_v2_1_2
         }
 
         if ($db->getOne('SELECT COUNT(*) FROM '.$ecs->table('mail_templates')." WHERE template_code='group_buy'") == 0)
-		{
+        {
             if (strtoupper($lang) == 'ZH_CN')
             {
                 $sql = "INSERT INTO ". $ecs->table('mail_templates') . " (`template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`) VALUES ('group_buy', 1, '团购商品', '亲爱的{\$consignee}。您好！\n\n您于{\$order_time}在本店参加团购商品活动，所购买的商品名称为：{\$goods_name}，数量：{\$goods_number}，订单号为：{\$order_sn}，订单金额为：{\$order_amount}\n\n此团购商品现在已到结束日期，并达到最低价格，您现在可以对该订单付款。\n\n请点击下面的链接：\n\n<a href={\$shop_url} target=_blank>{\$shop_url}</a>\n\n请尽快登录到用户中心，查看您的订单详情信息。 \n\n{\$shop_name}\n\n{\$send_date}',1162201031)";
@@ -71,10 +71,10 @@ class up_v2_1_2
             }
 
             $db->query($sql);
-		}
+        }
     }
 
-	function update_files(){}
+    function update_files(){}
 }
 
 ?>

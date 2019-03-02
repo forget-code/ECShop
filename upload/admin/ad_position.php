@@ -3,15 +3,14 @@
 /**
  * ECSHOP 广告位置管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: ad_position.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: ad_position.php 15645 2009-02-23 07:39:37Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -91,11 +90,14 @@ elseif ($_REQUEST['act'] == 'insert')
         admin_log($position_name, 'add', 'ads_position');
 
         /* 提示信息 */
-        $link[0]['text'] = $_LANG['continue_add_position'];
-        $link[0]['href'] = 'ad_position.php?act=add';
+        $link[0]['text'] = $_LANG['ads_add'];
+        $link[0]['href'] = 'ads.php?act=add';
 
-        $link[1]['text'] = $_LANG['back_position_list'];
-        $link[1]['href'] = 'ad_position.php?act=list';
+        $link[1]['text'] = $_LANG['continue_add_position'];
+        $link[1]['href'] = 'ad_position.php?act=add';
+
+        $link[2]['text'] = $_LANG['back_position_list'];
+        $link[2]['href'] = 'ad_position.php?act=list';
 
         sys_msg($_LANG['add'] . "&nbsp;" . stripslashes($position_name) . "&nbsp;" . $_LANG['attradd_succed'], 0, $link);
     }
@@ -193,7 +195,7 @@ elseif ($_REQUEST['act'] == 'edit_position_name')
     check_authz_json('ad_manage');
 
     $id     = intval($_POST['id']);
-    $position_name   = trim($_POST['val']);
+    $position_name   = json_str_iconv(trim($_POST['val']));
 
     /* 检查名称是否重复 */
     if ($exc->num("position_name", $position_name, $id) != 0)
@@ -222,7 +224,7 @@ elseif ($_REQUEST['act'] == 'edit_ad_width')
     check_authz_json('ad_manage');
 
     $id         = intval($_POST['id']);
-    $ad_width   = trim($_POST['val']);
+    $ad_width   = json_str_iconv(trim($_POST['val']));
 
     /* 宽度值必须是数字 */
     if (!preg_match("/^[\.0-9]+$/",$ad_width))
@@ -256,7 +258,7 @@ elseif ($_REQUEST['act'] == 'edit_ad_height')
     check_authz_json('ad_manage');
 
     $id         = intval($_POST['id']);
-    $ad_height  = trim($_POST['val']);
+    $ad_height  = json_str_iconv(trim($_POST['val']));
 
     /* 高度值必须是数字 */
     if (!preg_match("/^[\.0-9]+$/",$ad_height))

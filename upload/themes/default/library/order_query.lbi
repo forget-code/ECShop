@@ -1,40 +1,31 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!--{if empty($order_query)}-->
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><div class="title-div"><img src="../images/order_query.gif" alt="" width="158" height="39" /></div>
 <script>var invalid_order_sn = "{$lang.invalid_order_sn}"</script>
-<div class="content-div" style="text-align:center;"><form name="ecsOrderQuery">
-<input type="text" name="order_sn" /><br />
-<input type="button" value="{$lang.query_order}" onclick="orderQuery()" />
-</form></div>
-<div class="content-div" id="ECS_ORDER_QUERY">
-<!--{else}-->
-  <table width="100%" cellpadding="2" cellspacing="0" border="0">
-    <!--{if $order_query.user_id}-->
-    <tr align="left">
-      <th width="30%" style="border-top: 1px dashed #DADADA;font-size:10px">{$lang.order_number}</th>
-      <td style="font-size:9px;border-top: 1px dashed #DADADA;"><a href="user.php?act=order_detail&order_id={$order_query.order_id}" >{$order_query.order_sn}</a></td>
-    </tr>
-    <!--{else}-->
-    <tr align="left">
-      <th width="30%" style="border-top: 1px dashed #DADADA;font-size:10px">{$lang.order_number}</th>
-      <td style="font-size:9px;border-top: 1px dashed #DADADA;">{$order_query.order_sn}</td>
-    </tr>
-    <!--{/if}-->
-    <tr align="left">
-      <th width="30%" style="border-top: 1px dashed #DADADA;font-size:10px">{$lang.order_status}</th>
-      <td style="font-size:9px;border-top: 1px dashed #DADADA;">{$order_query.order_status}</td>
-    </tr>
-    <!--{if $order_query.invoice_no }-->
-    <tr align="left">
-      <th width="30%" style="border-bottom: 1px dashed #DADADA;font-size:10px">{$lang.consignment}</th>
-      <td style="font-size:9px;border-bottom: 1px dashed #DADADA;">{$order_query.invoice_no}</td>
-    </tr>
-    <!--{/if}-->
-    {if $order_query.shipping_date}
-    <tr align="left">
-      <th width="30%" style="border-bottom: 1px dashed #DADADA;font-size:10px">{$lang.shipping_date}</th>
-      <td style="font-size:9px;border-bottom: 1px dashed #DADADA;">{$order_query.shipping_date}</td>
-    </tr>
-    <!--{/if}-->
-  </table>
-<!--{/if}-->
+<div class="box">
+ <div class="box_1">
+  <h3><span>{$lang.order_query}</span></h3>
+  <div class="boxCenterList">
+    <form name="ecsOrderQuery">
+    <input type="text" name="order_sn" class="inputBg" /><br />
+    <div class="blank5"></div>
+    <input type="button" value="{$lang.query_order}" class="bnt_blue_2" onclick="orderQuery()" />
+    </form>
+    <div id="ECS_ORDER_QUERY" style="margin-top:8px;">
+      <!--{else}-->
+      <!--{if $order_query.user_id}-->
+<b>{$lang.order_number}：</b><a href="user.php?act=order_detail&order_id={$order_query.order_id}" class="f6">{$order_query.order_sn}</a><br>
+  <!--{else}-->
+<b>{$lang.order_number}：</b>{$order_query.order_sn}<br>
+  <!--{/if}-->
+<b>{$lang.order_status}：</b><br><font class="f1">{$order_query.order_status}</font><br>
+  <!--{if $order_query.invoice_no }-->
+<b>{$lang.consignment}：</b>{$order_query.invoice_no}<br>
+  <!--{/if}-->
+      {if $order_query.shipping_date}：{$lang.shipping_date} {$order_query.shipping_date}<br>
+  <!--{/if}-->
+  <!--{/if}-->
+    </div>
+  </div>
+ </div>
 </div>
+<div class="blank5"></div>

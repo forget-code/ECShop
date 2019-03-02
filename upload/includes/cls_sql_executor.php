@@ -4,15 +4,14 @@
  * ECSHOP SQL语句执行类。在调用该类方法之前，请参看相应方法的说明。
  *
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: cls_sql_executor.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: sunxiaodong $
+ * $Id: cls_sql_executor.php 15714 2009-03-05 08:30:19Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -110,7 +109,7 @@ class sql_executor
      * @param   array       $ignored_errors 忽略的错误号数组
      * @return  void
      */
-    function __construct($db, $charset = 'utf8', $sprefix = 'ecs_', $tprefix = 'ecs_', $log_path = '', $auto_match = false, $ignored_errors = array())
+    function __construct($db, $charset = 'gbk', $sprefix = 'ecs_', $tprefix = 'ecs_', $log_path = '', $auto_match = false, $ignored_errors = array())
     {
         $this->sql_executor($db, $charset, $sprefix, $tprefix, $log_path, $auto_match, $ignored_errors);
     }
@@ -128,7 +127,7 @@ class sql_executor
      * @param   array       $ignored_errors 忽略的错误号数组
      * @return  void
      */
-    function sql_executor($db, $charset = 'utf8', $sprefix = 'ecs_', $tprefix = 'ecs_', $log_path = '', $auto_match = false, $ignored_errors = array())
+    function sql_executor($db, $charset = 'gbk', $sprefix = 'ecs_', $tprefix = 'ecs_', $log_path = '', $auto_match = false, $ignored_errors = array())
     {
         $this->db = $db;
         $this->db_charset = $charset;
@@ -305,6 +304,7 @@ class sql_executor
                   . 'ALTER\s+TABLE|'
                   . 'UPDATE|'
                   . 'REPLACE\s+INTO|'
+                  . 'DELETE\s+FROM|'
                   . 'INSERT\s+INTO';
 
         $pattern = '/(' . $keywords . ')(\s*)`?' . $this->source_prefix . '(\w+)`?(\s*)/i';

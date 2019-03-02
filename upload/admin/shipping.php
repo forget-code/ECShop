@@ -3,15 +3,14 @@
 /**
  * ECSHOP 配送方式管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: shipping.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Id: shipping.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -155,6 +154,55 @@ elseif ($_REQUEST['act'] == 'uninstall')
 }
 
 /*------------------------------------------------------ */
+//-- 编辑打印模板
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'edit_print_template')
+{
+    admin_priv('ship_manage');
+    $shipping_id = !empty($_GET['shipping']) ? intval($_GET['shipping']) : 0;
+
+    /* 检查该插件是否已经安装 */
+    $sql = "SELECT shipping_id, shipping_name, shipping_code, shipping_print FROM " .$ecs->table('shipping'). " WHERE shipping_id=$shipping_id";
+    $row = $db->GetRow($sql);
+    if ($row)
+    {
+        include_once(ROOT_PATH . 'includes/modules/shipping/' . $row['shipping_code'] . '.php');
+        $row['shipping_print'] = !empty($row['shipping_print']) ? $row['shipping_print'] : $_LANG['shipping_print'];
+        $smarty->assign('shipping', $row);
+    }
+    else
+    {
+        $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'shipping.php?act=list');
+        sys_msg($_LANG['no_shipping_install'] , 0, $lnk);
+    }
+
+    $smarty->assign('ur_here', $_LANG['03_shipping_list']);
+    $smarty->assign('action_link', array('text' => $_LANG['03_shipping_list'], 'href' => 'shipping.php?act=list'));
+    assign_query_info();
+    $smarty->display('shipping_template.htm');
+}
+
+/*------------------------------------------------------ */
+//-- 编辑打印模板
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'do_edit_print_template')
+{
+    admin_priv('ship_manage');
+    $shipping_id = !empty($_GET['shipping']) ? intval($_GET['shipping']) : 0;
+    $template = !empty($_POST['shipping_print']) ? $_POST['shipping_print'] : '';
+    $db->query("UPDATE " . $ecs->table('shipping'). " SET shipping_print='" . $template . "' WHERE shipping_id=$shipping_id");
+
+    /* 记录管理员操作 */
+    admin_log(addslashes($shipping_name), 'edit', 'shipping');
+
+    $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'shipping.php?act=list');
+    sys_msg($_LANG['edit_template_success'], 0, $lnk);
+
+}
+
+/*------------------------------------------------------ */
 //-- 编辑配送方式名称
 /*------------------------------------------------------ */
 
@@ -164,8 +212,8 @@ elseif ($_REQUEST['act'] == 'edit_name')
     check_authz_json('ship_manage');
 
     /* 取得参数 */
-    $id  = trim($_POST['id']);
-    $val = trim($_POST['val']);
+    $id  = json_str_iconv(trim($_POST['id']));
+    $val = json_str_iconv(trim($_POST['val']));
 
     /* 检查名称是否为空 */
     if (empty($val))
@@ -194,8 +242,8 @@ elseif ($_REQUEST['act'] == 'edit_desc')
     check_authz_json('ship_manage');
 
     /* 取得参数 */
-    $id = trim($_POST['id']);
-    $val = trim($_POST['val']);
+    $id = json_str_iconv(trim($_POST['id']));
+    $val = json_str_iconv(trim($_POST['val']));
 
     /* 更新描述 */
     $exc->edit("shipping_desc = '$val'", $id);
@@ -212,8 +260,8 @@ elseif ($_REQUEST['act'] == 'edit_insure')
     check_authz_json('ship_manage');
 
     /* 取得参数 */
-    $id = trim($_POST['id']);
-    $val = trim($_POST['val']);
+    $id = json_str_iconv(trim($_POST['id']));
+    $val = json_str_iconv(trim($_POST['val']));
     if (empty($val))
     {
         $val = 0;

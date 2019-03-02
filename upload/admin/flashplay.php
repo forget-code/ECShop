@@ -3,15 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: flashplay.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: flashplay.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -31,9 +30,12 @@ if ($_REQUEST['act']== 'list')
         }
     }
     assign_query_info();
+    $flash_dir = ROOT_PATH . 'data/flashdata/';
     $smarty->assign('uri', $uri);
     $smarty->assign('ur_here', $_LANG['flashplay']);
     $smarty->assign('action_link', array('text' => $_LANG['add_new'], 'href' => 'flashplay.php?act=add'));
+    $smarty->assign('flashtpls', get_flash_templates($flash_dir));
+    $smarty->assign('current_flashtpl', $_CFG['flash_theme']);
     $smarty->assign('playerdb', $playerdb);
     $smarty->display('flashplay_list.htm');
 }
@@ -66,6 +68,7 @@ elseif($_REQUEST['act']== 'del')
         }
     }
     put_flash_xml($temp);
+    set_flash_data($_CFG['flash_theme'], $error_msg = '');
     ecs_header("Location: flashplay.php?act=list\n");
     exit;
 }
@@ -98,10 +101,10 @@ elseif ($_REQUEST['act'] == 'add')
                 $name .= chr(mt_rand(97, 122));
             }
             $name .= '.' . end(explode('.', $_FILES['img_file_src']['name']));
-            $target = ROOT_PATH . 'data/afficheimg/' . $name;
+            $target = ROOT_PATH . DATA_DIR . '/afficheimg/' . $name;
             if (move_upload_file($_FILES['img_file_src']['tmp_name'], $target))
             {
-                $src = 'data/afficheimg/' . $name;
+                $src = DATA_DIR . '/afficheimg/' . $name;
             }
         }
         elseif (!empty($_POST['img_src']))
@@ -125,8 +128,10 @@ elseif ($_REQUEST['act'] == 'add')
             sys_msg($_LANG['link_empty'], 0, $links);
         }
         $flashdb = get_flash_xml();
-        array_unshift($flashdb, array('src'=>$src,'url'=>$_POST['img_url']));
+        array_unshift($flashdb, array('src'=>$src,'url'=>$_POST['img_url'],'text'=>$_POST['img_text']));
+        //print_r($flashdb);exit;
         put_flash_xml($flashdb);
+        set_flash_data($_CFG['flash_theme'], $error_msg = '');
         $links[] = array('text' => $_LANG['go_url'], 'href' => 'flashplay.php?act=list');
         sys_msg($_LANG['edit_ok'], 0, $links);
     }
@@ -151,6 +156,8 @@ elseif ($_REQUEST['act'] == 'edit')
         $rt['act'] = 'edit';
         $rt['img_url'] = $rt['url'];
         $rt['img_src'] = $rt['src'];
+        $rt['img_txt'] = $rt['text'];
+
         $rt['id'] = $id;
         $smarty->assign('action_link', array('text' => $_LANG['go_url'], 'href' => 'flashplay.php?act=list'));
         $smarty->assign('rt', $rt);
@@ -178,11 +185,11 @@ elseif ($_REQUEST['act'] == 'edit')
                 $name .= chr(mt_rand(97, 122));
             }
             $name .= '.' . end(explode('.', $_FILES['img_file_src']['name']));
-            $target = ROOT_PATH . 'data/afficheimg/' . $name;
+            $target = ROOT_PATH . DATA_DIR . '/afficheimg/' . $name;
 
             if (move_upload_file($_FILES['img_file_src']['tmp_name'], $target))
             {
-                $src = 'data/afficheimg/' . $name;
+                $src = DATA_DIR . '/afficheimg/' . $name;
             }
         }
         else if (!empty($_POST['img_src']))
@@ -204,24 +211,56 @@ elseif ($_REQUEST['act'] == 'edit')
         {
             @unlink(ROOT_PATH . $rt['src']);
         }
-        $flashdb[$id] = array('src'=>$src,'url'=>$_POST['img_url']);
+        $flashdb[$id] = array('src'=>$src,'url'=>$_POST['img_url'],'text'=>$_POST['img_text']);
         put_flash_xml($flashdb);
+        set_flash_data($_CFG['flash_theme'], $error_msg = '');
         $links[] = array('text' => $_LANG['go_url'], 'href' => 'flashplay.php?act=list');
         sys_msg($_LANG['edit_ok'], 0, $links);
+    }
+}
+elseif ($_REQUEST['act'] == 'install')
+{
+    check_authz_json('flash_manage');
+    $flash_theme = trim($_GET['flashtpl']);
+    if ($_CFG['flash_theme'] != $flash_theme)
+    {
+        $sql = "UPDATE " .$GLOBALS['ecs']->table('shop_config'). " SET value = '$flash_theme' WHERE code = 'flash_theme'";
+        if ($db->query($sql, 'SILENT'))
+        {
+            clear_all_files(); //清除模板编译文件
+
+            $error_msg = '';
+            if (set_flash_data($flash_theme, $error_msg))
+            {
+                make_json_error($error_msg);
+            }
+            else
+            {
+                make_json_result($flash_theme, $_LANG['install_success']);
+            }
+        }
+        else
+        {
+            make_json_error($db->error());
+        }
+    }
+    else
+    {
+        make_json_result($flash_theme, $_LANG['install_success']);
     }
 }
 
 function get_flash_xml()
 {
     $flashdb = array();
-    if (file_exists(ROOT_PATH . 'data/cycle_image.xml'))
+    if (file_exists(ROOT_PATH . DATA_DIR . '/flash_data.xml'))
     {
-        preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"/', file_get_contents(ROOT_PATH . 'data/cycle_image.xml'), $t, PREG_SET_ORDER);
+        preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"\stext="([^"]*)"/', file_get_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml'), $t, PREG_SET_ORDER);
         if (!empty($t))
         {
             foreach ($t as $key => $val)
             {
-                $flashdb[] = array('src'=>$val[1],'url'=>$val[2]);
+                $flashdb[] = array('src'=>$val[1],'url'=>$val[2],'text'=>$val[3]);
             }
         }
     }
@@ -233,17 +272,17 @@ function put_flash_xml($flashdb)
 {
     if (!empty($flashdb))
     {
-        $xml = '<?xml version="1.0" encoding="utf-8"?><bcaster>';
+        $xml = '<?xml version="1.0" encoding="' . EC_CHARSET . '"?><bcaster>';
         foreach ($flashdb as $key => $val)
         {
-            $xml .= '<item item_url="' . $val['src'] . '" link="' . $val['url'] . '" />';
+            $xml .= '<item item_url="' . $val['src'] . '" link="' . $val['url'] . '" text="' . $val['text'] . '" />';
         }
         $xml .= '</bcaster>';
-        file_put_contents(ROOT_PATH . 'data/cycle_image.xml', $xml);
+        file_put_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml', $xml);
     }
     else
     {
-        @unlink(ROOT_PATH . 'data/cycle_image.xml');
+        @unlink(ROOT_PATH . DATA_DIR . '/flash_data.xml');
     }
 }
 
@@ -261,9 +300,9 @@ function get_url_image($url)
         $name .= chr(mt_rand(97, 122));
     }
     $name .= '.' . $ext;
-    $target = ROOT_PATH . 'data/afficheimg/' . $name;
+    $target = ROOT_PATH . DATA_DIR . '/afficheimg/' . $name;
 
-    $tmp_file = 'data/afficheimg/' . $name;
+    $tmp_file = DATA_DIR . '/afficheimg/' . $name;
     $filename = ROOT_PATH . $tmp_file;
 
     $img = file_get_contents($url);
@@ -300,4 +339,114 @@ function get_width_height()
     return $width_height;
 }
 
+function get_flash_templates($dir)
+{
+    $flashtpls = array();
+    $template_dir        = @opendir($dir);
+    while ($file = readdir($template_dir))
+    {
+        if ($file != '.' && $file != '..' && is_dir($dir . $file) && $file != '.svn' && $file != 'index.htm')
+        {
+            $flashtpls[] = get_flash_tpl_info($dir, $file);
+        }
+    }
+    @closedir($template_dir);
+    return $flashtpls;
+}
+
+function get_flash_tpl_info($dir, $file)
+{
+    $info = array();
+    if (is_file($dir . $file . '/preview.jpg'))
+    {
+        $info['code'] = $file;
+        $info['screenshot'] = '../data/flashdata/' . $file . '/preview.jpg';
+        $arr = array_slice(file($dir . $file . '/cycle_image.js'), 1, 2);
+        $info_name = explode(':', $arr[0]);
+        $info_desc = explode(':', $arr[1]);
+        $info['name'] = isset($info_name[1])?trim($info_name[1]):'';
+        $info['desc'] = isset($info_desc[1])?trim($info_desc[1]):'';
+    }
+    return $info;
+}
+
+function set_flash_data($tplname, &$msg)
+{
+    $flashdata = get_flash_xml();
+    if (empty($flashdata))
+    {
+        $flashdata[] = array(
+                                'src' => 'data/images/ecshop_slagon.jpg',
+                                'text' => 'ECShop',
+                                'url' =>'http://www.ecshop.com'
+                            );
+    }
+    switch($tplname)
+    {
+        case 'uproll':
+            $msg = set_flash_uproll($tplname, $flashdata);
+            break;
+        case 'redfocus':
+        case 'pinkfocus':
+        case 'dynfocus':
+            $msg = set_flash_focus($tplname, $flashdata);
+            break;
+        case 'default':
+        default:
+            $msg = set_flash_default($tplname, $flashdata);
+            break;
+    }
+    return $msg !== true;
+}
+
+function set_flash_uproll($tplname, $flashdata)
+{
+    $data_file = ROOT_PATH . DATA_DIR . '/flashdata/' . $tplname . '/data.xml';
+    $xmldata = '<?xml version="1.0" encoding="' . EC_CHARSET . '"?><myMenu>';
+    foreach ($flashdata as $data)
+    {
+        $xmldata .= '<myItem pic="' . $data['src'] . '" url="' . $data['url'] . '" />';
+    }
+    $xmldata .= '</myMenu>';
+    file_put_contents($data_file, $xmldata);
+    return true;
+}
+
+function set_flash_focus($tplname, $flashdata)
+{
+    $data_file = ROOT_PATH . DATA_DIR . '/flashdata/' . $tplname . '/data.js';
+    $jsdata = '';
+    $jsdata2 = array('url' => 'var pics=', 'txt' => 'var texts=', 'link' => 'var links=');
+    $count = 1;
+    $join = '';
+    foreach ($flashdata as $data)
+    {
+        $jsdata .= 'imgUrl' . $count . '="' . $data['src'] . '";' . "\n";
+        $jsdata .= 'imgtext' . $count . '="' . $data['text'] . '";' . "\n";
+        $jsdata .= 'imgLink' . $count . '=escape("' . $data['url'] . '");' . "\n";
+        if ($count != 1)
+        {
+            $join = '+"|"+';
+        }
+        $jsdata2['url'] .= $join . 'imgUrl' . $count;
+        $jsdata2['txt'] .= $join . 'imgtext' . $count;
+        $jsdata2['link'] .= $join . 'imgLink' . $count;
+        ++$count;
+    }
+    file_put_contents($data_file, $jsdata . "\n" . $jsdata2['url'] . ";\n" . $jsdata2['link'] . ";\n" . $jsdata2['txt'] . ";");
+    return true;
+}
+
+function set_flash_default($tplname, $flashdata)
+{
+    $data_file = ROOT_PATH . DATA_DIR . '/flashdata/' . $tplname . '/data.xml';
+    $xmldata = '<?xml version="1.0" encoding="' . EC_CHARSET . '"?><bcaster>';
+    foreach ($flashdata as $data)
+    {
+        $xmldata .= '<item item_url="' . $data['src'] . '" link="' . $data['url'] . '" />';
+    }
+    $xmldata .= '</bcaster>';
+    file_put_contents($data_file, $xmldata);
+    return true;
+}
 ?>

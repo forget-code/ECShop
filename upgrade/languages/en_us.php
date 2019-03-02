@@ -11,9 +11,9 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-01-10 11:05:54 +0800 (Wednesday, 10 January 2007) $
- * $Id: zh_cn.php 4045 2007-01-10 03:05:54Z paulgao $
+ * $Author: testyang $
+ * $Date: 2008-11-07 18:51:04 +0800 (星期五, 07 十一月 2008) $
+ * $Id: en_us.php 15163 2008-11-07 10:51:04Z testyang $
 */
 
 $_LANG['prev_step'] = 'Previous:';
@@ -22,7 +22,7 @@ $_LANG['readme_title'] = 'ECSHOP upgrade program, the 1 step / 2 steps, readme p
 $_LANG['checking_title'] = 'ECShop upgrade program, the 2 step / 2steps, check environment';
 $_LANG['check_system_environment'] = 'Check system environment';
 
-$_LANG['copyright'] = '&copy; 2005-2007 <a href="http://www.ecshop.com" target="_blank">Beijing Yi Shang Interactive Technology Development Ltd.</a>. All right reserved';
+$_LANG['copyright'] = '&copy; 2005-2008 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a>. All right reserved';
 $_LANG['is_last_version'] = 'Your ECSHOP has been the newest version, needn\'t upgrade.';
 
 $_LANG['readme_page'] = 'Readme page';

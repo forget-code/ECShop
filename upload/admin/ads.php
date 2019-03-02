@@ -3,15 +3,14 @@
 /**
  * ECSHOP 广告管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: ads.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: ads.php 15643 2009-02-23 06:07:36Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -176,7 +175,7 @@ elseif ($_REQUEST['act'] == 'insert')
             }
 
             $source_file = $_FILES['upfile_flash']['tmp_name'];
-            $target      = ROOT_PATH . 'data/afficheimg/';
+            $target      = ROOT_PATH . DATA_DIR . '/afficheimg/';
             $file_name   = $urlstr .'.swf';
 
             if (!move_upload_file($source_file, $target.$file_name))
@@ -255,11 +254,15 @@ elseif ($_REQUEST['act'] == 'insert')
     clear_cache_files(); // 清除缓存文件
 
     /* 提示信息 */
-    $link[0]['text'] = $_LANG['back_ads_list'];
-    $link[0]['href'] = 'ads.php?act=list';
 
-    $link[1]['text'] = $_LANG['continue_add_ad'];
-    $link[1]['href'] = 'ads.php?act=add';
+    $link[0]['text'] = $_LANG['show_ads_template'];
+    $link[0]['href'] = 'template.php?act=setup';
+
+    $link[1]['text'] = $_LANG['back_ads_list'];
+    $link[1]['href'] = 'ads.php?act=list';
+
+    $link[2]['text'] = $_LANG['continue_add_ad'];
+    $link[2]['href'] = 'ads.php?act=add';
     sys_msg($_LANG['add'] . "&nbsp;" .$_POST['ad_name'] . "&nbsp;" . $_LANG['attradd_succed'],0, $link);
 
 }
@@ -275,6 +278,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $sql = "SELECT * FROM " .$ecs->table('ad'). " WHERE ad_id='".intval($_REQUEST['id'])."'";
     $ads_arr = $db->getRow($sql);
 
+    $ads_arr['ad_name'] = htmlspecialchars($ads_arr['ad_name']);
     /* 格式化广告的有效日期 */
     $ads_arr['start_time']  = local_date('Y-m-d', $ads_arr['start_time']);
     $ads_arr['end_time']    = local_date('Y-m-d', $ads_arr['end_time']);
@@ -283,7 +287,7 @@ elseif ($_REQUEST['act'] == 'edit')
     {
         if (strpos($ads_arr['ad_code'], 'http://') === false && strpos($ads_arr['ad_code'], 'https://') === false)
         {
-            $src = '../data/afficheimg/'. $ads_arr['ad_code'];
+            $src = '../' . DATA_DIR . '/afficheimg/'. $ads_arr['ad_code'];
             $smarty->assign('img_src', $src);
         }
         else
@@ -296,7 +300,7 @@ elseif ($_REQUEST['act'] == 'edit')
     {
         if (strpos($ads_arr['ad_code'], 'http://') === false && strpos($ads_arr['ad_code'], 'https://') === false)
         {
-            $src = '../data/afficheimg/'. $ads_arr['ad_code'];
+            $src = '../' . DATA_DIR . '/afficheimg/'. $ads_arr['ad_code'];
             $smarty->assign('flash_url', $src);
         }
         else
@@ -395,7 +399,7 @@ elseif ($_REQUEST['act'] == 'update')
             }
 
             $source_file = $_FILES['upfile_flash']['tmp_name'];
-            $target      = ROOT_PATH . 'data/afficheimg/';
+            $target      = ROOT_PATH . DATA_DIR . '/afficheimg/';
             $file_name   = $urlstr .'.swf';
 
             if (!move_upload_file($source_file, $target.$file_name))
@@ -436,7 +440,7 @@ elseif ($_REQUEST['act'] == 'update')
         $ad_code = "ad_code = '$_POST[ad_text]', ";
     }
 
-    $ad_code = str_replace('../data/afficheimg/', '', $ad_code);
+    $ad_code = str_replace('../' . DATA_DIR . '/afficheimg/', '', $ad_code);
     /* 更新信息 */
     $sql = "UPDATE " .$ecs->table('ad'). " SET ".
             "position_id = '$_POST[position_id]', ".
@@ -500,7 +504,7 @@ elseif ($_REQUEST['act'] == 'edit_ad_name')
     check_authz_json('ad_manage');
 
     $id      = intval($_POST['id']);
-    $ad_name = trim($_POST['val']);
+    $ad_name = json_str_iconv(trim($_POST['val']));
 
     /* 检查广告名称是否重复 */
     if ($exc->num('ad_name', $ad_name, $id) != 0)
@@ -536,7 +540,7 @@ elseif ($_REQUEST['act'] == 'remove')
     if ((strpos($img, 'http://') === false) && (strpos($img, 'https://') === false))
     {
         $img_name = basename($img);
-        @unlink(ROOT_PATH.'data/afficheimg/'.$img_name);
+        @unlink(ROOT_PATH. DATA_DIR . '/afficheimg/'.$img_name);
     }
 
     admin_log('', 'remove', 'ads');

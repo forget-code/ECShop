@@ -2,7 +2,7 @@
 
 /************************************************
 ** Title.........: PHP4+ Debug Helper
-** Author........: Thomas Schüßler <code at atomar dot de>
+** Author........: Thomas Sch&#51180;er <code at atomar dot de>
 ** Filename......: debuglib.php(s)
 ** Last changed..: 12.07.2004 14:13
 ** License.......: Free to use. Postcardware ;)
@@ -598,7 +598,7 @@ if (USE_DEBUGLIB) {
         /* remove whitespace at end of the string */
         $string = preg_replace('/\s*$/', '', $string);
 
-        # kleinste Anzahl von führenden TABS zählen
+        # kleinste Anzahl von f&#51762;enden TABS z&#18988;en
         preg_match_all('/^\t+/', $string, $matches);
         $minTabCount = strlen(@min($matches[0]));
 

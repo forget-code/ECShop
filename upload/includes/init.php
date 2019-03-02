@@ -3,15 +3,14 @@
 /**
  * ECSHOP 前台公用文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
- * $Id: init.php 14080 2008-01-28 11:27:47Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: init.php 15592 2009-02-13 02:26:56Z sunxiaodong $
 */
 
 if (!defined('IN_ECS'))
@@ -77,6 +76,7 @@ require(ROOT_PATH . 'includes/inc_constant.php');
 require(ROOT_PATH . 'includes/cls_ecshop.php');
 require(ROOT_PATH . 'includes/cls_error.php');
 require(ROOT_PATH . 'includes/lib_time.php');
+require(ROOT_PATH . 'includes/lib_base.php');
 require(ROOT_PATH . 'includes/lib_common.php');
 require(ROOT_PATH . 'includes/lib_main.php');
 require(ROOT_PATH . 'includes/lib_insert.php');
@@ -101,6 +101,8 @@ if (!get_magic_quotes_gpc())
 
 /* 创建 ECSHOP 对象 */
 $ecs = new ECS($db_name, $prefix);
+define('DATA_DIR', $ecs->data_dir());
+define('IMAGE_DIR', $ecs->image_dir());
 
 /* 初始化数据库类 */
 require(ROOT_PATH . 'includes/cls_mysql.php');
@@ -114,12 +116,28 @@ $err = new ecs_error('message.dwt');
 /* 载入系统参数 */
 $_CFG = load_config();
 
+/* 载入语言文件 */
+require(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/common.php');
+
+if ($_CFG['shop_closed'] == 1)
+{
+    /* 商店关闭了，输出关闭的消息 */
+    header('Content-type: text/html; charset='.EC_CHARSET);
+
+    die('<div style="margin: 150px; text-align: center; font-size: 14px"><p>' . $_LANG['shop_closed'] . '</p><p>' . $_CFG['close_comment'] . '</p></div>');
+}
+
 if (is_spider())
 {
     /* 如果是蜘蛛的访问，那么默认为访客方式，并且不记录到日志中 */
     if (!defined('INIT_NO_USERS'))
     {
         define('INIT_NO_USERS', true);
+        /* 整合UC后，如果是蜘蛛访问，初始化UC需要的常量 */
+        if($_CFG['integrate_code'] == 'ucenter')
+        {
+             $user = & init_users();
+        }
     }
     $_SESSION = array();
 }
@@ -134,21 +152,10 @@ if (!defined('INIT_NO_USERS'))
     define('SESS_ID', $sess->get_session_id());
 }
 
-/* 载入语言文件 */
-require(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/common.php');
-
-if ($_CFG['shop_closed'] == 1)
-{
-    /* 商店关闭了，输出关闭的消息 */
-    header('Content-type: text/html; charset=utf-8');
-
-    die('<div style="margin: 150px; text-align: center; font-size: 14px"><p>' . $_LANG['shop_closed'] . '</p><p>' . $_CFG['close_comment'] . '</p></div>');
-}
-
 if (!defined('INIT_NO_SMARTY'))
 {
     header('Cache-control: private');
-    header('Content-type: text/html; charset=utf-8');
+    header('Content-type: text/html; charset='.EC_CHARSET);
 
     /* 创建 Smarty 对象。*/
     require(ROOT_PATH . 'includes/cls_template.php');
@@ -156,8 +163,8 @@ if (!defined('INIT_NO_SMARTY'))
 
     $smarty->cache_lifetime = $_CFG['cache_time'];
     $smarty->template_dir   = ROOT_PATH . 'themes/' . $_CFG['template'];
-    $smarty->cache_dir      = ROOT_PATH . 'templates/caches';
-    $smarty->compile_dir    = ROOT_PATH . 'templates/compiled';
+    $smarty->cache_dir      = ROOT_PATH . 'temp/caches';
+    $smarty->compile_dir    = ROOT_PATH . 'temp/compiled';
 
     if ((DEBUG_MODE & 2) == 2)
     {
@@ -171,6 +178,7 @@ if (!defined('INIT_NO_SMARTY'))
     }
 
     $smarty->assign('lang', $_LANG);
+    $smarty->assign('ecs_charset', EC_CHARSET);
 }
 
 if (!defined('INIT_NO_USERS'))
@@ -223,6 +231,10 @@ if (!defined('INIT_NO_USERS'))
     if (isset($_GET['u']))
     {
         set_affiliate();
+    }
+    if (isset($smarty))
+    {
+        $smarty->assign('ecs_session', $_SESSION);
     }
 }
 

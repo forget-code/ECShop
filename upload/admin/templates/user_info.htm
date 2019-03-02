@@ -1,4 +1,4 @@
-<!-- $Id: user_info.htm 13961 2008-01-07 06:54:44Z dolphin $ -->
+<!-- $Id: user_info.htm 15587 2009-02-10 07:02:30Z sunxiaodong $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form method="post" action="users.php" name="theForm" onsubmit="return validate()">
@@ -39,6 +39,15 @@
     <td class="label">{$lang.confirm_password}:</td>
     <td><input type="password" name="confirm_password" maxlength="20" size="20" />{$lang.require_field}</td>
   </tr>
+  {elseif  $form_action eq "update"}
+  <tr>
+    <td class="label">{$lang.newpass}:</td>
+    <td><input type="password" name="password" maxlength="20" size="20" /></td>
+  </tr>
+  <tr>
+    <td class="label">{$lang.confirm_password}:</td>
+    <td><input type="password" name="confirm_password" maxlength="20" size="20" /></td>
+  </tr>
   {/if}
   <tr>
     <td class="label">{$lang.user_rank}:</td>
@@ -53,7 +62,7 @@
   </tr>
   <tr>
     <td class="label">{$lang.birthday}:</td>
-    <td>{html_select_date field_order="YMD" prefix="birthday" time=$user.birthday start_year="-100" end_year="+1" display_days=true month_format="%m"}</td>
+    <td>{html_select_date field_order="YMD" prefix="birthday" time=$user.birthday start_year="-60" end_year="+1" display_days=true month_format="%m"}</td>
   </tr>
   <tr>
     <td class="label">{$lang.credit_line}:</td>
@@ -127,13 +136,29 @@ function validate()
 {
     validator = new Validator("theForm");
     validator.isEmail("email", invalid_email, true);
- 
+
     if (document.forms['theForm'].elements['act'].value == "insert")
     {
         validator.required("username",  no_username);
         validator.required("password", no_password);
         validator.required("confirm_password", no_confirm_password);
         validator.eqaul("password", "confirm_password", password_not_same);
+    }
+    else if (document.forms['theForm'].elements['act'].value == "update")
+    {
+        var newpass = document.forms['theForm'].elements['password'];
+        var confirm_password = document.forms['theForm'].elements['confirm_password'];
+        if(newpass.value.length > 0 || confirm_password.value.length)
+        {
+          if(newpass.value.length >= 6 || confirm_password.value.length >= 6)
+          {
+            validator.eqaul("password", "confirm_password", password_not_same);
+          }
+          else
+          {
+            validator.addErrorMsg(password_len_err);
+          }
+        }
     }
 
     return validator.passed();

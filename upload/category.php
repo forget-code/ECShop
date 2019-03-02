@@ -3,15 +3,14 @@
 /**
  * ECSHOP 商品分类
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: category.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: zblikai $
+ * $Id: category.php 15611 2009-02-18 02:27:16Z zblikai $
 */
 
 define('IN_ECS', true);
@@ -59,9 +58,9 @@ $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_C
 
 $sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
 $order = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
-$display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_SESSION['display']) ? $_SESSION['display'] : $default_display_type);
+$display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
 
-$_SESSION['display'] = $display;
+setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
 /*------------------------------------------------------ */
 //-- PROCESSOR
 /*------------------------------------------------------ */
@@ -169,7 +168,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
         for(; $row['max'] >= $dx * $i; $i ++);
         $row['max'] = $dx * ($i) + $price_grade * ($j - 1);
 
-        $sql = "SELECT (FLOOR((g.shop_price - $row[min]) / $dx)) AS sn, COUNT(g.goods_id) AS goods_num  ".
+        $sql = "SELECT (FLOOR((g.shop_price - $row[min]) / $dx)) AS sn, COUNT(*) AS goods_num  ".
                " FROM " . $ecs->table('goods') . " AS g ".
                " WHERE ($children OR " . get_extension_goods($children) . ') AND g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1 '.
                " GROUP BY sn ";
@@ -273,6 +272,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
 
     $brand_list = array_merge($arr, get_brands($cat_id, 'category'));
 
+    $smarty->assign('data_dir',    DATA_DIR);
     $smarty->assign('brand_list',      $brand_list);
     $smarty->assign('promotion_info', get_promotion_info());
 
@@ -413,14 +413,15 @@ function category_get_goods($children, $brand, $min, $max, $ext, $size, $page, $
         {
             $arr[$row['goods_id']]['goods_name']       = $row['goods_name'];
         }
+        $arr[$row['goods_id']]['name']             = $row['goods_name'];
         $arr[$row['goods_id']]['goods_brief']      = $row['goods_brief'];
         $arr[$row['goods_id']]['goods_style_name'] = add_style($row['goods_name'],$row['goods_name_style']);
         $arr[$row['goods_id']]['market_price']     = price_format($row['market_price']);
         $arr[$row['goods_id']]['shop_price']       = price_format($row['shop_price']);
         $arr[$row['goods_id']]['type']             = $row['goods_type'];
         $arr[$row['goods_id']]['promote_price']    = ($promote_price > 0) ? price_format($promote_price) : '';
-        $arr[$row['goods_id']]['goods_thumb']      = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
-        $arr[$row['goods_id']]['goods_img']        = empty($row['goods_img'])   ? $GLOBALS['_CFG']['no_picture'] : $row['goods_img'];
+        $arr[$row['goods_id']]['goods_thumb']      = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']        = get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['url']              = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
     }
 
@@ -471,9 +472,18 @@ function get_parent_grade($cat_id)
 
     if ($res === NULL)
     {
-        $sql = "SELECT parent_id, cat_id, grade ".
-               " FROM " . $GLOBALS['ecs']->table('category');
-        $res = $GLOBALS['db']->getAllCached($sql);
+        $data = read_static_cache('cat_parent_grade');
+        if ($data === false)
+        {
+            $sql = "SELECT parent_id, cat_id, grade ".
+                   " FROM " . $GLOBALS['ecs']->table('category');
+            $res = $GLOBALS['db']->getAll($sql);
+            write_static_cache('cat_parent_grade', $res);
+        }
+        else
+        {
+            $res = $data;
+        }
     }
 
     if (!$res)

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心起始页语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-18 13:08:42 +0800 (星期五, 18 一月 2008) $
- * $Id: index.php 13996 2008-01-18 05:08:42Z fenghl $
+ * $Author: testyang $
+ * $Id: index.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 $_LANG['shop_guide'] = '开店向导';
@@ -48,48 +47,49 @@ $_LANG['pm_username'] = '留言者';
 $_LANG['pm_time'] = '留言时间';
 
 $_LANG['order_stat'] = '订单统计信息';
-$_LANG['unconfirmed'] = '未确认订单：';
-$_LANG['await_ship'] = '待发货订单：';
-$_LANG['await_pay'] = '待支付订单：';
-$_LANG['finished'] = '已成交订单数：';
-$_LANG['new_booking'] = '新缺货登记：';
-$_LANG['new_reimburse'] = '退款申请：';
+$_LANG['unconfirmed'] = '未确认订单:';
+$_LANG['await_ship'] = '待发货订单:';
+$_LANG['await_pay'] = '待支付订单:';
+$_LANG['finished'] = '已成交订单数:';
+$_LANG['new_booking'] = '新缺货登记:';
+$_LANG['new_reimburse'] = '退款申请:';
 
 $_LANG['goods_stat'] = '实体商品统计信息';
 $_LANG['virtual_card_stat'] = '虚拟卡商品统计';
-$_LANG['goods_count'] = '商品总数：';
-$_LANG['sales_count'] = '促销商品数：';
-$_LANG['new_goods'] = '新品推荐数：';
-$_LANG['recommed_goods'] = '精品推荐数：';
-$_LANG['hot_goods'] = '热销商品数：';
-$_LANG['warn_goods'] = '库存警告商品数：';
+$_LANG['goods_count'] = '商品总数:';
+$_LANG['sales_count'] = '促销商品数:';
+$_LANG['new_goods'] = '新品推荐数:';
+$_LANG['recommed_goods'] = '精品推荐数:';
+$_LANG['hot_goods'] = '热销商品数:';
+$_LANG['warn_goods'] = '库存警告商品数:';
 $_LANG['clear_cache'] = '清除缓存';
 $_LANG['ebao_commend'] = '易宝推荐';
 
 $_LANG['acess_stat'] = '访问统计';
-$_LANG['acess_today'] = '今日访问：';
-$_LANG['online_users'] = '在线人数：';
-$_LANG['user_count'] = '会员总数：';
-$_LANG['today_register'] = '今日注册：';
-$_LANG['new_feedback'] = '最新留言：';
-$_LANG['new_comments'] = '最新评论：';
+$_LANG['acess_today'] = '今日访问:';
+$_LANG['online_users'] = '在线人数:';
+$_LANG['user_count'] = '会员总数:';
+$_LANG['today_register'] = '今日注册:';
+$_LANG['new_feedback'] = '最新留言:';
+$_LANG['new_comments'] = '未审核评论:';
 
 $_LANG['system_info'] = '系统信息';
-$_LANG['os'] = '服务器操作系统：';
-$_LANG['web_server'] = 'Web 服务器：';
-$_LANG['php_version'] = 'PHP 版本：';
-$_LANG['mysql_version'] = 'MySQL 版本：';
-$_LANG['gd_version'] = 'GD 版本：';
-$_LANG['zlib'] = 'Zlib 支持：';
-$_LANG['ecs_version'] = 'ECShop 版本：';
-$_LANG['install_date'] = '安装日期：';
-$_LANG['ip_version'] = 'IP 库版本：';
-$_LANG['max_filesize'] = '文件上传的最大大小：';
-$_LANG['safe_mode'] = '安全模式：';
-$_LANG['safe_mode_gid'] = '安全模式GID：';
-$_LANG['timezone'] = '时区设置：';
+$_LANG['os'] = '服务器操作系统:';
+$_LANG['web_server'] = 'Web 服务器:';
+$_LANG['php_version'] = 'PHP 版本:';
+$_LANG['mysql_version'] = 'MySQL 版本:';
+$_LANG['gd_version'] = 'GD 版本:';
+$_LANG['zlib'] = 'Zlib 支持:';
+$_LANG['ecs_version'] = 'ECShop 版本:';
+$_LANG['install_date'] = '安装日期:';
+$_LANG['ip_version'] = 'IP 库版本:';
+$_LANG['max_filesize'] = '文件上传的最大大小:';
+$_LANG['safe_mode'] = '安全模式:';
+$_LANG['safe_mode_gid'] = '安全模式GID:';
+$_LANG['timezone'] = '时区设置:';
 $_LANG['no_timezone'] = '无需设置';
-$_LANG['socket'] = 'Socket 支持：';
+$_LANG['socket'] = 'Socket 支持:';
+$_LANG['ec_charset'] = '编码:';
 
 $_LANG['remove_install'] = '您还没有删除 install 文件夹，出于安全的考虑，我们建议您删除 install 文件夹。';
 $_LANG['remove_upgrade'] = '您还没有删除 upgrade 文件夹，出于安全的考虑，我们建议您删除 upgrade 文件夹。';
@@ -121,9 +121,9 @@ $_LANG['ui_designer'] = '界面设计';
 $_LANG['documentation'] = '文档整理';
 $_LANG['special_thanks'] = '特别感谢';
 $_LANG['official_site'] = '官方网站';
-$_LANG['site_url'] = '网站地址：';
-$_LANG['support_center'] = '支持中心：';
-$_LANG['support_forum'] = '支持论坛：';
+$_LANG['site_url'] = '网站地址:';
+$_LANG['support_center'] = '支持中心:';
+$_LANG['support_forum'] = '支持论坛:';
 // 邮件群发
 $_LANG['mailsend_fail'] = '邮件 %s 发送失败!';
 $_LANG['mailsend_ok'] = '邮件 %s 发送成功!还有 %s 邮件未发送!';
@@ -175,7 +175,7 @@ $_LANG['add_favourable'] = '添加优惠活动';
 $_LANG['shop_config'] = '商店设置';
 $_LANG['select_template'] = '选择模板';
 $_LANG['shop_back_in'] = '进入网店后台';
-$_LANG['goods_img_too_big'] = '商品图片文件太大了（最大值：%s），无法上传。';
+$_LANG['goods_img_too_big'] = '商品图片文件太大了（最大值:%s），无法上传。';
 $_LANG['invalid_goods_img'] = '商品图片格式不正确！';
 
 
@@ -186,4 +186,6 @@ $_LANG['js_languages']['good_category_not_null'] = '商品分类不能为空';
 $_LANG['js_languages']['good_number_not_number'] = '商品数量不是数值';
 $_LANG['js_languages']['good_price_not_number'] = '商品价格不是数值';
 
+/*后台语言项*/
+$_LANG['send_mail_off'] = '自动发送邮件关闭';
 ?>

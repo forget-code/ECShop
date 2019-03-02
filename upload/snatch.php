@@ -3,15 +3,14 @@
 /**
  * ECSHOP 夺宝奇兵前台页面
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: snatch.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: snatch.php 15570 2009-01-17 02:11:08Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -54,9 +53,7 @@ if ($_REQUEST['act'] == 'main')
     $goods = get_snatch($id);
     if ($goods)
     {
-        $page_title = $goods['snatch_name'] .'_'. $_LANG['snatch_list'] .'_'. $_CFG['shop_title'];
-        $ur_here    = '<a href=".">' .$_LANG['home']. '</a><code> &gt; </code><a href="snatch.php">' .$_LANG['snatch_list'].
-        '</a><code> &gt; </code>' .$goods['snatch_name'];
+        $position = assign_ur_here(0,$goods['snatch_name']);
         $myprice = get_myprice($id);
         if ($goods['is_end'])
         {
@@ -82,8 +79,8 @@ if ($_REQUEST['act'] == 'main')
 
     assign_template();
     assign_dynamic('search');
-    $smarty->assign('page_title',  $page_title);
-    $smarty->assign('ur_here',     $ur_here);
+    $smarty->assign('page_title',  $position['title']);
+    $smarty->assign('ur_here',     $position['ur_here']);
     $smarty->assign('categories',  get_categories_tree()); // 分类树
     $smarty->assign('helps',       get_shop_help());       // 网店帮助
     $smarty->assign('snatch_list', get_snatch_list());     //所有有效的夺宝奇兵列表
@@ -111,6 +108,7 @@ if ($_REQUEST['act'] == 'bid')
     $result = array('error'=>0, 'content'=>'');
 
     $price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
+    $price = round($price, 2);
 
     /* 测试是否登陆 */
     if (empty($_SESSION['user_id']))
@@ -401,7 +399,7 @@ function get_snatch($id)
         $goods['formated_market_price']  = price_format($goods['market_price']);
         $goods['formated_shop_price']    = price_format($goods['shop_price']);
         $goods['formated_promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';
-        $goods['goods_thumb']   = empty($goods['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $goods['goods_thumb'];
+        $goods['goods_thumb']   = get_image_path($goods['goods_id'], $goods['goods_thumb'], true);
         $goods['url']           = build_uri('goods', array('gid'=>$goods['goods_id']), $goods['goods_name']);
         $goods['start_time']    = local_date($GLOBALS['_CFG']['time_format'], $goods['start_time']);
 
@@ -442,9 +440,8 @@ function get_last_snatch()
 {
     $now = gmtime();
     $sql = 'SELECT act_id FROM ' . $GLOBALS['ecs']->table('goods_activity').
-           " WHERE  start_time < '$now' AND act_type = " . GAT_SNATCH .
+           " WHERE  start_time < '$now' AND end_time > '$now' AND act_type = " . GAT_SNATCH .
            " ORDER BY end_time ASC LIMIT 1";
-
     return $GLOBALS['db']->GetOne($sql);
 }
 

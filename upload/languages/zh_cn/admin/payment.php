@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心支付方式管理语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: payment.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: testyang $
+ * $Id: payment.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 $_LANG['payment'] = '支付方式';
@@ -39,4 +38,10 @@ $_LANG['edit_after_install'] = '该支付方式尚未安装，请你安装后再
 $_LANG['payment_not_available'] = '该支付插件不存在或尚未安装';
 
 $_LANG['js_languages']['lang_removeconfirm'] = '您确定要卸载该支付方式吗？';
+
+$_LANG['ctenpay']           = '立即注册财付通商户号';
+$_LANG['ctenpay_url']       = 'http://union.tenpay.com/mch/mch_register_b2c.shtml?sp_suggestuser=542554970';
+$_LANG['ctenpayc2c_url']    = 'https://www.tenpay.com/mchhelper/mch_register_c2c.shtml?sp_suggestuser=542554970';
+$_LANG['tenpay']  = '即时到账';
+$_LANG['tenpayc2c'] = '中介担保';
 ?>

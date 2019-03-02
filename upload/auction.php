@@ -3,15 +3,14 @@
 /**
  * ECSHOP 拍卖前台文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: auction.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: auction.php 15624 2009-02-18 10:43:54Z sunxiaodong $
  */
 
 define('IN_ECS', true);
@@ -71,23 +70,7 @@ if ($_REQUEST['act'] == 'list')
             $smarty->assign('auction_list',  $auction_list);
 
             /* 设置分页链接 */
-            $url = 'auction.php?act=list&amp;page=';
-            $pager = array(
-                'search'       => array('act' => 'list'),
-                'page'         => $page,
-                'size'         => $size,
-                'record_count' => $count,
-                'page_count'   => $page_count,
-                'page_first'   => $url . '1',
-                'page_prev'    => $page > 1 ? $url . ($page - 1) : 'javascript:;',
-                'page_next'    => $page < $page_count ? $url . ($page + 1) : 'javascript:;',
-                'page_last'    => $url . $page_count,
-                'array'        => array()
-            );
-            for ($i = 1; $i <= $page_count; $i++)
-            {
-                $pager['array'][$i] = $i;
-            }
+            $pager = get_pager('auction.php', array('act' => 'list'), $count, $page, $size);
             $smarty->assign('pager', $pager);
         }
 
@@ -189,6 +172,7 @@ elseif ($_REQUEST['act'] == 'view')
            "WHERE goods_id = '" . $auction['goods_id'] . "'";
     $db->query($sql);
 
+    $smarty->assign('now_time',  gmtime());           // 当前系统时间
     $smarty->display('auction.dwt', $cache_id);
 }
 
@@ -265,10 +249,16 @@ elseif ($_REQUEST['act'] == 'bid')
             }
         }
 
-        if ($bid_price < $min_price)
+        if ($bid_price <= $min_price)
         {
             show_message(sprintf($_LANG['au_your_lowest_price'], price_format($min_price, false)), '', '', 'error');
         }
+    }
+
+    /* 检查联系两次拍卖人是否相同 */
+    if ($auction['last_bid']['bid_user'] == $user_id && $bid_price != $auction['end_price'])
+    {
+        show_message($_LANG['au_bid_repeat_user'], '', '', 'error');
     }
 
     /* 是否需要保证金 */
@@ -426,12 +416,14 @@ function auction_count()
 function auction_list($size, $page)
 {
     $auction_list = array();
+    $auction_list['finished'] = $auction_list['finished'] = array();
+
     $now = gmtime();
     $sql = "SELECT a.*, IFNULL(g.goods_thumb, '') AS goods_thumb " .
             "FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS a " .
                 "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS g ON a.goods_id = g.goods_id " .
             "WHERE a.act_type = '" . GAT_AUCTION . "' " .
-            "AND a.start_time <= '$now'";
+            "AND a.start_time <= '$now' ORDER BY a.act_id DESC";
     $res = $GLOBALS['db']->selectLimit($sql, $size, ($page - 1) * $size);
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
@@ -444,14 +436,20 @@ function auction_list($size, $page)
         $auction['formated_start_price'] = price_format($auction['start_price']);
         $auction['formated_end_price'] = price_format($auction['end_price']);
         $auction['formated_deposit'] = price_format($auction['deposit']);
-        if (empty($auction['goods_thumb']))
-        {
-            $auction['goods_thumb'] = $GLOBALS['_CFG']['no_picture'];
-        }
+        $auction['goods_thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'], true);
         $auction['url'] = build_uri('auction', array('auid'=>$auction['act_id']));
 
-        $auction_list[] = $auction;
+        if($auction['status_no'] < 2)
+        {
+            $auction_list['under_way'][] = $auction;
+        }
+        else
+        {
+            $auction_list['finished'][] = $auction;
+        }
     }
+
+    $auction_list = @array_merge($auction_list['under_way'], $auction_list['finished']);
 
     return $auction_list;
 }

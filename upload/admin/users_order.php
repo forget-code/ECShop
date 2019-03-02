@@ -3,15 +3,14 @@
 /**
  * ECSHOP 会员排行统计程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
- * $Id: users_order.php 14080 2008-01-28 11:27:47Z testyang $
+ * $Id: users_order.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -111,7 +110,7 @@ if ($_REQUEST['act'] == 'download')
     $user_orderinfo = get_user_orderinfo($show_num, 'turnover', $start_date, $end_date);
     $filename = $start_date . '_' . $end_date . 'users_order';
 
-    header("Content-type: application/vnd.ms-excel; charset=GB2312");
+    header("Content-type: application/vnd.ms-excel; charset=utf-8");
     header("Content-Disposition: attachment; filename=$filename.xls");
 
     $data = "$_LANG[visit_buy]\t\n";
@@ -122,7 +121,7 @@ if ($_REQUEST['act'] == 'download')
         $order_by = $k + 1;
         $data .= "$order_by\t$row[user_name]\t$row[order_num]\t$row[turnover]\n";
     }
-    echo ecs_iconv('UTF8', 'GB2312', $data);
+    echo ecs_iconv(EC_CHARSET, 'GB2312', $data);
     exit;
 }
 /*------------------------------------------------------ */

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 模版类
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * @author:     xuanyan <xuanyan1983@gmail.com>
- * @version:    v1.0
- * ---------------------------------------------
+ * $Author: testyang $
+ * $Id: cls_template.php 15309 2008-11-20 02:13:23Z testyang $
  */
 
 class cls_template
@@ -48,7 +47,15 @@ class cls_template
     {
         $this->_errorlevel = error_reporting();
         $this->_nowtime    = time();
-        header('Content-type: text/html; charset=utf-8');
+        if (defined('EC_CHARSET'))
+        {
+            $charset = EC_CHARSET;
+        }
+        else
+        {
+            $charset = 'utf-8';
+        }
+        header('Content-type: text/html; charset='.$charset);
     }
 
     /**
@@ -183,9 +190,14 @@ class cls_template
                             $out = str_replace("\n\n", "\n", $out);
                         }
 
-                        if (file_put_contents($this->cache_dir . '/' . $cachename . '.php', '<?php exit;?>' . $data . $out) === false)
+                        $hash_dir = $this->cache_dir . '/' . substr(md5($cachename), 0, 1);
+                        if (!is_dir($hash_dir))
                         {
-                            trigger_error('can\'t write:' . $this->cache_dir . '/' . $cachename . '.php');
+                            mkdir($hash_dir);
+                        }
+                        if (file_put_contents($hash_dir . '/' . $cachename . '.php', '<?php exit;?>' . $data . $out, LOCK_EX) === false)
+                        {
+                            trigger_error('can\'t write:' . $hash_dir . '/' . $cachename . '.php');
                         }
                         $this->template = array();
                     }
@@ -247,7 +259,7 @@ class cls_template
             $this->_current_file = $filename;
             $source = $this->fetch_str(file_get_contents($filename));
 
-            if (file_put_contents($name, $source) === false)
+            if (file_put_contents($name, $source, LOCK_EX) === false)
             {
                 trigger_error('can\'t write:' . $name);
             }
@@ -290,7 +302,8 @@ class cls_template
         $cachename = basename($filename, strrchr($filename, '.')) . '_' . $cache_id;
         if ($this->caching == true && $this->direct_output == false)
         {
-            if ($data = @file_get_contents($this->cache_dir . '/' . $cachename . '.php'))
+            $hash_dir = $this->cache_dir . '/' . substr(md5($cachename), 0, 1);
+            if ($data = @file_get_contents($hash_dir . '/' . $cachename . '.php'))
             {
                 $data = substr($data, 13);
                 $pos  = strpos($data, '<');
@@ -566,9 +579,24 @@ class cls_template
                         {
                             $p = 'urlencode(' . $p . ')';
                         }
+                        elseif ($s[1] == 'decode_url')
+                        {
+                            $p = 'urldecode(' . $p . ')';
+                        }
                         elseif ($s[1] == 'quotes')
                         {
                             $p = 'addslashes(' . $p . ')';
+                        }
+                        elseif ($s[1] == 'u8_url')
+                        {
+                            if (EC_CHARSET != 'utf-8')
+                            {
+                                $p = 'urlencode(ecs_iconv("' . EC_CHARSET . '", "utf-8",' . $p . '))';
+                            }
+                            else
+                            {
+                                $p = 'urlencode(' . $p . ')';
+                            }
                         }
                         else
                         {
@@ -615,6 +643,10 @@ class cls_template
     {
         if (strrpos($val, '.') === false)
         {
+            if (isset($this->_var[$val]) && isset($this->_patchstack[$val]))
+            {
+                $val = $this->_patchstack[$val];
+            }
             $p = '$this->_var[\'' . $val . '\']';
         }
         else
@@ -809,14 +841,13 @@ class cls_template
         $from = $attrs['from'];
         if(isset($this->_var[$attrs['item']]) && !isset($this->_patchstack[$attrs['item']]))
         {
-            $this->_patchstack[$attrs['item']] = $attrs['item'] . '_1';
+            $this->_patchstack[$attrs['item']] = $attrs['item'] . '_' . str_replace(array(' ', '.'), '_', microtime());
             $attrs['item'] = $this->_patchstack[$attrs['item']];
         }
         else
         {
             $this->_patchstack[$attrs['item']] = $attrs['item'];
         }
-
         $item = $this->get_val($attrs['item']);
 
         if (!empty($attrs['key']))
@@ -855,7 +886,6 @@ class cls_template
             $output .= "if (count(\$_from)):\n";
             $output .= "    foreach (\$_from AS $key_part$item):\n";
         }
-
         return $output . '?>';
     }
 
@@ -1061,6 +1091,10 @@ class cls_template
 
             /* 修正js目录下js的路径 */
             $source = preg_replace('/(<script\s(?:type|language)=["|\']text\/javascript["|\']\ssrc=["|\'])(?:\.\/|\.\.\/)?(js\/[a-z0-9A-Z_\-\.]+\.(?:js|vbs)["|\']><\/script>)/', '\1' . $tmp_dir . '\2', $source);
+
+            /* 更换编译模板的编码类型 */
+            $source = preg_replace('/<meta\shttp-equiv=["|\']Content-Type["|\']\scontent=["|\']text\/html;\scharset=(?:.*?)["|\'][^>]*?>\r?\n?/i', '<meta http-equiv="Content-Type" content="text/html; charset=' . EC_CHARSET . '" />' . "\n", $source);
+
         }
 
         /**

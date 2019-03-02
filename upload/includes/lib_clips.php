@@ -3,15 +3,14 @@
 /**
  * ECSHOP 用户相关函数库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-01-19 15:31:01 +0800 (五, 19  1月 2007) $
- * $Id: lib_profile.php 4369 2007-01-19 07:31:01Z wj $
+ * $Author: sunxiaodong $
+ * $Id: lib_clips.php 15545 2009-01-09 05:30:40Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -115,8 +114,8 @@ function get_message_list($user_id, $user_name, $num, $start, $order_id = 0)
     while ($rows = $GLOBALS['db']->fetchRow($res))
     {
         /* 取得留言的回复 */
-        if (empty($order_id))
-        {
+        //if (empty($order_id))
+        //{
             $reply = array();
             $sql   = "SELECT user_name, user_email, msg_time, msg_content".
                      " FROM " .$GLOBALS['ecs']->table('feedback') .
@@ -130,7 +129,7 @@ function get_message_list($user_id, $user_name, $num, $start, $order_id = 0)
                 $msg[$rows['msg_id']]['re_msg_time']    = local_date($GLOBALS['_CFG']['time_format'], $reply['msg_time']);
                 $msg[$rows['msg_id']]['re_msg_content'] = nl2br(htmlspecialchars($reply['msg_content']));
             }
-        }
+        //}
 
         $msg[$rows['msg_id']]['msg_content'] = nl2br(htmlspecialchars($rows['msg_content']));
         $msg[$rows['msg_id']]['msg_time']    = local_date($GLOBALS['_CFG']['time_format'], $rows['msg_time']);
@@ -153,7 +152,8 @@ function get_message_list($user_id, $user_name, $num, $start, $order_id = 0)
  */
 function add_message($message)
 {
-    $upload_size_limit = $GLOBALS['_CFG']['upload_size_limit'] == 'default' ? ini_get('upload_max_filesize') : $GLOBALS['_CFG']['upload_size_limit'];
+    $upload_size_limit = $GLOBALS['_CFG']['upload_size_limit'] == '-1' ? ini_get('upload_max_filesize') : $GLOBALS['_CFG']['upload_size_limit'];
+    $status = 1 - $GLOBALS['_CFG']['message_check'];
 
     $last_char = strtolower($upload_size_limit{strlen($upload_size_limit)-1});
 
@@ -166,13 +166,14 @@ function add_message($message)
             $upload_size_limit *= 1024;
             break;
     }
-    if($_FILES['message_img']['size'] > $upload_size_limit)
-    {
-        $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['upload_file_limit'], $upload_size_limit));
-        return false;
-    }
+
     if ($message['upload'])
     {
+        if($_FILES['message_img']['size'] / 1024 > $upload_size_limit)
+        {
+            $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['upload_file_limit'], $upload_size_limit));
+            return false;
+        }
         $img_name = upload_file($_FILES['message_img'], 'feedbackimg');
 
         if ($img_name === false)
@@ -192,10 +193,11 @@ function add_message($message)
         return false;
     }
 
+    $message['msg_area'] = isset($message['msg_area']) ? intval($message['msg_area']) : 0;
     $sql = "INSERT INTO " . $GLOBALS['ecs']->table('feedback') .
-            " (msg_id, parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_content, msg_time, message_img, order_id)".
+            " (msg_id, parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_status,  msg_content, msg_time, message_img, order_id, msg_area)".
             " VALUES (NULL, 0, '$message[user_id]', '$message[user_name]', '$message[user_email]', ".
-            " '$message[msg_title]', '$message[msg_type]', '$message[msg_content]', '".gmtime()."', '$img_name', '$message[order_id]')";
+            " '$message[msg_title]', '$message[msg_type]', '$status', '$message[msg_content]', '".gmtime()."', '$img_name', '$message[order_id]', '$message[msg_area]')";
     $GLOBALS['db']->query($sql);
 
     return true;
@@ -444,7 +446,7 @@ function get_surplus_info($surplus_id)
  */
 function get_online_payment_list($include_balance = true)
 {
-    $sql = 'SELECT pay_id, pay_name, pay_fee, pay_desc ' .
+    $sql = 'SELECT pay_id, pay_code, pay_name, pay_fee, pay_desc ' .
             'FROM ' . $GLOBALS['ecs']->table('payment') .
             " WHERE enabled = 1 AND is_cod <> 1";
     if (!$include_balance)
@@ -452,7 +454,23 @@ function get_online_payment_list($include_balance = true)
         $sql .= " AND pay_code <> 'balance' ";
     }
 
-    return $GLOBALS['db']->getAll($sql);
+    $pay_list = $GLOBALS['db']->getAll($sql);
+
+    /* 将财付通在冲值页面提至第一位显示   */
+    foreach ($pay_list as $key => $val )
+    {
+        if ($val['pay_code'] == 'tenpayc2c')
+        {
+            unset($pay_list[$key]);
+        }
+        if ($val['pay_code'] == 'tenpay')
+        {
+            $tenpay = $val;
+            unset($pay_list[$key]);
+            array_unshift($pay_list, $tenpay);
+        }
+    }
+    return $pay_list;
 }
 
 /**
@@ -562,10 +580,11 @@ function get_user_default($user_id)
     $sql = "SELECT pay_points, user_money, credit_line, last_login, is_validated FROM " .$GLOBALS['ecs']->table('users'). " WHERE user_id = '$user_id'";
     $row = $GLOBALS['db']->getRow($sql);
     $info = array();
-    $info['username']  = $_SESSION['user_name'];
+    $info['username']  = stripslashes($_SESSION['user_name']);
     $info['shop_name'] = $GLOBALS['_CFG']['shop_name'];
     $info['integral']  = $row['pay_points'] . $GLOBALS['_CFG']['integral_name'];
-    $info['is_validate'] = $row['is_validated'];
+    /* 增加是否开启会员邮件验证开关 */
+    $info['is_validate'] = ($GLOBALS['_CFG']['member_email_validate'] && !$row['is_validated'])?0:1;
     $info['credit_line'] = $row['credit_line'];
     $info['formated_credit_line'] = price_format($info['credit_line'], false);
 
@@ -679,7 +698,21 @@ function color_tag(&$tags)
         $tags[$key]['color'] = $tagmark[$lvl]['color'];
         $tags[$key]['size']  = $tagmark[$lvl]['size'];
         $tags[$key]['bold']  = $tagmark[$lvl]['ifbold'];
-        $tags[$key]['url']   = $rewrite ? 'tag-' . urlencode($val['tag_words']) . '.html' : 'search.php?keywords=' . urlencode($val['tag_words']);
+        if ($rewrite)
+        {
+            if (strtolower(EC_CHARSET) !== 'utf-8')
+            {
+                $tags[$key]['url'] = 'tag-' . urlencode(urlencode($val['tag_words'])) . '.html';
+            }
+            else
+            {
+                $tags[$key]['url'] = 'tag-' . urlencode($val['tag_words']) . '.html';
+            }
+        }
+        else
+        {
+            $tags[$key]['url'] = 'search.php?keywords=' . urlencode($val['tag_words']);
+        }
     }
     shuffle($tags);
 }

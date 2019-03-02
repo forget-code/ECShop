@@ -3,15 +3,14 @@
 /**
  * ECSHOP 商品比较程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: compare.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Author: zblikai $
+ * $Id: compare.php 15568 2009-01-15 10:18:02Z zblikai $
 */
 
 define('IN_ECS', true);
@@ -34,11 +33,14 @@ if (!empty($_REQUEST['goods']) && is_array($_REQUEST['goods']) && count($_REQUES
 
     $where = db_create_in($_REQUEST['goods'], 'g.goods_id');
     $sql = "SELECT g.goods_id, g.goods_type, g.goods_name, g.shop_price, g.goods_weight, g.goods_thumb, g.goods_brief, ".
-                "a.attr_name, v.attr_value, a.attr_id, b.brand_name ".
+                "a.attr_name, v.attr_value, a.attr_id, b.brand_name, ".
+                "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS rank_price " .
             "FROM " .$ecs->table('goods'). " AS g ".
             "LEFT JOIN " . $ecs->table('goods_attr'). " AS v ON v.goods_id = g.goods_id ".
             "LEFT JOIN " . $ecs->table('attribute') . " AS a ON a.attr_id = v.attr_id " .
             "LEFT JOIN " . $ecs->table('brand') . " AS b ON g.brand_id = b.brand_id " .
+            "LEFT JOIN " . $ecs->table('member_price') . " AS mp ".
+                    "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
             "WHERE g.is_delete = 0 AND $where ".
             "ORDER BY a.attr_id";
     $res = $db->query($sql);
@@ -53,15 +55,23 @@ if (!empty($_REQUEST['goods']) && is_array($_REQUEST['goods']) && count($_REQUES
         $arr[$goods_id]['goods_id']     = $goods_id;
         $arr[$goods_id]['url']          = build_uri('goods', array('gid' => $goods_id), $row['goods_name']);
         $arr[$goods_id]['goods_name']   = $row['goods_name'];
-        $arr[$goods_id]['shop_price']   = $row['shop_price'];
+        $arr[$goods_id]['shop_price']   = price_format($row['shop_price']);
+        $arr[$goods_id]['rank_price']   = price_format($row['rank_price']);
         $arr[$goods_id]['goods_weight'] = (intval($row['goods_weight']) > 0) ?
                                            ceil($row['goods_weight']) . $_LANG['kilogram'] : ceil($row['goods_weight'] * 1000) . $_LANG['gram'];
-        $arr[$goods_id]['goods_thumb']  = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
+        $arr[$goods_id]['goods_thumb']  = get_image_path($row['goods_id'], $row['goods_thumb'], true);
         $arr[$goods_id]['goods_brief']  = $row['goods_brief'];
         $arr[$goods_id]['brand_name']   = $row['brand_name'];
 
         $arr[$goods_id]['properties'][$row['attr_id']]['name']  = $row['attr_name'];
-        $arr[$goods_id]['properties'][$row['attr_id']]['value'] = $row['attr_value'];
+        if (!empty($arr[$goods_id]['properties'][$row['attr_id']]['value']))
+        {
+            $arr[$goods_id]['properties'][$row['attr_id']]['value'] .= ',' . $row['attr_value'];
+        }
+        else
+        {
+            $arr[$goods_id]['properties'][$row['attr_id']]['value'] = $row['attr_value'];
+        }
 
         if (!isset($arr[$goods_id]['comment_rank']))
         {

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 中通速递插件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-11-12 14:34:17 +0800 (星期一, 12 十一月 2007) $
- * $Id: zto.php 13583 2007-11-12 06:34:17Z wj $
+ * $Author: sunxiaodong $
+ * $Id: zto.php 15538 2009-01-08 07:54:54Z sunxiaodong $
 */
 
 $shipping_lang = ROOT_PATH.'languages/' .$GLOBALS['_CFG']['lang']. '/shipping/zto.php';
@@ -34,7 +33,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     /* 配送方式的描述 */
     $modules[$i]['desc']    = 'zto_desc';
 
-    /* 不支持保价 */
+    /* 是否支持保价 */
     $modules[$i]['insure']  = '2%';
 
     /* 配送方式是否支持货到付款 */
@@ -48,7 +47,8 @@ if (isset($set_modules) && $set_modules == TRUE)
 
     /* 配送接口需要的参数 */
     $modules[$i]['configure'] = array(
-                                    array('name' => 'basic_fee',    'value'=>10),    /* 1000克以内的价格 */
+                                    array('name' => 'item_fee',     'value'=>15),    /* 单件商品配送的价格 */
+                                    array('name' => 'base_fee',    'value'=>10),    /* 1000克以内的价格 */
                                     array('name' => 'step_fee',     'value'=>5),    /* 续重每1000克增加的价格 */
                                 );
 
@@ -90,9 +90,10 @@ class zto
      *
      * @param   float   $goods_weight   商品重量
      * @param   float   $goods_amount   商品金额
+     * @param   float   $goods_number   商品件数
      * @return  decimal
      */
-    function calculate($goods_weight, $goods_amount)
+    function calculate($goods_weight, $goods_amount, $goods_number)
     {
         if ($this->configure['free_money'] > 0 && $goods_amount >= $this->configure['free_money'])
         {
@@ -100,12 +101,21 @@ class zto
         }
         else
         {
-            @$fee = $this->configure['basic_fee'];
+            @$fee = $this->configure['base_fee'];
+            $this->configure['fee_compute_mode'] = !empty($this->configure['fee_compute_mode']) ? $this->configure['fee_compute_mode'] : 'by_weight';
 
-            if ($goods_weight > 1)
+            if ($this->configure['fee_compute_mode'] == 'by_number')
             {
-                $fee += (ceil(($goods_weight - 1))) * $this->configure['step_fee'];
+                $fee = $goods_number * $this->configure['item_fee'];
             }
+            else
+            {
+                if ($goods_weight > 1)
+                {
+                    $fee += (ceil(($goods_weight - 1))) * $this->configure['step_fee'];
+                }
+            }
+
             return $fee;
         }
     }
@@ -129,14 +139,14 @@ class zto
 
         return $str;
     }
-    
+
     /**
      * 计算保价费用
      * 保价费不低于100元，保价金额不得高于10000元，保价金额超过10000元的，超过的部分无效
      * @access  public
      * @param   int     $goods_amount       保价费用
      * @param   int     $insure             保价比例
-     * 
+     *
      * @return void
      */
     function calculate_insure ($goods_amount, $insure)
@@ -144,17 +154,17 @@ class zto
         if ($goods_amount > 10000)
         {
             $goods_amount = 10000;
-        }  
-              
+        }
+
         $fee = $goods_amount * $insure;
 
         if ($fee < 100)
         {
             $fee = 100;
         }
-        
+
         return $fee;
-    } 
+    }
 
 }
 

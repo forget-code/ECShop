@@ -1,37 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="gbk"?>
 <help>
   <section id="list">
-    <title>管理员列表</title>
+    <title>����Ա�б�</title>
     <content>
     <![CDATA[
-	<p>本页面显示网店的管理员信息。</p>
+	<p>��ҳ����ʾ����Ĺ���Ա��Ϣ��</p>
 	]]>
     </content>
   </section>
 
   <section id="add">
-    <title>添加管理员</title>
+    <title>���ӹ���Ա</title>
     <content>
     <![CDATA[
-	<p>为网店添加一个新的管理员的操作。</p>
+	<p>Ϊ��������һ���µĹ���Ա�Ĳ�����</p>
 	]]>
     </content>
   </section>
   
   <section id="allot">
-    <title>分配权限</title>
+    <title>����Ȩ��</title>
     <content>
     <![CDATA[
-	<p>对指定的管理员分配相应的操作权限。</p>
+	<p>��ָ���Ĺ���Ա������Ӧ�Ĳ���Ȩ�ޡ�</p>
 	]]>
     </content>
   </section>
   
   <section id="edit">
-    <title>编辑管理员</title>
+    <title>�༭����Ա</title>
     <content>
     <![CDATA[
-	<p>对指定的管理员信息进行编辑的操作。</p>
+	<p>��ָ���Ĺ���Ա��Ϣ���б༭�Ĳ�����</p>
 	]]>
     </content>
   </section>

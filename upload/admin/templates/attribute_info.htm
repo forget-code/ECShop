@@ -1,4 +1,3 @@
-<!-- $Id: attribute_info.htm 13961 2008-01-07 06:54:44Z dolphin $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
   <form action="attribute.php"  method="post" name="theForm" onsubmit="return validate();">
@@ -51,8 +50,9 @@
       <tr>
         <td class="label"><a href="javascript:showNotice('noticeAttrType');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.label_attr_type}</td>
         <td>
-          <input type="radio" name="attr_type" value="0" {if $attr.attr_type eq 0} checked="true" {/if} /> {$lang.no}
-          <input type="radio" name="attr_type" value="1" {if $attr.attr_type eq 1} checked="true" {/if} /> {$lang.yes}
+          <input type="radio" name="attr_type" value="0" {if $attr.attr_type eq 0} checked="true" {/if} /> {$lang.attr_type_values[0]}
+          <input type="radio" name="attr_type" value="1" {if $attr.attr_type eq 1} checked="true" {/if} /> {$lang.attr_type_values[1]}
+          <input type="radio" name="attr_type" value="2" {if $attr.attr_type eq 2} checked="true" {/if} /> {$lang.attr_type_values[2]}
           <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeAttrType">{$lang.note_attr_type}</span>
         </td>
       </tr>
@@ -67,12 +67,12 @@
           {$lang.text_area}
         </td>
       </tr>
-        <tr>
-          <td class="label">{$lang.label_attr_values}</td>
-          <td>
-            <textarea name="attr_values" cols="30" rows="5">{$attr.attr_values}</textarea>
-          </td>
-        </tr>
+      <tr>
+        <td class="label">{$lang.label_attr_values}</td>
+        <td>
+          <textarea name="attr_values" cols="30" rows="5">{$attr.attr_values}</textarea>
+        </td>
+      </tr>
       <tr>
         <td colspan="2">
         <div class="button-div">
@@ -169,12 +169,11 @@ function changeGoodsTypeResponse(res)
         var opt = document.createElement('OPTION');
         opt.value = i;
         opt.text = res.content[i];
-        if(i == '{$attr.attr_group}')
+        sel.options.add(opt);
+        if (i == '{$attr.attr_group}')
         {
           opt.selected=true;
         }
-
-        sel.options.add(opt);
       }
     }
   }

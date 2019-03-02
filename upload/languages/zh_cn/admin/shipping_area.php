@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心配送方式管理语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: shipping_area.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: sunxiaodong $
+ * $Id: shipping_area.php 15458 2008-12-16 11:04:53Z sunxiaodong $
 */
 
 $_LANG['shipping_area_name'] = '配送区域名称';
@@ -20,7 +19,9 @@ $_LANG['shipping_area_regions'] = '所辖地区';
 $_LANG['shipping_area_assign'] = '配送方式';
 $_LANG['area_region'] = '地区';
 $_LANG['area_shipping'] = '配送方式';
-
+$_LANG['fee_compute_mode'] = '费用计算方式';
+$_LANG['fee_by_weight'] = '按重量计算';
+$_LANG['fee_by_number'] = '按商品件数计算';
 $_LANG['new_area'] = '新建配送区域';
 $_LANG['label_country'] = '国家：';
 $_LANG['label_province'] = '省份：';
@@ -49,6 +50,7 @@ $_LANG['disable_shipping_success'] = '指定的配送方式已经从该配送区
 
 /* 需要用到的JS语言项 */
 $_LANG['js_languages']['no_area_name'] = '配送区域名称不能为空。';
+$_LANG['js_languages']['del_shipping_area'] = '请先删除该配送区域，然后重新添加。';
 $_LANG['js_languages']['invalid_free_mondy'] = '免费额度不能为空且必须是一个整数。';
 $_LANG['js_languages']['lang_remove'] = '移除';
 $_LANG['js_languages']['lang_remove_confirm'] = '您确定要移除该地区吗？';

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心公用文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: init.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: init.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -80,6 +79,7 @@ require(ROOT_PATH . 'includes/inc_constant.php');
 require(ROOT_PATH . 'includes/cls_ecshop.php');
 require(ROOT_PATH . 'includes/cls_error.php');
 require(ROOT_PATH . 'includes/lib_time.php');
+require(ROOT_PATH . 'includes/lib_base.php');
 require(ROOT_PATH . 'includes/lib_common.php');
 require(ROOT_PATH . 'admin/includes/lib_main.php');
 require(ROOT_PATH . 'admin/includes/cls_exchange.php');
@@ -109,6 +109,8 @@ if (strpos(PHP_SELF, '.php/') !== false)
 
 /* 创建 ECSHOP 对象 */
 $ecs = new ECS($db_name, $prefix);
+define('DATA_DIR', $ecs->data_dir());
+define('IMAGE_DIR', $ecs->image_dir());
 
 /* 初始化数据库类 */
 require(ROOT_PATH . 'includes/cls_mysql.php');
@@ -161,26 +163,41 @@ if (file_exists(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/admin/' . basename(
     include(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF));
 }
 
-if (!file_exists('../templates/caches'))
+if (!file_exists('../temp/caches'))
 {
-    @mkdir('../templates/caches', 0777);
-    @chmod('../templates/caches', 0777);
+    @mkdir('../temp/caches', 0777);
+    @chmod('../temp/caches', 0777);
 }
 
-if (!file_exists('../templates/compiled/admin'))
+if (!file_exists('../temp/compiled/admin'))
 {
-    @mkdir('../templates/compiled/admin', 0777);
-    @chmod('../templates/compiled/admin', 0777);
+    @mkdir('../temp/compiled/admin', 0777);
+    @chmod('../temp/compiled/admin', 0777);
 }
 
 clearstatcache();
+
+/* 如果有新版本，升级 */
+if (!isset($_CFG['ecs_version']))
+{
+    $_CFG['ecs_version'] = 'v2.0.5';
+}
+
+if (preg_replace('/(?:\.|\s+)[a-z]*$/i', '', $_CFG['ecs_version']) != preg_replace('/(?:\.|\s+)[a-z]*$/i', '', VERSION)
+        && file_exists('../upgrade/index.php'))
+{
+    // 转到升级文件
+    ecs_header("Location: ../upgrade/index.php\n");
+
+    exit;
+}
 
 /* 创建 Smarty 对象。*/
 require(ROOT_PATH . 'includes/cls_template.php');
 $smarty = new cls_template;
 
 $smarty->template_dir  = ROOT_PATH . 'admin/templates';
-$smarty->compile_dir   = ROOT_PATH . 'templates/compiled/admin';
+$smarty->compile_dir   = ROOT_PATH . 'temp/compiled/admin';
 if ((DEBUG_MODE & 2) == 2)
 {
     $smarty->force_compile = true;
@@ -197,21 +214,6 @@ if(isset($_CFG['enable_order_check']))  // 为了从旧版本顺利升级到2.5.
 else
 {
     $smarty->assign('enable_order_check', 0);
-}
-
-/* 如果有新版本，升级 */
-if (!isset($_CFG['ecs_version']))
-{
-    $_CFG['ecs_version'] = 'v2.0.5';
-}
-
-if (preg_replace('/(?:\.|\s+)[a-z]*$/i', '', $_CFG['ecs_version']) != preg_replace('/(?:\.|\s+)[a-z]*$/i', '', VERSION)
-        && file_exists('../upgrade/index.php'))
-{
-    // 转到升级文件
-    ecs_header("Location: ../upgrade/index.php\n");
-
-    exit;
 }
 
 /* 验证管理员身份 */
@@ -320,7 +322,7 @@ if ($_REQUEST['act'] == 'phpinfo' && function_exists('phpinfo'))
 }
 
 //header('Cache-control: private');
-header('content-type: text/html; charset=utf-8');
+header('content-type: text/html; charset=' . EC_CHARSET);
 header('Expires: Fri, 14 Mar 1980 20:53:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: no-cache, must-revalidate');

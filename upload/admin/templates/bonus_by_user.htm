@@ -1,4 +1,4 @@
-<!-- $Id: bonus_by_user.htm 12216 2007-09-20 06:44:56Z hackfan $ -->
+<!-- $Id: bonus_by_user.htm 15589 2009-02-10 09:24:05Z sunxiaodong $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js"}
 
@@ -12,13 +12,20 @@
       <option value="0">{$lang.select_rank}</option>
       {html_options options=$ranklist selected=$smarty.get.rank_id}
       </select>&nbsp;&nbsp;&nbsp;
-      <input type="submit" name="send_rank" value="{$lang.confirm_send_bonus}" class="button" />
+      <input type="checkbox" name="validated_email" value="1">{$lang.validated_email}
     </td>
   </tr>
+  <tr>
+     <td style="text-align:center" colspan =2>
+     <input type="submit" name="send_rank" value="{$lang.confirm_send_bonus}" class="button" />
+     </td>
+   </tr>
 </table>
 <input type="hidden" name="act" value="send_by_user" />
 <input type="hidden" name="id" value="{$id}" />
 </form>
+
+
 </div>
 
 <div class="main-div">

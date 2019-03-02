@@ -124,7 +124,7 @@ function macauclock()
   showtime();
 }
 
-function onload_leftTime()
+function onload_leftTime(now_time)
 {
   /* 第一次运行时初始化语言项目 */
   try
@@ -140,10 +140,16 @@ function onload_leftTime()
   catch (e)
   {
   }
-
   if (_GMTEndTime > 0)
   {
-    var tmp_val = parseInt(_GMTEndTime) - parseInt(cur_date.getTime() / 1000 + cur_date.getTimezoneOffset() * 60);
+    if (now_time == undefined)
+    {
+      var tmp_val = parseInt(_GMTEndTime) - parseInt(cur_date.getTime() / 1000 + cur_date.getTimezoneOffset() * 60);
+    }
+    else
+    {
+      var tmp_val = parseInt(_GMTEndTime) - now_time;
+    }
     if (tmp_val > 0)
     {
       auctionDate = tmp_val;

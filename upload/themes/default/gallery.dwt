@@ -1,25 +1,31 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>{$gallery.goods_name} - {$gallery.img_desc}</title>
+<title>{$gallery.goods_name} - {$shop_name}</title>
 <link rel="shortcut icon" href="favicon.ico" >
 <link rel="icon" href="animated_favicon.gif" type="image/gif" >
 <link href="style.css" rel="stylesheet" type="text/css" />
+<style>
+body{margin:0;}
+</style>
+<script type="text/javascript">
+{foreach from=$lang.gallery_js item=lang_js key=key}
+var {$key} = '{$lang_js}';
+{/foreach}
+</script>
 </head>
 <body>
-<div align="center">
-  <!-- {foreach from=$thumbs item=thumb} -->
-  <a href="gallery.php?id={$gallery.goods_id}&amp;img={$thumb.img_id}"><img src="{if $thumb.thumb_url}{$thumb.thumb_url}{else}{$thumb.img_url}{/if}" alt="{$img_desc|escape:html}" /></a>
-  <!-- {/foreach} -->
-</div>
-<div align="center" style="border-bottom: 1px solid #dadada; padding-bottom: 5px">
-  <input type="button" onclick="location.href='gallery.php?id={$gallery.goods_id}&amp;img={$prev_img}'" value="&lt;">
-  <input type="button" onclick="location.href='gallery.php?id={$gallery.goods_id}&amp;img={$next_img}'" value="&gt;">
-</div>
-<div align="center">
-  <p><img src="{$gallery.img_url}" border="1" /></p>
-  <p>{$gallery.img_desc}</p>
+<div id="show-pic">
+<embed src="data/images/pic-view.swf" quality="high" id="picview" flashvars="copyright=shopex&xml=<products name='{$gallery.goods_name}' shopname='{$shop_name}'>{foreach name=gallery_list from=$gallery.list item=photo}<smallpic{if $smarty.foreach.gallery_list.first} selected='selected'{/if}>{$photo.gallery_thumb}</smallpic><photo_desc>{$photo.img_desc}</photo_desc><bigpic{if $smarty.foreach.gallery_list.first} selected='selected'{/if}>{$photo.gallery}</bigpic>{/foreach}</products>" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="100%" height="100%"></embed>
+<script>
+function windowClose()
+{
+    if(window.confirm(close_window))
+    {
+        window.close();
+    }
+}
+</script>
 </div>
 </body>
 </html>

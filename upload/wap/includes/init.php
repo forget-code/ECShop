@@ -1,17 +1,16 @@
 <?php
 
 /**
- * ECSHOP WAP初始化文件
+ * ECSHOP wap前台公共函数
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
- * $Id: init.php 14080 2008-01-28 11:27:47Z testyang $
+ * $Id: init.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -75,6 +74,7 @@ define('PHP_SELF', $php_self);
 
 require(ROOT_PATH . 'includes/cls_ecshop.php');
 require(ROOT_PATH . 'includes/lib_goods.php');
+require(ROOT_PATH . 'includes/lib_base.php');
 require(ROOT_PATH . 'includes/lib_common.php');
 require(ROOT_PATH . 'includes/lib_time.php');
 require(ROOT_PATH . 'includes/lib_main.php');
@@ -124,8 +124,8 @@ if (!defined('INIT_NO_SMARTY'))
 
     $smarty->cache_lifetime = $_CFG['cache_time'];
     $smarty->template_dir   = ROOT_PATH . 'wap/templates';
-    $smarty->cache_dir      = ROOT_PATH . 'templates/caches';
-    $smarty->compile_dir    = ROOT_PATH . 'templates/compiled/wap';
+    $smarty->cache_dir      = ROOT_PATH . 'temp/caches';
+    $smarty->compile_dir    = ROOT_PATH . 'temp/compiled/wap';
 
     if ((DEBUG_MODE & 2) == 2)
     {
@@ -186,7 +186,7 @@ if (gzip_enabled())
 /* wap头文件 */
 //if (substr($_SERVER['SCRIPT_NAME'], strrpos($_SERVER['SCRIPT_NAME'], '/')) != '/user.php')
 //{}
-header("Content-Type:text/vnd.wap.wml");
+header("Content-Type:text/vnd.wap.wml; charset=utf-8");
 echo "<?xml version='1.0' encoding='utf-8'?>";
 if (empty($_CFG['wap_config']))
 {

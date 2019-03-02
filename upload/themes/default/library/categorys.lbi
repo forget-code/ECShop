@@ -1,12 +1,15 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- {if $cat_list} -->
-<!-- 分类 -->
-<div class="title-div"><img src="../images/category.gif" alt="category" width="158" height="39" /></div>
-<div class="content-div">
-  <div style="list-style: none; margin: 10px; padding: 0;">
+<div class="box">
+ <div class="box_1">
+  <div id="category_tree">
     <!-- {foreach from=$cat_list item=cat} -->
-    <div><img src="images/cat_arrow.gif" alt="arrow" /> <a href="{$cat.url}">{$cat.cat_name|escape:html} {if $cat.goods_num}({$cat.goods_num}){/if}</a></div>
-    <!-- {/foreach} -->
+     <dl>
+     <dt><a href="{$cat.url}">{$cat.cat_name|escape:html} {if $cat.goods_num}({$cat.goods_num}){/if}</a></dt>
+     </dl>
+    <!--{/foreach}--> 
   </div>
+ </div>
 </div>
+<div class="blank5"></div>
 <!-- {/if} -->

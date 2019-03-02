@@ -21,6 +21,9 @@
         <input type="hidden" name="id" value="{$val.template_id}" />
         <input type="hidden" name="act" value="addtolist" />
         <select name="pri"><option value='0'>{$lang.pri.0}</option><option value='1'>{$lang.pri.1}</option></select>
+        <select name="send_rank">
+          {html_options options=$send_rank}
+        </select>
         <input type="submit" value="{$lang.button_submit}" class="button" />
     </form>
     </td>

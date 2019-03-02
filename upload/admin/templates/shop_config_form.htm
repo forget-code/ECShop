@@ -22,8 +22,14 @@
             {if $var.code eq 'rewrite'}
               onclick="return ReWriterConfirm(this);"
             {/if}
+            {if $var.code eq 'smtp_ssl' and $opt eq 1}
+              onclick="return confirm('{$lang.smtp_ssl_confirm}');"
+            {/if}
             {if $var.code eq 'enable_gzip' and $opt eq 1}
               onclick="return confirm('{$lang.gzip_confirm}');"
+            {/if}
+            {if $var.code eq 'retain_original_img' and $opt eq 0}
+              onclick="return confirm('{$lang.retain_original_confirm}');"
             {/if}
           />{$var.display_options[$k]}</label>
           {/foreach}

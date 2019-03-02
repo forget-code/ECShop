@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心商品相关函数
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-10-12 15:11:53 +0800 (星期五, 12 十月 2007) $
- * $Id: lib_goods.php 12860 2007-10-12 07:11:53Z wj $
+ * $Author: zblikai $
+ * $Id: lib_goods.php 15595 2009-02-13 07:26:20Z zblikai $
  */
 
 if (!defined('IN_ECS'))
@@ -30,6 +29,7 @@ function get_intro_list()
         'is_new'     => $GLOBALS['_LANG']['is_new'],
         'is_hot'     => $GLOBALS['_LANG']['is_hot'],
         'is_promote' => $GLOBALS['_LANG']['is_promote'],
+        'all_type' => $GLOBALS['_LANG']['all_type'],
     );
 }
 
@@ -279,6 +279,8 @@ function handle_goods_article($goods_id)
  */
 function handle_gallery_image($goods_id, $image_files, $image_descs)
 {
+    /* 是否处理缩略图 */
+    $proc_thumb = (isset($GLOBALS['shop_id']) && $GLOBALS['shop_id'] > 0)? false : true;
     foreach ($image_descs AS $key => $img_desc)
     {
         /* 是否成功上传 */
@@ -301,8 +303,11 @@ function handle_gallery_image($goods_id, $image_files, $image_descs)
         if ($flag)
         {
             // 生成缩略图
-            $thumb_url = $GLOBALS['image']->make_thumb($image_files['tmp_name'][$key], $GLOBALS['_CFG']['thumb_width'],  $GLOBALS['_CFG']['thumb_height']);
-            $thumb_url = is_string($thumb_url) ? $thumb_url : '';
+            if ($proc_thumb)
+            {
+                $thumb_url = $GLOBALS['image']->make_thumb($image_files['tmp_name'][$key], $GLOBALS['_CFG']['thumb_width'],  $GLOBALS['_CFG']['thumb_height']);
+                $thumb_url = is_string($thumb_url) ? $thumb_url : '';
+            }
 
             $upload = array(
                 'name' => $image_files['name'][$key],
@@ -315,10 +320,18 @@ function handle_gallery_image($goods_id, $image_files, $image_descs)
                 $upload['error'] = $image_files['error'][$key];
             }
             $img_original = $GLOBALS['image']->upload_image($upload);
+            if ($img_original === false)
+            {
+                sys_msg($GLOBALS['image']->error_msg(), 1, array(), false);
+            }
             $img_url = $img_original;
 
+            if (!$proc_thumb)
+            {
+                $thumb_url = $img_original;
+            }
             // 如果服务器支持GD 则添加水印
-            if (gd_version() > 0)
+            if ($proc_thumb && gd_version() > 0)
             {
                 $pos        = strpos(basename($img_original), '.');
                 $newname    = dirname($img_original) . '/' . $GLOBALS['image']->random_filename() . substr(basename($img_original), $pos);
@@ -328,6 +341,10 @@ function handle_gallery_image($goods_id, $image_files, $image_descs)
                 $GLOBALS['image']->add_watermark('../'.$img_url,'',$GLOBALS['_CFG']['watermark'], $GLOBALS['_CFG']['watermark_place'], $GLOBALS['_CFG']['watermark_alpha']);
             }
 
+            /* 重新格式化图片名称 */
+            $img_original = reformat_image_name('gallery', $goods_id, $img_original, 'source');
+            $img_url = reformat_image_name('gallery', $goods_id, $img_url, 'goods');
+            $thumb_url = reformat_image_name('gallery_thumb', $goods_id, $thumb_url, 'thumb');
             $sql = "INSERT INTO " . $GLOBALS['ecs']->table('goods_gallery') . " (goods_id, img_url, img_desc, thumb_url, img_original) " .
                     "VALUES ('$goods_id', '$img_url', '$img_desc', '$thumb_url', '$img_original')";
             $GLOBALS['db']->query($sql);
@@ -515,7 +532,7 @@ function get_attr_list($cat_id, $goods_id = 0)
             "LEFT JOIN " .$GLOBALS['ecs']->table('goods_attr'). " AS v ".
             "ON v.attr_id = a.attr_id AND v.goods_id = '$goods_id' ".
             "WHERE a.cat_id = " . intval($cat_id) ." OR a.cat_id = 0 ".
-            "ORDER BY a.attr_type, a.attr_id, a.sort_order, v.attr_price, v.goods_attr_id";
+            "ORDER BY a.sort_order, a.attr_type, a.attr_id, v.attr_price, v.goods_attr_id";
 
     $row = $GLOBALS['db']->GetAll($sql);
 
@@ -539,7 +556,7 @@ function build_attr_html($cat_id, $goods_id = 0)
     foreach ($attr AS $key => $val)
     {
         $html .= "<tr><td class='label'>";
-        if ($val['attr_type'] == 1)
+        if ($val['attr_type'] == 1 || $val['attr_type'] == 2)
         {
             $html .= ($spec != $val['attr_id']) ?
                 "<a href='javascript:;' onclick='addSpec(this)'>[+]</a>" :
@@ -575,7 +592,7 @@ function build_attr_html($cat_id, $goods_id = 0)
             $html .= '</select> ';
         }
 
-        $html .= ($val['attr_type'] == 1) ?
+        $html .= ($val['attr_type'] == 1 || $val['attr_type'] == 2) ?
             $GLOBALS['_LANG']['spec_price'].' <input type="text" name="attr_price_list[]" value="' . $val['attr_price'] . '" size="5" maxlength="10" />' :
             ' <input type="hidden" name="attr_price_list[]" value="0" />';
 
@@ -689,6 +706,10 @@ function goods_list($is_delete, $real_goods=1)
         $filter['stock_warning']    = empty($_REQUEST['stock_warning']) ? 0 : intval($_REQUEST['stock_warning']);
         $filter['brand_id']         = empty($_REQUEST['brand_id']) ? 0 : intval($_REQUEST['brand_id']);
         $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
+        if ($_REQUEST['is_ajax'] == 1)
+        {
+            $filter['keyword'] = json_str_iconv($filter['keyword']);
+        }
         $filter['sort_by']          = empty($_REQUEST['sort_by']) ? 'goods_id' : trim($_REQUEST['sort_by']);
         $filter['sort_order']       = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
         $filter['extension_code']   = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
@@ -711,6 +732,9 @@ function goods_list($is_delete, $real_goods=1)
                 break;
             case 'is_promote':
                 $where .= " AND is_promote = 1 AND promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today'";
+                break;
+            case 'all_type';
+                $where .= " AND (is_best=1 OR is_hot=1 OR is_new=1 OR (is_promote = 1 AND promote_price > 0 AND promote_start_date <= '" . $today . "' AND promote_end_date >= '" . $today . "'))";
         }
 
         /* 库存警告 */
@@ -749,7 +773,7 @@ function goods_list($is_delete, $real_goods=1)
         /* 分页大小 */
         $filter = page_and_size($filter);
 
-        $sql = "SELECT goods_id, goods_name, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, goods_number, integral, " .
+        $sql = "SELECT goods_id, goods_name, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
                     " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ".
                     " FROM " . $GLOBALS['ecs']->table('goods') . " AS g WHERE is_delete='$is_delete' $where" .
                     " ORDER BY $filter[sort_by] $filter[sort_order] ".
@@ -766,6 +790,85 @@ function goods_list($is_delete, $real_goods=1)
     $row = $GLOBALS['db']->getAll($sql);
 
     return array('goods' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+}
+
+/**
+ * 格式化商品图片名称（按目录存储）
+ *
+ */
+function reformat_image_name($type, $goods_id, $source_img, $position='')
+{
+    $rand_name = gmtime() . sprintf("%03d", mt_rand(1,999));
+    $img_ext = substr($source_img, strrpos($source_img, '.'));
+    $dir = 'images';
+    if (defined('IMAGE_DIR'))
+    {
+        $dir = IMAGE_DIR;
+    }
+    $sub_dir = date('Ym', gmtime());
+    if (!make_dir(ROOT_PATH.$dir.'/'.$sub_dir))
+    {
+        return false;
+    }
+    if (!make_dir(ROOT_PATH.$dir.'/'.$sub_dir.'/source_img'))
+    {
+        return false;
+    }
+    if (!make_dir(ROOT_PATH.$dir.'/'.$sub_dir.'/goods_img'))
+    {
+        return false;
+    }
+    if (!make_dir(ROOT_PATH.$dir.'/'.$sub_dir.'/thumb_img'))
+    {
+        return false;
+    }
+    switch($type)
+    {
+        case 'goods':
+            $img_name = $goods_id . '_G_' . $rand_name;
+            break;
+        case 'goods_thumb':
+            $img_name = $goods_id . '_thumb_G_' . $rand_name;
+            break;
+        case 'gallery':
+            $img_name = $goods_id . '_P_' . $rand_name;
+            break;
+        case 'gallery_thumb':
+            $img_name = $goods_id . '_thumb_P_' . $rand_name;
+            break;
+    }
+    if ($position == 'source')
+    {
+        if (move_image_file(ROOT_PATH.$source_img, ROOT_PATH.$dir.'/'.$sub_dir.'/source_img/'.$img_name.$img_ext))
+        {
+            return $dir.'/'.$sub_dir.'/source_img/'.$img_name.$img_ext;
+        }
+    }
+    elseif ($position == 'thumb')
+    {
+        if (move_image_file(ROOT_PATH.$source_img, ROOT_PATH.$dir.'/'.$sub_dir.'/thumb_img/'.$img_name.$img_ext))
+        {
+            return $dir.'/'.$sub_dir.'/thumb_img/'.$img_name.$img_ext;
+        }
+    }
+    else
+    {
+        if (move_image_file(ROOT_PATH.$source_img, ROOT_PATH.$dir.'/'.$sub_dir.'/goods_img/'.$img_name.$img_ext))
+        {
+            return $dir.'/'.$sub_dir.'/goods_img/'.$img_name.$img_ext;
+        }
+    }
+    return false;
+}
+
+function move_image_file($source, $dest)
+{
+    if (@copy($source, $dest))
+    {
+        @unlink($source);
+        return true;
+    }
+    return false;
 }
 
 ?>

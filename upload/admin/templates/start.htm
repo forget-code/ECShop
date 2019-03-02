@@ -1,9 +1,9 @@
-<!-- $Id: start.htm 14019 2008-01-21 09:17:15Z testyang $ -->
+<!-- $Id: start.htm 14598 2008-05-21 07:41:15Z testyang $ -->
 {include file="pageheader.htm"}
 <!-- directory install start -->
 <ul style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
   {if $need_check_version}
-  <script type="text/javascript" src="http://api.ecshop.com/checkver.php?ver={$ecs_version}&amp;lang={$ecs_lang}&amp;release={$ecs_release}&amp;php_ver={$sys_info.php_ver}&amp;mysql_ver={$sys_info.mysql_ver}&amp;ocount={$order.stats.oCount}&amp;oamount={$order.stats.oAmount}&amp;=gcount={$goods.total}"></script>
+  <script type="text/javascript" src="http://api.ecshop.com/checkver.php?ver={$ecs_version}&lang={$ecs_lang}&release={$ecs_release}&php_ver={$sys_info.php_ver}&mysql_ver={$sys_info.mysql_ver}&ocount={$order.stats.oCount}&oamount={$order.stats.oAmount}&gcount={$goods.total}&charset={$ecs_charset}"></script>
   {/if}
   {foreach from=$warning_arr item=warning}
   <li style="border: 1px solid #CC0000; background: #FFFFCC; padding: 10px; margin-bottom: 5px;" >{$warning}</li>
@@ -186,6 +186,12 @@
     <td>{$ecs_version} RELEASE {$ecs_release}</td>
     <td>{$lang.install_date}</td>
     <td>{$install_date}</td>
+  </tr>
+  <tr>
+    <td>{$lang.ec_charset}</td>
+    <td>{$ecs_charset}</td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
 </div>

@@ -11,15 +11,14 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: luhengqi $
- * $Date: 2007-03-07 17:59:06 +0800 (Wednesday, 07 March 2007) $
- * $Id: zh_cn.php 6586 2007-03-07 09:59:06Z luhengqi $
+ * $Author: zblikai $
+ * $Id: en_us.php 15655 2009-02-24 06:22:39Z zblikai $
  */
 
 /* Common language item */
 $_LANG['prev_step'] = 'Previous:';
 $_LANG['next_step'] = 'Next:';
-$_LANG['copyright'] = '&copy; 2005-2007 <a href="http://www.ecshop.com" target="_blank">Beijing Yi Shang Interactive Technology Development Ltd. </a> <br> All right reserved.';
+$_LANG['copyright'] = '&copy; 2005-2008 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a> <br> All right reserved.';
 
 
 /* Welcome page */
@@ -101,6 +100,7 @@ $_LANG['dv'] = 'Digital vidicon';
 $_LANG['cosmetics'] = 'Cosmetics';
 $_LANG['install_at_once'] = 'Install at once';
 $_LANG['default_friend_link'] = 'ECSHOP e-commerce management system';
+$_LANG['maifou_friend_link'] = 'Shop free';
 $_LANG['monitor_title'] = 'Installer Monitor';
 $_LANG['admin_user'][] = 'Goods list|goods.php?act=list';
 $_LANG['admin_user'][] = 'Order list|order.php?act=list';

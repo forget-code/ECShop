@@ -3,15 +3,14 @@
 /**
  * ECSHOP 购物流程相关语言
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-16 22:42:23 +0800 (星期三, 16 一月 2008) $
- * $Id: shopping_flow.php 13986 2008-01-16 14:42:23Z fenghl $
+ * $Author: zblikai $
+ * $Id: shopping_flow.php 15487 2008-12-22 09:32:06Z zblikai $
 */
 
 $_LANG['flow_login_register']['username_not_null'] = '请您输入用户名。';
@@ -62,6 +61,11 @@ $_LANG['not_support_virtual_goods'] = '购物车中存在非实体商品,不支�
 $_LANG['not_support_insure'] = '不支持保价';
 $_LANG['clear_cart'] = '清空购物车';
 $_LANG['drop_to_collect'] = '放入收藏夹';
+$_LANG['password_js']['show_div_text'] = '请点击更新购物车按钮';
+$_LANG['password_js']['show_div_exit'] = '关闭';
+$_LANG['goods_fittings'] = '商品相关配件';
+$_LANG['parent_name'] = '相关商品：';
+$_LANG['remark_package'] = '礼包';
 
 /* 优惠活动 */
 $_LANG['favourable_name'] = '活动名称：';
@@ -83,6 +87,9 @@ $_LANG['favourable_used'] = '该优惠活动已加入购物车了';
 $_LANG['pls_select_gift'] = '请选择赠品（特惠品）';
 $_LANG['gift_count_exceed'] = '您选择的赠品（特惠品）数量超过上限了';
 $_LANG['gift_in_cart'] = '您选择的赠品（特惠品）已经在购物车中了：%s';
+$_LANG['label_favourable'] = '优惠活动';
+$_LANG['label_collection'] = '我的收藏';
+$_LANG['collect_to_flow'] = '立即购买';
 
 /* 登录注册 */
 $_LANG['forthwith_login'] = '登录';

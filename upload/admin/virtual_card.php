@@ -3,15 +3,14 @@
 /**
  * ECSHOP 虚拟卡商品管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: virtual_card.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: virtual_card.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -439,8 +438,8 @@ elseif ($_REQUEST['act'] == 'remove_card')
 
 elseif ($_REQUEST['act'] == 'start_change')
 {
-    $old_key = trim($_GET['old_key']);
-    $new_key = trim($_GET['new_key']);
+    $old_key = json_str_iconv(trim($_GET['old_key']));
+    $new_key = json_str_iconv(trim($_GET['new_key']));
 
     if ($old_key != OLD_AUTH_KEY)
     {
@@ -556,6 +555,10 @@ function get_replenish_list()
     $filter['search_type'] = empty($_REQUEST['search_type']) ? 0 : trim($_REQUEST['search_type']);
     $filter['order_sn']    = empty($_REQUEST['order_sn'])    ? 0 : trim($_REQUEST['order_sn']);
     $filter['keyword']     = empty($_REQUEST['keyword'])     ? 0 : trim($_REQUEST['keyword']);
+    if ($_REQUEST['is_ajax'] == 1)
+    {
+        $filter['keyword'] = json_str_iconv($filter['keyword']);
+    }
     $filter['sort_by']     = empty($_REQUEST['sort_by'])     ? 'card_id' : trim($_REQUEST['sort_by']);
     $filter['sort_order']  = empty($_REQUEST['sort_order'])  ? 'DESC' : trim($_REQUEST['sort_order']);
 

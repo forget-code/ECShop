@@ -1,4 +1,4 @@
-<!-- $Id: auction_list.htm 9471 2007-06-27 05:51:48Z scottye $ -->
+<!-- $Id: auction_list.htm 14888 2008-09-18 03:43:21Z levie $ -->
 
 {if $full_page}
 {include file="pageheader.htm"}
@@ -41,7 +41,7 @@
       <td align="right">{$auction.start_time}</td>
       <td align="right">{$auction.end_time}</td>
       <td align="right">{$auction.start_price}</td>
-      <td align="right">{$auction.end_price}</td>
+      <td align="right">{if $auction.no_top}{$lang.label_no_top}{else}{$auction.end_price}{/if}</td>
       <td align="center">
         <a href="auction.php?act=view_log&id={$auction.act_id}"><img src="images/icon_view.gif" title="{$lang.auction_log}" border="0" height="16" width="16" /></a>
         <a href="auction.php?act=edit&amp;id={$auction.act_id}" title="{$lang.edit}"><img src="images/icon_edit.gif" border="0" height="16" width="16" /></a>

@@ -1,4 +1,4 @@
-<!-- $Id: favourable_info.htm 13961 2008-01-07 06:54:44Z dolphin $ -->
+<!-- $Id: favourable_info.htm 14361 2008-04-07 09:26:17Z zhuwenyuan $ -->
 {include file="pageheader.htm"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
 <link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
@@ -66,10 +66,10 @@
       <table id="gift-table">
       {if $favourable.gift}
         <tr align="center"><td><strong>{$lang.js_languages.gift}</strong></td><td><strong>{$lang.js_languages.price}</strong></td></tr>
-        {foreach from=$favourable.gift item=goods}
-        <tr><td><input type="checkbox" name="gift_id[]" value="{$goods.id}" checked="checked" />{$goods.name}</td>
-        <td align="right"><input name="gift_price[]" type="text" value="{$goods.price}" size="10" style="text-align:right" />
-        <input name="gift_name[]" type="hidden" value="{$goods.name}" /></td></tr>
+        {foreach from=$favourable.gift item=goods key=key}
+        <tr><td><input type="checkbox" name="gift_id[{$key}]" value="{$goods.id}" checked="checked" />{$goods.name}</td>
+        <td align="right"><input name="gift_price[{$key}]" type="text" value="{$goods.price}" size="10" style="text-align:right" />
+        <input name="gift_name[{$key}]" type="hidden" value="{$goods.name}" /></td></tr>
         {/foreach}
       {/if}
       </table>

@@ -3,21 +3,165 @@
 /**
  * ECSHOP 顺丰速运插件的语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: sf_express.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: sunxiaodong $
+ * $Id: sf_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
 */
 global $_LANG;
 
 $_LANG['sf_express']             = '顺丰速运';
 $_LANG['sf_express_desc']        = '江、浙、沪地区首重15元/KG，续重2元/KG，其余城市首重20元/KG';
-$_LANG['basic_fee']              = '1000克以内费用';
+$_LANG['item_fee']              = '单件商品费用：';
+$_LANG['base_fee']              = '1000克以内费用';
 $_LANG['step_fee']               = '续重每1000克或其零数的费用';
+$_LANG['shipping_print']         = '<table style="width:18.8cm; height:3cm;" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<table style="width:18.8cm;" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="width:9.4cm" valign="top">
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+      <td valign="middle" style="width:1.5cm; height:0.8cm;">&nbsp;</td>
+      <td width="85%">
+     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+     <tr>
+    <td valign="middle" style="width:5cm; height:0.8cm;">{$shop_name}</td>
+      <td valign="middle">&nbsp;</td>
+    <td valign="middle" style="width:1.8cm; height:0.8cm;">{$order.order_sn}</td>
+    </tr>
+   </table>
+   </td>
+ </tr>
+ <tr valign="middle">
+ <td>&nbsp;</td>
+ <td class="h">
+ <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="width:1.3cm; height:0.8cm;">{$province}</td>
+    <td>&nbsp;</td>
+    <td style="width:1.3cm; height:0.8cm;">{$city}</td>
+    <td>&nbsp;</td>
+    <td style="width:1.3cm; height:0.8cm;">&nbsp;</td>
+    <td>&nbsp;</td>
+    <td style="width:1.3cm; height:0.8cm;">&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">{$shop_address}</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">&nbsp;</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>&nbsp;</td>
+    <td style="width:1.5cm; height:0.8cm;">&nbsp;</td>
+    <td>&nbsp;</td>
+    <td style="width:3.5cm; height:0.8cm;">{$service_phone}</td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+  </td>
+    <td style="width:9.4cm;" valign="top">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+<td valign="middle" style="width:1.5cm; height:0.8cm;">&nbsp;</td>
+<td width="85%">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+  <td valign="middle" style="width:5cm; height:0.8cm;">{$order.consignee}</td>
+  <td valign="middle">&nbsp;</td>
+  <td valign="middle" style="width:1.8cm; height:0.8cm;">&nbsp;</td>
+  </tr>
+</table>
+</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">{$order.region}</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">{$order.address}</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">&nbsp;</td>
+</tr>
+<tr valign="middle">
+<td>&nbsp;</td>
+<td class="h">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="width:1.7cm;">&nbsp;</td>
+    <td style="width:1.5cm; height:0.8cm;">&nbsp;</td>
+    <td style="width:1.7cm;">&nbsp;</td>
+    <td style="width:3.5cm; height:0.8cm;">{$order.tel}</td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+  </tr>
+</table>
+<table style="width:18.8cm; height:6.5cm;" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td valign="top" style="width:7.4cm;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+   <td colspan="2" style="height:0.5cm;"></td>
+  </tr>
+<tr>
+<td rowspan="2" style="width:4.9cm;">&nbsp;</td>
+<td style="height:0.8cm;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:0.8cm;">
+  <tr>
+    <td style="width:1cm;">&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="height:1.3cm;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+  <td style="height:0.7cm;">&nbsp;</td>
+  </tr>
+  <tr>
+  <td>&nbsp;</td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:1.5cm">
+<tr>
+<td>&nbsp;</td>
+</tr>
+</table>
+</td>
+<td valign="top" style="width:11.4cm;">&nbsp;</td>
+  </tr>
+</table>';
 
 ?>

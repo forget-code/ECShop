@@ -3,15 +3,14 @@
 /**
  * ECSHOP 贝宝插件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: paypal.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: testyang $
+ * $Id: paypal.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -94,23 +93,26 @@ class paypal
     {
         $data_order_id      = $order['log_id'];
         $data_amount        = $order['order_amount'];
-        $data_return_url    = $GLOBALS['ecs']->url();
+        $data_return_url    = return_url(basename(__FILE__, '.php'));
         $data_pay_account   = $payment['paypal_account'];
         $currency_code      = $payment['paypal_currency'];
         $data_notify_url    = return_url(basename(__FILE__, '.php'));
+        $cancel_return      = $GLOBALS['ecs']->url();
 
-        $def_url  = '<br /><form style="text-align:center;" action="https://www.paypal.com/cgi-bin/webscr" method="post">' .   // 不能省略
+        $def_url  = '<br /><form style="text-align:center;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">' .   // 不能省略
             "<input type='hidden' name='cmd' value='_xclick'>" .                             // 不能省略
             "<input type='hidden' name='business' value='$data_pay_account'>" .                 // 贝宝帐号
-            "<input type='hidden' name='return' value='$data_return_url'>" .                    // 付款后页面
+            "<input type='hidden' name='item_name' value='$order[order_sn]'>" .                 // payment for
             "<input type='hidden' name='amount' value='$data_amount'>" .                        // 订单金额
+            "<input type='hidden' name='currency_code' value='$currency_code'>" .            // 货币
+            "<input type='hidden' name='return' value='$data_return_url'>" .                    // 付款后页面
             "<input type='hidden' name='invoice' value='$data_order_id'>" .                      // 订单号
             "<input type='hidden' name='charset' value='utf-8'>" .                              // 字符集
             "<input type='hidden' name='no_shipping' value='1'>" .                              // 不要求客户提供收货地址
             "<input type='hidden' name='no_note' value=''>" .                                  // 付款说明
-            "<input type='hidden' name='currency_code' value='$currency_code'>" .            // 货币
             "<input type='hidden' name='notify_url' value='$data_notify_url'>" .
-            "<input type='hidden' name='item_name' value='$order[order_sn]'>" .                 // payment for
+            "<input type='hidden' name='rm' value='2'>" .
+            "<input type='hidden' name='cancel_return' value='$cancel_return'>" .
             "<input type='submit' value='" . $GLOBALS['_LANG']['paypal_button'] . "'>" .                      // 按钮
             "</form><br />";
 
@@ -134,7 +136,7 @@ class paypal
         }
 
         // post back to PayPal system to validate
-        $header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
+        $header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $header .= "Content-Length: " . strlen($req) ."\r\n\r\n";
         $fp = fsockopen ('www.paypal.com', 80, $errno, $errstr, 30);
@@ -149,7 +151,8 @@ class paypal
         $receiver_email = $_POST['receiver_email'];
         $payer_email = $_POST['payer_email'];
         $order_sn = $_POST['invoice'];
-        $action_note = $txn_id . '（' . $GLOBALS['_LANG']['paypal_txn_id'] . '）' . $_POST['memo'];
+        $memo = !empty($_POST['memo']) ? $_POST['memo'] : '';
+        $action_note = $txn_id . '（' . $GLOBALS['_LANG']['paypal_txn_id'] . '）' . $memo;
 
         if (!$fp)
         {
@@ -166,7 +169,7 @@ class paypal
                 if (strcmp($res, 'VERIFIED') == 0)
                 {
                     // check the payment_status is Completed
-                    if ($payment_status != 'Completed')
+                    if ($payment_status != 'Completed' && $payment_status != 'Pending')
                     {
                         fclose($fp);
 
@@ -174,13 +177,13 @@ class paypal
                     }
 
                     // check that txn_id has not been previously processed
-                    $sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('order_action') . " WHERE action_note LIKE '" . mysql_like_quote($txn_id) . "%'";
+                    /*$sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('order_action') . " WHERE action_note LIKE '" . mysql_like_quote($txn_id) . "%'";
                     if ($GLOBALS['db']->getOne($sql) > 0)
                     {
                         fclose($fp);
 
                         return false;
-                    }
+                    }*/
 
                     // check that receiver_email is your Primary PayPal email
                     if ($receiver_email != $merchant_id)
@@ -191,14 +194,14 @@ class paypal
                     }
 
                     // check that payment_amount/payment_currency are correct
-                    $sql = "SELECT order_amount FROM " . $GLOBALS['ecs']->table('order_info') . " WHERE order_sn = '$order_sn'";
+                    $sql = "SELECT order_amount FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE log_id = '$order_sn'";
                     if ($GLOBALS['db']->getOne($sql) != $payment_amount)
                     {
                         fclose($fp);
 
                         return false;
                     }
-                    if ($payment_currency != '$data_pay_account')
+                    if ($payment['paypal_currency'] != $payment_currency)
                     {
                         fclose($fp);
 

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 会员帐目管理(包括预付款，余额)
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: user_account.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: user_account.php 15548 2009-01-09 12:18:44Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -301,6 +300,7 @@ elseif ($_REQUEST['act'] == 'check')
 
     /* 模板赋值 */
     $smarty->assign('ur_here',      $_LANG['check']);
+    $account['user_note'] = htmlspecialchars($account['user_note']);
     $smarty->assign('surplus',      $account);
     $smarty->assign('process_type', $process_type);
     $smarty->assign('user_name',    $user_name);
@@ -486,11 +486,18 @@ function account_list()
         /* 过滤列表 */
         $filter['user_id'] = !empty($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
         $filter['keywords'] = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
+        if ($_REQUEST['is_ajax'] == 1)
+        {
+            $filter['keywords'] = json_str_iconv($filter['keywords']);
+        }
+
         $filter['process_type'] = isset($_REQUEST['process_type']) ? intval($_REQUEST['process_type']) : -1;
         $filter['payment'] = empty($_REQUEST['payment']) ? '' : trim($_REQUEST['payment']);
         $filter['is_paid'] = isset($_REQUEST['is_paid']) ? intval($_REQUEST['is_paid']) : -1;
         $filter['sort_by'] = empty($_REQUEST['sort_by']) ? 'add_time' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
+        $filter['start_date'] = empty($_REQUEST['start_date']) ? '' : local_strtotime($_REQUEST['start_date']);
+        $filter['end_date'] = empty($_REQUEST['end_date']) ? '' : (local_strtotime($_REQUEST['end_date']) + 86400);
 
         $where = " WHERE 1 ";
         if ($filter['user_id'] > 0)
@@ -521,6 +528,12 @@ function account_list()
             $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('user_account'). " AS ua, ".
                    $GLOBALS['ecs']->table('users') . " AS u " . $where;
         }
+        /*　时间过滤　*/
+        if (!empty($filter['start_date']) && !empty($filter['end_date']))
+        {
+            $where .= "AND paid_time >= " . $filter['start_date']. " AND paid_time < '" . $filter['end_date'] . "'";
+        }
+
         $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('user_account'). " AS ua, ".
                    $GLOBALS['ecs']->table('users') . " AS u " . $where;
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);

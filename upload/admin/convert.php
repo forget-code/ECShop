@@ -3,15 +3,14 @@
 /**
  * ECSHOP 转换程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
- * $Id: convert.php 14080 2008-01-28 11:27:47Z testyang $
+ * $Id: convert.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -117,7 +116,7 @@ elseif ($_REQUEST['act'] == 'check')
     }
 
     /* 创建图片目录 */
-    $img_dir = ROOT_PATH . 'images/' . date('Ym') . '/';
+    $img_dir = ROOT_PATH . IMAGE_DIR . '/' . date('Ym') . '/';
     if (!file_exists($img_dir))
     {
         make_dir($img_dir);
@@ -125,9 +124,9 @@ elseif ($_REQUEST['act'] == 'check')
 
     /* 需要检查可写的目录 */
     $to_dir_list = array(
-        ROOT_PATH . 'images/upload/',
+        ROOT_PATH . IMAGE_DIR . '/upload/',
         $img_dir,
-        ROOT_PATH . 'data/afficheimg/',
+        ROOT_PATH . DATA_DIR . '/afficheimg/',
         ROOT_PATH . 'cert/'
     );
 
@@ -171,7 +170,7 @@ elseif ($_REQUEST['act'] == 'process')
     check_authz_json('all');
 
     /* 取得参数 */
-    $step = $_POST['step'];
+    $step = json_str_iconv($_POST['step']);
 
     /* 连接原数据库 */
     $config = $_SESSION['convert_config'];

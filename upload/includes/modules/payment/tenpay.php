@@ -3,15 +3,14 @@
 /**
  * ECSHOP 财付通插件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: tenpay.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: testyang $
+ * $Id: tenpay.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -96,19 +95,35 @@ class tenpay
         $cmd_no = '1';
 
         /* 获得订单的流水号，补零到10位 */
-        $bill_no = str_pad($order['log_id'], 10, 0, STR_PAD_LEFT);
+        $sp_billno = $order['order_sn'];
 
         /* 交易日期 */
         $today = date('Ymd');
 
         /* 将商户号+年月日+流水号 */
+        $bill_no = str_pad($order['log_id'], 10, 0, STR_PAD_LEFT);
         $transaction_id = $payment['tenpay_account'].$today.$bill_no;
 
         /* 银行类型:支持纯网关和财付通 */
         $bank_type = '0';
 
         /* 订单描述，用订单号替代 */
-        $desc = str_pad($order['order_sn'], 13, 0, STR_PAD_LEFT);;
+        if (!empty($order['order_id']))
+        {
+            //$desc = get_goods_name_by_id($order['order_id']);
+            $desc = $order['order_sn'];
+            $attach = '';
+        }
+        else
+        {
+            $desc = $GLOBALS['_LANG']['account_voucher'];
+            $attach = 'voucher';
+        }
+        /* 编码标准 */
+        if (!defined('EC_CHARSET') || EC_CHARSET == 'utf-8')
+        {
+            $desc = ecs_iconv('utf-8', 'gbk', $desc);
+        }
 
         /* 返回的路径 */
         $return_url = return_url('tenpay');
@@ -120,13 +135,13 @@ class tenpay
         $fee_type = '1';
 
         /* 重写自定义签名 */
-        $payment['magic_string'] = abs(crc32($payment['magic_string']));
+        //$payment['magic_string'] = abs(crc32($payment['magic_string']));
 
         /* 数字签名 */
         $sign_text = "cmdno=" . $cmd_no . "&date=" . $today . "&bargainor_id=" . $payment['tenpay_account'] .
-          "&transaction_id=" . $transaction_id . "&sp_billno=" . $bill_no .
+          "&transaction_id=" . $transaction_id . "&sp_billno=" . $sp_billno .
           "&total_fee=" . $total_fee . "&fee_type=" . $fee_type . "&return_url=" . $return_url .
-          "&attach=" . $payment['magic_string'] . "&key=" . $payment['tenpay_key'];
+          "&attach=" . $attach . "&key=" . $payment['tenpay_key'];
         $sign = strtoupper(md5($sign_text));
 
         /* 交易参数 */
@@ -138,22 +153,23 @@ class tenpay
             'purchaser_id'      => '',                          // 用户(买方)的财付通帐户,可以为空
             'bargainor_id'      => $payment['tenpay_account'],  // 商家的财付通商户号
             'transaction_id'    => $transaction_id,             // 交易号(订单号)，由商户网站产生(建议顺序累加)
-            'sp_billno'         => $bill_no,                    // 商户系统内部的定单号,最多10位
+            'sp_billno'         => $sp_billno,                    // 商户系统内部的定单号,最多10位
             'total_fee'         => $total_fee,                  // 订单金额
             'fee_type'          => $fee_type,                   // 现金支付币种
             'return_url'        => $return_url,                 // 接收财付通返回结果的URL
-            'attach'            => $payment['magic_string'],    // 用户自定义签名
-            'sign'              => $sign                        // MD5签名
+            'attach'            => $attach,                     // 用户自定义签名
+            'sign'              => $sign,                       // MD5签名
+            'sys_id'            => '542554970'                  //ecshop C账号 不参与签名
         );
 
-        $button  = '<br /><form style="text-align:center;" action="http://portal.tenpay.com/cfbiportal/cgi-bin/cfbiin.cgi" target="_blank" style="margin:0px;padding:0px" >';
+        $button  = '<br /><form style="text-align:center;" action="https://www.tenpay.com/cgi-bin/v1.0/pay_gate.cgi" target="_blank" style="margin:0px;padding:0px" >';
 
         foreach ($parameter AS $key=>$val)
         {
             $button  .= "<input type='hidden' name='$key' value='$val' />";
         }
 
-        $button  .= '<input type="submit" value="' .$GLOBALS['_LANG']['pay_button']. '" /></form><br />';
+        $button  .= '<input type="image" src="'. $GLOBALS['ecs']->url() .'images/tenpay.gif" value="' .$GLOBALS['_LANG']['pay_button']. '" /></form><br />';
 
         return $button;
     }
@@ -178,7 +194,15 @@ class tenpay
 
         $payment    = get_payment('tenpay');
         //$order_sn   = $bill_date . str_pad(intval($sp_billno), 5, '0', STR_PAD_LEFT);
-        $log_id = preg_replace('/0*([0-9]*)/', '\1', $sp_billno); //取得支付的log_id
+        //$log_id = preg_replace('/0*([0-9]*)/', '\1', $sp_billno); //取得支付的log_id
+        if ($attach == 'voucher')
+        {
+            $log_id = get_order_id_by_sn($sp_billno, "true");
+        }
+        else
+        {
+            $log_id = get_order_id_by_sn($sp_billno);
+        }
 
         /* 如果pay_result大于0则表示支付失败 */
         if ($pay_result > 0)
@@ -206,8 +230,7 @@ class tenpay
         else
         {
             /* 改变订单状态 */
-            order_paid($log_id, 1);
-
+            order_paid($log_id);
             return true;
         }
     }

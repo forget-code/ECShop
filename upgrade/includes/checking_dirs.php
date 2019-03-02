@@ -15,11 +15,13 @@ $checking_dirs = array(
                     'data/cardimg',
                     'data/feedbackimg',
                     'data/sqldata',
-                    'templates',
-                    'templates/backup',
-                    'templates/caches',
-                    'templates/compiled',
-                    'templates/compiled/admin',
+                    'temp',
+                    'temp/backup',
+                    'temp/caches',
+                    'temp/compiled',
+                    'temp/compiled/admin',
+                    'temp/query_caches/',
+                    'temp/static_caches/',
                     'themes'
                     );
 

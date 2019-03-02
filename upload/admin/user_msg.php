@@ -3,15 +3,14 @@
 /**
  * ECSHOP 客户留言
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: user_msg.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: user_msg.php 15616 2009-02-18 05:16:22Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -52,8 +51,8 @@ if ($_REQUEST['act']=='add')
 
 if ($_REQUEST['act']=='insert')
 {
-    $sql = "INSERT INTO " . $ecs->table('feedback') .
-            " VALUES ('', 0, '$_POST[user_id]', '$_SESSION[admin_name]', ' ', ".
+    $sql = "INSERT INTO " . $ecs->table('feedback') . "(parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_content, msg_time, message_img, order_id)" .
+            " VALUES (0, '$_POST[user_id]', '$_SESSION[admin_name]', ' ', ".
             " '$_POST[msg_title]', 5, '$_POST[msg_content]', '" . gmtime() . "', '', '$_POST[order_id]')";
 
     $db->query($sql);
@@ -77,7 +76,7 @@ if ($_REQUEST['act'] == 'remove_msg')
         {
             if ($row['message_img'])
             {
-                @unlink(ROOT_PATH.'data/feedbackimg/' . $row['message_img']);
+                @unlink(ROOT_PATH. DATA_DIR . '/feedbackimg/' . $row['message_img']);
             }
             $sql = "DELETE FROM " . $ecs->table('feedback') . " WHERE msg_id=$msg_id LIMIT 1";
             $db->query($sql);
@@ -87,7 +86,36 @@ if ($_REQUEST['act'] == 'remove_msg')
     ecs_header("Location: user_msg.php?act=add&order_id=$_GET[order_id]&user_id=$_GET[user_id]\n");
     exit;
 }
+/*------------------------------------------------------ */
+//-- 更新留言的状态为显示或者禁止
+/*------------------------------------------------------ */
+if ($_REQUEST['act'] == 'check')
+{
+    if ($_REQUEST['check'] == 'allow')
+    {
+        /* 允许留言显示 */
+        $sql = "UPDATE " .$ecs->table('feedback'). " SET msg_status = 1 WHERE msg_id = '$_REQUEST[id]'";
+        $db->query($sql);
 
+        /* 清除缓存 */
+        clear_cache_files();
+
+        ecs_header("Location: user_msg.php?act=view&id=$_REQUEST[id]\n");
+        exit;
+    }
+    else
+    {
+        /* 禁止留言显示 */
+        $sql = "UPDATE " .$ecs->table('feedback'). " SET msg_status = 0 WHERE msg_id = '$_REQUEST[id]'";
+        $db->query($sql);
+
+        /* 清除缓存 */
+        clear_cache_files();
+
+        ecs_header("Location: user_msg.php?act=view&id=$_REQUEST[id]\n");
+        exit;
+    }
+}
 /*------------------------------------------------------ */
 //-- 列出所有留言
 /*------------------------------------------------------ */
@@ -142,7 +170,7 @@ elseif ($_REQUEST['act'] == 'remove')
         /* 删除图片 */
         if (!empty($img))
         {
-             @unlink(ROOT_PATH.'data/feedbackimg/'.$img);
+             @unlink(ROOT_PATH. DATA_DIR . '/feedbackimg/'.$img);
         }
         $sql = "DELETE FROM " . $ecs->table('feedback') . " WHERE parent_id = '$msg_id' LIMIT 1";
         $db->query($sql, 'SILENT');
@@ -208,7 +236,7 @@ elseif ($_REQUEST['act'] == 'drop_file')
 
     /* 删除上传的文件 */
     $file = $_GET['file'];
-    @unlink('../data/feedbackimg/'.$file);
+    @unlink('../' . DATA_DIR . '/feedbackimg/'.$file);
 
     /* 更新数据库 */
     $db->query("UPDATE ".$ecs->table('feedback')." SET message_img = '' WHERE msg_id = '$_GET[id]'");
@@ -229,6 +257,10 @@ function msg_list()
 {
     /* 过滤条件 */
     $filter['keywords']   = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
+    if ($_REQUEST['is_ajax'] == 1)
+    {
+        $filter['keywords'] = json_str_iconv($filter['keywords']);
+    }
     $filter['msg_type']   = isset($_REQUEST['msg_type']) ? intval($_REQUEST['msg_type']) : -1;
     $filter['sort_by']    = empty($_REQUEST['sort_by']) ? 'f.msg_id' : trim($_REQUEST['sort_by']);
     $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
@@ -250,7 +282,7 @@ function msg_list()
     /* 分页大小 */
     $filter = page_and_size($filter);
 
-    $sql = "SELECT f.msg_id, f.user_name, f.msg_title, f.msg_type, f.msg_time, COUNT(r.msg_id) AS reply " .
+    $sql = "SELECT f.msg_id, f.user_name, f.msg_title, f.msg_type, f.order_id, f.msg_status, f.msg_time, f.msg_area, COUNT(r.msg_id) AS reply " .
             "FROM " . $GLOBALS['ecs']->table('feedback') . " AS f ".
             "LEFT JOIN " . $GLOBALS['ecs']->table('feedback') . " AS r ON r.parent_id=f.msg_id ".
             "WHERE f.parent_id = 0 $where " .
@@ -260,7 +292,10 @@ function msg_list()
 
     $msg_list = $GLOBALS['db']->getAll($sql);
     foreach ($msg_list AS $key => $value)
-    {
+    {   if($value['order_id'] > 0)
+        {
+            $msg_list[$key]['order_sn'] = $GLOBALS['db']->getOne("SELECT order_sn FROM " . $GLOBALS['ecs']->table('order_info') ." WHERE order_id= " .$value['order_id']);
+        }
         $msg_list[$key]['msg_time'] = local_date($GLOBALS['_CFG']['time_format'], $value['msg_time']);
         $msg_list[$key]['msg_type'] = $GLOBALS['_LANG']['type'][$value['msg_type']];
     }

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 包装管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: pack.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: pack.php 15066 2008-10-25 06:33:26Z testyang $
 */
 
 define('IN_ECS', true);
@@ -89,8 +88,20 @@ if ($_REQUEST['act'] == 'insert')
         sys_msg(sprintf($_LANG['packname_exist'], stripslashes($_POST['pack_name'])), 1);
     }
 
-     /*处理图片*/
-    $img_name = basename($image->upload_image($_FILES['pack_img'],"packimg"));
+    /* 处理图片 */
+    if (!empty($_FILES['pack_img']))
+    {
+        $upload_img = $image->upload_image($_FILES['pack_img'],"packimg", $_POST['old_packimg']);
+        if ($upload_img == false)
+        {
+            sys_msg($image->error_msg);
+        }
+        $img_name = basename($upload_img);
+    }
+    else
+    {
+        $img_name = '';
+    }
 
     /*插入数据*/
     $sql = "INSERT INTO ".$ecs->table('pack')."(pack_name, pack_fee, free_money, pack_desc, pack_img)
@@ -140,7 +151,20 @@ if ($_REQUEST['act'] == 'update')
 
     $param = "pack_name = '$_POST[pack_name]', pack_fee = '$_POST[pack_fee]', free_money= '$_POST[free_money]', pack_desc = '$_POST[pack_desc]' ";
     /* 处理图片 */
-    $img_name = basename($image->upload_image($_FILES['pack_img'],"packimg", $_POST['old_packimg']));
+    if (!empty($_FILES['pack_img']['name']))
+    {
+        $upload_img = $image->upload_image($_FILES['pack_img'],"packimg", $_POST['old_packimg']);
+        if ($upload_img == false)
+        {
+            sys_msg($image->error_msg);
+        }
+        $img_name = basename($upload_img);
+    }
+    else
+    {
+        $img_name = '';
+    }
+
     if (!empty($img_name))
     {
         $param .= " ,pack_img = '$img_name' ";
@@ -174,7 +198,7 @@ if ($_REQUEST['act'] == 'drop_pack_img')
 
     if (!empty($img_name))
     {
-        @unlink(ROOT_PATH . 'data/packimg/' .$img_name);
+        @unlink(ROOT_PATH . DATA_DIR . '/packimg/' .$img_name);
         $sql = "UPDATE " .$ecs->table('pack'). " SET pack_img = '' WHERE pack_id = '$pack_id'";
         $db->query($sql);
     }
@@ -191,7 +215,7 @@ if ($_REQUEST['act'] == 'edit_name')
     check_authz_json('pack');
 
     $id = intval($_POST['id']);
-    $val = trim($_POST['val']);
+    $val = json_str_iconv(trim($_POST['val']));
 
     /* 取得该属性所属商品类型id */
     $pack_name = $exc->get_name($id);
@@ -264,7 +288,7 @@ if ($_REQUEST['act'] == 'remove')
         /* 删除图片 */
         if (!empty($img))
         {
-             @unlink('../data/packimg/'.$img);
+             @unlink('../' . DATA_DIR . '/packimg/'.$img);
         }
         admin_log(addslashes($name),'remove','pack');
 

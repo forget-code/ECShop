@@ -3,15 +3,14 @@
 /**
  * ECSHOP 数据库导出类
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-10-26 15:04:42 +0800 (星期五, 26 十月 2007) $
- * $Id: cls_sql_dump.php 13217 2007-10-26 07:04:42Z wj $
+ * $Author: testyang $
+ * $Id: cls_sql_dump.php 15449 2008-12-16 07:21:16Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -101,7 +100,7 @@ class cls_sql_dump
 
         if ($this->db->version() >= '4.1')
         {
-            $table_df .= $tmp_sql . " ENGINE=MyISAM DEFAULT CHARSET=utf8;\r\n";
+            $table_df .= $tmp_sql . " ENGINE=MyISAM DEFAULT CHARSET=" . str_replace('-', '', EC_CHARSET) . ";\r\n";
         }
         else
         {
@@ -160,13 +159,28 @@ class cls_sql_dump
                     }
                     else
                     {
-                        $tmp_dump_sql = " ( '" . implode("', '" , $record) . "' ),\r\n";
+                        if ($j == $data_count - 1)
+                        {
+                            $tmp_dump_sql = " ( '" . implode("', '" , $record) . "' );\r\n";
+                        }
+                        else
+                        {
+                            $tmp_dump_sql = " ( '" . implode("', '" , $record) . "' ),\r\n";
+                        }
+                        //$tmp_dump_sql = " ( '" . implode("', '" , $record) . "' ),\r\n";
                     }
 
                     if ($post_pos == $pos)
                     {
                         /* 第一次插入数据 */
                         $tmp_dump_sql = $start_sql . "\r\n" . $tmp_dump_sql;
+                    }
+                    else
+                    {
+                        if ($j == 0)
+                        {
+                            $tmp_dump_sql = $start_sql . "\r\n" . $tmp_dump_sql;
+                        }
                     }
                 }
                 else
@@ -442,14 +456,12 @@ class cls_sql_dump
      */
     function get_random_name()
     {
-        $str = '';
+        $str = date('Ymd');
 
         for ($i = 0; $i < 6; $i++)
         {
             $str .= chr(mt_rand(97, 122));
         }
-
-        $str .= date('Ymd');
 
         return $str;
     }

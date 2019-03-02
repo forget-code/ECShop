@@ -130,7 +130,7 @@ input.button {
   border: 1px solid #2D5082;
   background: url(../../admin/images/button_bg.gif) repeat-x top center;
 }
-
+input.btn-1{margin-left:50px;}
 a:visited {
   color: #335B64;
   text-decoration: none;
@@ -199,3 +199,4 @@ a:active {
   border:1px solid #000;
   background:#f4fafb;
 }
+.uc_table{margin:12px auto 0;}

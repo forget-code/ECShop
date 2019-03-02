@@ -3,15 +3,14 @@
 /**
  * ECSHOP 安装程序 之 模型
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-01-30 15:37:32 +0800 (星期二, 30 一月 2007) $
- * $Id: index.php 4749 2007-01-30 07:37:32Z paulgao $
+ * $Author: zblikai $
+ * $Id: lib_installer.php 15652 2009-02-23 09:14:27Z zblikai $
  */
 
 if (!defined('IN_ECS'))
@@ -259,7 +258,7 @@ function create_database($db_host, $db_port, $db_user, $db_pass, $db_name)
     keep_right_conn($conn, $mysql_version);
     if (mysql_select_db($db_name, $conn) === false)
     {
-        $sql = $mysql_version >= '4.1' ? "CREATE DATABASE $db_name DEFAULT CHARACTER SET utf8" : "CREATE DATABASE $db_name";
+        $sql = $mysql_version >= '4.1' ? "CREATE DATABASE $db_name DEFAULT CHARACTER SET " . EC_DB_CHARSET : "CREATE DATABASE $db_name";
         if (mysql_query($sql, $conn) === false)
         {
             $err->add($_LANG['cannt_create_database']);
@@ -288,7 +287,7 @@ function keep_right_conn($conn, $mysql_version='')
 
     if ($mysql_version >= '4.1')
     {
-        mysql_query('SET character_set_connection=utf8, character_set_results=utf8, character_set_client=binary', $conn);
+        mysql_query('SET character_set_connection=' . EC_DB_CHARSET . ', character_set_results=' . EC_DB_CHARSET . ', character_set_client=binary', $conn);
 
         if ($mysql_version > '5.0.1')
         {
@@ -330,7 +329,8 @@ function create_config_file($db_host, $db_port, $db_user, $db_pass, $db_name, $p
     $content .= "\$cookie_path    = \"/\";\n\n";
     $content .= "\$cookie_domain    = \"\";\n\n";
     $content .= "\$admin_dir = \"admin\";\n\n";
-    $content .= "\$session = \"1440\";\n";
+    $content .= "\$session = \"1440\";\n\n";
+    $content .= "define('EC_CHARSET','".EC_CHARSET."');\n\n";
     $content .= '?>';
 
     $fp = @fopen(ROOT_PATH . 'data/config.php', 'wb+');
@@ -378,7 +378,7 @@ function install_data($sql_files)
     include_once(ROOT_PATH . 'includes/cls_sql_executor.php');
 
     $db = new cls_mysql($db_host, $db_user, $db_pass, $db_name);
-    $se = new sql_executor($db, 'utf8', 'ecs_', $prefix);
+    $se = new sql_executor($db, EC_DB_CHARSET, 'ecs_', $prefix);
     $result = $se->run_all($sql_files);
     if ($result === false)
     {
@@ -505,12 +505,13 @@ function copy_files($source, $target)
 
     if (!file_exists($target))
     {
-        if (!mkdir(rtrim($target, '/'), 0777))
+        //if (!mkdir(rtrim($target, '/'), 0777))
+        if (!mkdir($target, 0777))
         {
             $err->add($_LANG['cannt_mk_dir']);
             return false;
         }
-        chmod($target, 0777);
+        @chmod($target, 0777);
     }
     $dir = opendir($source);
     while (($file = @readdir($dir)) !== false)
@@ -522,7 +523,7 @@ function copy_files($source, $target)
                 $err->add($_LANG['cannt_copy_file']);
                 return false;
             }
-            chmod($target . $file, 0777);
+            @chmod($target . $file, 0777);
         }
     }
     closedir($dir);
@@ -538,9 +539,10 @@ function copy_files($source, $target)
  * @param   string      $disable_captcha        是否开启验证码
  * @param   array       $goods_types            预选商品类型
  * @param   string      $install_demo           是否安装测试数据
+ * @param   string      $integrate_code         用户接口
  * @return  boolean     成功返回true，失败返回false
  */
-function do_others($system_lang, $captcha, $goods_types, $install_demo)
+function do_others($system_lang, $captcha, $goods_types, $install_demo, $integrate_code)
 {
     global $err, $_LANG;
 
@@ -567,7 +569,32 @@ function do_others($system_lang, $captcha, $goods_types, $install_demo)
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/200609/', ROOT_PATH . 'images/200609/'))
+        if (!copy_files(ROOT_PATH . 'install/data/demo/brandlogo/', ROOT_PATH . 'data/brandlogo/'))
+        {
+            $err->add(implode('', $err->last_message()));
+            return false;
+        }
+        if (!copy_files(ROOT_PATH . 'install/data/demo/200810/goods_img/', ROOT_PATH . 'images/200810/goods_img/'))
+        {
+            $err->add(implode('', $err->last_message()));
+            return false;
+        }
+        if (!copy_files(ROOT_PATH . 'install/data/demo/200810/thumb_img/', ROOT_PATH . 'images/200810/thumb_img/'))
+        {
+            $err->add(implode('', $err->last_message()));
+            return false;
+        }
+        if (!copy_files(ROOT_PATH . 'install/data/demo/afficheimg/', ROOT_PATH . 'data/afficheimg/'))
+        {
+            $err->add(implode('', $err->last_message()));
+            return false;
+        }
+        if (!copy_files(ROOT_PATH . 'install/data/demo/packimg/', ROOT_PATH . 'data/packimg/'))
+        {
+            $err->add(implode('', $err->last_message()));
+            return false;
+        }
+        if (!copy_files(ROOT_PATH . 'install/data/demo/cardimg/', ROOT_PATH . 'data/cardimg/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
@@ -586,10 +613,33 @@ function do_others($system_lang, $captcha, $goods_types, $install_demo)
         return false;
     }
 
+    /* 更新用户接口 */
+    if (!empty($integrate_code))
+    {
+        $sql = "UPDATE $prefix"."shop_config SET value='" . $integrate_code . "' WHERE code='integrate_code'";
+        if (!$db->query($sql, 'SILENT'))
+        {
+            $err->add($db->errno() .' '. $db->error());
+            return false;
+        }
+    }
+
     /* 处理验证码 */
     if (!empty($captcha))
     {
         $sql = "UPDATE $prefix" . "shop_config SET value = '12' WHERE code = 'captcha'";
+        if (!$db->query($sql, 'SILENT'))
+        {
+            $err->add($db->errno() .' '. $db->error());
+            return false;
+        }
+    }
+
+    /* 更新用户接口配置 */
+    if (file_exists(ROOT_PATH .'data/config_temp.php'))
+    {
+        include(ROOT_PATH .'data/config_temp.php');
+        $sql = "UPDATE $prefix" . "shop_config SET value = '".serialize($cfg)."' WHERE code = 'integrate_config'";
         if (!$db->query($sql, 'SILENT'))
         {
             $err->add($db->errno() .' '. $db->error());
@@ -621,6 +671,15 @@ function deal_aftermath()
                 "(link_name, link_url, link_logo, show_order)".
             "VALUES ".
                 "('".$_LANG['default_friend_link']."', 'http://www.ecshop.com/', 'http://www.ecshop.com/images/logo/ecshop_logo.gif','0')";
+    if (!$db->query($sql, 'SILENT'))
+    {
+        $err->add($db->errno() .' '. $db->error());
+    }
+
+    $sql = "INSERT INTO $prefix"."friend_link ".
+                "(link_name, link_url, show_order)".
+            "VALUES ".
+                "('".$_LANG['maifou_friend_link']."', 'http://www.maifou.net/','1')";
     if (!$db->query($sql, 'SILENT'))
     {
         $err->add($db->errno() .' '. $db->error());
@@ -677,13 +736,257 @@ function get_spt_code()
 {
     include(ROOT_PATH . 'data/config.php');
     include_once(ROOT_PATH . 'includes/cls_ecshop.php');
-
+    include_once(ROOT_PATH . 'includes/cls_mysql.php');
+    $db = new cls_mysql($db_host, $db_user, $db_pass, $db_name);
     $ecs = new ECS($db_name, $prefix);
-
+    $hash_code = $db->getOne("SELECT value FROM " . $ecs->table('shop_config') . " WHERE code='hash_code'");
     $spt = '<script type="text/javascript" src="http://api.ecshop.com/record.php?';
-    $spt .= "url=" .urlencode($ecs->url()). "&mod=install&version=" .VERSION. "\"></script>";
+    $spt .= "url=" .urlencode($ecs->url()). "&mod=install&version=" .VERSION. "&hash_code=" . $hash_code . "&charset=" .EC_CHARSET. "&language=" . $GLOBALS['installer_lang'] . "\"></script>";
 
     return $spt;
 }
 
+/**
+ * 取得当前的域名
+ *
+ * @access  public
+ *
+ * @return  string      当前的域名
+ */
+function get_domain()
+{
+    /* 协议 */
+    $protocol = http();
+
+    /* 域名或IP地址 */
+    if (isset($_SERVER['HTTP_X_FORWARDED_HOST']))
+    {
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    }
+    elseif (isset($_SERVER['HTTP_HOST']))
+    {
+        $host = $_SERVER['HTTP_HOST'];
+    }
+    else
+    {
+        /* 端口 */
+        if (isset($_SERVER['SERVER_PORT']))
+        {
+            $port = ':' . $_SERVER['SERVER_PORT'];
+
+            if ((':80' == $port && 'http://' == $protocol) || (':443' == $port && 'https://' == $protocol))
+            {
+                $port = '';
+            }
+        }
+        else
+        {
+            $port = '';
+        }
+
+        if (isset($_SERVER['SERVER_NAME']))
+        {
+            $host = $_SERVER['SERVER_NAME'] . $port;
+        }
+        elseif (isset($_SERVER['SERVER_ADDR']))
+        {
+            $host = $_SERVER['SERVER_ADDR'] . $port;
+        }
+    }
+
+    return $protocol . $host;
+}
+
+/**
+ * 获得 ECSHOP 当前环境的 URL 地址
+ *
+ * @access  public
+ *
+ * @return  void
+ */
+function url()
+{
+    $PHP_SELF = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+    $ecserver = 'http://'.$_SERVER['HTTP_HOST'].($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : '');
+    $default_appurl = $ecserver.substr($PHP_SELF, 0, strpos($PHP_SELF, 'install/') - 1);
+
+    return $default_appurl;
+}
+
+/**
+ * 获得 ECSHOP 当前环境的 HTTP 协议方式
+ *
+ * @access  public
+ *
+ * @return  void
+ */
+function http()
+{
+    return (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://';
+}
+
+
+function insertconfig($s, $find, $replace)
+{
+    if(preg_match($find, $s))
+    {
+        $s = preg_replace($find, $replace, $s);
+    }
+    else
+    {
+        // 插入到最后一行
+        $s .= "\r\n".$replace;
+    }
+    return $s;
+}
+
+function getgpc($k, $var='G')
+{
+    switch($var)
+    {
+        case 'G': $var = &$_GET; break;
+        case 'P': $var = &$_POST; break;
+        case 'C': $var = &$_COOKIE; break;
+        case 'R': $var = &$_REQUEST; break;
+    }
+
+    return isset($var[$k]) ? $var[$k] : '';
+}
+
+function var_to_hidden($k, $v)
+{
+    return "<input type=\"hidden\" name=\"$k\" value=\"$v\" />";
+}
+
+function dfopen($url, $limit = 0, $post = '', $cookie = '', $bysocket = FALSE, $ip = '', $timeout = 15, $block = TRUE)
+{
+    $return = '';
+    $matches = parse_url($url);
+    $host = $matches['host'];
+    $path = $matches['path'] ? $matches['path'].'?'.$matches['query'].($matches['fragment'] ? '#'.$matches['fragment'] : '') : '/';
+    $port = !empty($matches['port']) ? $matches['port'] : 80;
+
+    if($post)
+    {
+        $out = "POST $path HTTP/1.0\r\n";
+        $out .= "Accept: */*\r\n";
+        //$out .= "Referer: $boardurl\r\n";
+        $out .= "Accept-Language: zh-cn\r\n";
+        $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
+        $out .= "User-Agent: $_SERVER[HTTP_USER_AGENT]\r\n";
+        $out .= "Host: $host\r\n";
+        $out .= 'Content-Length: '.strlen($post)."\r\n";
+        $out .= "Connection: Close\r\n";
+        $out .= "Cache-Control: no-cache\r\n";
+        $out .= "Cookie: $cookie\r\n\r\n";
+        $out .= $post;
+    }
+    else
+    {
+        $out = "GET $path HTTP/1.0\r\n";
+        $out .= "Accept: */*\r\n";
+        //$out .= "Referer: $boardurl\r\n";
+        $out .= "Accept-Language: zh-cn\r\n";
+        $out .= "User-Agent: $_SERVER[HTTP_USER_AGENT]\r\n";
+        $out .= "Host: $host\r\n";
+        $out .= "Connection: Close\r\n";
+        $out .= "Cookie: $cookie\r\n\r\n";
+    }
+    $fp = @fsockopen(($ip ? $ip : $host), $port, $errno, $errstr, $timeout);
+    if(!$fp)
+    {
+        return '';//note $errstr : $errno \r\n
+    }
+    else
+    {
+        stream_set_blocking($fp, $block);
+        stream_set_timeout($fp, $timeout);
+        @fwrite($fp, $out);
+        $status = stream_get_meta_data($fp);
+        if(!$status['timed_out'])
+        {
+            while (!feof($fp))
+            {
+                if(($header = @fgets($fp)) && ($header == "\r\n" ||  $header == "\n"))
+                {
+                    break;
+                }
+            }
+
+            $stop = false;
+            while(!feof($fp) && !$stop)
+            {
+                $data = fread($fp, ($limit == 0 || $limit > 8192 ? 8192 : $limit));
+                $return .= $data;
+                if($limit)
+                {
+                    $limit -= strlen($data);
+                    $stop = $limit <= 0;
+                }
+            }
+        }
+        @fclose($fp);
+        return $return;
+    }
+}
+
+function save_uc_config($config)
+{
+    $success = false;
+
+    list($appauthkey, $appid, $ucdbhost, $ucdbname, $ucdbuser, $ucdbpw, $ucdbcharset, $uctablepre, $uccharset, $ucapi, $ucip) = explode('|', $config);
+
+/*
+    $content = '<?' ."php\n";
+    $content .= "define('UC_CONNECT', 'mysql');\n\n";
+    $content .= "define('UC_DBHOST', '$ucdbhost');\n\n";
+    $content .= "define('UC_DBUSER', '$ucdbuser');\n\n";
+    $content .= "define('UC_DBPW', '$ucdbpw');\n\n";
+    $content .= "define('UC_DBNAME', '$ucdbname');\n\n";
+    $content .= "define('UC_DBCHARSET', '$ucdbcharset');\n\n";
+    $content .= "define('UC_DBTABLEPRE', '`$ucdbname`.$uctablepre');\n\n";
+    $content .= "define('UC_DBCONNECT', '0');\n\n";
+    $content .= "define('UC_KEY', '$appauthkey');\n\n";
+    $content .= "define('UC_API', '$ucapi');\n\n";
+    $content .= "define('UC_CHARSET', '$uccharset');\n\n";
+    $content .= "define('UC_IP', '$ucip');\n\n";
+    $content .= "define('UC_APPID', '$appid');\n\n";
+    $content .= "define('UC_PPP', '20');\n\n";
+    $content .= '?>';
+*/
+    $cfg = array(
+                    'uc_id' => $appid,
+                    'uc_key' => $appauthkey,
+                    'uc_url' => $ucapi,
+                    'uc_ip' => $ucip,
+                    'uc_connect' => 'mysql',
+                    'uc_charset' => $uccharset,
+                    'db_host' => $ucdbhost,
+                    'db_user' => $ucdbuser,
+                    'db_name' => $ucdbname,
+                    'db_pass' => $ucdbpw,
+                    'db_pre' => $uctablepre,
+                    'db_charset' => $ucdbcharset,
+                );
+    $content = "<?php\r\n";
+    $content .= "\$cfg = " . var_export($cfg, true) . ";\r\n";
+    $content .= "?>";
+
+    $fp = @fopen(ROOT_PATH . 'data/config_temp.php', 'wb+');
+    if (!$fp)
+    {
+        $result['error'] = 1;
+        $result['message'] = $_LANG['ucenter_datadir_access'];
+        die($GLOBALS['json']->encode($result));
+    }
+    if (!@fwrite($fp, $content))
+    {
+        $result['error'] = 1;
+        $result['message'] = $_LANG['ucenter_tmp_config_error'];
+        die($GLOBALS['json']->encode($result));
+    }
+    @fclose($fp);
+
+    return true;
+}
 ?>

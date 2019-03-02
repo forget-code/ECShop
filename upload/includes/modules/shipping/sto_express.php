@@ -3,15 +3,14 @@
 /**
  * ECSHOP 申通快递 配送方式插件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: sto_express.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: sunxiaodong $
+ * $Id: sto_express.php 15603 2009-02-17 06:05:13Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -50,7 +49,8 @@ if (isset($set_modules) && $set_modules == TRUE)
 
     /* 配送接口需要的参数 */
     $modules[$i]['configure'] = array(
-                                    array('name' => 'basic_fee',    'value'=>15), /* 1000克以内的价格           */
+                                    array('name' => 'item_fee',     'value'=>15), /* 单件商品的配送费用 */
+                                    array('name' => 'base_fee',    'value'=>15), /* 1000克以内的价格           */
                                     array('name' => 'step_fee',     'value'=>5),  /* 续重每1000克增加的价格 */
                                 );
 
@@ -102,9 +102,10 @@ class sto_express
      *
      * @param   float   $goods_weight   商品重量
      * @param   float   $goods_amount   商品金额
+     * @param   float   $goods_amount   商品件数
      * @return  decimal
      */
-    function calculate($goods_weight, $goods_amount)
+    function calculate($goods_weight, $goods_amount, $goods_number)
     {
         if ($this->configure['free_money'] > 0 && $goods_amount >= $this->configure['free_money'])
         {
@@ -112,12 +113,21 @@ class sto_express
         }
         else
         {
-            @$fee = $this->configure['basic_fee'];
+            @$fee = $this->configure['base_fee'];
+            $this->configure['fee_compute_mode'] = !empty($this->configure['fee_compute_mode']) ? $this->configure['fee_compute_mode'] : 'by_weight';
 
-            if ($goods_weight > 1)
+             if ($this->configure['fee_compute_mode'] == 'by_number')
             {
-                $fee += (ceil(($goods_weight - 1))) * $this->configure['step_fee'];
+                $fee = $goods_number * $this->configure['item_fee'];
             }
+            else
+            {
+                if ($goods_weight > 1)
+                {
+                    $fee += (ceil(($goods_weight - 1))) * $this->configure['step_fee'];
+                }
+            }
+
             return $fee;
         }
     }
@@ -131,7 +141,8 @@ class sto_express
      */
     function query($invoice_sn)
     {
-        $form_str = '<a href="http://www.sto.cn/querybill/webform1.aspx?wen=' .$invoice_sn. '" target="_blank">' .$invoice_sn. '</a>';
+        $form_str = '<a href="http://61.152.237.204:8080/sto/index.jsp?wen=' .$invoice_sn. '" target="_blank">' .$invoice_sn. '</a>';
+
         return $form_str;
     }
 }

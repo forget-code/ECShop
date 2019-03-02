@@ -253,6 +253,7 @@ function doOthers() {
             + "system_lang=" + getCheckedRadio("js-system-lang").value + "&"
             + getCheckedGoodsTypesString() + "&"
             + "install_demo=" + installDemo + "&"
+            + "userinterface=" + f["userinterface"].value + "&"
             + "lang=" + getAddressLang();
 
     notice.innerHTML += $_LANG["do_others"];

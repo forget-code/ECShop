@@ -3,15 +3,14 @@
 /**
  * ECSHOP 夺宝奇兵管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: snatch.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: snatch.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -156,7 +155,7 @@ elseif ($_REQUEST['act'] == 'edit_snatch_name')
     check_authz_json('snatch_manage');
 
     $id = intval($_POST['id']);
-    $val = trim($_POST['val']);
+    $val = json_str_iconv(trim($_POST['val']));
 
     /* 检查活动重名 */
     $sql = "SELECT COUNT(*) ".
@@ -349,6 +348,10 @@ function get_snatchlist()
     {
         /* 查询条件 */
         $filter['keywords']   = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
+        if ($_REQUEST['is_ajax'] == 1)
+        {
+            $filter['keywords'] = json_str_iconv($filter['keywords']);
+        }
         $filter['sort_by']    = empty($_REQUEST['sort_by']) ? 'act_id' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
 

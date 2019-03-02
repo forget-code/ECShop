@@ -3,15 +3,14 @@
 /**
  * ECSHOP 会员管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: users.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: users.php 15715 2009-03-05 09:37:33Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -24,6 +23,8 @@ require(dirname(__FILE__) . '/includes/init.php');
 
 if ($_REQUEST['act'] == 'list')
 {
+    /* 检查权限 */
+    admin_priv('users_manage');
     $sql = "SELECT rank_id, rank_name, min_points FROM ".$ecs->table('user_rank')." ORDER BY min_points ASC ";
     $rs = $db->query($sql);
 
@@ -110,12 +111,28 @@ elseif ($_REQUEST['act'] == 'insert')
 
     $users =& init_users();
 
-    if (!$users->add_user($username, $password, $email, $sex, $birthday, gmtime()))
+    if (!$users->add_user($username, $password, $email))
     {
         /* 插入会员数据失败 */
-        if ($users->error == ERR_USERNAME_EXISTS)
+        if ($users->error == ERR_INVALID_USERNAME)
+        {
+            $msg = $_LANG['username_invalid'];
+        }
+        elseif ($users->error == ERR_USERNAME_NOT_ALLOW)
+        {
+            $msg = $_LANG['username_not_allow'];
+        }
+        elseif ($users->error == ERR_USERNAME_EXISTS)
         {
             $msg = $_LANG['username_exists'];
+        }
+        elseif ($users->error == ERR_INVALID_EMAIL)
+        {
+            $msg = $_LANG['email_invalid'];
+        }
+        elseif ($users->error == ERR_EMAIL_NOT_ALLOW)
+        {
+            $msg = $_LANG['email_not_allow'];
         }
         elseif ($users->error == ERR_EMAIL_EXISTS)
         {
@@ -123,7 +140,7 @@ elseif ($_REQUEST['act'] == 'insert')
         }
         else
         {
-            die('Error:'.$users->error_msg());
+            //die('Error:'.$users->error_msg());
         }
         sys_msg($msg, 1);
     }
@@ -137,7 +154,10 @@ elseif ($_REQUEST['act'] == 'insert')
     /* 更新会员的其它信息 */
     $other =  array();
     $other['credit_line'] = $credit_line;
-    $other['user_rank'] = $rank;
+    $other['user_rank']  = $rank;
+    $other['sex']        = $sex;
+    $other['birthday']   = $birthday;
+    
     foreach ($_POST['other'] as $key=>$val)
     {
         if (!empty($val))
@@ -146,7 +166,7 @@ elseif ($_REQUEST['act'] == 'insert')
         }
     }
     $db->autoExecute($ecs->table('users'), $other, 'UPDATE', "user_name = '$username'");
-    
+
     /* 记录管理员操作 */
     admin_log($_POST['username'], 'add', 'users');
 
@@ -165,15 +185,17 @@ elseif ($_REQUEST['act'] == 'edit')
     /* 检查权限 */
     admin_priv('users_manage');
 
-    $sql = "SELECT u.user_name, u.sex, u.birthday, u.pay_points, u.rank_points, u.user_rank , u.user_money, u.frozen_money, u.credit_line, u.parent_id, u2.user_name as parent_username, u.qq, u.msn, u.office_phone, u.home_phone, u.mobile_phone ".
+    $sql = "SELECT u.user_name, u.sex, u.birthday, u.pay_points, u.rank_points, u.user_rank , u.user_money, u.frozen_money, u.credit_line, u.parent_id, u2.user_name as parent_username, u.qq,
+    u.msn, u.office_phone, u.home_phone, u.mobile_phone ".
         " FROM " .$ecs->table('users'). " u LEFT JOIN " . $ecs->table('users') . " u2 ON u.parent_id = u2.user_id WHERE u.user_id='$_GET[id]'";
 
     $row = $db->GetRow($sql);
-
+    $row['user_name'] = addslashes($row['user_name']);
     $users  =& init_users();
     $user   = $users->get_user_info($row['user_name']);
 
-    $sql = "SELECT u.user_id, u.sex, u.birthday, u.pay_points, u.rank_points, u.user_rank , u.user_money, u.frozen_money, u.credit_line, u.parent_id, u2.user_name as parent_username, u.qq, u.msn, u.office_phone, u.home_phone, u.mobile_phone ".
+    $sql = "SELECT u.user_id, u.sex, u.birthday, u.pay_points, u.rank_points, u.user_rank , u.user_money, u.frozen_money, u.credit_line, u.parent_id, u2.user_name as parent_username, u.qq, u.msn,
+    u.office_phone, u.home_phone, u.mobile_phone ".
         " FROM " .$ecs->table('users'). " u LEFT JOIN " . $ecs->table('users') . " u2 ON u.parent_id = u2.user_id WHERE u.user_id='$_GET[id]'";
 
     $row = $db->GetRow($sql);
@@ -229,7 +251,7 @@ elseif ($_REQUEST['act'] == 'update')
     /* 检查权限 */
     admin_priv('users_manage');
     $username = empty($_POST['username']) ? '' : trim($_POST['username']);
-    //$password = empty($_POST['password']) ? '' : trim($_POST['password']);
+    $password = empty($_POST['password']) ? '' : trim($_POST['password']);
     $email = empty($_POST['email']) ? '' : trim($_POST['email']);
     $sex = empty($_POST['sex']) ? 0 : intval($_POST['sex']);
     $sex = in_array($sex, array(0, 1, 2)) ? $sex : 0;
@@ -239,7 +261,7 @@ elseif ($_REQUEST['act'] == 'update')
 
     $users  =& init_users();
 
-    if (!$users->edit_user(array('username'=>$username, 'email'=>$email, 'gender'=>$sex, 'bday'=>$birthday )))
+    if (!$users->edit_user(array('username'=>$username, 'password'=>$password, 'email'=>$email, 'gender'=>$sex, 'bday'=>$birthday ), 1))
     {
         if ($users->error == ERR_EMAIL_EXISTS)
         {
@@ -291,12 +313,13 @@ elseif ($_REQUEST['act'] == 'batch_remove')
     {
         $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id " . db_create_in($_POST['checkboxes']);
         $col = $db->getCol($sql);
+        $usernames = implode(',',addslashes_deep($col));
         $count = count($col);
         /* 通过插件来删除用户 */
         $users =& init_users();
         $users->remove_user($col);
 
-        admin_log('', 'batch_remove', 'users');
+        admin_log($usernames, 'batch_remove', 'users');
 
         $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
         sys_msg(sprintf($_LANG['batch_remove_success'], $count), 0, $lnk);
@@ -314,7 +337,7 @@ elseif ($_REQUEST['act'] == 'edit_username')
     /* 检查权限 */
     check_authz_json('users_manage');
 
-    $username = empty($_REQUEST['val']) ? '' : trim($_REQUEST['val']);
+    $username = empty($_REQUEST['val']) ? '' : json_str_iconv(trim($_REQUEST['val']));
     $id = empty($_REQUEST['id']) ? 0 : intval($_REQUEST['id']);
 
     if ($id == 0)
@@ -358,7 +381,7 @@ elseif ($_REQUEST['act'] == 'edit_email')
     check_authz_json('users_manage');
 
     $id = empty($_REQUEST['id']) ? 0 : intval($_REQUEST['id']);
-    $email = empty($_REQUEST['val']) ? '' : trim($_REQUEST['val']);
+    $email = empty($_REQUEST['val']) ? '' : json_str_iconv(trim($_REQUEST['val']));
 
     $users =& init_users();
 
@@ -468,6 +491,10 @@ function user_list()
     {
         /* 过滤条件 */
         $filter['keywords'] = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
+        if ($_REQUEST['is_ajax'] == 1)
+        {
+            $filter['keywords'] = json_str_iconv($filter['keywords']);
+        }
         $filter['rank'] = empty($_REQUEST['rank']) ? 0 : intval($_REQUEST['rank']);
         $filter['pay_points_gt'] = empty($_REQUEST['pay_points_gt']) ? 0 : intval($_REQUEST['pay_points_gt']);
         $filter['pay_points_lt'] = empty($_REQUEST['pay_points_lt']) ? 0 : intval($_REQUEST['pay_points_lt']);
@@ -507,7 +534,7 @@ function user_list()
 
         /* 分页大小 */
         $filter = page_and_size($filter);
-        $sql = "SELECT user_id, user_name, email, reg_time ".
+        $sql = "SELECT user_id, user_name, email, is_validated, user_money, frozen_money, rank_points, pay_points, reg_time ".
                 " FROM " . $GLOBALS['ecs']->table('users') . $ex_where .
                 " ORDER by " . $filter['sort_by'] . ' ' . $filter['sort_order'] .
                 " LIMIT " . $filter['start'] . ',' . $filter['page_size'];

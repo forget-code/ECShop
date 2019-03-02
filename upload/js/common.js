@@ -43,7 +43,7 @@ function getSelectedAttributes(formBuy)
     var prefix = formBuy.elements[i].name.substr(0, 5);
 
     if (prefix == 'spec_' && (
-      (formBuy.elements[i].type == 'radio' && formBuy.elements[i].checked) ||
+      ((formBuy.elements[i].type == 'radio' || formBuy.elements[i].type == 'checkbox') && formBuy.elements[i].checked) ||
       formBuy.elements[i].tagName == 'SELECT'))
     {
       spec_arr[j] = formBuy.elements[i].value;
@@ -85,7 +85,7 @@ function addToCartResponse(result)
   else
   {
     var cartInfo = document.getElementById('ECS_CARTINFO');
-
+    var cart_url = 'flow.php?step=cart';
     if (cartInfo)
     {
       cartInfo.innerHTML = result.content;
@@ -93,20 +93,20 @@ function addToCartResponse(result)
 
     if (result.one_step_buy == '1')
     {
-      location.href = 'flow.php';
+      location.href = cart_url;
     }
     else
     {
       switch(result.confirm_type)
       {
         case '1' :
-          if (confirm(result.message)) location.href = 'flow.php';
+          if (confirm(result.message)) location.href = cart_url;
           break;
         case '2' :
-          if (!confirm(result.message)) location.href = 'flow.php';
+          if (!confirm(result.message)) location.href = cart_url;
           break;
         case '3' :
-          location.href = 'flow.php';
+          location.href = cart_url;
           break;
         default :
           break;
@@ -487,8 +487,8 @@ function orderQueryResponse(result)
 function display_mode(str)
 {
     document.getElementById('display').value = str;
-	setTimeout(doSubmit, 0);
-	function doSubmit() {document.forms['listform'].submit();}
+    setTimeout(doSubmit, 0);
+    function doSubmit() {document.forms['listform'].submit();}
 }
 
 
@@ -522,4 +522,273 @@ function fixpng()
         }
      }
   }
+}
+
+function hash(string, length)
+{
+  var length = length ? length : 32;
+  var start = 0;
+  var i = 0;
+  var result = '';
+  filllen = length - string.length % length;
+  for(i = 0; i < filllen; i++)
+  {
+    string += "0";
+  }
+  while(start < string.length)
+  {
+    result = stringxor(result, string.substr(start, length));
+    start += length;
+  }
+  return result;
+}
+
+function stringxor(s1, s2)
+{
+  var s = '';
+  var hash = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var max = Math.max(s1.length, s2.length);
+  for(var i=0; i<max; i++)
+  {
+    var k = s1.charCodeAt(i) ^ s2.charCodeAt(i);
+    s += hash.charAt(k % 52);
+  }
+  return s;
+}
+
+var evalscripts = new Array();
+function evalscript(s)
+{
+  if(s.indexOf('<script') == -1) return s;
+  var p = /<script[^\>]*?src=\"([^\>]*?)\"[^\>]*?(reload=\"1\")?(?:charset=\"([\w\-]+?)\")?><\/script>/ig;
+  var arr = new Array();
+  while(arr = p.exec(s)) appendscript(arr[1], '', arr[2], arr[3]);
+  return s;
+}
+
+function $$(id)
+{
+    return document.getElementById(id);
+}
+
+function appendscript(src, text, reload, charset)
+{
+  var id = hash(src + text);
+  if(!reload && in_array(id, evalscripts)) return;
+  if(reload && $$(id))
+  {
+    $$(id).parentNode.removeChild($$(id));
+  }
+  evalscripts.push(id);
+  var scriptNode = document.createElement("script");
+  scriptNode.type = "text/javascript";
+  scriptNode.id = id;
+  //scriptNode.charset = charset;
+  try
+  {
+    if(src)
+    {
+      scriptNode.src = src;
+    }
+    else if(text)
+    {
+      scriptNode.text = text;
+    }
+    $$('append_parent').appendChild(scriptNode);
+  }
+  catch(e)
+  {}
+}
+
+function in_array(needle, haystack)
+{
+  if(typeof needle == 'string' || typeof needle == 'number')
+  {
+    for(var i in haystack)
+    {
+      if(haystack[i] == needle)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+var pmwinposition = new Array();
+
+var userAgent = navigator.userAgent.toLowerCase();
+var is_opera = userAgent.indexOf('opera') != -1 && opera.version();
+var is_moz = (navigator.product == 'Gecko') && userAgent.substr(userAgent.indexOf('firefox') + 8, 3);
+var is_ie = (userAgent.indexOf('msie') != -1 && !is_opera) && userAgent.substr(userAgent.indexOf('msie') + 5, 3);
+function pmwin(action, param)
+{
+  var objs = document.getElementsByTagName("OBJECT");
+  if(action == 'open')
+  {
+    for(i = 0;i < objs.length; i ++)
+    {
+      if(objs[i].style.visibility != 'hidden')
+      {
+        objs[i].setAttribute("oldvisibility", objs[i].style.visibility);
+        objs[i].style.visibility = 'hidden';
+      }
+    }
+    var clientWidth = document.body.clientWidth;
+    var clientHeight = document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight;
+    var scrollTop = document.body.scrollTop ? document.body.scrollTop : document.documentElement.scrollTop;
+    var pmwidth = 800;
+    var pmheight = clientHeight * 0.9;
+    if(!$$('pmlayer'))
+    {
+      div = document.createElement('div');div.id = 'pmlayer';
+      div.style.width = pmwidth + 'px';
+      div.style.height = pmheight + 'px';
+      div.style.left = ((clientWidth - pmwidth) / 2) + 'px';
+      div.style.position = 'absolute';
+      div.style.zIndex = '999';
+      $$('append_parent').appendChild(div);
+      $$('pmlayer').innerHTML = '<div style="width: 800px; background: #666666; margin: 5px auto; text-align: left">' +
+        '<div style="width: 800px; height: ' + pmheight + 'px; padding: 1px; background: #FFFFFF; border: 1px solid #7597B8; position: relative; left: -6px; top: -3px">' +
+        '<div onmousedown="pmwindrag(event, 1)" onmousemove="pmwindrag(event, 2)" onmouseup="pmwindrag(event, 3)" style="cursor: move; position: relative; left: 0px; top: 0px; width: 800px; height: 30px; margin-bottom: -30px;"></div>' +
+        '<a href="###" onclick="pmwin(\'close\')"><img style="position: absolute; right: 20px; top: 15px" src="images/close.gif" title="关闭" /></a>' +
+        '<iframe id="pmframe" name="pmframe" style="width:' + pmwidth + 'px;height:100%" allowTransparency="true" frameborder="0"></iframe></div></div>';
+    }
+    $$('pmlayer').style.display = '';
+    $$('pmlayer').style.top = ((clientHeight - pmheight) / 2 + scrollTop) + 'px';
+    if(!param)
+    {
+        pmframe.location = 'pm.php';
+    }
+    else
+    {
+        pmframe.location = 'pm.php?' + param;
+    }
+  }
+  else if(action == 'close')
+  {
+    for(i = 0;i < objs.length; i ++)
+    {
+      if(objs[i].attributes['oldvisibility'])
+      {
+        objs[i].style.visibility = objs[i].attributes['oldvisibility'].nodeValue;
+        objs[i].removeAttribute('oldvisibility');
+      }
+    }
+    hiddenobj = new Array();
+    $$('pmlayer').style.display = 'none';
+  }
+}
+
+var pmwindragstart = new Array();
+function pmwindrag(e, op)
+{
+  if(op == 1)
+  {
+    pmwindragstart = is_ie ? [event.clientX, event.clientY] : [e.clientX, e.clientY];
+    pmwindragstart[2] = parseInt($$('pmlayer').style.left);
+    pmwindragstart[3] = parseInt($$('pmlayer').style.top);
+    doane(e);
+  }
+  else if(op == 2 && pmwindragstart[0])
+  {
+    var pmwindragnow = is_ie ? [event.clientX, event.clientY] : [e.clientX, e.clientY];
+    $$('pmlayer').style.left = (pmwindragstart[2] + pmwindragnow[0] - pmwindragstart[0]) + 'px';
+    $$('pmlayer').style.top = (pmwindragstart[3] + pmwindragnow[1] - pmwindragstart[1]) + 'px';
+    doane(e);
+  }
+  else if(op == 3)
+  {
+    pmwindragstart = [];
+    doane(e);
+  }
+}
+
+function doane(event)
+{
+  e = event ? event : window.event;
+  if(is_ie)
+  {
+    e.returnValue = false;
+    e.cancelBubble = true;
+  }
+  else if(e)
+  {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}
+
+/* *
+ * 添加礼包到购物车
+ */
+function addPackageToCart(packageId)
+{
+  var package_info = new Object();
+  var number       = 1;
+
+  package_info.package_id = packageId
+  package_info.number     = number;
+
+  Ajax.call('flow.php?step=add_package_to_cart', 'package_info=' + package_info.toJSONString(), addPackageToCartResponse, 'POST', 'JSON');
+}
+
+/* *
+ * 处理添加礼包到购物车的反馈信息
+ */
+function addPackageToCartResponse(result)
+{
+  if (result.error > 0)
+  {
+      alert(result.message);
+  }
+  else
+  {
+    var cartInfo = document.getElementById('ECS_CARTINFO');
+    var cart_url = 'flow.php?step=cart';
+    if (cartInfo)
+    {
+      cartInfo.innerHTML = result.content;
+    }
+
+    if (result.one_step_buy == '1')
+    {
+      location.href = cart_url;
+    }
+    else
+    {
+      switch(result.confirm_type)
+      {
+        case '1' :
+          if (confirm(result.message)) location.href = cart_url;
+          break;
+        case '2' :
+          if (!confirm(result.message)) location.href = cart_url;
+          break;
+        case '3' :
+          location.href = cart_url;
+          break;
+        default :
+          break;
+      }
+    }
+  }
+}
+
+function setSuitShow(suitId)
+{
+    var suit    = document.getElementById('suit_'+suitId);
+
+    if(suit == null)
+    {
+        return;
+    }
+    if(suit.style.display=='none')
+    {
+        suit.style.display='';
+    }
+    else
+    {
+        suit.style.display='none';
+    }
 }

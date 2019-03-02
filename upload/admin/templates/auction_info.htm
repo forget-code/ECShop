@@ -1,4 +1,4 @@
-<!-- $Id: auction_info.htm 13847 2007-12-10 03:02:15Z fenghl $ -->
+<!-- $Id: auction_info.htm 14888 2008-09-18 03:43:21Z levie $ -->
 {include file="pageheader.htm"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
 <link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
@@ -42,7 +42,7 @@
   </tr>
   <tr>
     <td class="label">{$lang.label_end_price}</td>
-    <td><input name="end_price" type="text" id="end_price" value="{$auction.end_price}"></td>
+    <td><input name="end_price" type="text" id="end_price"  {if $auction.no_top}disabled="true" {else}value="{$auction.end_price}"{/if}><input name="no_top" type="checkbox" value="1" onClick="checked_no_top(this);" onChange="checked_no_top(this);" {if $auction.no_top}checked{/if}/>{$lang.label_no_top}</td>
   </tr>
   <tr>
     <td class="label">{$lang.label_amplitude}</td>
@@ -94,13 +94,28 @@ function validate()
     validator = new Validator("theForm");
     validator.isNumber('start_price', start_price_not_number, false);
     validator.isNumber('end_price', end_price_not_number, false);
-    validator.gt('end_price', 'start_price', end_gt_start);
+
+    if (document.forms['theForm'].elements['no_top'].checked == false)
+    {
+      validator.gt('end_price', 'start_price', end_gt_start);
+    }
     validator.isNumber('amplitude', amplitude_not_number, false);
     validator.isNumber('deposit', deposit_not_number, false);
     validator.islt('start_time', 'end_time', start_lt_end);
     return validator.passed();
 }
-
+function checked_no_top(o)
+{
+  if (o.checked)
+  {
+    o.form.elements['end_price'].value = '';
+    o.form.elements['end_price'].disabled = true;
+  }
+  else
+  {
+    o.form.elements['end_price'].disabled = false;
+  }
+}
 function searchGoods()
 {
   var filter = new Object;

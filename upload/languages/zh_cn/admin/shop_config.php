@@ -2,15 +2,14 @@
 /**
  * ECSHOP 管理中心商店设置语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-14 10:36:17 +0800 (星期四, 14 二月 2008) $
- * $Id: shop_config.php 14137 2008-02-14 02:36:17Z testyang $
+ * $Author: zblikai $
+ * $Id: shop_config.php 15712 2009-03-04 06:50:41Z zblikai $
  */
 
 $_LANG['cfg_name']['basic'] = '基本设置';
@@ -59,6 +58,7 @@ $_LANG['cfg_name']['shop_country'] = '所在国家';
 $_LANG['cfg_name']['shop_province'] = '所在省份';
 $_LANG['cfg_name']['shop_city'] = '所在城市';
 $_LANG['cfg_name']['shop_address'] = '详细地址';
+$_LANG['cfg_name']['licensed'] = '是否显示 Licensed';
 $_LANG['cfg_name']['qq'] = '客服QQ号码';
 $_LANG['cfg_name']['ww'] = '淘宝旺旺';
 $_LANG['cfg_name']['skype'] = 'Skype';
@@ -69,6 +69,13 @@ $_LANG['cfg_name']['service_phone'] = '客服电话';
 $_LANG['cfg_name']['can_invoice'] = '能否开发票';
 $_LANG['cfg_name']['user_notice'] = '用户中心公告';
 $_LANG['cfg_name']['shop_notice'] = '商店公告';
+$_LANG['cfg_name']['shop_reg_closed'] = '是否关闭注册';
+$_LANG['cfg_name']['send_mail_on'] = '是否开启自动发送邮件';
+$_LANG['cfg_name']['auto_generate_gallery'] = '上传商品是否自动生成相册图';
+$_LANG['cfg_name']['retain_original_img'] = '上传商品时是否保留原图';
+$_LANG['cfg_name']['member_email_validate'] = '是否开启会员邮件验证';
+$_LANG['cfg_name']['message_board'] = '是否启用留言板功能';
+$_LANG['cfg_name']['message_check'] = '用户留言是否需要审核';
 //$_LANG['cfg_name']['use_package'] = '是否使用包装';
 //$_LANG['cfg_name']['use_card'] = '是否使用贺卡';
 $_LANG['cfg_name']['use_integral'] = '是否使用积分';
@@ -101,6 +108,8 @@ $_LANG['cfg_name']['no_picture'] = '商品的默认图片';
 $_LANG['cfg_name']['stats_code'] = '统计代码';
 $_LANG['cfg_name']['cache_time'] = '缓存存活时间（秒）';
 $_LANG['cfg_name']['page_size'] = '商品分类页列表的数量';
+$_LANG['cfg_name']['article_page_size'] = '文章分类页列表的数量';
+$_LANG['cfg_name']['page_style'] = '分页样式';
 $_LANG['cfg_name']['sort_order_type'] = '商品分类页默认排序类型';
 $_LANG['cfg_name']['sort_order_method'] = '商品分类页默认排序方式';
 $_LANG['cfg_name']['show_order_type'] = '商品分类页默认显示方式';
@@ -121,6 +130,9 @@ $_LANG['cfg_name']['show_marketprice'] = '是否显示市场价格';
 $_LANG['cfg_name']['goodsattr_style'] = '商品属性显示样式';
 $_LANG['cfg_name']['test_mail_address']  = '邮件地址';
 $_LANG['cfg_name']['send'] = '发送测试邮件';
+$_LANG['cfg_name']['send_service_email'] = '下订单时是否给客服发邮件';
+$_LANG['cfg_name']['show_goods_in_cart'] = '购物车里显示商品方式';
+$_LANG['cfg_name']['show_attr_in_cart'] = '购物车里是否显示商品属性';
 $_LANG['test_mail_title'] = '测试邮件';
 $_LANG['cfg_name']['email_content']  = '您好！这是一封检测邮件服务器设置的测试邮件。收到此邮件，意味着您的邮件服务器设置正确！您可以进行其它邮件发送的操作了！';
 $_LANG['cfg_name']['sms'] = '短信设置';
@@ -179,6 +191,8 @@ $_LANG['cfg_desc']['shop_notice'] = '以上内容将显示在首页商店公告�
 $_LANG['cfg_desc']['bgcolor'] = '颜色请以#FFFFFF格式填写';
 $_LANG['cfg_desc']['cart_confirm'] = '允许您设置用户点击“加入购物车”后是否提示以及随后的动作。';
 $_LANG['cfg_desc']['use_how_oos'] = '使用缺货处理时前台订单确认页面允许用户选择缺货时处理方法。';
+$_LANG['cfg_desc']['send_service_email'] = '网店信息中的客服邮件地址不为空时，该选项有效。';
+$_LANG['cfg_desc']['send_mail_on'] = '启用该选项登录后台时，会自动发送邮件队列中尚未发送的邮件';
 
 $_LANG['cfg_range']['cart_confirm'][1] = '提示用户，点击“确定”进购物车';
 $_LANG['cfg_range']['cart_confirm'][2] = '提示用户，点击“取消”进购物车';
@@ -186,6 +200,18 @@ $_LANG['cfg_range']['cart_confirm'][3] = '直接进入购物车';
 $_LANG['cfg_range']['cart_confirm'][4] = '不提示并停留在当前页面';
 $_LANG['cfg_range']['shop_closed']['0'] = '否';
 $_LANG['cfg_range']['shop_closed']['1'] = '是';
+$_LANG['cfg_range']['licensed']['0'] = '否';
+$_LANG['cfg_range']['licensed']['1'] = '是';
+$_LANG['cfg_range']['send_mail_on']['on'] = '开启';
+$_LANG['cfg_range']['send_mail_on']['off'] = '关闭';
+$_LANG['cfg_range']['member_email_validate']['1'] = '开启';
+$_LANG['cfg_range']['member_email_validate']['0'] = '关闭';
+$_LANG['cfg_range']['message_board']['1'] = '开启';
+$_LANG['cfg_range']['message_board']['0'] = '关闭';
+$_LANG['cfg_range']['auto_generate_gallery']['1'] = '是';
+$_LANG['cfg_range']['auto_generate_gallery']['0'] = '否';
+$_LANG['cfg_range']['retain_original_img']['1'] = '是';
+$_LANG['cfg_range']['retain_original_img']['0'] = '否';
 $_LANG['cfg_range']['watermark_place']['0'] = '无';
 $_LANG['cfg_range']['watermark_place']['1'] = '左上';
 $_LANG['cfg_range']['watermark_place']['2'] = '右上';
@@ -243,6 +269,8 @@ $_LANG['cfg_range']['mail_charset']['GB2312'] = '简体中文';
 $_LANG['cfg_range']['mail_charset']['BIG5'] = '繁体中文';
 $_LANG['cfg_range']['comment_check']['0'] = '不需要审核';
 $_LANG['cfg_range']['comment_check']['1'] = '需要审核';
+$_LANG['cfg_range']['message_check']['0'] = '不需要审核';
+$_LANG['cfg_range']['message_check']['1'] = '需要审核';
 $_LANG['cfg_range']['comment_factor']['0'] = '所有用户';
 $_LANG['cfg_range']['comment_factor']['1'] = '仅登录用户';
 $_LANG['cfg_range']['comment_factor']['2'] = '有过一次以上购买行为用户';
@@ -265,6 +293,8 @@ $_LANG['cfg_range']['show_order_type'][1] = '表格显示';
 $_LANG['cfg_range']['show_order_type'][2] = '文本显示';
 $_LANG['cfg_range']['help_open'][0] = '关闭';
 $_LANG['cfg_range']['help_open'][1] = '打开';
+$_LANG['cfg_range']['page_style'][0] = '默认经典';
+$_LANG['cfg_range']['page_style'][1] = '流行页码';
 
 $_LANG['cfg_range']['anonymous_buy']['0'] = '不允许';
 $_LANG['cfg_range']['anonymous_buy']['1'] = '允许';
@@ -298,7 +328,15 @@ $_LANG['cfg_range']['enable_order_check']['0'] = '否';
 $_LANG['cfg_range']['enable_order_check']['1'] = '是';
 $_LANG['cfg_range']['stock_dec_time']['0'] = '发货时';
 $_LANG['cfg_range']['stock_dec_time']['1'] = '下订单时';
-
+$_LANG['cfg_range']['send_service_email']['0'] = '否';
+$_LANG['cfg_range']['send_service_email']['1'] = '是';
+$_LANG['cfg_range']['show_goods_in_cart']['1'] = '只显示文字';
+$_LANG['cfg_range']['show_goods_in_cart']['2'] = '只显示图片';
+$_LANG['cfg_range']['show_goods_in_cart']['3'] = '显示文字与图片';
+$_LANG['cfg_range']['show_attr_in_cart']['0'] = '否';
+$_LANG['cfg_range']['show_attr_in_cart']['1'] = '是';
+$_LANG['cfg_range']['shop_reg_closed']['0'] = '否';
+$_LANG['cfg_range']['shop_reg_closed']['1'] = '是';
 $_LANG['cfg_range']['timezone']['-12'] = '(GMT -12:00) Eniwetok, Kwajalein';
 $_LANG['cfg_range']['timezone']['-11'] = '(GMT -11:00) Midway Island, Samoa';
 $_LANG['cfg_range']['timezone']['-10'] = '(GMT -10:00) Hawaii';
@@ -332,7 +370,7 @@ $_LANG['cfg_range']['timezone']['10'] = '(GMT +10:00) Canberra, Guam, Melbourne,
 $_LANG['cfg_range']['timezone']['11'] = '(GMT +11:00) Magadan, New Caledonia, Solomon Islands';
 $_LANG['cfg_range']['timezone']['12'] = '(GMT +12:00) Auckland, Wellington, Fiji, Marshall Island';
 
-$_LANG['cfg_range']['upload_size_limit']['default'] = '服务默认设置';
+$_LANG['cfg_range']['upload_size_limit']['-1'] = '服务默认设置';
 $_LANG['cfg_range']['upload_size_limit']['0'] = '0KB';
 $_LANG['cfg_range']['upload_size_limit']['64'] = '64KB';
 $_LANG['cfg_range']['upload_size_limit']['128'] = '128KB';
@@ -346,8 +384,10 @@ $_LANG['cfg_range']['visit_stats']['off'] = '关闭';
 
 $_LANG['rewrite_confirm'] = "URL Rewrite 功能要求您的 Web Server 必须是 Apache，\\n并且起用了 rewrite 模块。\\n同时请您确认是否已经将htaccess.txt文件重命名为.htaccess。\\n如果服务器上还有其他的重写规则请去掉注释,请将RewriteBase行的注释去掉,并将路径设置为服务器请求的绝对路径";
 $_LANG['gzip_confirm'] = "GZip 功能需要您的服务器支持 zlib 扩展库。\\n如果您发现开启Gzip后页面出现乱码，可能是您的服务器已经开启了Gzip，您不需要在 ECSHOP 中再次开启。";
+$_LANG['retain_original_confirm'] = "如果您不保留商品原图，在“图片批量处理”的时候，\\n将不会重新生成不包含原图的商品图片。请慎重使用该功能！";
 $_LANG['msg_invalid_file'] = '您上传了一个非法的文件类型。该文件名为：%s';
 $_LANG['msg_upload_failed'] = '上传文件 %s 失败，请检查 %s 目录是否可写。';
+$_LANG['smtp_ssl_confirm'] = '此功能要求您的php必须支持OpenSSL模块, 如果您要使用此功能，请联系您的空间商确认支持此模块';
 
 /* 邮件设置语言项 */
 $_LANG['cfg_name']['mail_service'] = '邮件服务';
@@ -361,6 +401,9 @@ $_LANG['cfg_name']['smtp_user'] = '邮件发送帐号';
 $_LANG['cfg_name']['smtp_pass'] = '帐号密码';
 $_LANG['cfg_name']['smtp_mail'] = '邮件回复地址';
 $_LANG['cfg_name']['mail_charset'] = '邮件编码';
+$_LANG['cfg_name']['smtp_ssl'] = '邮件服务器是否要求加密连接(SSL)';
+$_LANG['cfg_range']['smtp_ssl'][0] = '否';
+$_LANG['cfg_range']['smtp_ssl'][1] = '是';
 
 $_LANG['mail_settings_note'] = '如果您的服务器支持 Mail 函数（具体信息请咨询您的空间提供商）。我们建议您使用系统的 Mail 函数。<br />当您的服务器不支持 Mail 函数的时候您也可以选用 SMTP 作为邮件服务器。';
 
@@ -383,9 +426,14 @@ $_LANG['cfg_name']['wap_logo']      = 'WAP LOGO上传';
 $_LANG['cfg_desc']['wap_logo']      = '为了更好地兼容各种手机类型，LOGO 最好为png图片';
 
 $_LANG['cfg_desc']['wap_config'] = '此功能只支持简体中文且只在中国大陆区有效';
+$_LANG['cfg_name']['recommend_order'] = '推荐商品排序';
+$_LANG['cfg_desc']['recommend_order'] = '推荐排序适合少量推荐，随机显示大量推荐';
+$_LANG['cfg_range']['recommend_order'][0] = '推荐排序';
+$_LANG['cfg_range']['recommend_order'][1] = '随机显示';
 
 $_LANG['invoice_type'] = '类型';
 $_LANG['invoice_rate'] = '税率（％）';
 $_LANG['back_shop_config'] = '返回商店设置';
-
+$_LANG['back_mail_settings'] = '返回邮件服务器设置';
+$_LANG['mail_settings'] = '邮件服务器设置';
 ?>

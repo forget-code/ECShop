@@ -3,15 +3,14 @@
 /**
  * ECSHOP  调查管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: vote.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: vote.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -223,7 +222,7 @@ elseif ($_REQUEST['act'] == 'new_option')
 {
     check_authz_json('vote_priv');
 
-    $option_name = trim($_POST['option_name']);
+    $option_name = json_str_iconv(trim($_POST['option_name']));
     $vote_id = intval($_POST['id']);
 
     if (!empty($option_name))
@@ -264,7 +263,7 @@ elseif ($_REQUEST['act'] == 'edit_vote_name')
     check_authz_json('vote_priv');
 
     $id        = intval($_POST['id']);
-    $vote_name = trim($_POST['val']);
+    $vote_name = json_str_iconv(trim($_POST['val']));
 
     /* 检查名称是否重复 */
     if ($exc->num("vote_name", $vote_name, $id) != 0)
@@ -289,7 +288,7 @@ elseif ($_REQUEST['act'] == 'edit_option_name')
     check_authz_json('vote_priv');
 
     $id        = intval($_POST['id']);
-    $option_name = trim($_POST['val']);
+    $option_name = json_str_iconv(trim($_POST['val']));
 
     /* 检查名称是否重复 */
     $vote_id = $db->getOne('SELECT vote_id FROM ' .$ecs->table('vote_option'). " WHERE option_id='$id'");

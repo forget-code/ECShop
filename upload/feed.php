@@ -3,15 +3,14 @@
 /**
  * ECSHOP RSS Feed 生成程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
- * $Id: feed.php 14080 2008-01-28 11:27:47Z testyang $
+ * $Id: feed.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -21,7 +20,7 @@ define('INIT_NO_SMARTY', true);
 require(dirname(__FILE__) . '/includes/init.php');
 require(ROOT_PATH . 'includes/cls_rss.php');
 
-header('Content-Type: application/xml; charset=utf-8');
+header('Content-Type: application/xml; charset=' . EC_CHARSET);
 header('Cache-Control: no-cache, must-revalidate');
 header('Expires: Fri, 14 Mar 1980 20:53:00 GMT');
 header('Last-Modified: ' . date('r'));
@@ -32,7 +31,7 @@ $cat = isset($_REQUEST['cat']) ? ' AND ' . get_children(intval($_REQUEST['cat'])
 $brd = isset($_REQUEST['brand']) ? ' AND g.brand_id=' . intval($_REQUEST['brand']) . ' ' : '';
 $uri = $ecs->url();
 
-$rss = new RSSBuilder('utf-8', $uri, $_CFG['shop_name'], $_CFG['shop_desc'], $uri . 'animated_favicon.gif');
+$rss = new RSSBuilder(EC_CHARSET, $uri, htmlspecialchars($_CFG['shop_name']), htmlspecialchars($_CFG['shop_desc']), $uri . 'animated_favicon.gif');
 $rss->addDCdata('', 'http://www.ecshop.com', date('r'));
 
 $in_cat = $cat > 0 ? ' AND ' . get_children($cat) : '';
@@ -48,9 +47,10 @@ if ($res !== false)
     while ($row = $db->fetchRow($res))
     {
         $item_url = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
+        $separator = (strpos($item_url, '?') === false)? '?' : '&amp;';
         $about    = $uri . $item_url;
         $title    = htmlspecialchars($row['goods_name']);
-        $link     = $uri . $item_url . '&amp;from=rss';
+        $link     = $uri . $item_url . $separator . 'from=rss';
         $desc     = htmlspecialchars($row['goods_brief']);
         $subject  = htmlspecialchars($row['cat_name']);
         $date     = local_date($_CFG['timezone'], $row['last_update']);

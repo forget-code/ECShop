@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心会员数据整合插件管理程序语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-11-09 11:28:17 +0800 (星期五, 09 十一月 2007) $
- * $Id: integrate.php 13518 2007-11-09 03:28:17Z wj $
+ * $Author: sunxiaodong $
+ * $Id: integrate.php 15716 2009-03-06 03:22:25Z sunxiaodong $
 */
 
 $_LANG['integrate_name'] = '名称';
@@ -30,6 +29,12 @@ $_LANG['view_install_log'] = '查看安装日志';
 $_LANG['integrate_setup'] = '设置会员数据整合插件';
 $_LANG['continue_sync'] = '继续同步会员数据';
 $_LANG['go_userslist'] = '返回会员帐号列表';
+$_LANG['user_help'] = '<pre>
+使用方法：
+         1:如果需要整合其他的用户系统，可以安装适当的版本号插件进行整合。
+         2:如果需要更换整合的用户系统，直接安装目标插件即可完成整合，同时自动卸载上一次整合插件。
+         3:如果不需要整合任何用户系统，请选择安装 ecshop 插件，即可卸载所有的整合插件。
+                           </pre>';
 
 /* 查看安装日志 */
 $_LANG['lost_install_log'] = '未找到安装日志';
@@ -146,5 +151,59 @@ $_LANG['js_languages']['no_method'] = '请选择一种默认处理方法';
 $_LANG['js_languages']['rate_not_null'] = '比例不能为空';
 $_LANG['js_languages']['rate_not_int'] = '比例只能填整数';
 $_LANG['js_languages']['rate_invailed'] = '你填写了一个无效的比例';
+$_LANG['js_languages']['user_importing'] = '正在导入用户到UCenter中...';
+
+/* UCenter设置语言项 */
+$_LANG['ucenter_tab_base'] = '基本设置';
+$_LANG['ucenter_tab_show'] = '显示设置';
+$_LANG['ucenter_lab_id'] = 'UCenter 应用 ID:';
+$_LANG['ucenter_lab_key'] = 'UCenter 通信密钥:';
+$_LANG['ucenter_lab_url'] = 'UCenter 访问地址:';
+$_LANG['ucenter_lab_ip'] = 'UCenter IP 地址:';
+$_LANG['ucenter_lab_connect'] = 'UCenter 连接方式:';
+$_LANG['ucenter_lab_db_host'] = 'UCenter 数据库服务器:';
+$_LANG['ucenter_lab_db_user'] = 'UCenter 数据库用户名:';
+$_LANG['ucenter_lab_db_pass'] = 'UCenter 数据库密码:';
+$_LANG['ucenter_lab_db_name'] = 'UCenter 数据库名:';
+$_LANG['ucenter_lab_db_pre'] = 'UCenter 表前缀:';
+$_LANG['ucenter_lab_tag_number'] = 'TAG 标签显示数量:';
+$_LANG['ucenter_lab_credit_0'] = '等级积分名称:';
+$_LANG['ucenter_lab_credit_1'] = '消费积分名称:';
+$_LANG['ucenter_opt_database'] = '数据库方式';
+$_LANG['ucenter_opt_interface'] = '接口方式';
+
+$_LANG['ucenter_notice_id'] = '该值为当前商店在 UCenter 的应用 ID，一般情况请不要改动';
+$_LANG['ucenter_notice_key'] = '通信密钥用于在 UCenter 和 ECShop 之间传输信息的加密，可包含任何字母及数字，请在 UCenter 与 ECShop 设置完全相同的通讯密钥，以确保两套系统能够正常通信';
+$_LANG['ucenter_notice_url'] = '该值在您安装完 UCenter 后会被初始化，在您 UCenter 地址或者目录改变的情况下，修改此项，一般情况请不要改动 例如: http://www.sitename.com/uc_server (最后不要加"/")';
+$_LANG['ucenter_notice_ip'] = '如果您的服务器无法通过域名访问 UCenter，可以输入 UCenter 服务器的 IP 地址';
+$_LANG['ucenter_notice_connect'] = '请根据您的服务器网络环境选择适当的连接方式';
+$_LANG['ucenter_notice_db_host'] = '可以是本地也可以是远程数据库服务器，如果 MySQL 端口不是默认的 3306，请填写如下形式：127.0.0.1:6033';
+$_LANG['uc_notice_ip'] = '连接的过程中出了点问题，请您填写服务器 IP 地址，如果您的 UC 与 ECShop 装在同一服务器上，我们建议您尝试填写 127.0.0.1';
+
+$_LANG['uc_lab_url'] = 'UCenter 的 URL:';
+$_LANG['uc_lab_pass'] = 'UCenter 创始人密码:';
+$_LANG['uc_lab_ip'] = 'UCenter 的 IP:';
+
+$_LANG['uc_msg_verify_failur'] = '验证失败';
+$_LANG['uc_msg_password_wrong'] = '创始人密码错误';
+$_LANG['uc_msg_data_error'] = '安装数据错误';
+
+$_LANG['ucenter_import_username'] = '会员数据导入到 UCenter';
+$_LANG['uc_import_notice'] = '提醒：导入会员数据前请暂停各个应用(如Discuz!, SupeSite等)';
+$_LANG['uc_members_merge'] = '会员合并方式';
+$_LANG['user_startid_intro'] = '<p>此起始会员ID为%s。如原 ID 为 888 的会员将变为 %s+888 的值。</p>';
+$_LANG['uc_members_merge_way1'] = '将与UC用户名和密码相同的用户强制为同一用户';
+$_LANG['uc_members_merge_way2'] = '将与UC用户名和密码相同的用户不导入UC用户';
+$_LANG['start_import'] = '开始导入';
+$_LANG['import_user_success'] = '成功将会员数据导入到 UCenter';
+$_LANG['uc_points'] = 'UCenter的积分兑换设置需要在UCenter管理后台进行';
+$_LANG['uc_set_credits'] = '设置积分兑换方案';
+$_LANG['uc_client_not_exists'] = 'uc_client目录不存在，请先把uc_client目录上传到商城根目录下再进行整合';
+$_LANG['uc_client_not_write'] = 'uc_client/data目录不可写，请先把uc_client/data目录权限设置为777';
+$_LANG['uc_lang']['credits'][0][0] = '等级积分';
+$_LANG['uc_lang']['credits'][0][1] = '';
+$_LANG['uc_lang']['credits'][1][0] = '消费积分';
+$_LANG['uc_lang']['credits'][1][1] = '';
+$_LANG['uc_lang']['exchange'] = 'UCenter积分兑换';
 
 ?>

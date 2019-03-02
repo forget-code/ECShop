@@ -3,15 +3,14 @@
 /**
  * ECSHOP 商品分类管理程序
  * ============================================================================
- * 版权所有 (C) 2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: category.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: zblikai $
+ * $Id: category.php 15730 2009-03-10 08:38:29Z zblikai $
 */
 
 define('IN_ECS', true);
@@ -104,6 +103,7 @@ if ($_REQUEST['act'] == 'insert')
     $cat['is_show']      = !empty($_POST['is_show'])      ? intval($_POST['is_show'])    : 0;
     $cat['grade']        = !empty($_POST['grade'])        ? intval($_POST['grade'])      : 0;
     $cat['filter_attr']  = !empty($_POST['filter_attr'])  ? intval($_POST['filter_attr']) : 0;
+    $cat['cat_recommend']  = !empty($_POST['cat_recommend'])  ? $_POST['cat_recommend'] : array();
 
     if (cat_exists($cat['cat_name'], $cat['parent_id']))
     {
@@ -122,6 +122,7 @@ if ($_REQUEST['act'] == 'insert')
     /* 入库的操作 */
     if ($db->autoExecute($ecs->table('category'), $cat) !== false)
     {
+        $cat_id = $db->insert_id();
         if($cat['show_in_nav'] == 1)
         {
             $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('nav') . " WHERE type = 'middle'");
@@ -129,9 +130,10 @@ if ($_REQUEST['act'] == 'insert')
             //显示在自定义导航栏中
             $sql = "INSERT INTO " . $ecs->table('nav') .
                 " (name,ctype,cid,ifshow,vieworder,opennew,url,type)".
-                " VALUES('" . $cat['cat_name'] . "', 'c', '".$db->insert_id()."','1','$vieworder','0', '" . build_uri('category', array('cid'=> $db->insert_id())) . "','middle')";
+                " VALUES('" . $cat['cat_name'] . "', 'c', '".$db->insert_id()."','1','$vieworder','0', '" . build_uri('category', array('cid'=> $cat_id)) . "','middle')";
             $db->query($sql);
         }
+        insert_cat_recommend($cat['cat_recommend'], $cat_id);
 
         admin_log($_POST['cat_name'], 'add', 'category');   // 记录管理员操作
         clear_cache_files();    // 清除缓存
@@ -153,7 +155,8 @@ if ($_REQUEST['act'] == 'insert')
 if ($_REQUEST['act'] == 'edit')
 {
     admin_priv('cat_manage');   // 权限检查
-    $cat_info = get_cat_info(intval($_REQUEST['cat_id']));  // 查询分类信息数据
+    $cat_id = intval($_REQUEST['cat_id']);
+    $cat_info = get_cat_info($cat_id);  // 查询分类信息数据
     $attr_list = get_attr_list();
 
     if ($cat_info['filter_attr'])
@@ -171,13 +174,24 @@ if ($_REQUEST['act'] == 'edit')
         $attr_cat_id = 0;
     }
 
-
     /* 模板赋值 */
     $smarty->assign('goods_type_list',  goods_type_list($attr_cat_id)); // 取得商品类型
     $smarty->assign('attr_list',        $attr_list); // 取得商品属性
     $smarty->assign('attr_cat_id',      $attr_cat_id);
     $smarty->assign('ur_here',     $_LANG['category_edit']);
     $smarty->assign('action_link', array('text' => $_LANG['03_category_list'], 'href' => 'category.php?act=list'));
+
+    //分类是否存在首页推荐
+    $res = $db->getAll("SELECT recommend_type FROM " . $ecs->table("cat_recommend") . " WHERE cat_id=" . $cat_id);
+    if (!empty($res))
+    {
+        $cat_recommend = array();
+        foreach($res as $data)
+        {
+            $cat_recommend[$data['recommend_type']] = 1;
+        }
+        $smarty->assign('cat_recommend', $cat_recommend);
+    }
 
     $smarty->assign('cat_info',    $cat_info);
     $smarty->assign('form_act',    'update');
@@ -192,7 +206,7 @@ if ($_REQUEST['act'] == 'edit')
 elseif($_REQUEST['act'] == 'add_category')
 {
     $parent_id = empty($_REQUEST['parent_id']) ? 0 : intval($_REQUEST['parent_id']);
-    $category = empty($_REQUEST['cat']) ? '' : trim($_REQUEST['cat']);
+    $category = empty($_REQUEST['cat']) ? '' : json_str_iconv(trim($_REQUEST['cat']));
 
     if(cat_exists($category, $parent_id))
     {
@@ -236,12 +250,13 @@ if ($_REQUEST['act'] == 'update')
     $cat['style']        = !empty($_POST['style'])        ? trim($_POST['style'])        : '';
     $cat['grade']        = !empty($_POST['grade'])        ? intval($_POST['grade'])      : 0;
     $cat['filter_attr']  = !empty($_POST['filter_attr'])  ? intval($_POST['filter_attr']) : 0;
+    $cat['cat_recommend']  = !empty($_POST['cat_recommend'])  ? $_POST['cat_recommend'] : array();
 
     /* 判断分类名是否重复 */
 
     if ($cat['cat_name'] != $old_cat_name)
     {
-        if (cat_exists($cat['cat_name'],$cat['parent_id']))
+        if (cat_exists($cat['cat_name'],$cat['parent_id'], $cat_id))
         {
            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
            sys_msg($_LANG['catname_exist'], 0, $link);
@@ -302,7 +317,10 @@ if ($_REQUEST['act'] == 'update')
                 $db->query("UPDATE " . $ecs->table('nav') . " SET ifshow = 0 WHERE ctype = 'c' AND cid = '" . $cat_id . "' AND type = 'middle'");
             }
         }
-        /* 更新分類信息成功 */
+
+        //更新首页推荐
+        insert_cat_recommend($cat['cat_recommend'], $cat_id);
+        /* 更新分类信息成功 */
         clear_cache_files(); // 清除缓存
         admin_log($_POST['cat_name'], 'edit', 'category'); // 记录管理员操作
 
@@ -397,7 +415,7 @@ if ($_REQUEST['act'] == 'edit_measure_unit')
     check_authz_json('cat_manage');
 
     $id = intval($_POST['id']);
-    $val = $_POST['val'];
+    $val = json_str_iconv($_POST['val']);
 
     if (cat_update($id, array('measure_unit' => $val)))
     {
@@ -629,5 +647,57 @@ function get_attr_list()
     return $list;
 }
 
+/**
+ * 插入首页推荐扩展分类
+ *
+ * @access  public
+ * @param   array   $recommend_type 推荐类型
+ * @param   integer $cat_id     分类ID
+ *
+ * @return void
+ */
+function insert_cat_recommend($recommend_type, $cat_id)
+{
+    //检查分类是否为首页推荐
+    if (!empty($recommend_type))
+    {
+        //取得之前的分类
+        $recommend_res = $GLOBALS['db']->getAll("SELECT recommend_type FROM " . $GLOBALS['ecs']->table("cat_recommend") . " WHERE cat_id=" . $cat_id);
+        if (empty($recommend_res))
+        {
+            foreach($recommend_type as $data)
+            {
+                $data = intval($data);
+                $GLOBALS['db']->query("INSERT INTO " . $GLOBALS['ecs']->table("cat_recommend") . "(cat_id, recommend_type) VALUES ('$cat_id', '$data')");
+            }
+        }
+        else
+        {
+            $old_data = array();
+            foreach($recommend_res as $data)
+            {
+                $old_data[] = $data['recommend_type'];
+            }
+            $delete_array = array_diff($old_data, $recommend_type);
+            if (!empty($delete_array))
+            {
+                $GLOBALS['db']->query("DELETE FROM " . $GLOBALS['ecs']->table("cat_recommend") . " WHERE cat_id=$cat_id AND recommend_type " . db_create_in($delete_array));
+            }
+            $insert_array = array_diff($recommend_type, $old_data);
+            if (!empty($insert_array))
+            {
+                foreach($insert_array as $data)
+                {
+                    $data = intval($data);
+                    $GLOBALS['db']->query("INSERT INTO " . $GLOBALS['ecs']->table("cat_recommend") . "(cat_id, recommend_type) VALUES ('$cat_id', '$data')");
+                }
+            }
+        }
+    }
+    else
+    {
+        $GLOBALS['db']->query("DELETE FROM ". $GLOBALS['ecs']->table("cat_recommend") . " WHERE cat_id=" . $cat_id);
+    }
+}
 
 ?>

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心文章处理程序文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: article.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: article.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -311,7 +310,7 @@ elseif ($_REQUEST['act'] == 'edit_title')
     check_authz_json('article_manage');
 
     $id    = intval($_POST['id']);
-    $title = trim($_POST['val']);
+    $title = json_str_iconv(trim($_POST['val']));
 
     /* 检查文章标题是否重复 */
     if ($exc->num("title", $title, $id) != 0)
@@ -567,6 +566,10 @@ function get_articleslist()
     {
         $filter = array();
         $filter['keyword']    = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
+        if ($_REQUEST['is_ajax'] == 1)
+        {
+            $filter['keyword'] = json_str_iconv($filter['keyword']);
+        }
         $filter['cat_id'] = empty($_REQUEST['cat_id']) ? 0 : intval($_REQUEST['cat_id']);
         $filter['sort_by']    = empty($_REQUEST['sort_by']) ? 'a.article_id' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
@@ -618,18 +621,18 @@ function get_articleslist()
 /* 上传文件 */
 function upload_article_file($upload)
 {
-    if (!make_dir("../data/article"))
+    if (!make_dir("../" . DATA_DIR . "/article"))
     {
         /* 创建目录失败 */
         return false;
     }
 
     $filename = cls_image::random_filename() . substr($upload['name'], strpos($upload['name'], '.'));
-    $path     = ROOT_PATH."data/article/" . $filename;
+    $path     = ROOT_PATH. DATA_DIR . "/article/" . $filename;
 
     if (move_upload_file($upload['tmp_name'], $path))
     {
-        return "data/article/" . $filename;
+        return DATA_DIR . "/article/" . $filename;
     }
     else
     {

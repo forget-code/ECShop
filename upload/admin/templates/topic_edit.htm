@@ -1,4 +1,4 @@
-<!-- $Id: topic_edit.htm 13961 2008-01-07 06:54:44Z dolphin $ -->
+<!-- $Id: topic_edit.htm 14668 2008-06-10 08:17:16Z testyang $ -->
 
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
@@ -350,7 +350,7 @@ function removeItem(sender,isAll)
   var key = 'default';
   if (classList.value != "-1")
   {
-    key = classList.options[classList.selectedIndex];
+    key = classList.options[classList.selectedIndex].text;
   }
   var arr = myTopic[key];
   if (!isAll)
@@ -368,6 +368,7 @@ function removeItem(sender,isAll)
     {
       if (sender.options[i].selected) {
         sender.remove(i);
+        myTopic[key].splice(i, 0);
       }
       else
       {

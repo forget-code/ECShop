@@ -1,28 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="gbk"?>
 <help>
   <section id="list">
-    <title>账户金额</title>
+    <title>�˻����</title>
     <content>
     <![CDATA[
-	<p>本页面显示所有会员的账户金额记录。其中包括会员账户金额的四个来源：会员预付款、会员退款申请、购买商品以及订单退款。</p>
+	<p>��ҳ����ʾ���л�Ա���˻�����¼�����а�����Ա�˻������ĸ���Դ����ԱԤ�����Ա�˿����롢������Ʒ�Լ������˿</p>
 	]]>
     </content>
   </section>
 
   <section id="add">
-    <title>添加金额</title>
+    <title>���ӽ��</title>
     <content>
     <![CDATA[
-	<p>对会员的账户金额进行增、减的操作。</p>
+	<p>�Ի�Ա���˻��������������Ĳ�����</p>
 	]]>
     </content>
   </section>
   
   <section id="check">
-    <title>到款审核</title>
+    <title>�������</title>
     <content>
     <![CDATA[
-	<p>对会员的账户金额操作进行是否有效或者是否到款的操作审核。</p>
+	<p>�Ի�Ա���˻������������Ƿ���Ч�����Ƿ񵽿�Ĳ�����ˡ�</p>
 	]]>
     </content>
   </section>

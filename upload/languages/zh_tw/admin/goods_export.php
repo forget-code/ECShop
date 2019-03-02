@@ -1,23 +1,28 @@
 <?php
 
 /**
- * ECSHOP 商品匯出管理
+ * ECSHOP
  * ============================================================================
- * 版權所有 (C) 2005-2006 北京億商互動科技發展有限公司，並保留所有權利。
- * 網站地址: http://www.ecshop.com
+ * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 這是一個免費開源的軟件；這意味著您可以在不用於商業目的的前提下對程序代碼
- * 進行修改、使用和再發佈。
+ * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
+ * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-02-19 08:49:06 +0800 (星期二, 19 二月 2008) $
- * $Id: goods_export.php 14147 2008-02-19 00:49:06Z fenghl $
+ *
+ * $Author: sunxiaodong $
+ * $Id: goods_export.php 15232 2008-11-19 02:52:35Z sunxiaodong $
 */
 
-
-$_LANG['export_taobao'] = '匯出淘寶助理支援資料格式';
+$_LANG['user_guide'] =
+        '<br/>使用说明：' .
+        '<ol>' .
+          '<li>使用搜索条件每次只允许搜索符合条件的50个商品。</li>' .
+          '<li>如果用户需要导出某分类下的所有的商品，在条件中选择分类后，不需点击搜索，直接选择数据格式和编码导出即可。</li>' .
+        '</ol>';
+$_LANG['export_taobao'] = '導出淘寶助理支持數據格式';
 $_LANG['good_cat'] = '商品分類';
-$_LANG['select_please'] = '請選擇要匯出的分類';
+$_LANG['select_please'] = '請選擇要導出的分類';
 $_LANG['select_charset'] = '請選擇要導出的編碼';
 
 $_LANG['goods_class'] = '寶貝欄目ID';
@@ -30,7 +35,6 @@ $_LANG['notice_goods_class'] = '寶貝欄目ID為淘寶分類的ID，如若不�
 $_LANG['post_express_not_null'] = '平郵價格必須大於0';
 $_LANG['express_not_null'] = '快遞價格必須大於0';
 $_LANG['ems_not_null'] = 'EMS價格必須大於0';
-
 
 /* 淘寶 */
 $_LANG['taobao']['goods_name'] = '寶貝名稱';
@@ -49,7 +53,7 @@ $_LANG['taobao']['post_express'] = '平郵';
 $_LANG['taobao']['ems'] = 'EMS';
 $_LANG['taobao']['express'] = '快遞';
 $_LANG['taobao']['pay_type'] = '付款方式';
-$_LANG['taobao']['allow_alipay'] = '付款寶';
+$_LANG['taobao']['allow_alipay'] = '支付寶';
 $_LANG['taobao']['invoice'] = '發票';
 $_LANG['taobao']['repair'] = '保修';
 $_LANG['taobao']['resend'] = '自動重發';
@@ -68,7 +72,8 @@ $_LANG['taobao']['modify_time'] = '修改時間';
 $_LANG['taobao']['upload_status'] = '上傳狀態';
 $_LANG['taobao']['img_status'] = '圖片狀態';
 
-$_LANG['export_paipai'] = '匯出到拍拍助理支援資料格式';
+
+$_LANG['export_paipai'] = '導出到拍拍助理支持數據格式';
 $_LANG['paipai']['id'] = 'id';
 $_LANG['paipai']['tree_node_id'] = 'tree_node_id';
 $_LANG['paipai']['old_tree_node_id'] = 'old_tree_node_id';
@@ -106,11 +111,12 @@ $_LANG['paipai']['pic_width'] = 'pic_width';
 $_LANG['paipai']['pic_height'] = 'pic_height';
 $_LANG['paipai']['skin'] = 'skin';
 $_LANG['paipai']['prop'] = 'prop';
-	
+
+// 批量上傳商品的字段
 $_LANG['export_ecshop'] = '導出到ECShop數據格式';
 $_LANG['ecshop']['goods_name'] = '商品名稱';
 $_LANG['ecshop']['goods_sn'] = '商品貨號';
-$_LANG['ecshop']['brand_name'] = '商品品牌';
+$_LANG['ecshop']['brand_name'] = '商品品牌';   // 需要轉換成brand_id
 $_LANG['ecshop']['market_price'] = '市場售價';
 $_LANG['ecshop']['shop_price'] = '本店售價';
 $_LANG['ecshop']['integral'] = '積分購買額度';
@@ -130,5 +136,44 @@ $_LANG['ecshop']['is_on_sale'] = '是否上架';
 $_LANG['ecshop']['is_alone_sale'] = '能否作為普通商品銷售';
 $_LANG['ecshop']['is_real'] = '是否實體商品';
 
+//自定義導出數據格式
+$_LANG['export_custom'] = '導出到自定義數據格式';
+$_LANG['custom']['goods_name'] = '商品名稱';
+$_LANG['custom']['goods_sn'] = '商品貨號';
+$_LANG['custom']['brand_name'] = '商品品牌';
+$_LANG['custom']['market_price'] = '市場售價';
+$_LANG['custom']['shop_price'] = '本店售價';
+$_LANG['custom']['integral'] = '積分購買額度';
+$_LANG['custom']['original_img'] = '商品原始圖';
+$_LANG['custom']['goods_img'] = '商品圖片';
+$_LANG['custom']['goods_thumb'] = '商品縮略圖';
+$_LANG['custom']['keywords'] = '商品關鍵詞';
+$_LANG['custom']['goods_brief'] = '簡單描述';
+$_LANG['custom']['goods_desc'] = '詳細描述';
+$_LANG['custom']['goods_weight'] = '商品重量（kg）';
+$_LANG['custom']['goods_number'] = '庫存數量';
+$_LANG['custom']['warn_number'] = '庫存警告數量';
+$_LANG['custom']['is_best'] = '是否精品';
+$_LANG['custom']['is_new'] = '是否新品';
+$_LANG['custom']['is_hot'] = '是否熱銷';
+$_LANG['custom']['is_on_sale'] = '是否上架';
+$_LANG['custom']['is_alone_sale'] = '能否作為普通商品銷售';
+$_LANG['custom']['is_real'] = '是否實體商品';
+
+$_LANG['custom_keyword'] = '關鍵字';
+$_LANG['custom_goods_cat'] = '所有分類';
+$_LANG['custom_goods_brand'] = '所有品牌';
+$_LANG['custom_goods_list'] = '選擇商品數據列';
+$_LANG['custom_goods_type'] = '所有商品類型';
+$_LANG['custom_export_list'] = '輸出商品數據列';
+$_LANG['custom_up'] = '上';
+$_LANG['custom_down'] = '下';
+$_LANG['custom_goods_search'] = '導出條件';
+$_LANG['custom_goods_field_not_null'] = '輸出的商品數據列不能為空';
+
+// 導出條件
+$_LANG['export_condition'] = '商品數據批量導出';
+$_LANG['export_condition_search'] = '搜 索';
+$_LANG['export_format'] = '數據格式';
 
 ?>

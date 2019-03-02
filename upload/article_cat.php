@@ -3,15 +3,14 @@
 /**
  * ECSHOP 文章分类
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: article_cat.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: article_cat.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -70,7 +69,7 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     $smarty->assign('best_goods',           get_recommend_goods('best'));
     $smarty->assign('new_goods',            get_recommend_goods('new'));
     $smarty->assign('hot_goods',            get_recommend_goods('hot'));
-    $smarty->assign('promotion_goods',      get_recommend_goods('promote'));
+    $smarty->assign('promotion_goods',      get_promote_goods());
     $smarty->assign('promotion_info', get_promotion_info());
 
     /* Meta */
@@ -87,7 +86,7 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     $smarty->assign('description', htmlspecialchars($meta['cat_desc']));
 
     /* 获得文章总数 */
-    $size   = isset($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 20;
+    $size   = isset($_CFG['article_page_size']) && intval($_CFG['article_page_size']) > 0 ? intval($_CFG['article_page_size']) : 20;
     $count  = get_article_count($cat_id);
     $pages  = ($count > 0) ? ceil($count / $size) : 1;
 

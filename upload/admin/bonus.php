@@ -3,15 +3,14 @@
 /**
  * ECSHOP 红包类型的处理
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: bonus.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: bonus.php 15589 2009-02-10 09:24:05Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -83,7 +82,7 @@ if ($_REQUEST['act'] == 'edit_type_name')
     check_authz_json('bonus_manage');
 
     $id = intval($_POST['id']);
-    $val = trim($_POST['val']);
+    $val = json_str_iconv(trim($_POST['val']));
 
     /* 检查红包类型名称是否重复 */
     if (!$exc->is_only('type_name', $id, $val))
@@ -379,6 +378,7 @@ if ($_REQUEST['act'] == 'send_by_user')
     $user_list  = array();
     $start      = empty($_REQUEST['start']) ? 0 : intval($_REQUEST['start']);
     $limit      = empty($_REQUEST['limit']) ? 10 : intval($_REQUEST['limit']);
+    $validated_email = empty($_REQUEST['validated_email']) ? 0 : intval($_REQUEST['validated_email']);
     $send_count = 0;
 
     if (isset($_REQUEST['send_rank']))
@@ -395,10 +395,18 @@ if ($_REQUEST['act'] == 'send_by_user')
                 /* 特殊会员组处理 */
                 $sql = 'SELECT COUNT(*) FROM ' . $ecs->table('users'). " WHERE user_rank = '$rank_id'";
                 $send_count = $db->getOne($sql);
-
-                $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
-                        " WHERE user_rank = '$rank_id'";
-                        " LIMIT $start, $limit";
+                if($validated_email)
+                {
+                    $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                            " WHERE user_rank = '$rank_id' AND is_validated = 1".
+                            " LIMIT $start, $limit";
+                }
+                else
+                {
+                     $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                                " WHERE user_rank = '$rank_id'".
+                                " LIMIT $start, $limit";
+                }
             }
             else
             {
@@ -406,9 +414,19 @@ if ($_REQUEST['act'] == 'send_by_user')
                        " WHERE rank_points >= " . intval($row['min_points']) . " AND rank_points < " . intval($row['max_points']);
                 $send_count = $db->getOne($sql);
 
-                $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                if($validated_email)
+                {
+                    $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                        " WHERE rank_points >= " . intval($row['min_points']) . " AND rank_points < " . intval($row['max_points']) .
+                        " AND is_validated = 1 LIMIT $start, $limit";
+                }
+                else
+                {
+                     $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
                         " WHERE rank_points >= " . intval($row['min_points']) . " AND rank_points < " . intval($row['max_points']) .
                         " LIMIT $start, $limit";
+                }
+
             }
 
             $user_list = $db->getAll($sql);
@@ -542,7 +560,7 @@ if ($_REQUEST['act'] == 'send_mail')
 
 if ($_REQUEST['act'] == 'send_by_print')
 {
-    set_time_limit(0);
+    @set_time_limit(0);
 
     /* 红下红包的类型ID和生成的数量的处理 */
     $bonus_typeid = !empty($_POST['bonus_type_id']) ? $_POST['bonus_type_id'] : 0;
@@ -578,7 +596,7 @@ if ($_REQUEST['act'] == 'send_by_print')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'gen_excel')
 {
-    set_time_limit(0);
+    @set_time_limit(0);
 
     /* 获得此线下红包类型的ID */
     $tid  = !empty($_GET['tid']) ? intval($_GET['tid']) : 0;
@@ -586,18 +604,33 @@ if ($_REQUEST['act'] == 'gen_excel')
 
     /* 文件名称 */
     $bonus_filename = $type_name .'_bonus_list';
+    if (EC_CHARSET != 'gbk')
+    {
+        $bonus_filename = ecs_iconv('UTF8', 'GB2312',$bonus_filename);
+    }
 
-    header("Content-type: application/vnd.ms-excel; charset=GB2312");
+    header("Content-type: application/vnd.ms-excel; charset=utf-8");
     header("Content-Disposition: attachment; filename=$bonus_filename.xls");
 
     /* 文件标题 */
-    echo ecs_iconv('UTF8', 'GB2312', $_LANG['bonus_excel_file']) . "\t\n";
-
-    /* 红包序列号, 红包金额, 类型名称(红包名称), 使用结束日期 */
-    echo ecs_iconv('UTF8', 'GB2312', $_LANG['bonus_sn']) ."\t";
-    echo ecs_iconv('UTF8', 'GB2312', $_LANG['type_money']) ."\t";
-    echo ecs_iconv('UTF8', 'GB2312', $_LANG['type_name']) ."\t";
-    echo ecs_iconv('UTF8', 'GB2312', $_LANG['use_enddate']) ."\t\n";
+    if (EC_CHARSET != 'gbk')
+    {
+        echo ecs_iconv('UTF8', 'GB2312', $_LANG['bonus_excel_file']) . "\t\n";
+        /* 红包序列号, 红包金额, 类型名称(红包名称), 使用结束日期 */
+        echo ecs_iconv('UTF8', 'GB2312', $_LANG['bonus_sn']) ."\t";
+        echo ecs_iconv('UTF8', 'GB2312', $_LANG['type_money']) ."\t";
+        echo ecs_iconv('UTF8', 'GB2312', $_LANG['type_name']) ."\t";
+        echo ecs_iconv('UTF8', 'GB2312', $_LANG['use_enddate']) ."\t\n";
+    }
+    else
+    {
+        echo $_LANG['bonus_excel_file'] . "\t\n";
+        /* 红包序列号, 红包金额, 类型名称(红包名称), 使用结束日期 */
+        echo $_LANG['bonus_sn'] ."\t";
+        echo $_LANG['type_money'] ."\t";
+        echo $_LANG['type_name'] ."\t";
+        echo $_LANG['use_enddate'] ."\t\n";
+    }
 
     $val = array();
     $sql = "SELECT ub.bonus_id, ub.bonus_type_id, ub.bonus_sn, bt.type_name, bt.type_money, bt.use_end_date ".
@@ -612,10 +645,17 @@ if ($_REQUEST['act'] == 'gen_excel')
         echo $val['type_money'] . "\t";
         if (!isset($code_table[$val['type_name']]))
         {
-            $code_table[$val['type_name']] = ecs_iconv('UTF8', 'GB2312', $val['type_name']);
+            if (EC_CHARSET != 'gbk')
+            {
+                $code_table[$val['type_name']] = ecs_iconv('UTF8', 'GB2312', $val['type_name']);
+            }
+            else
+            {
+                $code_table[$val['type_name']] = $val['type_name'];
+            }
         }
         echo $code_table[$val['type_name']] . "\t";
-        echo local_date('Y-m-d', $val['use_enddate']);
+        echo local_date('Y-m-d', $val['use_end_date']);
         echo "\t\n";
     }
 }
@@ -714,7 +754,7 @@ if ($_REQUEST['act'] == 'drop_bonus_goods')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'search_users')
 {
-    $keywords = trim($_GET['keywords']);
+    $keywords = json_str_iconv(trim($_GET['keywords']));
 
     $sql = "SELECT user_id, user_name FROM " . $ecs->table('users') .
             " WHERE user_name LIKE '%" . mysql_like_quote($keywords) . "%' OR user_id LIKE '%" . mysql_like_quote($keywords) . "%'";
@@ -1066,6 +1106,7 @@ function send_bonus_mail($bonus_type_id, $bonus_id_list)
 function add_to_maillist($username, $email, $subject, $content, $is_html)
 {
     $time = time();
+    $content = addslashes($content);
     $template_id = $GLOBALS['db']->getOne("SELECT template_id FROM " . $GLOBALS['ecs']->table('mail_templates') . " WHERE template_code = 'send_bonus'");
     $sql = "INSERT INTO "  . $GLOBALS['ecs']->table('email_sendlist') . " ( email, template_id, email_content, pri, last_send) VALUES ('$email', $template_id, '$content', 1, '$time')";
     $GLOBALS['db']->query($sql);

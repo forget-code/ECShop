@@ -3,15 +3,14 @@
 /**
  * ECSHOP 商品类型管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: goods_type.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: goods_type.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -74,7 +73,7 @@ elseif ($_REQUEST['act'] == 'edit_type_name')
     check_authz_json('goods_type');
 
     $type_id   = !empty($_POST['id'])  ? intval($_POST['id']) : 0;
-    $type_name = !empty($_POST['val']) ? trim($_POST['val'])  : '';
+    $type_name = !empty($_POST['val']) ? json_str_iconv(trim($_POST['val']))  : '';
 
     /* 检查名称是否重复 */
     $is_only = $exc->is_only('cat_name', $type_name, $type_id);
@@ -129,8 +128,10 @@ elseif ($_REQUEST['act'] == 'add')
 
 elseif ($_REQUEST['act'] == 'insert')
 {
-    $goods_type['cat_name']   = trim_right(sub_str($_POST['cat_name'], 60));
-    $goods_type['attr_group'] = trim_right(sub_str($_POST['attr_group'], 255));
+    //$goods_type['cat_name']   = trim_right(sub_str($_POST['cat_name'], 60));
+    //$goods_type['attr_group'] = trim_right(sub_str($_POST['attr_group'], 255));
+    $goods_type['cat_name']   = sub_str($_POST['cat_name'], 60);
+    $goods_type['attr_group'] = sub_str($_POST['attr_group'], 255);
     $goods_type['enabled']    = intval($_POST['enabled']);
 
     if ($db->autoExecute($ecs->table('goods_type'), $goods_type) !== false)
@@ -171,8 +172,8 @@ elseif ($_REQUEST['act'] == 'edit')
 
 elseif ($_REQUEST['act'] == 'update')
 {
-    $goods_type['cat_name']   = trim_right(sub_str($_POST['cat_name'], 60));
-    $goods_type['attr_group'] = trim_right(sub_str($_POST['attr_group'], 255));
+    $goods_type['cat_name']   = sub_str($_POST['cat_name'], 60);
+    $goods_type['attr_group'] = sub_str($_POST['attr_group'], 255);
     $goods_type['enabled']    = intval($_POST['enabled']);
     $cat_id                   = intval($_POST['cat_id']);
     $old_groups               = get_attr_groups($cat_id);

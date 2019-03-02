@@ -3,15 +3,14 @@
 /**
  * ECSHOP 用户交易相关函数库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-01-19 15:31:01 +0800 (五, 19  1月 2007) $
- * $Id: lib_profile.php 4369 2007-01-19 07:31:01Z wj $
+ * $Author: zblikai $
+ * $Id: lib_transaction.php 15499 2008-12-24 03:55:06Z zblikai $
 */
 
 if (!defined('IN_ECS'))
@@ -115,6 +114,7 @@ function get_profile($user_id)
              " msn, qq, office_phone, home_phone, mobile_phone ".
            "FROM " .$GLOBALS['ecs']->table('users') . " WHERE user_id = '$user_id'";
     $infos = $GLOBALS['db']->getRow($sql);
+    $infos['user_name'] = addslashes($infos['user_name']);
 
     $row = $user->get_profile_by_name($infos['user_name']); //获取用户帐号信息
     $_SESSION['email'] = $row['email'];    //注册SESSION
@@ -285,7 +285,7 @@ function get_user_orders($user_id, $num = 10, $start = 0)
     $arr    = array();
 
     $sql = "SELECT order_id, order_sn, order_status, shipping_status, pay_status, add_time, " .
-           "(goods_amount + shipping_fee + insure_fee + pay_fee + pack_fee + card_fee + tax) AS total_fee ".
+           "(goods_amount + shipping_fee + insure_fee + pay_fee + pack_fee + card_fee + tax - discount) AS total_fee ".
            " FROM " .$GLOBALS['ecs']->table('order_info') .
            " WHERE user_id = '$user_id' ORDER BY add_time DESC";
     $res = $GLOBALS['db']->SelectLimit($sql, $num, $start);
@@ -350,7 +350,7 @@ function get_user_orders($user_id, $num = 10, $start = 0)
 function cancel_order($order_id, $user_id = 0)
 {
     /* 查询订单信息，检查状态 */
-    $sql = "SELECT user_id, order_sn , surplus , integral , bonus_id, order_status, shipping_status, pay_status FROM " .$GLOBALS['ecs']->table('order_info') ." WHERE order_id = '$order_id'";
+    $sql = "SELECT user_id, order_id, order_sn , surplus , integral , bonus_id, order_status, shipping_status, pay_status FROM " .$GLOBALS['ecs']->table('order_info') ." WHERE order_id = '$order_id'";
     $order = $GLOBALS['db']->GetRow($sql);
 
     if (empty($order))
@@ -420,6 +420,22 @@ function cancel_order($order_id, $user_id = 0)
         {
             change_user_bonus($order['bonus_id'], $order['order_id'], false);
         }
+
+        /* 如果使用库存，且下订单时减库存，则增加库存 */
+        if ($GLOBALS['_CFG']['use_storage'] == '1' && $GLOBALS['_CFG']['stock_dec_time'] == SDT_PLACE)
+        {
+            change_order_goods_storage($order['order_id'], false);
+        }
+
+        /* 修改订单 */
+        $arr = array(
+            'bonus_id'  => 0,
+            'bonus'     => 0,
+            'integral'  => 0,
+            'integral_money'    => 0,
+            'surplus'   => 0
+        );
+        update_order($order['order_id'], $arr);
 
         return true;
     }
@@ -822,7 +838,7 @@ function return_to_cart($order_id)
     /* 查订单商品：不考虑赠品 */
     $sql = "SELECT goods_id, goods_number, goods_attr, parent_id" .
             " FROM " . $GLOBALS['ecs']->table('order_goods') .
-            " WHERE order_id = '$order_id' AND is_gift = 0" .
+            " WHERE order_id = '$order_id' AND is_gift = 0 AND extension_code <> 'package_buy'" .
             " ORDER BY parent_id ASC";
     $res = $GLOBALS['db']->query($sql);
 
@@ -872,6 +888,17 @@ function return_to_cart($order_id)
             $attr_id = $GLOBALS['db']->getCol($sql);
             $row['goods_attr'] = join(',', $attr_id);
         }
+
+        //检查商品价格是否有会员价格
+        $sql = "SELECT goods_number FROM" . $GLOBALS['ecs']->table('cart') . " " .
+                "WHERE session_id = '" . SESS_ID . "' " .
+                "AND goods_id = '" . $row['goods_id'] . "' " .
+                "AND rec_type = '" . CART_GENERAL_GOODS . "' LIMIT 1";
+        $temp_number = $GLOBALS['db']->getOne($sql);
+        $row['goods_number'] += $temp_number;
+
+        $attr_array           = empty($attr_id) ? array() : explode(',', $attr_id);
+        $goods['goods_price'] = get_final_price($row['goods_id'], $row['goods_number'], true, $attr_array);
 
         // 要返回购物车的商品
         $return_goods = array(
@@ -942,9 +969,10 @@ function return_to_cart($order_id)
         {
             // 有相同商品，修改数量
             $sql = "UPDATE " . $GLOBALS['ecs']->table('cart') . " SET " .
-                    "goods_number = goods_number + '$return_goods[goods_number]' " .
+                    "goods_number = '" . $return_goods['goods_number'] . "' " .
+                    ",goods_price = '" . $return_goods['goods_price'] . "' " .
                     "WHERE session_id = '" . SESS_ID . "' " .
-                    "AND goods_id = '$return_goods[goods_id]' " .
+                    "AND goods_id = '" . $return_goods['goods_id'] . "' " .
                     "AND rec_type = '" . CART_GENERAL_GOODS . "' LIMIT 1";
             $GLOBALS['db']->query($sql);
         }

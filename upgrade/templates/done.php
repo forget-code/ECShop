@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $lang['upgrade_done_title'];?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $ec_charset; ?>" />
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
 </head>
 

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 支付接口函数库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: lib_payment.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: testyang $
+ * $Id: lib_payment.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -49,6 +48,37 @@ function get_payment($code)
     }
 
     return $payment;
+}
+
+/**
+ *  通过订单sn取得订单ID
+ *  @param  string  $order_sn   订单sn
+ *  @param  blob    $voucher    是否为会员充值
+ */
+function get_order_id_by_sn($order_sn, $voucher = 'false')
+{
+    if ($voucher == 'true')
+    {
+        return $GLOBALS['db']->getOne("SELECT log_id FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE order_id=" . $order_sn . ' AND order_type=1');
+    }
+    else
+    {
+        $sql = 'SELECT order_id FROM ' . $GLOBALS['ecs']->table('order_info'). " WHERE order_sn = '$order_sn'";
+        $order_id = $GLOBALS['db']->getOne($sql);
+        $pay_log_id = $GLOBALS['db']->getOne("SELECT log_id FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE order_id=" . $order_id);
+        return $pay_log_id;
+    }
+}
+
+/**
+ *  通过订单ID取得订单商品名称
+ *  @param  string  $order_id   订单ID
+ */
+function get_goods_name_by_id($order_id)
+{
+    $sql = 'SELECT goods_name FROM ' . $GLOBALS['ecs']->table('order_goods'). " WHERE order_id = '$order_id'";
+    $goods_name = $GLOBALS['db']->getCol($sql);
+    return implode(',', $goods_name);
 }
 
 /**
@@ -205,12 +235,12 @@ function order_paid($log_id, $pay_status = PS_PAYED, $note = '')
                                 if ($info = virtual_card_result($row['order_sn'], $goods))
                                 {
                                     $virtual_card[] = array('goods_id'=>$goods['goods_id'], 'goods_name'=>$goods['goods_name'], 'info'=>$info);
-                                }                       
+                                }
                             }
-         
+
                             $GLOBALS['smarty']->assign('virtual_card',      $virtual_card);
-                        }       
-                    } 
+                        }
+                    }
                 }
                 else
                 {

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 商品销售排行
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: sale_order.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Id: sale_order.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -25,6 +24,11 @@ if (isset($_REQUEST['act']) && ($_REQUEST['act'] == 'query' ||  $_REQUEST['act']
 {
     /* 检查权限 */
     check_authz_json('sale_order_stats');
+    if (strstr($_REQUEST['start_date'], '-') === false)
+    {
+        $_REQUEST['start_date'] = local_date('Y-m-d', $_REQUEST['start_date']);
+        $_REQUEST['end_date'] = local_date('Y-m-d', $_REQUEST['end_date']);
+    }
 
     /* 下载报表 */
     if ($_REQUEST['act'] == 'download')
@@ -34,7 +38,7 @@ if (isset($_REQUEST['act']) && ($_REQUEST['act'] == 'query' ||  $_REQUEST['act']
 
         $filename = $_REQUEST['start_date'] . '_' . $_REQUEST['end_date'] .'sale_order';
 
-        header("Content-type: application/vnd.ms-excel; charset=GB2312");
+        header("Content-type: application/vnd.ms-excel; charset=utf-8");
         header("Content-Disposition: attachment; filename=$filename.xls");
 
         $data  = "$_LANG[sell_stats]\t\n";
@@ -46,7 +50,14 @@ if (isset($_REQUEST['act']) && ($_REQUEST['act'] == 'query' ||  $_REQUEST['act']
             $data .= "$order_by\t$row[goods_name]\t$row[goods_sn]\t$row[goods_num]\t$row[turnover]\t$row[wvera_price]\n";
         }
 
-        echo ecs_iconv('UTF8', 'GB2312', $data);
+        if (EC_CHARSET == 'utf-8')
+        {
+            echo ecs_iconv(EC_CHARSET, 'GB2312', $data);
+        }
+        else
+        {
+            echo $data;
+        }
         exit;
     }
     $goods_order_data = get_sales_order();
@@ -102,8 +113,8 @@ else
  * @param   bool  $is_pagination  是否分页
  * @return  array   销售排行数据
  */
- function get_sales_order($is_pagination = true)
- {
+function get_sales_order($is_pagination = true)
+{
     $filter['start_date'] = empty($_REQUEST['start_date']) ? '' : local_strtotime($_REQUEST['start_date']);
     $filter['end_date'] = empty($_REQUEST['end_date']) ? '' : local_strtotime($_REQUEST['end_date']);
     $filter['sort_by'] = empty($_REQUEST['sort_by']) ? 'goods_num' : trim($_REQUEST['sort_by']);

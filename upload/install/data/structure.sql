@@ -317,7 +317,7 @@ CREATE TABLE `ecs_cart` (
   `market_price` decimal(10,2) unsigned NOT NULL default '0.00',
   `goods_price` decimal(10,2) NOT NULL default '0.00',
   `goods_number` smallint(5) unsigned NOT NULL default '0',
-  `goods_attr` text NOT NULL default '',
+  `goods_attr` text NOT NULL,
   `is_real` tinyint(1) unsigned NOT NULL default '0',
   `extension_code` varchar(30) NOT NULL default '',
   `parent_id` mediumint(8) unsigned NOT NULL default '0',
@@ -459,10 +459,12 @@ CREATE TABLE `ecs_feedback` (
   `user_email` varchar(60) NOT NULL default '',
   `msg_title` varchar(200) NOT NULL default '',
   `msg_type` tinyint(1) unsigned NOT NULL default '0',
+  `msg_status` tinyint( 1 ) unsigned NOT NULL DEFAULT '0',
   `msg_content` text NOT NULL,
   `msg_time` int(10) unsigned NOT NULL default '0',
   `message_img` varchar(255) NOT NULL default '0',
   `order_id` int(11) unsigned NOT NULL default '0',
+  `msg_area` TINYINT(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`msg_id`),
   KEY `user_id` (`user_id`)
 )  TYPE=MyISAM;
@@ -531,6 +533,7 @@ CREATE TABLE `ecs_goods` (
   `goods_type` smallint(5) unsigned NOT NULL default '0',
   `seller_note` varchar(255) NOT NULL default '',
   `give_integral` int NOT NULL default '-1',
+  `rank_integral` int NOT NULL default '-1',
   PRIMARY KEY  (`goods_id`),
   KEY `goods_sn` (`goods_sn`),
   KEY `cat_id` (`cat_id`),
@@ -539,7 +542,8 @@ CREATE TABLE `ecs_goods` (
   KEY `goods_weight` (`goods_weight`),
   KEY `promote_end_date` (`promote_end_date`),
   KEY `promote_start_date` (`promote_start_date`),
-  KEY `goods_number` (`goods_number`)
+  KEY `goods_number` (`goods_number`),
+  KEY `sort_order` (`sort_order`)
 )  TYPE=MyISAM;
 
 -- --------------------------------------------------------
@@ -738,7 +742,7 @@ CREATE TABLE `ecs_order_goods` (
   `goods_number` smallint(5) unsigned NOT NULL default '1',
   `market_price` decimal(10,2) NOT NULL default '0.00',
   `goods_price` decimal(10,2) NOT NULL default '0.00',
-  `goods_attr` text NOT NULL default '',
+  `goods_attr` text NOT NULL,
   `send_number` smallint(5) unsigned NOT NULL default '0',
   `is_real` tinyint(1) unsigned NOT NULL default '0',
   `extension_code` varchar(30) NOT NULL default '',
@@ -897,7 +901,7 @@ CREATE TABLE `ecs_region` (
   `parent_id` smallint(5) unsigned NOT NULL default '0',
   `region_name` varchar(120) NOT NULL default '',
   `region_type` tinyint(1) NOT NULL default '2',
-  `agency_id` smallint(5) unsigned NOT NULL,
+  `agency_id` smallint(5) unsigned NOT NULL default '0',
   PRIMARY KEY  (`region_id`),
   KEY `parent_id` (`parent_id`),
   KEY `region_type` (`region_type`),
@@ -931,8 +935,12 @@ CREATE TABLE `ecs_sessions` (
   `userid` mediumint(8) unsigned NOT NULL default '0',
   `adminid` mediumint(8) unsigned NOT NULL default '0',
   `ip` char(15) NOT NULL default '',
+  `user_name` varchar(60) NOT NULL,
+  `user_rank` tinyint(3) NOT NULL,
+  `discount` decimal(3,2) NOT NULL,
+  `email` varchar(60) NOT NULL,
   `data` char(255) NOT NULL default '',
-  PRIMARY KEY (`sesskey`),
+  PRIMARY KEY  (`sesskey`),
   KEY `expiry` (`expiry`)
 ) TYPE=HEAP;
 
@@ -950,7 +958,7 @@ CREATE TABLE `ecs_sessions_data` (
   `data` longtext NOT NULL ,
   PRIMARY KEY ( `sesskey` ) ,
   KEY `expiry` ( `expiry` )
-) TYPE = MYISAM ;
+) TYPE = MYISAM;
 
 -- --------------------------------------------------------
 
@@ -967,6 +975,7 @@ CREATE TABLE `ecs_shipping` (
   `insure` VARCHAR( 10 ) NOT NULL DEFAULT '0',
   `support_cod` tinyint(1) unsigned NOT NULL default '0',
   `enabled` tinyint(1) unsigned NOT NULL default '0',
+  `shipping_print` text NOT NULL,
   PRIMARY KEY  (`shipping_id`),
   KEY `shipping_code` (`shipping_code`,`enabled`)
 )  TYPE=MyISAM;
@@ -1131,6 +1140,23 @@ CREATE TABLE `ecs_user_bonus` (
   KEY `user_id` (`user_id`)
 )  TYPE=MyISAM;
 
+-- ---------------------------------------------------------
+--
+-- 表的结构 `ecs_user_feed`
+--
+
+DROP TABLE IF EXISTS `ecs_user_feed`;
+CREATE TABLE IF NOT EXISTS `ecs_user_feed` (
+  `feed_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `user_id` mediumint(8) unsigned NOT NULL default '0',
+  `value_id` mediumint(8) unsigned NOT NULL default '0',
+  `goods_id` mediumint(8) unsigned NOT NULL default '0',
+  `feed_type` tinyint(1) unsigned NOT NULL default '0',
+  `is_feed` tinyint(1) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`feed_id`)
+)  TYPE=MyISAM;
+
+
 -- --------------------------------------------------------
 
 --
@@ -1256,7 +1282,7 @@ CREATE TABLE `ecs_pay_log` (
   `order_type` tinyint(1) unsigned NOT NULL default '0',
   `is_paid` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`log_id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 
 -- --------------------------------------------------------
 --
@@ -1294,9 +1320,9 @@ CREATE TABLE `ecs_agency` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_goods_activity`
--- 
+--
 
 DROP TABLE IF EXISTS `ecs_goods_activity`;
 CREATE TABLE `ecs_goods_activity` (
@@ -1316,9 +1342,9 @@ CREATE TABLE `ecs_goods_activity` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `account_log`
--- 
+--
 
 DROP TABLE IF EXISTS `ecs_account_log`;
 CREATE TABLE `ecs_account_log` (
@@ -1337,9 +1363,9 @@ CREATE TABLE `ecs_account_log` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_topic`
--- 
+--
 
 DROP TABLE IF EXISTS `ecs_topic`;
 CREATE TABLE `ecs_topic` (
@@ -1356,9 +1382,9 @@ CREATE TABLE `ecs_topic` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_auction_log`
--- 
+--
 
 DROP TABLE IF EXISTS `ecs_auction_log`;
 CREATE TABLE `ecs_auction_log` (
@@ -1374,7 +1400,7 @@ CREATE TABLE `ecs_auction_log` (
 -- --------------------------------------------------------
 
 
---增加分成信息纪录
+-- 增加分成信息纪录
 DROP TABLE IF EXISTS `ecs_affiliate_log`;
 CREATE TABLE  `ecs_affiliate_log` (
  `log_id` MEDIUMINT( 8 ) NOT NULL auto_increment,
@@ -1386,13 +1412,13 @@ CREATE TABLE  `ecs_affiliate_log` (
  `point` INT(10) NOT NULL DEFAULT '0',
  `separate_type` TINYINT(1) NOT NULL DEFAULT '0',
 PRIMARY KEY ( `log_id` )
-) TYPE = MYISAM ;
+) TYPE = MYISAM;
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_favourable_activity`
--- 
+--
 
 DROP TABLE IF EXISTS `ecs_favourable_activity`;
 CREATE TABLE `ecs_favourable_activity` (
@@ -1415,9 +1441,9 @@ CREATE TABLE `ecs_favourable_activity` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_virtual_card`
--- 
+--
 DROP TABLE IF EXISTS `ecs_virtual_card`;
 CREATE TABLE `ecs_virtual_card` (
     `card_id` mediumint(8) NOT NULL auto_increment,
@@ -1433,13 +1459,13 @@ CREATE TABLE `ecs_virtual_card` (
     KEY `goods_id` (`goods_id`),
     KEY `car_sn` (`card_sn`),
     KEY `is_saled` (`is_saled`)
-    ) TYPE=MyISAM ;
+    ) TYPE=MyISAM;
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_wholesale`
--- 
+--
 DROP TABLE IF EXISTS `ecs_wholesale`;
 CREATE TABLE IF NOT EXISTS `ecs_wholesale` (
   `act_id` mediumint(8) unsigned NOT NULL auto_increment,
@@ -1450,13 +1476,13 @@ CREATE TABLE IF NOT EXISTS `ecs_wholesale` (
   `enabled` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY  (`act_id`),
   KEY `goods_id` (`goods_id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 
 -- --------------------------------------------------------
 
--- 
+--
 -- 表的结构 `ecs_nav`
--- 
+--
 DROP TABLE IF EXISTS `ecs_nav`;
 CREATE TABLE `ecs_nav` (
   `id` mediumint(8) NOT NULL auto_increment,
@@ -1473,7 +1499,7 @@ CREATE TABLE `ecs_nav` (
   KEY `ifshow` (`ifshow`)
 ) TYPE=MyISAM;
 
---增加发送队列表
+-- 增加发送队列表
 DROP TABLE IF EXISTS `ecs_email_sendlist`;
 CREATE TABLE  `ecs_email_sendlist` (
  `id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -1483,9 +1509,9 @@ CREATE TABLE  `ecs_email_sendlist` (
  `error` TINYINT( 1 ) NOT NULL DEFAULT  '0' ,
  `pri` TINYINT( 10 ) NOT NULL ,
  `last_send` INT( 10 ) NOT NULL
-) TYPE = MYISAM ;
+) TYPE = MYISAM;
 
---增加电子杂志订阅表
+-- 增加电子杂志订阅表
 DROP TABLE IF EXISTS `ecs_email_list`;
 CREATE TABLE `ecs_email_list` (
   `id` mediumint(8) NOT NULL auto_increment,
@@ -1495,7 +1521,7 @@ CREATE TABLE `ecs_email_list` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 
---增加自动处理的表
+-- 增加自动处理的表
 DROP TABLE IF EXISTS `ecs_auto_manage`;
 CREATE TABLE `ecs_auto_manage` (
   `item_id` mediumint(8) NOT NULL,
@@ -1504,3 +1530,41 @@ CREATE TABLE `ecs_auto_manage` (
   `endtime` int(10) NOT NULL,
   PRIMARY KEY  (`item_id`,`type`)
 ) TYPE=MyISAM;
+
+-- 增加分类首页推荐表
+DROP TABLE IF EXISTS `ecs_cat_recommend`;
+CREATE TABLE `ecs_cat_recommend` (
+  `cat_id` smallint(5) NOT NULL,
+  `recommend_type` tinyint(1) NOT NULL,
+  PRIMARY KEY  (`cat_id`,`recommend_type`)
+) TYPE=MyISAM;
+
+-- 增加商品批量购买优惠价格表
+DROP TABLE IF EXISTS `ecs_volume_price`;
+CREATE TABLE IF NOT EXISTS `ecs_volume_price` (
+  `price_type` tinyint(1) unsigned NOT NULL,
+  `goods_id` mediumint(8) unsigned NOT NULL,
+  `volume_number` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `volume_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`price_type`,`goods_id`,`volume_number`)
+) TYPE=MyISAM;
+
+-- 增加超值礼包商品表
+DROP TABLE IF EXISTS `ecs_package_goods`;
+CREATE TABLE `ecs_package_goods` (
+  `package_id` mediumint( 8 ) unsigned NOT NULL DEFAULT '0',
+  `goods_id` mediumint( 8 ) unsigned NOT NULL DEFAULT '0',
+  `goods_number` smallint( 5 ) unsigned NOT NULL DEFAULT '1',
+  `admin_id` tinyint( 3 ) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY ( `package_id` , `goods_id` , `admin_id` )
+) TYPE = MYISAM;
+
+-- 增加积分商城商品表
+DROP TABLE IF EXISTS `ecs_exchange_goods`;
+CREATE TABLE IF NOT EXISTS `ecs_exchange_goods` (
+  `goods_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `exchange_integral` int(10) unsigned NOT NULL DEFAULT '0',
+  `is_exchange` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `is_hot` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`goods_id`)
+) TYPE=MYISAM;

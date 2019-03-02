@@ -3,15 +3,15 @@
 /**
  * ECSHOP 升级程序 之 模型
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-01-30 15:37:32 +0800 (星期二, 30 一月 2007) $
- * $Id: index.php 4749 2007-01-30 07:37:32Z paulgao $
+ * $Author: testyang $
+ * $Date: 2008-10-29 16:46:41 +0800 (星期三, 29 十月 2008) $
+ * $Id: lib_updater.php 15130 2008-10-29 08:46:41Z testyang $
  */
 
 /**
@@ -118,7 +118,8 @@ function get_record_number($next_ver, $type)
     global $db, $prefix;
 
     $file_path = ROOT_PATH . 'upgrade/packages/' . $next_ver . '/' . $type . '.sql';
-    $se = new sql_executor($db, 'utf8', 'ecs_', $prefix);
+    $db_charset = strtolower((str_replace('-', '', EC_CHARSET)));
+    $se = new sql_executor($db, $db_charset, 'ecs_', $prefix);
 
     $query_items = $se->parse_sql_file($file_path);
 
@@ -202,8 +203,9 @@ function update_structure_automatically($next_ver, $cur_pos)
         return true;
     }
 
-    $structure_path = ROOT_PATH . 'upgrade/packages/' . $next_ver . '/structure.sql';
-    $se = new sql_executor($db, 'utf8', 'ecs_', $prefix,
+    $structure_path = ROOT_PATH . 'upgrade/packages/' . $next_ver . '/' . $ver_obj->sql_files['structure'];
+    $db_charset = strtolower((str_replace('-', '', EC_CHARSET)));
+    $se = new sql_executor($db, $db_charset, 'ecs_', $prefix,
             ROOT_PATH . 'data/upgrade_'.$next_ver.'.log',
             $ver_obj->auto_match, array(1062, 1146));
 
@@ -233,7 +235,8 @@ function update_data_automatically($next_ver)
         return true;
     }
 
-    $se = new sql_executor($db, 'utf8', 'ecs_', $prefix,
+    $db_charset = strtolower((str_replace('-', '', EC_CHARSET)));
+    $se = new sql_executor($db, $db_charset, 'ecs_', $prefix,
             ROOT_PATH . 'data/upgrade_'.$next_ver.'.log',
             $ver_obj->auto_match, array(1062, 1146));
 
@@ -241,10 +244,10 @@ function update_data_automatically($next_ver)
     $ver_root = ROOT_PATH . 'upgrade/packages/' . $next_ver . '/';
     if (is_array($ver_obj->sql_files['data']))
     {
-        $lang = get_current_lang();
+        $lang = EC_LANGUAGE . '_' . EC_CHARSET;
         if (!isset($ver_obj->sql_files['data'][$lang]))
         {
-           $lang = 'zh_cn';
+           $lang = 'zh_cn_utf-8';
         }
         $data_path = $ver_root . $ver_obj->sql_files['data'][$lang];
     }
@@ -326,6 +329,12 @@ function dump_database($next_ver)
 
     include_once(ROOT_PATH . 'admin/includes/cls_sql_dump.php');
     require_once(ROOT_PATH . 'upgrade/packages/' . $next_ver . '/dump_table.php');
+
+    /* 备份表为空时不作备份，返回真 */
+    if (empty($temp))
+    {
+        return true;
+    }
     @set_time_limit(300);
 
     $dump = new cls_sql_dump($db);
@@ -384,7 +393,8 @@ function rollback($next_ver)
         return false;
     }
 
-    $se = new sql_executor($db, 'utf8', 'ecs_', $prefix);
+    $db_charset = strtolower((str_replace('-', '', EC_CHARSET)));
+    $se = new sql_executor($db, $db_charset, 'ecs_', $prefix);
     $result = $se->run_all($structure_path);
     if ($result === false)
     {
@@ -393,6 +403,276 @@ function rollback($next_ver)
     }
 
     return true;
+}
+
+
+/**
+ * 获得 ECSHOP 当前环境的 HTTP 协议方式
+ *
+ * @access  public
+ *
+ * @return  void
+ */
+function http()
+{
+    return (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://';
+}
+
+/**
+ * 取得当前的域名
+ *
+ * @access  public
+ *
+ * @return  string      当前的域名
+ */
+function get_domain()
+{
+    /* 协议 */
+    $protocol = http();
+
+    /* 域名或IP地址 */
+    if (isset($_SERVER['HTTP_X_FORWARDED_HOST']))
+    {
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    }
+    elseif (isset($_SERVER['HTTP_HOST']))
+    {
+        $host = $_SERVER['HTTP_HOST'];
+    }
+    else
+    {
+        /* 端口 */
+        if (isset($_SERVER['SERVER_PORT']))
+        {
+            $port = ':' . $_SERVER['SERVER_PORT'];
+
+            if ((':80' == $port && 'http://' == $protocol) || (':443' == $port && 'https://' == $protocol))
+            {
+                $port = '';
+            }
+        }
+        else
+        {
+            $port = '';
+        }
+
+        if (isset($_SERVER['SERVER_NAME']))
+        {
+            $host = $_SERVER['SERVER_NAME'] . $port;
+        }
+        elseif (isset($_SERVER['SERVER_ADDR']))
+        {
+            $host = $_SERVER['SERVER_ADDR'] . $port;
+        }
+    }
+
+    return $protocol . $host;
+}
+
+/**
+ * 获得 ECSHOP 当前环境的 URL 地址
+ *
+ * @access  public
+ *
+ * @return  void
+ */
+function url()
+{
+    define(PHP_SELF, $_SERVER['PHP_SELF']);
+    $curr = strpos(PHP_SELF, 'upgrade/') !== false ?
+            preg_replace('/(.*)(upgrade)(\/?)(.)*/i', '\1', dirname(PHP_SELF)) :
+            dirname(PHP_SELF);
+
+    $root = str_replace('\\', '/', $curr);
+
+    if (substr($root, -1) != '/')
+    {
+        $root .= '/';
+    }
+
+    return get_domain() . $root;
+}
+
+function dfopen($url, $limit = 0, $post = '', $cookie = '', $bysocket = FALSE, $ip = '', $timeout = 15, $block = TRUE) {
+        $return = '';
+        $matches = parse_url($url);
+        $host = $matches['host'];
+        $path = $matches['path'] ? $matches['path'].'?'.$matches['query'].'#'.$matches['fragment'] : '/';
+        $port = !empty($matches['port']) ? $matches['port'] : 80;
+
+        if($post) {
+            $out = "POST $path HTTP/1.0\r\n";
+            $out .= "Accept: */*\r\n";
+            //$out .= "Referer: $boardurl\r\n";
+            $out .= "Accept-Language: zh-cn\r\n";
+            $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
+            $out .= "User-Agent: $_SERVER[HTTP_USER_AGENT]\r\n";
+            $out .= "Host: $host\r\n";
+            $out .= 'Content-Length: '.strlen($post)."\r\n";
+            $out .= "Connection: Close\r\n";
+            $out .= "Cache-Control: no-cache\r\n";
+            $out .= "Cookie: $cookie\r\n\r\n";
+            $out .= $post;
+        } else {
+            $out = "GET $path HTTP/1.0\r\n";
+            $out .= "Accept: */*\r\n";
+            //$out .= "Referer: $boardurl\r\n";
+            $out .= "Accept-Language: zh-cn\r\n";
+            $out .= "User-Agent: $_SERVER[HTTP_USER_AGENT]\r\n";
+            $out .= "Host: $host\r\n";
+            $out .= "Connection: Close\r\n";
+            $out .= "Cookie: $cookie\r\n\r\n";
+        }
+        $fp = @fsockopen(($ip ? $ip : $host), $port, $errno, $errstr, $timeout);
+        if(!$fp) {
+            return '';//note $errstr : $errno \r\n
+        } else {
+            stream_set_blocking($fp, $block);
+            stream_set_timeout($fp, $timeout);
+            @fwrite($fp, $out);
+            $status = stream_get_meta_data($fp);
+            if(!$status['timed_out']) {
+                while (!feof($fp)) {
+                    if(($header = @fgets($fp)) && ($header == "\r\n" ||  $header == "\n")) {
+                        break;
+                    }
+                }
+
+                $stop = false;
+                while(!feof($fp) && !$stop) {
+                    $data = fread($fp, ($limit == 0 || $limit > 8192 ? 8192 : $limit));
+                    $return .= $data;
+                    if($limit) {
+                        $limit -= strlen($data);
+                        $stop = $limit <= 0;
+                    }
+                }
+            }
+            @fclose($fp);
+            return $return;
+        }
+    }
+
+function write_charset_config($lang, $charset)
+{
+    $config_file = ROOT_PATH . 'data/config.php';
+    $s = file_get_contents($config_file);
+    $s = insertconfig($s, "/\?\>/","");
+    $s = insertconfig($s, "/define\('EC_LANGUAGE',\s*'.*?'\);/i", "define('EC_LANGUAGE', '" . $lang . "');");
+    $s = insertconfig($s, "/define\('EC_CHARSET',\s*'.*?'\);/i", "define('EC_CHARSET', '" . $charset . "');");
+    $s = insertconfig($s, "/\?\>/","?>");
+    return file_put_contents($config_file, $s);
+}
+
+function remove_lang_config()
+{
+    $config_file = ROOT_PATH . 'data/config.php';
+    $s = file_get_contents($config_file);
+    $s = insertconfig($s, "/\?\>/", "");
+    $s = insertconfig($s, "/define\('EC_LANGUAGE',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/\?\>/", "?>");
+    return file_put_contents($config_file, $s);
+}
+
+function change_ucenter_config()
+{
+    global $db, $ecs;
+    $config_file = ROOT_PATH . 'data/config.php';
+    @include ($config_file);
+    if (defined('UC_CONNECT'))
+    {
+        $cfg = array(
+            'uc_id' => UC_APPID,
+            'uc_key' => UC_KEY,
+            'uc_url' => UC_API,
+            'uc_ip' => UC_IP,
+            'uc_connect' => UC_CONNECT,
+            'uc_charset' => UC_CHARSET,
+            'db_host' => UC_DBHOST,
+            'db_user' => UC_DBUSER,
+            'db_name' => UC_DBNAME,
+            'db_pass' => UC_DBPW,
+            'db_pre' => UC_DBTABLEPRE,
+            'db_charset' => UC_DBCHARSET,
+        );
+        $db->query('UPDATE ' . $ecs->table('shop_config') . "  SET value='ucenter' WHERE code='integrate_code'");
+        $db->query('UPDATE ' . $ecs->table('shop_config') . "  SET value='". serialize($cfg) ."' WHERE code='integrate_config'");
+    }
+    return true;
+}
+
+function remove_ucenter_config()
+{
+    global $db, $ecs;
+    $config_file = ROOT_PATH . 'data/config.php';
+    $s = file_get_contents($config_file);
+    $s = insertconfig($s, "/\?\>/", "");
+    $s = insertconfig($s, "/\/\*\=*UCenter\=*\*\//i", "");
+    $s = insertconfig($s, "/define\('UC_CONNECT',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBHOST',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBUSER',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBPW',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBNAME',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBCHARSET',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBTABLEPRE',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_DBCONNECT',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_KEY',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_API',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_CHARSET',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_IP',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_APPID',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/define\('UC_PPP',\s*'.*?'\);/i", "");
+    $s = insertconfig($s, "/\?\>/", "?>");
+    return file_put_contents($config_file, $s);
+}
+
+function save_uc_config($config)
+{
+    global $db, $ecs;
+    $success = false;
+
+    list($appauthkey, $appid, $ucdbhost, $ucdbname, $ucdbuser, $ucdbpw, $ucdbcharset, $uctablepre, $uccharset, $ucapi, $ucip) = explode('|', $config);
+
+    $config_file = ROOT_PATH . 'data/config.php';
+    $s = file_get_contents($config_file);
+    $s = insertconfig($s, "/\?\>/","");
+
+    $link = mysql_connect($ucdbhost, $ucdbuser, $ucdbpw, 1);
+    $uc_connnect = $link && mysql_select_db($ucdbname, $link) ? 'mysql' : 'post';
+    $s = insertconfig($s, "/define\('EC_CHARSET',\s*'.*?'\);/i", "define('EC_CHARSET', '" . EC_CHARSET . "');");
+
+    $s = insertconfig($s, "/\/\*\=*UCenter\=*\*\//","/*=================UCenter=======================*/");
+    $s = insertconfig($s, "/define\('UC_CONNECT',\s*'.*?'\);/i", "define('UC_CONNECT', '$uc_connnect');");
+    $s = insertconfig($s, "/define\('UC_DBHOST',\s*'.*?'\);/i", "define('UC_DBHOST', '$ucdbhost');");
+    $s = insertconfig($s, "/define\('UC_DBUSER',\s*'.*?'\);/i", "define('UC_DBUSER', '$ucdbuser');");
+    $s = insertconfig($s, "/define\('UC_DBPW',\s*'.*?'\);/i", "define('UC_DBPW', '$ucdbpw');");
+    $s = insertconfig($s, "/define\('UC_DBNAME',\s*'.*?'\);/i", "define('UC_DBNAME', '$ucdbname');");
+    $s = insertconfig($s, "/define\('UC_DBCHARSET',\s*'.*?'\);/i", "define('UC_DBCHARSET', '$ucdbcharset');");
+    $s = insertconfig($s, "/define\('UC_DBTABLEPRE',\s*'.*?'\);/i", "define('UC_DBTABLEPRE', '`$ucdbname`.$uctablepre');");
+    $s = insertconfig($s, "/define\('UC_DBCONNECT',\s*'.*?'\);/i", "define('UC_DBCONNECT', '0');");
+    $s = insertconfig($s, "/define\('UC_KEY',\s*'.*?'\);/i", "define('UC_KEY', '$appauthkey');");
+    $s = insertconfig($s, "/define\('UC_API',\s*'.*?'\);/i", "define('UC_API', '$ucapi');");
+    $s = insertconfig($s, "/define\('UC_CHARSET',\s*'.*?'\);/i", "define('UC_CHARSET', '$uccharset');");
+    $s = insertconfig($s, "/define\('UC_IP',\s*'.*?'\);/i", "define('UC_IP', '$ucip');");
+    $s = insertconfig($s, "/define\('UC_APPID',\s*'?.*?'?\);/i", "define('UC_APPID', '$appid');");
+    $s = insertconfig($s, "/define\('UC_PPP',\s*'?.*?'?\);/i", "define('UC_PPP', '20');");
+    $s = insertconfig($s, "/\?\>/","?>");
+
+    return file_put_contents($config_file, $s);
+}
+
+function insertconfig($s, $find, $replace)
+{
+    if(preg_match($find, $s))
+    {
+        $s = preg_replace($find, $replace, $s);
+    }
+    else
+    {
+        // 插入到最后一行
+        $s .= "\r\n".$replace;
+    }
+    return $s;
 }
 
 ?>

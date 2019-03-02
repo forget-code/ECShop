@@ -775,13 +775,13 @@ Calendar.prototype.create = function (_par) {
 	this._nav_py = hh("&#x00ab;", 1, -2);
 	this._nav_py.ttip = Calendar._TT["PREV_YEAR"];
 
-	this._nav_pm = hh("&#x2039;", 1, -1);
+	this._nav_pm = hh("&#8249;", 1, -1);
 	this._nav_pm.ttip = Calendar._TT["PREV_MONTH"];
 
 	this._nav_now = hh(Calendar._TT["TODAY"], this.weekNumbers ? 4 : 3, 0);
 	this._nav_now.ttip = Calendar._TT["GO_TODAY"];
 
-	this._nav_nm = hh("&#x203a;", 1, 1);
+	this._nav_nm = hh("&#8250;", 1, 1);
 	this._nav_nm.ttip = Calendar._TT["NEXT_MONTH"];
 
 	this._nav_ny = hh("&#x00bb;", 1, 2);

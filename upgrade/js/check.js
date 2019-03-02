@@ -5,6 +5,7 @@ var curVer = "";
 var nextVer = "";
 var iframe = null;
 var notice = null;
+var ui = "";
 
 /* Ajax设置 */
 Ajax.onRunning  = null;
@@ -27,10 +28,19 @@ function stopNotice() {
 
 /* 页面加载完毕执行一些操作 */
 window.onload = function () {
-    $("js-submit").onclick = function () {
-        this.setAttribute("disabled", "true");
-        upgrade();
-    };
+    if ($("js-submit")) {
+        $("js-submit").onclick = function () {
+            this.setAttribute("disabled", "true");
+            upgrade();
+        };
+    }
+
+    if ($("js-submit-uc")) {
+        $("js-submit-uc").onclick = function () {
+            this.setAttribute("disabled", "true");
+            importUCenterData();
+        }
+    }
 
     iframe = frames[0];
     notice = $("js-notice", iframe);
@@ -58,8 +68,18 @@ window.onload = function () {
 
     $("js-monitor-close").onclick = function () {
         $("js-monitor").style.display = "none";
-        $("js-submit").removeAttribute("disabled");
+        if ($("js-submit")) {
+            $("js-submit").removeAttribute("disabled");
+        }
+        if ($("js-submit-uc")) {
+            $("js-submit-uc").removeAttribute("disabled");
+        }
     };
+
+    ui = QueryString('ui');
+    if (ui == '') {
+        ui = 'ecshop';
+    }
 };
 
 /**
@@ -239,16 +259,20 @@ function updateData() {
  * 升级版本
  */
 function updateVersion() {
-    var params = "next_ver=" + nextVer;
-    Ajax.call("./index.php?step=update_version", params, function (result) {
-        if (result.replace(/^\s+/g, '') === "OK") {
-            go();
-        } else {
-            notice.innerHTML += $_LANG["fail"] + lf
-            notice.innerHTML += result;
-            displayErrorMsg();
-        }
-    });
+    if ((ui == 'ucenter') && (nextVer == 'v2.6.0') && typeof(arguments[0]) == 'undefined') {
+        goToUCenter();
+    } else {
+        var params = "next_ver=" + nextVer;
+        Ajax.call("./index.php?step=update_version", params, function (result) {
+            if (result.replace(/^\s+/g, '') === "OK") {
+                go();
+            } else {
+                notice.innerHTML += $_LANG["fail"] + lf
+                notice.innerHTML += result;
+                displayErrorMsg();
+            }
+        });
+    }
 }
 
 /**
@@ -321,7 +345,7 @@ function rollback()
 function goToDone() {
     stopNotice();
     window.setTimeout(function () {
-        location.href = "./index.php?step=done";
+        location.href = "./index.php?step=done&ui="+ui;
     }, 1000);
 }
 
@@ -357,4 +381,57 @@ function localize(target, winHDL) {
 
     y = target.offsetTop + pageYOffset;
     winHDL.scrollTo(0, y);
+}
+
+/**
+ * 跳到 UCenter 安装页面
+ */
+function goToUCenter(){
+    stopNotice();
+    window.setTimeout(function () {
+        location.href = "./index.php?step=uccheck";
+    }, 1000);
+}
+
+/**
+ * 安装UCenter的数据
+ */
+function importUCenterData() {
+    startNotice();
+    $("js-monitor").style.display = "block";
+    notice.innerHTML = $_LANG["initialize"] + $_LANG["suspension_points"];
+    delay(1);
+    try {
+        var merge = ($("js-merge-1").checked == true)?$("js-merge-1").value : $("js-merge-2").value;
+        var params ="merge=" + merge;
+        Ajax.call("./index.php?step=userimporttouc", params, function (result) {
+            if (result.error > 0) {
+                notice.innerHTML += result.message + lr;
+                $("js-monitor-notice").style.display = "block";
+                stopNotice();
+            } else {
+                var result = getVerList();
+                if (result === false) {
+                    displayErrorMsg();
+                    return;
+                }
+                curVer = result["cur_ver"];
+                needupVerList = result["needup_ver_list"];
+
+                if (needupVerList.length === 0) {
+                    notice.innerHTML += $_LANG["fail"] + lf
+                        + lf + lf + $_LANG["is_last_version"] + lf;
+                    displayErrorMsg();
+                } else {
+                    notice.innerHTML += $_LANG["success"] + lf;
+                    nextVer = needupVerList.shift();
+                    updateVersion(true);
+                }
+            }
+        }, "POST", "JSON");
+    } catch (ex) {
+        ex = typeof(ex) === "object" ? ex.message : ex;
+        location.href="index.php?step=error&msg="
+            + encodeURI(ex);
+    }
 }

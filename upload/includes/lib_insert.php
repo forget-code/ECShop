@@ -3,15 +3,14 @@
 /**
  * ECSHOP 动态内容函数库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-10-23 13:08:32 +0800 (星期二, 23 十月 2007) $
- * $Id: lib_insert.php 13116 2007-10-23 05:08:32Z paulgao $
+ * $Author: testyang $
+ * $Id: lib_insert.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -156,7 +155,7 @@ function insert_ads($arr)
                 "WHERE enabled = 1 AND start_time <= '" . $time . "' AND end_time >= '" . $time . "' ".
                     "AND a.position_id = '" . $arr['id'] . "' " .
                 'ORDER BY rnd LIMIT ' . $arr['num'];
-        $res = $GLOBALS['db']->GetAllCached($sql);
+        $res = $GLOBALS['db']->GetAll($sql);
     }
     else
     {
@@ -169,7 +168,7 @@ function insert_ads($arr)
                     "WHERE enabled = 1 AND a.position_id = '" . $arr['id'] .
                         "' AND start_time <= '" . $time . "' AND end_time >= '" . $time . "' " .
                     'ORDER BY rnd LIMIT 1';
-            $static_res[$arr['id']] = $GLOBALS['db']->GetAllCached($sql);
+            $static_res[$arr['id']] = $GLOBALS['db']->GetAll($sql);
         }
         $res = $static_res[$arr['id']];
     }
@@ -187,14 +186,14 @@ function insert_ads($arr)
         {
             case 0: // 图片广告
                 $src = (strpos($row['ad_code'], 'http://') === false && strpos($row['ad_code'], 'https://') === false) ?
-                        "data/afficheimg/$row[ad_code]" : $row['ad_code'];
+                        DATA_DIR . "/afficheimg/$row[ad_code]" : $row['ad_code'];
                 $ads[] = "<a href='affiche.php?ad_id=$row[ad_id]&amp;uri=" .urlencode($row["ad_link"]). "'
                 target='_blank'><img src='$src' width='" .$row['ad_width']. "' height='$row[ad_height]'
                 border='0' /></a>";
                 break;
             case 1: // Flash
                 $src = (strpos($row['ad_code'], 'http://') === false && strpos($row['ad_code'], 'https://') === false) ?
-                        "data/afficheimg/$row[ad_code]" : $row['ad_code'];
+                        DATA_DIR . "/afficheimg/$row[ad_code]" : $row['ad_code'];
                 $ads[] = "<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" " .
                          "codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\"  " .
                            "width='$row[ad_width]' height='$row[ad_height]'>
@@ -247,7 +246,7 @@ function insert_member_info()
     {
         if (!empty($_COOKIE['ECS']['username']))
         {
-            $GLOBALS['smarty']->assign('ecs_username', $_COOKIE['ECS']['username']);
+            $GLOBALS['smarty']->assign('ecs_username', stripslashes($_COOKIE['ECS']['username']));
         }
         $captcha = intval($GLOBALS['_CFG']['captcha']);
         if (($captcha & CAPTCHA_LOGIN) && (!($captcha & CAPTCHA_LOGIN_FAIL) || (($captcha & CAPTCHA_LOGIN_FAIL) && $_SESSION['login_fail'] > 2)) && gd_version() > 0)
@@ -283,7 +282,7 @@ function insert_comments($arr)
         $GLOBALS['smarty']->assign('enabled_captcha', 1);
         $GLOBALS['smarty']->assign('rand', mt_rand());
     }
-    $GLOBALS['smarty']->assign('username',     $_SESSION['user_name']);
+    $GLOBALS['smarty']->assign('username',     stripslashes($_SESSION['user_name']));
     $GLOBALS['smarty']->assign('email',        $_SESSION['email']);
     $GLOBALS['smarty']->assign('comment_type', $arr['type']);
     $GLOBALS['smarty']->assign('id',           $arr['id']);

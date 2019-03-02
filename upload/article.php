@@ -3,15 +3,14 @@
 /**
  * ECSHOP 文章内容
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: article.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: article.php 15115 2008-10-28 09:43:36Z testyang $
 */
 
 define('IN_ECS', true);
@@ -62,7 +61,7 @@ if (!$smarty->is_cached('article.dwt', $cache_id))
     $smarty->assign('best_goods',       get_recommend_goods('best'));       // 推荐商品
     $smarty->assign('new_goods',        get_recommend_goods('new'));        // 最新商品
     $smarty->assign('hot_goods',        get_recommend_goods('hot'));        // 热点文章
-    $smarty->assign('promotion_goods',  get_recommend_goods('promote'));    // 特价商品
+    $smarty->assign('promotion_goods',  get_promote_goods());    // 特价商品
     $smarty->assign('related_goods',    article_related_goods($_REQUEST['id']));  // 特价商品
     $smarty->assign('id',               $article_id);
     $smarty->assign('username',         $_SESSION['user_name']);
@@ -103,18 +102,23 @@ if (!$smarty->is_cached('article.dwt', $cache_id))
 
     /* 上一篇下一篇文章 */
     $next_article = $db->getRow("SELECT article_id, title FROM " .$ecs->table('article'). " WHERE article_id > $article_id AND cat_id=$article[cat_id] AND is_open=1 LIMIT 1");
-    $smarty->assign('next_article', $next_article);
+    if (!empty($next_article))
+    {
+        $next_article['url'] = build_uri('article', array('aid'=>$next_article['article_id']), $next_article['title']);
+        $smarty->assign('next_article', $next_article);
+    }
+
     $prev_aid = $db->getOne("SELECT max(article_id) FROM " . $ecs->table('article') . " WHERE article_id < $article_id AND cat_id=$article[cat_id] AND is_open=1");
     if (!empty($prev_aid))
     {
         $prev_article = $db->getRow("SELECT article_id, title FROM " .$ecs->table('article'). " WHERE article_id = $prev_aid");
+        $prev_article['url'] = build_uri('article', array('aid'=>$prev_article['article_id']), $prev_article['title']);
         $smarty->assign('prev_article', $prev_article);
     }
 
     assign_dynamic('article');
 }
-
-if($article['cat_id'] > 2)
+if(isset($article) && $article['cat_id'] > 2)
 {
     $smarty->display('article.dwt', $cache_id);
 }
@@ -184,8 +188,8 @@ function article_related_goods($id)
         $arr[$row['goods_id']]['goods_name']    = $row['goods_name'];
         $arr[$row['goods_id']]['short_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
             sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
-        $arr[$row['goods_id']]['goods_thumb']   = (empty($row['goods_thumb'])) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
-        $arr[$row['goods_id']]['goods_img']     = (empty($row['goods_img'])) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_img'];
+        $arr[$row['goods_id']]['goods_thumb']   = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']     = get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['market_price']  = price_format($row['market_price']);
         $arr[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $arr[$row['goods_id']]['url']           = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);

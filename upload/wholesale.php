@@ -3,18 +3,17 @@
 /**
  * ECSHOP 批发前台文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * @author:     scott ye <scott.yell@gmail.com>
  * @version:    v2.x
  * ---------------------------------------------
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: wholesale.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: wholesale.php 15569 2009-01-15 10:40:56Z sunxiaodong $
  */
 
 define('IN_ECS', true);
@@ -24,7 +23,7 @@ require(dirname(__FILE__) . '/includes/init.php');
 /* 如果没登录，提示登录 */
 if ($_SESSION['user_rank'] <= 0)
 {
-    show_message($_LANG['ws_login_please'], $_LANG['ws_return_home'], 'index.php');
+    show_message($_LANG['ws_user_rank'], $_LANG['ws_return_home'], 'index.php');
 }
 
 /*------------------------------------------------------ */
@@ -63,24 +62,7 @@ if ($_REQUEST['act'] == 'list')
         $wholesale_list = wholesale_list($size, $page, $where);
         $smarty->assign('wholesale_list',  $wholesale_list);
 
-        /* 设置分页链接 */
-        $url = 'wholesale.php?act=list&amp;page=';
-        $pager = array(
-            'search'       => array('act' => 'list'),
-            'page'         => $page,
-            'size'         => $size,
-            'record_count' => $count,
-            'page_count'   => $page_count,
-            'page_first'   => $url . '1',
-            'page_prev'    => $page > 1 ? $url . ($page - 1) : 'javascript:;',
-            'page_next'    => $page < $page_count ? $url . ($page + 1) : 'javascript:;',
-            'page_last'    => $url . $page_count,
-            'array'        => array()
-        );
-        for ($i = 1; $i <= $page_count; $i++)
-        {
-            $pager['array'][$i] = $i;
-        }
+        $pager = get_pager('wholesale.php', array('act' => 'list'), $count, $page, $size);
         $smarty->assign('pager', $pager);
 
         /* 批发商品购物车 */
@@ -133,9 +115,16 @@ elseif ($_REQUEST['act'] == 'price_list')
         }
     }
 
-    header("Content-type: application/vnd.ms-excel; charset=GB2312");
+    header("Content-type: application/vnd.ms-excel; charset=utf-8");
     header("Content-Disposition: attachment; filename=price_list.xls");
-    echo ecs_iconv('UTF8', 'GB2312', $data);
+    if (EC_CHARSET == 'utf-8')
+    {
+        echo ecs_iconv('UTF8', 'GB2312', $data);
+    }
+    else
+    {
+        echo $data;
+    }
 }
 
 /*------------------------------------------------------ */

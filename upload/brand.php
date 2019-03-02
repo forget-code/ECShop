@@ -3,15 +3,14 @@
 /**
  * ECSHOP 品牌列表
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-02-20 10:12:57 +0800 (星期三, 20 二月 2008) $
- * $Id: brand.php 14156 2008-02-20 02:12:57Z fenghl $
+ * $Author: sunxiaodong $
+ * $Id: brand.php 15423 2008-12-11 03:28:45Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -38,9 +37,23 @@ if (!empty($_REQUEST['brand']))
 }
 if (empty($brand_id))
 {
-    /* 如果分类ID为0，则返回首页 */
-    ecs_header("Location: ./\n");
-    exit;
+    /* 缓存编号 */
+    $cache_id = sprintf('%X', crc32($_CFG['lang']));
+    if (!$smarty->is_cached('brand_list.dwt', $cache_id))
+    {
+        assign_template();
+        $position = assign_ur_here('', $_LANG['all_brand']);
+        $smarty->assign('page_title',      $position['title']);    // 页面标题
+        $smarty->assign('ur_here',         $position['ur_here']);  // 当前位置
+
+        $smarty->assign('categories',      get_categories_tree()); // 分类树
+        $smarty->assign('helps',           get_shop_help());       // 网店帮助
+        $smarty->assign('top_goods',       get_top10());           // 销售排行
+
+        $smarty->assign('brand_list', get_brands());
+    }
+    $smarty->display('brand_list.dwt', $cache_id);
+    exit();
 }
 
 /* 初始化分页信息 */
@@ -55,9 +68,9 @@ $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_C
 
 $sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
 $order = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
-$display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_SESSION['display']) ? $_SESSION['display'] : $default_display_type);
+$display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
 
-$_SESSION['display'] = $display;
+setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
 
 /*------------------------------------------------------ */
 //-- PROCESSOR
@@ -76,6 +89,7 @@ if (!$smarty->is_cached('brand.dwt', $cache_id))
         exit;
     }
 
+    $smarty->assign('data_dir',    DATA_DIR);
     $smarty->assign('keywords',    htmlspecialchars($brand_info['brand_desc']));
     $smarty->assign('description', htmlspecialchars($brand_info['brand_desc']));
 
@@ -90,6 +104,7 @@ if (!$smarty->is_cached('brand.dwt', $cache_id))
     $smarty->assign('categories',     get_categories_tree());        // 分类树
     $smarty->assign('helps',          get_shop_help());              // 网店帮助
     $smarty->assign('top_goods',      get_top10());                  // 销售排行
+    $smarty->assign('show_marketprice', $_CFG['show_marketprice']);
     $smarty->assign('brand_cat_list', brand_related_cat($brand_id)); // 相关分类
     $smarty->assign('feed_url',       ($_CFG['rewrite'] == 1) ? "feed-b$brand_id.xml" : 'feed.php?brand=' . $brand_id);
 
@@ -215,12 +230,12 @@ function brand_recommend_goods($type, $brand, $cat = 0)
             $goods[$idx]['name']         = $row['goods_name'];
             $goods[$idx]['brief']        = $row['goods_brief'];
             $goods[$idx]['brand_name']   = $row['brand_name'];
-            $goods[$idx]['short_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
+            $goods[$idx]['short_style_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
                                                sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
             $goods[$idx]['market_price'] = price_format($row['market_price']);
             $goods[$idx]['shop_price']   = price_format($row['shop_price']);
-            $goods[$idx]['thumb']        = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
-            $goods[$idx]['goods_img']    = empty($row['goods_img']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_img'];
+            $goods[$idx]['thumb']        = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+            $goods[$idx]['goods_img']    = get_image_path($row['goods_id'], $row['goods_img']);
             $goods[$idx]['url']          = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
 
             $idx++;
@@ -299,8 +314,8 @@ function brand_get_goods($brand_id, $cate, $size, $page, $sort, $order)
         $arr[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $arr[$row['goods_id']]['promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';
         $arr[$row['goods_id']]['goods_brief']   = $row['goods_brief'];
-        $arr[$row['goods_id']]['goods_thumb']   = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
-        $arr[$row['goods_id']]['goods_img']     = empty($row['goods_img'])   ? $GLOBALS['_CFG']['no_picture'] : $row['goods_img'];
+        $arr[$row['goods_id']]['goods_thumb']   = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$row['goods_id']]['goods_img']     = get_image_path($row['goods_id'], $row['goods_img']);
         $arr[$row['goods_id']]['url']           = build_uri('goods', array('gid' => $row['goods_id']), $row['goods_name']);
     }
 

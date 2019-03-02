@@ -3,33 +3,99 @@
 /**
  * ECSHOP 图片批量处理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-02-25 17:06:34 +0800 (星期一, 25 二月 2008) $
- * $Id: picture_batch.php 14186 2008-02-25 09:06:34Z fenghl $
+ * $Author: sunxiaodong $
+ * $Id: picture_batch.php 15532 2009-01-07 10:48:14Z sunxiaodong $
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 include_once(ROOT_PATH . 'includes/cls_image.php');
+include_once(ROOT_PATH . '/admin/includes/lib_goods.php');
 $image = new cls_image($_CFG['bgcolor']);
+
+/* 权限检查 */
+admin_priv('picture_batch');
 
 if (empty($_GET['is_ajax']))
 {
     assign_query_info();
     $smarty->assign('ur_here', $_LANG['12_batch_pic']);
+    $smarty->assign('cat_list',     cat_list(0, 0));
+    $smarty->assign('brand_list',   get_brand_list());
     $smarty->display('picture_batch.htm');
+}
+elseif (!empty($_GET['get_goods']))
+{
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON();
+    $brand_id = intval($_GET['brand_id']);
+    $cat_id = intval($_GET['cat_id']);
+    $goods_where = '';
+
+    if (!empty($cat_id))
+    {
+        $goods_where .= ' AND ' . get_children($cat_id);
+    }
+    if (!empty($brand_id))
+    {
+        $goods_where .= " AND g.`brand_id` = '$brand_id'";
+    }
+
+    $sql = 'SELECT `goods_id`, `goods_name` FROM ' . $ecs->table('goods') . ' AS g WHERE 1 ' . $goods_where . ' LIMIT 50';
+
+    die($json->encode($db->getAll($sql)));
 }
 else
 {
     include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON();
+    $proc_thumb = (isset($GLOBALS['shop_id']) && $GLOBALS['shop_id'] > 0);
+    $do_album = empty($_GET['do_album']) ? 0 : 1;
+    $do_icon = empty($_GET['do_icon']) ? 0 : 1;
+    $goods_id = trim($_GET['goods_id']);
+    $brand_id = intval($_GET['brand_id']);
+    $cat_id = intval($_GET['cat_id']);
+    $goods_where = '';
+    $album_where = '';
+    $module_no = 0;
+
+    if ($do_album == 1 AND $do_icon == 0)
+    {
+        $module_no = 1;
+    }
+    if (empty($goods_id))
+    {
+        if (!empty($cat_id))
+        {
+            $goods_where .= ' AND ' . get_children($cat_id);
+        }
+        if (!empty($brand_id))
+        {
+            $goods_where .= " AND g.`brand_id` = '$brand_id'";
+        }
+
+    }
+    else
+    {
+        $goods_where .=  ' AND g.`goods_id` ' . db_create_in($goods_id);
+    }
+
+    if (!empty($goods_where))
+    {
+        $album_where = ', ' . $ecs->table('goods'). " AS g WHERE album.img_original > '' AND album.goods_id = g.goods_id " . $goods_where;
+    }
+    else
+    {
+        $album_where = " WHERE album.img_original > ''";
+    }
+
 
     /* 设置最长执行时间为5分钟 */
     @set_time_limit(300);
@@ -53,12 +119,23 @@ else
         {
             make_json_error($image->error_msg());
         }
+        $title = '';
 
-        $count = $db->GetOne("SELECT COUNT(*) FROM ".$ecs->table('goods'). " WHERE original_img <> ''");
+        if (isset($_GET['total_icon']))
+        {
+            $count = $db->GetOne("SELECT COUNT(*) FROM ".$ecs->table('goods'). " AS g WHERE g.original_img <> ''" . $goods_where);
+            $title = sprintf($_LANG['goods_format'], $count, $page_size);
+        }
 
-        $title = sprintf($_LANG['goods_format'], $count, $page_size);
-        $result = array('error' => 0, 'message' => '', 'content' => '', 'module_no' => 0, 'done' => 1, 'title' => $title, 'page_size' => $page_size,
+        if (isset($_GET['total_album']))
+        {
+            $count = $GLOBALS['db']->GetOne("SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('goods_gallery'). ' AS album ' . $album_where);
+            $title = sprintf('&nbsp;' . $_LANG['gallery_format'], $count, $page_size);
+            $module_no = 1;
+        }
+        $result = array('error' => 0, 'message' => '', 'content' => '', 'module_no' => $module_no, 'done' => 1, 'title' => $title, 'page_size' => $page_size,
             'page' => 1, 'thumb'=> $thumb, 'watermark' => $watermark, 'total' => 1, 'change' => $change, 'silent' => $silent,
+            'do_album' => $do_album, 'do_icon'=> $do_icon, 'goods_id'=> $goods_id, 'brand_id'=> $brand_id, 'cat_id'=> $cat_id,
             'row' => array('new_page'  => sprintf($_LANG['page_format'], 1),
                            'new_total' => sprintf($_LANG['total_format'], ceil($count/$page_size)),
                            'new_time'  => $_LANG['wait'],
@@ -66,9 +143,10 @@ else
 
         die($json->encode($result));
     }
+
     else
     {
-        $result = array('error' => 0, 'message' => '', 'content' => '', 'done' => 2);
+        $result = array('error' => 0, 'message' => '', 'content' => '', 'done' => 2, 'do_album' => $do_album, 'do_icon'=> $do_icon, 'goods_id'=> $goods_id, 'brand_id'=> $brand_id, 'cat_id'=> $cat_id);
         $result['thumb']     = empty($_GET['thumb'])     ? 0 : 1;
         $result['watermark'] = empty($_GET['watermark']) ? 0 : 1;
         $result['change']    = empty($_GET['change'])    ? 0 : 1;
@@ -88,14 +166,21 @@ else
         /*------------------------------------------------------ */
         if ($result['module_no'] == 0)
         {
-            $count = $GLOBALS['db']->GetOne("SELECT COUNT(*) FROM ".$ecs->table('goods'). " WHERE original_img > ''");
+            $count = $GLOBALS['db']->GetOne("SELECT COUNT(*) FROM ".$ecs->table('goods'). " AS g WHERE g.original_img > ''" . $goods_where);
             /* 页数在许可范围内 */
             if ($result['page'] <= ceil($count / $result['page_size']))
             {
                 $start_time = gmtime(); //开始执行时间
 
                 /* 开始处理 */
-                process_image($result['page'], $result['page_size'], $result['module_no'], $result['thumb'], $result['watermark'], $result['change'], $result['silent']);
+                if ($proc_thumb)
+                {
+                    process_image_ex($result['page'], $result['page_size'], $result['module_no'], $result['thumb'], $result['watermark'], $result['change'], $result['silent']);
+                }
+                else
+                {
+                    process_image($result['page'], $result['page_size'], $result['module_no'], $result['thumb'], $result['watermark'], $result['change'], $result['silent']);
+                }
                 $end_time = gmtime();
                 $result['row']['pre_id'] = 'time_' . $result['total'];
                 $result['row']['pre_time'] = ($end_time > $start_time) ? $end_time - $start_time : 1;
@@ -109,45 +194,32 @@ else
             }
             else
             {
-                /* 超出页面许可范围，切换到商品相册模块 */
-
-                /* 切换模块 */
-                $result['module_no']++;
-                //确定相册有多少图片
-                $count = $GLOBALS['db']->GetOne("SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('goods_gallery'). " WHERE img_original > ''");
-
-                if ($count == 0) //结束
-                {
-                    $result['done'] = 0;
-                    $result['message'] = $_LANG['done'];
-                    /* 清除缓存 */
-                    clear_cache_files();
-                    die($json->encode($result));
-                }
-
-                $result['done'] = 1; // 产生新行
-                $result['page'] = 1;
-                $result['row']['cur_id'] = 'time_' . ($result['total'] + 1);
-                $result['row']['new_page'] = sprintf($_LANG['page_format'], $result['page']);
-                $result['row']['new_total'] = sprintf($_LANG['total_format'], ceil($count/$result['page_size']));
-                $result['row']['new_time'] = $_LANG['wait'];
-                $result['total']++;
-
-                $result['title'] = sprintf($_LANG['gallery_format'], $count, $result['page_size']);
-                $result['row']['new_page'] = sprintf($_LANG['page_format'], $result['page']);
-                $result['row']['new_total'] = sprintf($_LANG['total_format'], ceil($count/$result['page_size']));
+                --$result['total'];
+                --$result['page'];
+                $result['done'] = 0;
+                $result['message'] = ($do_album) ? '' : $_LANG['done'];
+                /* 清除缓存 */
+                clear_cache_files();
+                die($json->encode($result));
             }
         }
-        else if ($result['module_no'] == 1)
+        else if ($result['module_no'] == 1 && $result['do_album'] == 1)
         {
             //商品相册
-            $count = $GLOBALS['db']->GetOne("SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('goods_gallery'). " WHERE img_original > ''");
+            $count = $GLOBALS['db']->GetOne("SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('goods_gallery'). ' AS album ' . $album_where);
 
             if ($result['page'] <= ceil($count / $result['page_size']))
             {
                 $start_time = gmtime(); // 开始执行时间
                 /* 开始处理 */
-                process_image($result['page'], $result['page_size'], $result['module_no'], $result['thumb'], $result['watermark'], $result['change'], $result['silent']);
+                if ($proc_thumb)
+                {
+                    process_image_ex($result['page'], $result['page_size'], $result['module_no'], $result['thumb'], $result['watermark'], $result['change'], $result['silent']);
+                }
+                else
+                {
+                    process_image($result['page'], $result['page_size'], $result['module_no'], $result['thumb'], $result['watermark'], $result['change'], $result['silent']);
+                }
                 $end_time = gmtime();
 
                 $result['row']['pre_id'] = 'time_' . $result['total'];
@@ -204,9 +276,8 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
 {
     if ($type == 0)
     {
-        $sql = "SELECT goods_id, original_img, goods_img, goods_thumb FROM ".$GLOBALS['ecs']->table('goods'). " WHERE original_img > ''";
+        $sql = "SELECT g.goods_id, g.original_img, g.goods_img, g.goods_thumb FROM ".$GLOBALS['ecs']->table('goods'). " AS g WHERE g.original_img > ''" . $GLOBALS['goods_where'];
         $res = $GLOBALS['db']->SelectLimit($sql, $page_size, ($page-1)*$page_size);
-
         while ($row = $GLOBALS['db']->fetchRow($res))
         {
             $goods_thumb = '';
@@ -260,7 +331,8 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     }
                 }
 
-
+                /* 重新格式化图片名称 */
+                $image = reformat_image_name('goods', $row['goods_id'], $image, 'goods');
                 if ($change || empty($row['goods_img']))
                 {
                     /* 要生成新链接的处理过程 */
@@ -268,7 +340,11 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     {
                         $sql = "UPDATE " .$GLOBALS['ecs']->table('goods'). " SET goods_img = '$image' WHERE goods_id = '" . $row['goods_id'] . "'";
                         $GLOBALS['db']->query($sql);
-                        @unlink(ROOT_PATH . $row['goods_img']);
+                        /* 防止原图被删除 */
+                        if ($row['goods_img'] != $row['original_img'])
+                        {
+                            @unlink(ROOT_PATH . $row['goods_img']);
+                        }
                     }
                 }
                 else
@@ -306,14 +382,19 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     }
 
                 }
-
+                /* 重新格式化图片名称 */
+                $goods_thumb = reformat_image_name('goods_thumb', $row['goods_id'], $goods_thumb, 'thumb');
                 if ($change || empty($row['goods_thumb']))
                 {
                     if ($row['goods_thumb'] != $goods_thumb)
                     {
                         $sql = "UPDATE " .$GLOBALS['ecs']->table('goods'). " SET goods_thumb = '$goods_thumb' WHERE goods_id = '" . $row['goods_id'] . "'";
                         $GLOBALS['db']->query($sql);
-                        @unlink(ROOT_PATH . $row['goods_thumb']);
+                        /* 防止原图被删除 */
+                        if ($row['goods_thumb'] != $row['original_img'])
+                        {
+                            @unlink(ROOT_PATH . $row['goods_thumb']);
+                        }
                     }
                 }
                 else
@@ -326,7 +407,7 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
     else
     {
         /* 遍历商品相册 */
-        $sql = "SELECT goods_id, img_id, img_url, thumb_url, img_original FROM ".$GLOBALS['ecs']->table('goods_gallery'). " WHERE img_original > ''";
+        $sql = "SELECT album.goods_id, album.img_id, album.img_url, album.thumb_url, album.img_original FROM ".$GLOBALS['ecs']->table('goods_gallery'). " AS album " . $GLOBALS['album_where'];
         $res = $GLOBALS['db']->SelectLimit($sql, $page_size, ($page - 1) * $page_size);
 
         while ($row = $GLOBALS['db']->fetchRow($res))
@@ -365,7 +446,8 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                          make_json_error($msg);
                      }
                 }
-
+                /* 重新格式化图片名称 */
+                $image = reformat_image_name('gallery', $row['goods_id'], $image, 'goods');
                 if ($change || empty($row['img_url']) || $row['img_original'] == $row['img_url'])
                 {
                     if ($image != $row['img_url'])
@@ -411,7 +493,8 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                         make_json_error($msg);
                     }
                 }
-
+                /* 重新格式化图片名称 */
+                $thumb_url = reformat_image_name('gallery_thumb', $row['goods_id'], $thumb_url, 'thumb');
                 if ($change || empty($row['thumb_url']))
                 {
                     if ($thumb_url != $row['thumb_url'])
@@ -431,6 +514,58 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
 }
 
 /**
+ * 图片处理函数
+ *
+ * @access  public
+ * @param   integer $page
+ * @param   integer $page_size
+ * @param   integer $type
+ * @param   boolen  $thumb      是否生成缩略图
+ * @param   boolen  $watermark  是否生成水印图
+ * @param   boolen  $change     true 生成新图，删除旧图 false 用新图覆盖旧图
+ * @param   boolen  $silent     是否执行能忽略错误
+ *
+ * @return void
+ */
+function process_image_ex($page = 1, $page_size = 100, $type = 0, $thumb= true, $watermark = true, $change = false, $silent = true)
+{
+    if ($type == 0)
+    {
+        $sql = "SELECT g.goods_id, g.original_img, g.goods_img, g.goods_thumb FROM ".$GLOBALS['ecs']->table('goods'). " AS g WHERE g.original_img > ''" . $goods_where;
+        $res = $GLOBALS['db']->SelectLimit($sql, $page_size, ($page-1)*$page_size);
+
+        while ($row = $GLOBALS['db']->fetchRow($res))
+        {
+            if ($thumb)
+            {
+                get_image_path($row['goods_id'], '', true, 'goods', true);
+            }
+            if ($watermark)
+            {
+                get_image_path($row['goods_id'], '', false, 'goods', true);
+            }
+        }
+    }
+    else
+    {
+        $sql = "SELECT album.goods_id, album.img_id, album.img_url, album.thumb_url, album.img_original FROM ".$GLOBALS['ecs']->table('goods_gallery'). " AS album " . $GLOBALS['album_where'];
+        $res = $GLOBALS['db']->SelectLimit($sql, $page_size, ($page - 1) * $page_size);
+
+        while ($row = $GLOBALS['db']->fetchRow($res))
+        {
+            if ($thumb)
+            {
+                get_image_path($row['goods_id'], $row['img_original'], true, 'gallery', true);
+            }
+            if ($watermark)
+            {
+                get_image_path($row['goods_id'], $row['img_original'], false, 'gallery', true);
+            }
+        }
+    }
+}
+
+/**
  *  用新图片替换指定图片
  *
  * @access  public
@@ -443,58 +578,45 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
  */
 function replace_image($new_image, $old_image, $goods_id, $silent)
 {
-    if ((!file_exists(ROOT_PATH . $old_image)) && (!rename(ROOT_PATH . $new_image, ROOT_PATH . $old_image)))
+    $error = false;
+    if (file_exists(ROOT_PATH . $old_image))
     {
-        $msg = sprintf($GLOBALS['_LANG']['error_pos'], $goods_id) . "\n" . sprintf($GLOBALS['_LANG']['error_rename'], $new_image, $old_image);
-        if ($silent)
+        @rename(ROOT_PATH . $old_image, ROOT_PATH . $old_image . '.bak');
+        if (!@rename(ROOT_PATH . $new_image, ROOT_PATH . $old_image))
         {
-            $GLOBALS['err_msg'][] = $msg;
-            return;
-        }
-        else
-        {
-            make_json_error($msg);
-        }
-    }
-
-    if (file_exists(ROOT_PATH . $old_image . '.bak'))
-    {
-        @unlink(ROOT_PATH . $old_image . '.bak');
-    }
-
-    if ((!file_exists(ROOT_PATH . $old_image))  || rename(ROOT_PATH . $old_image, ROOT_PATH . $old_image . '.bak'))
-    {
-        if (rename(ROOT_PATH . $new_image, ROOT_PATH . $old_image))
-        {
-            @unlink(ROOT_PATH . $old_image . '.bak');
-        }
-        else
-        {
-            @unlink(ROOT_PATH . $old_image . '.bak');
-            $msg = sprintf($GLOBALS['_LANG']['error_pos'], $goods_id) . "\n" . sprintf($GLOBALS['_LANG']['error_rename'], $new_image, $old_image);
-            if ($silent)
-            {
-                $GLOBALS['err_msg'][] = $msg;
-                return;
-            }
-            else
-            {
-                make_json_error($msg);
-            }
+            $error = true;
         }
     }
     else
     {
-        $msg = sprintf($GLOBALS['_LANG']['error_pos'], $goods_id) . "\n" . sprintf($GLOBALS['_LANG']['error_rename'], $old_image, $old_image . '.bak');
+        if (!@rename(ROOT_PATH . $new_image, ROOT_PATH . $old_image))
+        {
+            $error = true;
+        }
+    }
+    if ($error === true)
+    {
+        if (file_exists(ROOT_PATH . $old_image . '.bak'))
+        {
+            @rename(ROOT_PATH . $old_image . '.bak', ROOT_PATH . $old_image);
+        }
+        $msg = sprintf($GLOBALS['_LANG']['error_pos'], $goods_id) . "\n" . sprintf($GLOBALS['_LANG']['error_rename'], $new_image, $old_image);
         if ($silent)
         {
             $GLOBALS['err_msg'][] = $msg;
-            return;
         }
         else
         {
             make_json_error($msg);
         }
+    }
+    else
+    {
+        if (file_exists(ROOT_PATH . $old_image . '.bak'))
+        {
+            @unlink(ROOT_PATH . $old_image . '.bak');
+        }
+        return;
     }
 }
 

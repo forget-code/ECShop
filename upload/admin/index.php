@@ -2,27 +2,27 @@
 /**
  * ECSHOP 控制台首页
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: index.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: index.php 15718 2009-03-06 10:02:38Z sunxiaodong $
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . 'includes/lib_order.php');
+require_once(ROOT_PATH . '/includes/lib_order.php');
 
 /*------------------------------------------------------ */
 //-- 框架
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == '')
 {
+    $smarty->assign('shop_url', urlencode($ecs->url()));
     $smarty->display('index.htm');
 }
 
@@ -47,6 +47,7 @@ elseif ($_REQUEST['act'] == 'top')
     }
 
     // 获得管理员ID
+    $smarty->assign('send_mail_on',$_CFG['send_mail_on']);
     $smarty->assign('nav_list', $lst);
     $smarty->assign('admin_id', $_SESSION['admin_id']);
 
@@ -67,45 +68,10 @@ elseif ($_REQUEST['act'] == 'calculator')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'menu')
 {
-    // 权限对照表
-    $purview['02_goods_add']         = 'goods_manage';
-    $purview['16_tag_manage']        = 'tag_manage';
-    $purview['13_batch_add']         = 'goods_manage';
-    $purview['14_batch_edit']        = 'goods_manage';
-    $purview['15_goods_script']      = 'goods_manage';
-
-    $purview['02_snatch_list']       = 'snatch_manage';
-    $purview['02_order_list']        = 'order_view';
-    $purview['03_order_query']       = 'order_view';
-    $purview['04_merge_order']       = 'order_os_edit';
-    $purview['05_edit_order_print']  = 'order_os_edit';
-    $purview['08_add_order']         = 'order_edit';
-
-    $purview['flow_stats']           = 'client_flow_stats';
-    $purview['report_guest']         = 'client_flow_stats';
-    $purview['report_order']         = 'sale_order_stats';
-    $purview['report_sell']          = 'sale_order_stats';
-    $purview['report_users']         = 'client_flow_stats';
-    $purview['sale_list']            = 'sale_order_stats';
-    $purview['sell_stats']           = 'sale_order_stats';
-    $purview['visit_buy_per']        = 'client_flow_stats';
-    $purview['z_clicks_stats']       = 'ad_manage';
-
-    $purview['04_users_add']         = 'user_manage';
-    $purview['09_user_account']      = 'surplus_manage';
-
-    $purview['admin_logs']           = 'logs_manage';
-
-    $purview['02_shop_config']       = 'shop_config';
-    $purview['05_area_list']         = 'area_manage';
-
-    $purview['03_template_setup']    = 'template_manage';
-    $purview['04_template_library']  = 'template_manage';
-
-    $purview['04_sql_query']         = 'all';
-    $purview['convert']              = 'all';
-
     include_once('includes/inc_menu.php');
+
+// 权限对照表
+    include_once('includes/inc_priv.php');
 
     foreach ($modules AS $key => $value)
     {
@@ -122,10 +88,30 @@ elseif ($_REQUEST['act'] == 'menu')
             {
                 if ( isset($purview[$k]))
                 {
-                    if (! admin_priv($purview[$k], '', false))
+                    if (is_array($purview[$k]))
                     {
-                        continue;
+                        $boole = false;
+                        foreach ($purview[$k] as $action)
+                        {
+                             $boole = $boole || admin_priv($action, '', false);
+                        }
+                        if (!$boole)
+                        {
+                            continue;
+                        }
+
                     }
+                    else
+                    {
+                        if (! admin_priv($purview[$k], '', false))
+                        {
+                            continue;
+                        }
+                    }
+                }
+                if ($k == 'ucenter_setup' && $_CFG['integrate_code'] != 'ucenter')
+                {
+                    continue;
                 }
                 $menus[$key]['children'][$k]['label']  = $_LANG[$k];
                 $menus[$key]['children'][$k]['action'] = $v;
@@ -135,16 +121,19 @@ elseif ($_REQUEST['act'] == 'menu')
         {
             $menus[$key]['action'] = $val;
         }
+
         // 如果children的子元素长度为0则删除该组
-        if(!count($menus[$key]['children']))
+        if(empty($menus[$key]['children']))
         {
             unset($menus[$key]);
         }
+
     }
 
     $smarty->assign('menus',     $menus);
     $smarty->assign('no_help',   $_LANG['no_help']);
     $smarty->assign('help_lang', $_CFG['lang']);
+    $smarty->assign('charset', EC_CHARSET);
     $smarty->assign('admin_id', $_SESSION['admin_id']);
     $smarty->display('menu.htm');
 }
@@ -229,41 +218,41 @@ elseif ($_REQUEST['act'] == 'main')
         $warning[] = sprintf($_LANG['not_writable'], 'cert', $_LANG['cert_cannt_write']);
     }
 
-    $result = file_mode_info('../data');
+    $result = file_mode_info('../' . DATA_DIR);
     if ($result < 2)
     {
         $warning[] = sprintf($_LANG['not_writable'], 'data', $_LANG['data_cannt_write']);
     }
     else
     {
-        $result = file_mode_info('../data/afficheimg');
+        $result = file_mode_info('../' . DATA_DIR . '/afficheimg');
         if ($result < 2)
         {
-            $warning[] = sprintf($_LANG['not_writable'], 'data/afficheimg', $_LANG['afficheimg_cannt_write']);
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/afficheimg', $_LANG['afficheimg_cannt_write']);
         }
 
-        $result = file_mode_info('../data/brandlogo');
+        $result = file_mode_info('../' . DATA_DIR . '/brandlogo');
         if ($result < 2)
         {
-            $warning[] = sprintf($_LANG['not_writable'], 'data/brandlogo', $_LANG['brandlogo_cannt_write']);
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/brandlogo', $_LANG['brandlogo_cannt_write']);
         }
 
-        $result = file_mode_info('../data/cardimg');
+        $result = file_mode_info('../' . DATA_DIR . '/cardimg');
         if ($result < 2)
         {
-            $warning[] = sprintf($_LANG['not_writable'], 'data/cardimg', $_LANG['cardimg_cannt_write']);
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/cardimg', $_LANG['cardimg_cannt_write']);
         }
 
-        $result = file_mode_info('../data/feedbackimg');
+        $result = file_mode_info('../' . DATA_DIR . '/feedbackimg');
         if ($result < 2)
         {
-            $warning[] = sprintf($_LANG['not_writable'], 'data/feedbackimg', $_LANG['feedbackimg_cannt_write']);
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/feedbackimg', $_LANG['feedbackimg_cannt_write']);
         }
 
-        $result = file_mode_info('../data/packimg');
+        $result = file_mode_info('../' . DATA_DIR . '/packimg');
         if ($result < 2)
         {
-            $warning[] = sprintf($_LANG['not_writable'], 'data/packimg', $_LANG['packimg_cannt_write']);
+            $warning[] = sprintf($_LANG['not_writable'], DATA_DIR . '/packimg', $_LANG['packimg_cannt_write']);
         }
     }
 
@@ -274,26 +263,26 @@ elseif ($_REQUEST['act'] == 'main')
     }
     else
     {
-        $result = file_mode_info('../images/upload');
+        $result = file_mode_info('../' . IMAGE_DIR . '/upload');
         if ($result < 2)
         {
-            $warning[] = sprintf($_LANG['not_writable'], 'images/upload', $_LANG['imagesupload_cannt_write']);
+            $warning[] = sprintf($_LANG['not_writable'], IMAGE_DIR . '/upload', $_LANG['imagesupload_cannt_write']);
         }
     }
 
-    $result = file_mode_info('../templates');
+    $result = file_mode_info('../temp');
     if ($result < 2)
     {
         $warning[] = sprintf($_LANG['not_writable'], 'images', $_LANG['tpl_cannt_write']);
     }
 
-    $result = file_mode_info('../templates/backup');
+    $result = file_mode_info('../temp/backup');
     if ($result < 2)
     {
         $warning[] = sprintf($_LANG['not_writable'], 'images', $_LANG['tpl_backup_cannt_write']);
     }
 
-    if (!is_writeable('../data/order_print.html'))
+    if (!is_writeable('../' . DATA_DIR . '/order_print.html'))
     {
         $warning[] = $_LANG['order_print_canntwrite'];
     }
@@ -406,7 +395,7 @@ elseif ($_REQUEST['act'] == 'main')
 
     /* 未审核评论 */
     $smarty->assign('comment_number', $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('comment') .
-    ' WHERE status = 0'));
+    ' WHERE status = 0 AND parent_id = 0'));
 
     $mysql_ver = $db->version();   // 获得 MySQL 版本
 
@@ -483,6 +472,7 @@ elseif ($_REQUEST['act'] == 'main')
     $smarty->assign('ecs_version',  VERSION);
     $smarty->assign('ecs_release',  RELEASE);
     $smarty->assign('ecs_lang',     $_CFG['lang']);
+    $smarty->assign('ecs_charset',  strtoupper(EC_CHARSET));
     $smarty->assign('install_date', local_date($_CFG['date_format'], $_CFG['install_date']));
     $smarty->display('start.htm');
 }
@@ -1038,7 +1028,7 @@ elseif ($_REQUEST['act'] == 'check_order')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'save_todolist')
 {
-    $content = $_POST["content"];
+    $content = json_str_iconv($_POST["content"]);
     $sql = "UPDATE" .$GLOBALS['ecs']->table('admin_user'). " SET todolist='" . $content . "' WHERE user_id = " . $_SESSION['admin_id'];
     $GLOBALS['db']->query($sql);
 }
@@ -1052,6 +1042,11 @@ elseif ($_REQUEST['act'] == 'get_todolist')
 // 邮件群发处理
 elseif ($_REQUEST['act'] == 'send_mail')
 {
+    if ($_CFG['send_mail_on'] == 'off')
+    {
+        make_json_result('', $_LANG['send_mail_off'], 0);
+        exit();
+    }
     $sql = "SELECT * FROM " . $ecs->table('email_sendlist') . " ORDER BY pri DESC, last_send ASC LIMIT 1";
     $row = $db->getRow($sql);
 

@@ -1,7 +1,7 @@
 <html>
 <head>
 <title> <?php echo $lang['readme_title'];?> </title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $ec_charset; ?>" />
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
 #logos { background: #278296; border-bottom: 1px solid #FFF; }
@@ -15,26 +15,24 @@
 
 <div id="wrapper" style="text-align:left;">
 
-
 <h3><?php echo $lang['method'];?></h3>
 <p><?php printf($lang['notice'], $new_version);?></p>
 <ol>
     <li><?php echo $lang['usage1'];?></li>
-    <li><?php printf($lang['usage2'], $old_version);?></li>
-    <li><?php printf($lang['usage3'], $new_version);?></li>
-    <li><?php echo $lang['usage4'];?></li>
+    <li><?php echo $lang['usage2'];?></li>
+    <li><?php printf($lang['usage3'], $old_version);?></li>
+    <li><?php printf($lang['usage4'], $new_version);?></li>
     <li><?php echo $lang['usage5'];?></li>
+    <li><?php echo $lang['usage6'];?></li>
 </ol>
 
-
 <h3><?php echo $lang['faq'];?></h3>
-<iframe src="templates/faq_<?php echo $updater_lang;?>.htm" width="730" height="350"></iframe>
+<iframe src="templates/faq_<?php echo $updater_lang;?>_<?php echo $ec_charset;?>.htm" width="730" height="350"></iframe>
 <div align="center">
-<input type="submit" id="js-submit" class="button" value="<?php echo $lang['next_step'];?><?php echo $lang['check_system_environment'];?>" onclick="location.href='index.php?step=check'" />
-</div>
+<input type="submit" id="js-submit" class="button" value="<?php echo $lang['next_step'];?><?php echo $lang['check_system_environment'];?>" onclick="top.location='index.php?step=check&ui=<?php echo $ui;?>'" />
 
 </div>
-
+</div>
 <?php include ROOT_PATH . 'upgrade/templates/copyright.php';?>
 </body>
 </html>

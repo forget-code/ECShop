@@ -1,4 +1,4 @@
-<!-- $Id: payment_list.htm 8300 2007-04-23 07:11:51Z wj $ -->
+<!-- $Id: payment_list.htm 15541 2009-01-08 10:29:01Z testyang $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
 <!-- start payment list -->
@@ -14,6 +14,7 @@
     <th>{$lang.handler}</th>
   </tr>
   {foreach from=$modules item=module}
+  {if $module.code neq "tenpayc2c"}
   <tr>
     <td class="first-cell" valign="top">
       {if $module.install == 1}
@@ -38,13 +39,37 @@
     <td align="right" valign="top"> {if $module.install == 1} <span onclick="listTable.edit(this, 'edit_order', '{$module.code}'); return false;">{$module.pay_order}</span> {else} &nbsp; {/if} </td>
     <td align="center" valign="top">
       {if $module.install == "1"}
-        <a href="javascript:confirm_redirect(lang_removeconfirm, 'payment.php?act=uninstall&code={$module.code}')">{$lang.uninstall}</a>
-        <a href="payment.php?act=edit&code={$module.code}">{$lang.edit}</a>
+      {if $module.code eq "tenpay"}
+        <a href="javascript:confirm_redirect(lang_removeconfirm, 'payment.php?act=uninstall&code={$module.code}')">{$lang.uninstall}{$lang.tenpay}</a>
+        <a href="payment.php?act=edit&code={$module.code}">{$lang.edit}</a><br />
+          {if $tenpayc2c.install eq "1"}<a href="javascript:confirm_redirect(lang_removeconfirm, 'payment.php?act=uninstall&code=tenpayc2c')">{$lang.uninstall}{$lang.tenpayc2c}</a>
+          <a href="payment.php?act=edit&code=tenpayc2c">{$lang.edit}</a>
+          {else}
+          <a href="payment.php?act=install&code=tenpayc2c">{$lang.install}{$lang.tenpayc2c}</a>
+          {/if}
+        {else}
+          <a href="javascript:confirm_redirect(lang_removeconfirm, 'payment.php?act=uninstall&code={$module.code}')">{$lang.uninstall}</a>
+          <a href="payment.php?act=edit&code={$module.code}">{$lang.edit}</a>
+        {/if}
+
       {else}
-        <a href="payment.php?act=install&code={$module.code}">{$lang.install}</a>
+          {if $module.code eq "tenpay"}
+          <a href="payment.php?act=install&code={$module.code}">{$lang.install}{$lang.tenpay} </a><br />
+               {if $tenpayc2c.install eq "1"}
+            <a href="javascript:confirm_redirect(lang_removeconfirm, 'payment.php?act=uninstall&code=tenpayc2c')">{$lang.uninstall}{$lang.tenpayc2c}</a>
+        <a href="payment.php?act=edit&code=tenpayc2c">{$lang.edit}</a>
+
+              {else}
+              <a href="payment.php?act=install&code=tenpayc2c">{$lang.install}{$lang.tenpayc2c}</a>
+              {/if}
+
+           {else}
+           <a href="payment.php?act=install&code={$module.code}">{$lang.install}</a>
+           {/if}
+
       {/if}
     </td>
-  </tr>
+  </tr>{/if}
   {/foreach}
 </table>
 </div>

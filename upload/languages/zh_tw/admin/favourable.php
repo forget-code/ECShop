@@ -3,25 +3,24 @@
 /**
  * ECSHOP 管理中心優惠活動語言文件
  * ============================================================================
- * 版權所有 (C) 2005-2007 北京億商互動科技發展有限公司，並保留所有權利。
- * 網站地址: http://www.ecshop.com
+ * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 這是一個免費開源的軟件；這意味著您可以在不用於商業目的的前提下對程序代碼
- * 進行修改、使用和再發佈。
+ * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
+ * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2007-12-10 11:02:15 +0800 (星期一, 10 十二月 2007) $
- * $Id: favourable.php 13847 2007-12-10 03:02:15Z fenghl $
+ * $Author: testyang $
+ * $Id: favourable.php 15086 2008-10-27 06:21:49Z testyang $
  */
 
 /* menu */
 $_LANG['favourable_list'] = '優惠活動列表';
-$_LANG['add_favourable'] = '新增優惠活動';
+$_LANG['add_favourable'] = '添加優惠活動';
 $_LANG['edit_favourable'] = '編輯優惠活動';
 $_LANG['favourable_log'] = '優惠活動出價記錄';
-$_LANG['continue_add_favourable'] = '繼續新增優惠活動';
+$_LANG['continue_add_favourable'] = '繼續添加優惠活動';
 $_LANG['back_favourable_list'] = '返回優惠活動列表';
-$_LANG['add_favourable_ok'] = '新增優惠活動成功';
+$_LANG['add_favourable_ok'] = '添加優惠活動成功';
 $_LANG['edit_favourable_ok'] = '編輯優惠活動成功';
 
 /* list */
@@ -33,8 +32,8 @@ $_LANG['end_time'] = '結束時間';
 $_LANG['min_amount'] = '金額下限';
 $_LANG['max_amount'] = '金額上限';
 $_LANG['favourable_not_exist'] = '您要操作的優惠活動不存在';
-$_LANG['js_languages']['batch_drop_confirm'] = '您確定要刪除選取的優惠活動嗎？';
-$_LANG['batch_drop_ok'] = '大量刪除成功';
+$_LANG['js_languages']['batch_drop_confirm'] = '您確實要刪除選中的優惠活動嗎？';
+$_LANG['batch_drop_ok'] = '批量刪除成功';
 $_LANG['no_record_selected'] = '沒有選擇記錄';
 
 /* info */
@@ -45,10 +44,10 @@ $_LANG['label_user_rank'] = '享受優惠的會員等級：';
 $_LANG['not_user'] = '非會員';
 $_LANG['label_act_range'] = '優惠範圍：';
 $_LANG['far_all'] = '全部商品';
-$_LANG['far_category'] = '某幾個分類';
-$_LANG['far_brand'] = '某幾個品牌';
-$_LANG['far_goods'] = '某幾個商品';
-$_LANG['label_search_and_add'] = '搜尋並加入優惠範圍';
+$_LANG['far_category'] = '以下分類';
+$_LANG['far_brand'] = '以下品牌';
+$_LANG['far_goods'] = '以下商品';
+$_LANG['label_search_and_add'] = '搜索並加入優惠範圍';
 $_LANG['js_languages']['all_need_not_search'] = '優惠範圍是全部商品，不需要此操作';
 $_LANG['js_languages']['range_exists'] = '該選項已存在';
 $_LANG['label_min_amount'] = '金額下限：';
@@ -61,9 +60,9 @@ $_LANG['notice_act_type'] = '當優惠方式為「享受贈品（特惠品）」
 $_LANG['fat_goods'] = '享受贈品（特惠品）';
 $_LANG['fat_price'] = '享受現金減免';
 $_LANG['fat_discount'] = '享受價格折扣';
-$_LANG['js_languages']['pls_search'] = '請先搜尋';
-$_LANG['search_result_empty'] = '沒有找到相應記錄，請重新搜尋';
-$_LANG['label_search_and_add_gift'] = '搜尋並加入贈品（特惠品）';
+$_LANG['js_languages']['pls_search'] = '請先搜索';
+$_LANG['search_result_empty'] = '沒有找到相應記錄，請重新搜索';
+$_LANG['label_search_and_add_gift'] = '搜索並加入贈品（特惠品）';
 $_LANG['js_languages']['price_need_not_search'] = '優惠方式是享受價格折扣，不需要此操作';
 $_LANG['js_languages']['gift'] = '贈品（特惠品）';
 $_LANG['js_languages']['price'] = '價格';
@@ -72,6 +71,7 @@ $_LANG['js_languages']['act_name_not_null'] = '請輸入優惠活動名稱';
 $_LANG['js_languages']['min_amount_not_number'] = '金額下限格式不正確（數字）';
 $_LANG['js_languages']['max_amount_not_number'] = '金額上限格式不正確（數字）';
 $_LANG['js_languages']['act_type_ext_not_number'] = '優惠方式後面的值不正確（數字）';
+$_LANG['js_languages']['amount_invalid'] = '金額上限小於金額下限。';
 $_LANG['js_languages']['start_lt_end'] = '優惠開始時間不能大於結束時間';
 
 /* post */
@@ -80,4 +80,5 @@ $_LANG['pls_set_act_range'] = '請設置優惠範圍';
 $_LANG['amount_error'] = '金額下限不能大於金額上限';
 $_LANG['act_name_exists'] = '該優惠活動名稱已存在，請您換一個';
 
+$_LANG['nolimit'] = '沒有限制';
 ?>

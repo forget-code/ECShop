@@ -99,6 +99,27 @@ Utils.isTime = function(val)
   return reg.test(val);
 }
 
+Utils.x = function(e)
+{ //当前鼠标X坐标
+    return Browser.isIE?event.x + document.documentElement.scrollLeft - 2:e.pageX;
+}
+
+Utils.y = function(e)
+{ //当前鼠标Y坐标
+    return Browser.isIE?event.y + document.documentElement.scrollTop - 2:e.pageY;
+}
+
+Utils.request = function(url, item)
+{
+	var sValue=url.match(new RegExp("[\?\&]"+item+"=([^\&]*)(\&?)","i"));
+	return sValue?sValue[1]:sValue;
+}
+
+Utils.$ = function(name)
+{
+    return document.getElementById(name);
+}
+
 function rowindex(tr)
 {
   if (Browser.isIE)

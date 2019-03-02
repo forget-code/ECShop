@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心模板管理语言文件
  * ============================================================================
- * 版权所有 (C) 2005-2006 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: template.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Author: zblikai $
+ * $Id: template.php 15744 2009-03-16 02:26:39Z zblikai $
 */
 
 $_LANG['template_manage'] = '模板管理';
@@ -42,7 +41,7 @@ $_LANG['backup_failed'] = '备份模板文件失败，请检查templates/backup 
 $_LANG['template_files']['article'] = '文章内容模板';
 $_LANG['template_files']['article_cat'] = '文章分类模板';
 $_LANG['template_files']['brand'] = '品牌专区';
-$_LANG['template_files']['catalog'] = '所有分类页';
+//$_LANG['template_files']['catalog'] = '所有分类页';
 $_LANG['template_files']['category'] = '商品分类页模板';
 $_LANG['template_files']['flow'] = '购物流程模板';
 $_LANG['template_files']['goods'] = '商品详情模板';
@@ -56,6 +55,9 @@ $_LANG['template_files']['tag_cloud'] = '标签云模板';
 $_LANG['template_files']['brand'] = '商品品牌页';
 $_LANG['template_files']['auction_list'] = '拍卖活动列表';
 $_LANG['template_files']['auction'] = '拍卖活动详情';
+$_LANG['template_files']['message_board'] = '留言板';
+//$_LANG['template_files']['quotation'] = '报价单';
+$_LANG['template_files']['exchange_list'] = '积分商城列表';
 
 /* 每一个库项目的描述 */
 $_LANG['template_libs']['ad_position'] = '广告位';
@@ -112,6 +114,10 @@ $_LANG['template_libs']['promotion_info'] = '促销信息';
 $_LANG['template_libs']['categorys'] = '商品分类';
 $_LANG['template_libs']['myship'] = '配送方式';
 $_LANG['template_libs']['online'] = '统计在线人数';
+$_LANG['template_libs']['relatetag'] = '其他应用关联标签数据';
+$_LANG['template_libs']['message_list'] = '留言列表';
+$_LANG['template_libs']['exchange_hot'] = '积分商城热卖商品';
+$_LANG['template_libs']['exchange_list'] = '积分商城列表商品';
 
 /* 模板布局备份 */
 $_LANG['backup_setting'] = '备份模板设置';

@@ -3,15 +3,14 @@
 /**
  * ECSHOP 第三方程序会员数据整合插件管理程序
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
- * $Id: integrate.php 14122 2008-02-01 15:40:15Z testyang $
+ * $Id: integrate.php 15125 2008-10-29 02:22:00Z testyang $
 */
 
 define('IN_ECS', true);
@@ -45,6 +44,19 @@ if ($_REQUEST['act'] == 'install')
 {
     admin_priv('integrate_users', '');
 
+    /* 增加ucenter设置时先检测uc_client与uc_client/data是否可写 */
+    if ($_GET['code'] == 'ucenter')
+    {
+        $uc_client_dir = file_mode_info(ROOT_PATH . 'uc_client/data');
+        if ($uc_client_dir === false)
+        {
+            sys_msg($_LANG['uc_client_not_exists'], 0);
+        }
+        if ($uc_client_dir < 7)
+        {
+            sys_msg($_LANG['uc_client_not_write'], 0);
+        }
+    }
     if ($_GET['code'] == 'ecshop')
     {
         $sql = "UPDATE " .$ecs->table('shop_config'). " SET value = 'ecshop' WHERE code = 'integrate_code'";
@@ -69,8 +81,15 @@ if ($_REQUEST['act'] == 'install')
         include_once(ROOT_PATH."includes/modules/integrates/".$_GET['code'].".php");
         $set_modules = false;
 
-        $cfg = $modules[0]['default'];
-        $cfg['integrate_url'] = "http://";
+//        if ($_GET['code'] == 'ucenter' && !empty($_CFG['integrate_config']))
+//        {
+//            $cfg = unserialize($_CFG['integrate_config']);
+//        }
+//        else
+//        {
+              $cfg = $modules[0]['default'];
+              $cfg['integrate_url'] = "http://";
+//        }
 
         /* 判断 */
 
@@ -88,12 +107,12 @@ if ($_REQUEST['act'] == 'install')
 if ($_REQUEST['act'] == 'view_install_log')
 {
     $code = empty($_GET['code']) ? '' : trim($_GET['code']);
-    if (empty($code) || file_exists(ROOT_PATH . 'data/integrate_' . $code . '_log.php' ))
+    if (empty($code) || file_exists(ROOT_PATH . DATA_DIR . '/integrate_' . $code . '_log.php' ))
     {
         sys_msg($_LANG['lost_intall_log'], 1);
     }
 
-    include(ROOT_PATH . 'data/integrate_' . $code . '_log.php');
+    include(ROOT_PATH . DATA_DIR . '/integrate_' . $code . '_log.php');
     if (isset($del_list) || isset($rename_list) || isset($ignore_list))
     {
         if (isset($del_list))
@@ -258,6 +277,138 @@ if ($_REQUEST['act'] == 'check_config')
 }
 
 /*------------------------------------------------------ */
+//-- 保存UCenter填写的资料
+/*------------------------------------------------------ */
+if ($_REQUEST['act'] == 'save_uc_config')
+{
+    $code = $_POST['code'];
+
+    $cfg = unserialize($_CFG['integrate_config']);
+
+    include_once(ROOT_PATH."includes/modules/integrates/".$code.".php");
+    $_POST['cfg']['quiet'] = 1;
+    $cls_user = new $code ($_POST['cfg']);
+
+    if ($cls_user->error)
+    {
+        /* 出错提示 */
+        if ($cls_user->error == 1)
+        {
+            sys_msg($_LANG['error_db_msg']);
+        }
+        elseif ($cls_user->error == 2)
+        {
+            sys_msg($_LANG['error_table_exist']);
+        }
+        elseif ($cls_user->error ==  1049)
+        {
+            sys_msg($_LANG['error_db_exist']);
+        }
+        else
+        {
+            sys_msg($cls_user->db->error());
+        }
+    }
+    
+    /* 合并数组，保存原值 */
+    $cfg = array_merge($cfg, $_POST['cfg']);
+
+    /* 直接保存修改 */
+    if (save_integrate_config($code, $cfg))
+    {
+        sys_msg($_LANG['save_ok'],0, array(array('text'=>$_LANG['06_list_integrate'],'href'=>'integrate.php?act=list')));
+    }
+    else
+    {
+        sys_msg($_LANG['save_error'],0, array(array('text'=>$_LANG['06_list_integrate'],'href'=>'integrate.php?act=list')));
+    }
+}
+
+/*------------------------------------------------------ */
+//-- 第一次保存UCenter安装的资料
+/*------------------------------------------------------ */
+if ($_REQUEST['act'] == 'save_uc_config_first')
+{
+    $code = $_POST['code'];
+
+    include_once(ROOT_PATH."includes/modules/integrates/".$code.".php");
+    $_POST['cfg']['quiet'] = 1;
+    $cls_user = new $code ($_POST['cfg']);
+
+    if ($cls_user->error)
+    {
+        /* 出错提示 */
+        if ($cls_user->error == 1)
+        {
+            sys_msg($_LANG['error_db_msg']);
+        }
+        elseif ($cls_user->error == 2)
+        {
+            sys_msg($_LANG['error_table_exist']);
+        }
+        elseif ($cls_user->error ==  1049)
+        {
+            sys_msg($_LANG['error_db_exist']);
+        }
+        else
+        {
+            sys_msg($cls_user->db->error());
+        }
+    }
+    list($appauthkey, $appid, $ucdbhost, $ucdbname, $ucdbuser, $ucdbpw, $ucdbcharset, $uctablepre, $uccharset, $ucapi, $ucip) = explode('|', $_POST['ucconfig']);
+    $uc_ip = !empty($ucip)? $ucip : trim($_POST['uc_ip']);
+    $uc_url = !empty($ucapi)? $ucapi : trim($_POST['uc_url']);
+    $cfg = array(
+                    'uc_id' => $appid,
+                    'uc_key' => $appauthkey,
+                    'uc_url' => $uc_url,
+                    'uc_ip' => $uc_ip,
+                    'uc_connect' => 'mysql',
+                    'uc_charset' => $uccharset,
+                    'db_host' => $ucdbhost,
+                    'db_user' => $ucdbuser,
+                    'db_name' => $ucdbname,
+                    'db_pass' => $ucdbpw,
+                    'db_pre' => $uctablepre,
+                    'db_charset' => $ucdbcharset,
+                );
+    /* 增加UC语言项 */
+    $cfg['uc_lang'] = $_LANG['uc_lang'];
+
+    /* 检测成功临时保存论坛配置参数 */
+    $_SESSION['cfg'] = $cfg;
+    $_SESSION['code'] = $code;
+
+    /* 直接保存修改 */
+    if (!empty($_POST['save']))
+    {
+        if (save_integrate_config($code, $cfg))
+        {
+            sys_msg($_LANG['save_ok'],0, array(array('text'=>$_LANG['06_list_integrate'],'href'=>'integrate.php?act=list')));
+        }
+        else
+        {
+            sys_msg($_LANG['save_error'],0, array(array('text'=>$_LANG['06_list_integrate'],'href'=>'integrate.php?act=list')));
+        }
+    }
+
+    $query = $db->query("SHOW TABLE STATUS LIKE '" . $GLOBALS['prefix'] . 'users' . "'");
+    $data = $db->fetch_array($query);
+    if($data["Auto_increment"]) {
+        $maxuid = $data["Auto_increment"] - 1;
+    } else {
+        $maxuid = 0;
+    }
+
+    /* 保存完成整合 */
+    save_integrate_config($code, $cfg);
+
+    $smarty->assign('ur_here',$_LANG['ucenter_import_username']);
+    $smarty->assign('user_startid_intro', sprintf($_LANG['user_startid_intro'], $maxuid, $maxuid));
+    $smarty->display('integrates_uc_import.htm');
+}
+
+/*------------------------------------------------------ */
 //-- 用户重名检查
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'check_user')
@@ -366,6 +517,91 @@ if ($_REQUEST['act'] == 'check_user')
             $result['href'] = "integrate.php?act=sync";
         }
     }
+    die($json->encode($result));
+}
+
+if ($_REQUEST['act'] == 'import_user')
+{
+    $cfg = $_SESSION['cfg'];
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $ucdb = new cls_mysql($cfg['db_host'], $cfg['db_user'], $cfg['db_pass'], $cfg['db_name'], $cfg['db_charset']);
+    $json = new JSON();
+    $result = array('error' => 0, 'message' => '');
+    $query = $db->query("SHOW TABLE STATUS LIKE '" . $GLOBALS['prefix'] . 'users' . "'");
+    $data = $db->fetch_array($query);
+    if($data["Auto_increment"]) {
+        $maxuid = $data["Auto_increment"] - 1;
+    } else {
+        $maxuid = 0;
+    }
+    $merge_method = intval($_POST['merge']);
+    $merge_uid = array();
+    $uc_uid = array();
+    $repeat_user = array();
+
+    $query = $db->query("SELECT * FROM " . $ecs->table('users') . " ORDER BY `user_id` ASC");
+    while($data = $db->fetch_array($query))
+    {
+        $salt = rand(100000, 999999);
+        $password = md5($data['password'].$salt);
+        $data['username'] = addslashes($data['user_name']);
+        $lastuid = $data['user_id'] + $maxuid;
+        $uc_userinfo = $ucdb->getRow("SELECT `uid`, `password`, `salt` FROM ".$cfg['db_pre']."members WHERE `username`='$data[username]'");
+        if(!$uc_userinfo)
+        {
+            $ucdb->query("INSERT LOW_PRIORITY INTO ".$cfg['db_pre']."members SET uid='$lastuid', username='$data[username]', password='$password', email='$data[email]', regip='$data[regip]', regdate='$data[regdate]', salt='$salt'", 'SILENT');
+            $ucdb->query("INSERT LOW_PRIORITY INTO ".$cfg['db_pre']."memberfields SET uid='$lastuid'",'SILENT');
+        }
+        else
+        {
+            if ($merge_method == 1)
+            {
+                if (md5($data['password'].$uc_userinfo['salt']) == $uc_userinfo['password'])
+                {
+                    $merge_uid[] = $data['user_id'];
+                    $uc_uid[] = array('user_id' => $data['user_id'], 'uid' => $uc_userinfo['uid']);
+                    continue;
+                }
+            }
+            $ucdb->query("REPLACE INTO ".$cfg['db_pre']."mergemembers SET appid='".UC_APPID."', username='$data[username]'", 'SILENT');
+            $repeat_user[] = $data;
+        }
+    }
+    $ucdb->query("ALTER TABLE ".$cfg['db_pre']."members AUTO_INCREMENT=".($lastuid + 1), 'SILENT');
+
+    //需要更新user_id的表
+    $up_user_table = array('account_log', 'affiliate_log', 'booking_goods', 'collect_goods', 'comment', 'feedback', 'order_info', 'snatch_log', 'tag', 'users', 'user_account', 'user_address', 'user_bonus');
+    // 清空的表
+    $truncate_user_table = array('cart', 'sessions', 'sessions_data');
+
+    if (!empty($merge_uid))
+    {
+        $merge_uid = implode(',', $merge_uid);
+    }
+    else
+    {
+        $merge_uid = 0;
+    }
+    // 更新ECSHOP表
+    foreach ($up_user_table as $table)
+    {
+        $db->query("UPDATE " . $ecs->table($table) . " SET `user_id`=`user_id`+ $maxuid ORDER BY `user_id` DESC");
+        foreach ($uc_uid as $uid)
+        {
+            $db->query("UPDATE " . $ecs->table($table) . " SET `user_id`='" . $uid['uid'] . "' WHERE `user_id`='" . ($uid['user_id'] + $maxuid) . "'");
+        }
+    }
+    foreach ($truncate_user_table as $table)
+    {
+        $db->query("TRUNCATE TABLE " . $ecs->table($table));
+    }
+    // 保存重复的用户信息
+    if (!empty($repeat_user))
+    {
+        @file_put_contents(ROOT_PATH . 'data/repeat_user.php', $json->encode($repeat_user));
+    }
+    $result['error'] = 0;
+    $result['message'] = $_LANG['import_user_success'];
     die($json->encode($result));
 }
 
@@ -541,7 +777,7 @@ if ($_REQUEST['act'] == 'sync')
     $tasks[] = array('task_name'=>$_LANG['task_save'],'task_status'=>'<span id="task_save">' . $_LANG['task_uncomplete'] . '</span>');
 
     /* 保存修改日志 */
-    $fp = @fopen(ROOT_PATH . 'data/integrate_' . $_SESSION['code'] . '_log.php', 'wb');
+    $fp = @fopen(ROOT_PATH . DATA_DIR . '/integrate_' . $_SESSION['code'] . '_log.php', 'wb');
     $log = '';
     if (isset($del_list))
     {
@@ -689,6 +925,87 @@ if ($_REQUEST['act'] == 'task')
     }
 }
 
+/*------------------------------------------------------ */
+//-- 保存UCenter设置
+/*------------------------------------------------------ */
+if ($_REQUEST['act'] == 'setup_ucenter')
+{
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_transport.php');
+    $json = new JSON();
+    $result = array('error' => 0, 'message' => '');
+
+    $app_type   = 'ECSHOP';
+    $app_name   = $db->getOne('SELECT value FROM ' . $ecs->table('shop_config') . " WHERE code = 'shop_name'");
+    $app_url    = $GLOBALS['ecs']->url();
+    $app_charset = EC_CHARSET;
+    $app_dbcharset = strtolower((str_replace('-', '', EC_CHARSET)));
+    $ucapi = !empty($_POST['ucapi']) ? trim($_POST['ucapi']) : '';
+    $ucip = !empty($_POST['ucip']) ? trim($_POST['ucip']) : '';
+    $dns_error = false;
+    if(!$ucip)
+    {
+        $temp = @parse_url($ucapi);
+        $ucip = gethostbyname($temp['host']);
+        if(ip2long($ucip) == -1 || ip2long($ucip) === FALSE)
+        {
+            $ucip = '';
+            $dns_error = true;
+        }
+    }
+    if($dns_error){
+        $result['error'] = 2;
+        $result['message'] = '';
+        die($json->encode($result));
+    }
+
+    $ucfounderpw = trim($_POST['ucfounderpw']);
+    $app_tagtemplates = 'apptagtemplates[template]='.urlencode('<a href="{url}" target="_blank">{goods_name}</a>').'&'.
+        'apptagtemplates[fields][goods_name]='.urlencode($_LANG['tagtemplates_goodsname']).'&'.
+        'apptagtemplates[fields][uid]='.urlencode($_LANG['tagtemplates_uid']).'&'.
+        'apptagtemplates[fields][username]='.urlencode($_LANG['tagtemplates_username']).'&'.
+        'apptagtemplates[fields][dateline]='.urlencode($_LANG['tagtemplates_dateline']).'&'.
+        'apptagtemplates[fields][url]='.urlencode($_LANG['tagtemplates_url']).'&'.
+        'apptagtemplates[fields][image]='.urlencode($_LANG['tagtemplates_image']).'&'.
+        'apptagtemplates[fields][goods_price]='.urlencode($_LANG['tagtemplates_price']);
+    $postdata ="m=app&a=add&ucfounder=&ucfounderpw=".urlencode($ucfounderpw)."&apptype=".urlencode($app_type).
+        "&appname=".urlencode($app_name)."&appurl=".urlencode($app_url)."&appip=&appcharset=".$app_charset.
+        '&appdbcharset='.$app_dbcharset.'&apptagtemplates='.$app_tagtemplates;
+    $t = new transport;
+    $ucconfig = $t->request($ucapi.'/index.php', $postdata);
+    $ucconfig = $ucconfig['body'];
+    if(empty($ucconfig))
+    {
+        //ucenter 验证失败
+        $result['error'] = 1;
+        $result['message'] = $_LANG['uc_msg_verify_failur'];
+
+    }
+    elseif($ucconfig == '-1')
+    {
+        //管理员密码无效
+        $result['error'] = 1;
+        $result['message'] = $_LANG['uc_msg_password_wrong'];
+    }
+    else
+    {
+        list($appauthkey, $appid) = explode('|', $ucconfig);
+        if(empty($appauthkey) || empty($appid))
+        {
+            //ucenter 安装数据错误
+            $result['error'] = 1;
+            $result['message'] = $_LANG['uc_msg_data_error'];
+        }
+        else
+        {
+            $result['error'] = 0;
+            $result['message'] = $ucconfig;
+        }
+    }
+
+    die($json->encode($result));
+}
+
 /* 显示整合成功信息 */
 if ($_REQUEST['act'] == 'complete')
 {
@@ -705,6 +1022,10 @@ if ($_REQUEST['act'] == 'points_set')
     if (empty($points))
     {
         sys_msg($_LANG['no_points'], 0, array(array('text'=>$_LANG['06_list_integrate'],'href'=>'integrate.php?act=list')));
+    }
+    elseif ($points == 'ucenter')
+    {
+        sys_msg($_LANG['uc_points'], 0, array(array('text'=>$_LANG['uc_set_credits'],'href'=>UC_API, 'target'=>'_blank')), false);
     }
 
     $rule = array(); //取得一样规则
@@ -922,7 +1243,6 @@ function conflict_userlist()
 
     return $arr;
 }
-
 
 /**
  *

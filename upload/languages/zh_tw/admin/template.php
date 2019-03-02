@@ -1,63 +1,65 @@
 <?php
 
 /**
- * ECSHOP 管理中心版型管理語言檔案
+ * ECSHOP 管理中心模板管理語言文件
  * ============================================================================
- * 版權所有 (C) 2005-2006 北京億商互動科技發展有限公司，並保留所有權利。
- * 網站地址: http://www.ecshop.com
+ * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 這是一個免費開源的軟件；這意味著您可以在不用於商業目的的前提下對程序代碼
- * 進行修改、使用和再發佈。
+ * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
+ * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: template.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Author: zblikai $
+ * $Id: template.php 15744 2009-03-16 02:26:39Z zblikai $
 */
 
-$_LANG['template_manage'] = '版型管理';
-$_LANG['current_template'] = '目前版型';
-$_LANG['available_templates'] = '可用版型';
-$_LANG['select_template'] = '請選擇一個版型：';
-$_LANG['select_library'] = '請選擇一個樣板：';
-$_LANG['library_name'] = '樣板';
+$_LANG['template_manage'] = '模板管理';
+$_LANG['current_template'] = '當前模板';
+$_LANG['available_templates'] = '可用模板';
+$_LANG['select_template'] = '請選擇一個模板：';
+$_LANG['select_library'] = '請選擇一個庫項目：';
+$_LANG['library_name'] = '庫項目';
 $_LANG['region_name'] = '區域';
 $_LANG['sort_order'] = '序號';
 $_LANG['contents'] = '內容';
 $_LANG['number'] = '數量';
 $_LANG['display'] = '顯示';
 $_LANG['select_plz'] = '請選擇...';
-$_LANG['button_restore'] = '還原到上一次修改';
+$_LANG['button_restore'] = '還原到上一修改';
 
-/* 提示資料 */
-$_LANG['library_not_written'] = '樣板檔案 %s 沒有修改權限，該樣板檔案將無法修改';
-$_LANG['install_template_success'] = '啟用版型成功。';
-$_LANG['setup_success'] = '設定版型內容成功。';
-$_LANG['modify_dwt_failed'] = '範本檔 %s 無法修改';
-$_LANG['update_lib_success'] = '樣板內容已經更新成功。';
-$_LANG['update_lib_failed'] = '編輯樣板內容失敗。請檢查 %s 目錄是否可以寫入。';
-$_LANG['backup_success'] = "所有版型檔案已備份到templates/backup目錄下。\n您現在要下載備份檔案嗎？。";
-$_LANG['backup_failed'] = '備份版型檔案失敗，請檢查templates/backup 目錄是否可以寫入。';
+/* 提示信息 */
+$_LANG['library_not_written'] = '庫文件 %s 沒有修改權限，該庫文件將無法修改';
+$_LANG['install_template_success'] = '啟用模板成功。';
+$_LANG['setup_success'] = '設置模板內容成功。';
+$_LANG['modify_dwt_failed'] = '模板文件 %s 無法修改';
+$_LANG['update_lib_success'] = '庫項目內容已經更新成功。';
+$_LANG['update_lib_failed'] = '編輯庫項目內容失敗。請檢查 %s 目錄是否可以寫入。';
+$_LANG['backup_success'] = "所有模板文件已備份到templates/backup目錄下。\n您現在要下載備份文件嗎？。";
+$_LANG['backup_failed'] = '備份模板文件失敗，請檢查templates/backup 目錄是否可以寫入。';
 
-/* 每一個版型檔案對應的語言 */
-$_LANG['template_files']['article'] = '文章內容版型';
-$_LANG['template_files']['article_cat'] = '文章分類版型';
+/* 每一個模板文件對應的語言 */
+$_LANG['template_files']['article'] = '文章內容模板';
+$_LANG['template_files']['article_cat'] = '文章分類模板';
 $_LANG['template_files']['brand'] = '品牌專區';
-$_LANG['template_files']['catalog'] = '所有分類頁';
-$_LANG['template_files']['category'] = '商品分類頁版型';
-$_LANG['template_files']['flow'] = '購物流程版型';
-$_LANG['template_files']['goods'] = '商品詳情版型';
-$_LANG['template_files']['group_buy_goods'] = '團購商品詳情版型';
-$_LANG['template_files']['group_buy_list'] = '團購商品列表版型';
-$_LANG['template_files']['index'] = '首頁版型';
-$_LANG['template_files']['search'] = '商品搜尋版型';
-$_LANG['template_files']['compare'] = '商品比較版型';
-$_LANG['template_files']['snatch'] = '拍賣競標';
-$_LANG['template_files']['tag_cloud'] = '標籤雲版型';
+//$_LANG['template_files']['catalog'] = '所有分類頁';
+$_LANG['template_files']['category'] = '商品分類頁模板';
+$_LANG['template_files']['flow'] = '購物流程模板';
+$_LANG['template_files']['goods'] = '商品詳情模板';
+$_LANG['template_files']['group_buy_goods'] = '團購商品詳情模板';
+$_LANG['template_files']['group_buy_list'] = '團購商品列表模板';
+$_LANG['template_files']['index'] = '首頁模板';
+$_LANG['template_files']['search'] = '商品搜索模板';
+$_LANG['template_files']['compare'] = '商品比較模板';
+$_LANG['template_files']['snatch'] = '奪寶奇兵';
+$_LANG['template_files']['tag_cloud'] = '標籤雲模板';
 $_LANG['template_files']['brand'] = '商品品牌頁';
 $_LANG['template_files']['auction_list'] = '拍賣活動列表';
 $_LANG['template_files']['auction'] = '拍賣活動詳情';
+$_LANG['template_files']['message_board'] = '留言板';
+//$_LANG['template_files']['quotation'] = '報價單';
+$_LANG['template_files']['exchange_list'] = '積分商城列表';
 
-/* 每一個樣板的描述 */
+/* 每一個庫項目的描述 */
 $_LANG['template_libs']['ad_position'] = '廣告位';
 $_LANG['template_libs']['cat_articles'] = '文章列表';
 $_LANG['template_libs']['articles'] = '文章列表';
@@ -87,53 +89,57 @@ $_LANG['template_libs']['history'] = '商品瀏覽歷史';
 $_LANG['template_libs']['comments_list'] = '評論內容';
 $_LANG['template_libs']['invoice_query'] = '發貨單查詢';
 $_LANG['template_libs']['member'] = '會員區';
-$_LANG['template_libs']['member_info'] = '會員資料';
+$_LANG['template_libs']['member_info'] = '會員信息';
 $_LANG['template_libs']['new_articles'] = '最新文章';
 $_LANG['template_libs']['order_total'] = '訂單費用總計';
 $_LANG['template_libs']['page_header'] = '頁面頂部';
 $_LANG['template_libs']['pages'] = '列表分頁';
 $_LANG['template_libs']['goods_related'] = '相關商品';
-$_LANG['template_libs']['search_form'] = '搜尋表單';
-$_LANG['template_libs']['signin'] = '登入表單';
-$_LANG['template_libs']['snatch'] = '拍賣競標出價';
-$_LANG['template_libs']['snatch_price'] = '拍賣競標最新出價';
+$_LANG['template_libs']['search_form'] = '搜索表單';
+$_LANG['template_libs']['signin'] = '登錄表單';
+$_LANG['template_libs']['snatch'] = '奪寶奇兵出價';
+$_LANG['template_libs']['snatch_price'] = '奪寶奇兵最新出價';
 $_LANG['template_libs']['top10'] = '銷售排行';
-$_LANG['template_libs']['ur_here'] = '目前位置';
-$_LANG['template_libs']['user_menu'] = '用戶中心選單';
+$_LANG['template_libs']['ur_here'] = '當前位置';
+$_LANG['template_libs']['user_menu'] = '用戶中心菜單';
 $_LANG['template_libs']['vote'] = '調查';
 $_LANG['template_libs']['auction'] = '拍賣商品';
 $_LANG['template_libs']['article_category_tree'] = '文章分類樹';
 $_LANG['template_libs']['order_query'] = '前台訂單狀態查詢';
 $_LANG['template_libs']['email_list'] = '前台郵件訂閱';
+$_LANG['template_libs']['vote_list'] = '在線調查';
 $_LANG['template_libs']['price_grade'] = '價格範圍';
 $_LANG['template_libs']['filter_attr'] = '屬性篩選';
-$_LANG['template_libs']['vote_list'] = '在线調查';
 $_LANG['template_libs']['promotion_info'] = '促銷信息';
 $_LANG['template_libs']['categorys'] = '商品分類';
 $_LANG['template_libs']['myship'] = '配送方式';
 $_LANG['template_libs']['online'] = '統計在線人數';
+$_LANG['template_libs']['relatetag'] = '其他應用關聯標籤數據';
+$_LANG['template_libs']['message_list'] = '留言列表';
+$_LANG['template_libs']['exchange_hot'] = '積分商城熱賣商品';
+$_LANG['template_libs']['exchange_list'] = '積分商城列表商品';
 
-/* 版型佈局備份 */
-$_LANG['backup_setting'] = '備份版型設定';
-$_LANG['cur_setting_template'] = '目前可備份的版型設定';
-$_LANG['no_setting_template'] = '沒有可備份的版型設定';
-$_LANG['cur_backup'] = '可使用的版型設定備份';
-$_LANG['no_backup'] = '沒有版型設定備份';
-$_LANG['remarks'] = '備份註解';
-$_LANG['backup_setting'] = '備份版型設定';
+/* 模板佈局備份 */
+$_LANG['backup_setting'] = '備份模板設置';
+$_LANG['cur_setting_template'] = '當前可備份的模板設置';
+$_LANG['no_setting_template'] = '沒有可備份的模板設置';
+$_LANG['cur_backup'] = '可使用的模板設置備份';
+$_LANG['no_backup'] = '沒有模板設置備份';
+$_LANG['remarks'] = '備份註釋';
+$_LANG['backup_setting'] = '備份模板設置';
 $_LANG['select_all'] = '全選';
-$_LANG['remarks_exist'] = '備份註解 %s 已經用過，請換個註解名稱';
-$_LANG['backup_template_ok'] = '備份設定成功';
+$_LANG['remarks_exist'] = '備份註釋 %s 已經用過，請換個註釋名稱';
+$_LANG['backup_template_ok'] = '備份設置成功';
 $_LANG['del_backup_ok'] = '備份刪除成功';
-$_LANG['restore_backup_ok'] = '還原備份成功';
+$_LANG['restore_backup_ok'] = '恢復備份成功';
 
 /* JS 語言項 */
-$_LANG['js_languages']['setupConfirm'] = '啟用新的版型將覆蓋原來的版型。\n您確定要啟用選擇的版型嗎？';
-$_LANG['js_languages']['reinstall'] = '重新安裝目前版型';
-$_LANG['backup'] = '備份目前版型';
+$_LANG['js_languages']['setupConfirm'] = '啟用新的模板將覆蓋原來的模板。\n您確定要啟用選定的模板嗎？';
+$_LANG['js_languages']['reinstall'] = '重新安裝當前模板';
+$_LANG['backup'] = '備份當前模板';
 $_LANG['js_languages']['selectPlease'] = '請選擇...';
-$_LANG['js_languages']['removeConfirm'] = '您確定要刪除選擇的內容嗎？';
-$_LANG['js_languages']['empty_content'] = '對不起，樣板的內容不能為空。';
-$_LANG['js_languages']['save_confirm'] = '您已經修改了版型內容，您確定不存檔嗎？';
+$_LANG['js_languages']['removeConfirm'] = '您確定要刪除選定的內容嗎？';
+$_LANG['js_languages']['empty_content'] = '對不起，庫項目的內容不能為空。';
+$_LANG['js_languages']['save_confirm'] = '您已經修改了模板內容，您確定不保存麼？';
 
 ?>

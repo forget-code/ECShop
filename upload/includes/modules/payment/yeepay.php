@@ -3,15 +3,14 @@
 /**
  * ECSHOP YeePay易宝插件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: yeepay.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: testyang $
+ * $Id: yeepay.php 15540 2009-01-08 09:06:01Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -46,7 +45,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['is_online']  = '1';
 
     /* 作者 */
-    $modules[$i]['author']  = 'newbj <ffo@21cn.com>';
+    $modules[$i]['author']  = 'ECSHOP TEAM';
 
     /* 网址 */
     $modules[$i]['website'] = 'http://www.yeepay.com';
@@ -175,29 +174,32 @@ class yeepay
     }
 }
 
-function hmac($data, $key)
+if (!function_exists("hmac"))
 {
-    // RFC 2104 HMAC implementation for php.
-    // Creates an md5 HMAC.
-    // Eliminates the need to install mhash to compute a HMAC
-    // Hacked by Lance Rushing(NOTE: Hacked means written)
-
-    $key  = ecs_iconv('GB2312', 'UTF8', $key);
-    $data = ecs_iconv('GB2312', 'UTF8', $data);
-
-    $b = 64; // byte length for md5
-    if (strlen($key) > $b)
+    function hmac($data, $key)
     {
-        $key = pack('H*', md5($key));
+        // RFC 2104 HMAC implementation for php.
+        // Creates an md5 HMAC.
+        // Eliminates the need to install mhash to compute a HMAC
+        // Hacked by Lance Rushing(NOTE: Hacked means written)
+
+        $key  = ecs_iconv('GB2312', 'UTF8', $key);
+        $data = ecs_iconv('GB2312', 'UTF8', $data);
+
+        $b = 64; // byte length for md5
+        if (strlen($key) > $b)
+        {
+            $key = pack('H*', md5($key));
+        }
+
+        $key    = str_pad($key, $b, chr(0x00));
+        $ipad   = str_pad('', $b, chr(0x36));
+        $opad   = str_pad('', $b, chr(0x5c));
+        $k_ipad = $key ^ $ipad ;
+        $k_opad = $key ^ $opad;
+
+        return md5($k_opad . pack('H*', md5($k_ipad . $data)));
     }
-
-    $key    = str_pad($key, $b, chr(0x00));
-    $ipad   = str_pad('', $b, chr(0x36));
-    $opad   = str_pad('', $b, chr(0x5c));
-    $k_ipad = $key ^ $ipad ;
-    $k_opad = $key ^ $opad;
-
-    return md5($k_opad . pack('H*', md5($k_ipad . $data)));
 }
 
 ?>

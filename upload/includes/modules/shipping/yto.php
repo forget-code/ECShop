@@ -3,15 +3,14 @@
 /**
  * ECSHOP 圆通速递插件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-02-27 17:20:49 +0800 (星期二, 27 二月 2007) $
- * $Id: cac.php 6072 2007-02-27 09:20:49Z wj $
+ * $Author: sunxiaodong $
+ * $Id: yto.php 15619 2009-02-18 05:59:31Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -53,7 +52,8 @@ if (isset($set_modules) && $set_modules == TRUE)
 
     /* 配送接口需要的参数 */
     $modules[$i]['configure'] = array(
-                                    array('name' => 'basic_fee',    'value'=>5),    /* 1000克以内的价格 */
+                                    array('name' => 'item_fee',     'value'=>10),   /* 单件商品的配送价格 */
+                                    array('name' => 'base_fee',    'value'=>5),    /* 1000克以内的价格 */
                                     array('name' => 'step_fee',     'value'=>5),    /* 续重每1000克增加的价格 */
                                 );
 
@@ -95,9 +95,10 @@ class yto
      *
      * @param   float   $goods_weight   商品重量
      * @param   float   $goods_amount   商品金额
+     * @param   float   $goods_number   商品件数
      * @return  decimal
      */
-    function calculate($goods_weight, $goods_amount)
+    function calculate($goods_weight, $goods_amount, $goods_number)
     {
         if ($this->configure['free_money'] > 0 && $goods_amount >= $this->configure['free_money'])
         {
@@ -105,12 +106,21 @@ class yto
         }
         else
         {
-            @$fee = $this->configure['basic_fee'];
+            @$fee = $this->configure['base_fee'];
+            $this->configure['fee_compute_mode'] = !empty($this->configure['fee_compute_mode']) ? $this->configure['fee_compute_mode'] : 'by_weight';
 
-            if ($goods_weight > 1)
+            if ($this->configure['fee_compute_mode'] == 'by_number')
             {
-                $fee += (ceil(($goods_weight - 1))) * $this->configure['step_fee'];
+                $fee = $goods_number * $this->configure['item_fee'];
             }
+            else
+            {
+                if ($goods_weight > 1)
+                {
+                    $fee += (ceil(($goods_weight - 1))) * $this->configure['step_fee'];
+                }
+            }
+
             return $fee;
         }
     }
@@ -125,13 +135,9 @@ class yto
      */
     function query($invoice_sn)
     {
-
-        return $invoice_sn;
-
-        /*
         //圆通快递查询会判断链接来源，目前的查询无法生效。
         $str = '<form style="margin:0px" methods="post" '.
-            'action="http://www.yto.net.cn/html/sql.asp" name="queryForm_' .$invoice_sn. '" target="_blank">'.
+            'action="http://www.yto.net.cn/service/service.asp" name="queryForm_' .$invoice_sn. '" target="_blank">'.
             '<input type="hidden" name="NumberText" value="' .$invoice_sn. '" />'.
             '<a href="javascript:document.forms[\'queryForm_' .$invoice_sn. '\'].submit();">' .$invoice_sn. '</a>'.
             '<input type="hidden" name="imageField.x" value="54" />'.
@@ -139,7 +145,7 @@ class yto
             '</form>';
 
         return $str;
-        */
+
     }
 }
 

@@ -3,15 +3,14 @@
 /**
  * ECSHOP google sitemap 文件
  * ===========================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: sitemaps.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Id: sitemaps.php 15174 2008-11-14 04:58:51Z testyang $
  */
 
 class sitemap
@@ -41,9 +40,9 @@ define('IN_ECS', true);
 define('INIT_NO_USERS', true);
 define('INIT_NO_SMARTY', true);
 require(dirname(__FILE__) . '/includes/init.php');
-if (file_exists(ROOT_PATH . 'data/sitemap.dat') && time() - filemtime(ROOT_PATH . 'data/sitemap.dat') < 86400)
+if (file_exists(ROOT_PATH . DATA_DIR . '/sitemap.dat') && time() - filemtime(ROOT_PATH . DATA_DIR . '/sitemap.dat') < 86400)
 {
-    $out = file_get_contents(ROOT_PATH . 'data/sitemap.dat');
+    $out = file_get_contents(ROOT_PATH . DATA_DIR . '/sitemap.dat');
 }
 else
 {
@@ -86,7 +85,7 @@ else
         $sitemap->item($item);
     }
     /* 商品 */
-    $sql = "SELECT goods_id,  last_update FROM " .$ecs->table('goods'). " WHERE is_delete = 0";
+    $sql = "SELECT goods_id,  last_update FROM " .$ecs->table('goods'). " WHERE is_delete = 0 LIMIT 300";
     $res = $db->query($sql);
 
     while ($row = $db->fetchRow($res))
@@ -114,7 +113,7 @@ else
         $sitemap->item($item);
     }
     $out =  $sitemap->generate();
-    file_put_contents(ROOT_PATH . 'data/sitemap.dat', $out);
+    file_put_contents(ROOT_PATH . DATA_DIR . '/sitemap.dat', $out);
 }
 if (function_exists('gzencode'))
 {

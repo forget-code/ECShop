@@ -1,21 +1,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!-- {if $vote} -->
-
 {insert_scripts files='transport.js'}
+
 <div id="ECS_VOTE">
-  <div class="title-div"><img src="../images/vote.gif" alt="" width="158" height="39" /></div>
-  <div class="content-div">
+<div  class="box">
+ <div class="box_1">
+  <h3><span>{$lang.online_vote}</span></h3>
+  <div  class="boxCenterList">
     <form id="formvote" name="ECS_VOTEFORM" method="post" action="javascript:submit_vote()">
-      <table id="vote_zone" width="100%" border="0" align="center" cellpadding="0" cellspacing="1">
-        <tr>
-          <!-- {foreach from=$vote item=title} -->
-          <td>{$title.vote_name}<br />
-            ({$lang.vote_times}:{$title.vote_count})</td>
-          <!-- {/foreach} -->
-        </tr>
-        <tr>
-          <!-- {foreach from=$vote item=title} -->
-          <td bgcolor="#FFFFFF" valign="top"><!-- {foreach from=$title.options item=item} -->
+    <!-- {foreach from=$vote item=title} -->
+     {$title.vote_name}<br />
+     ({$lang.vote_times}:{$title.vote_count})<br />
+     <!-- {/foreach} -->
+     <!-- {foreach from=$vote item=title} -->
+          <!-- {foreach from=$title.options item=item} -->
             <!-- {if $title.can_multi eq 0} -->
             <input type="checkbox" name="option_id" value="{$item.option_id}" />
             {$item.option_name} ({$item.percent}%)<br />
@@ -25,20 +23,16 @@
             <!-- {/if} -->
             <!-- {/foreach} -->
             <input type="hidden" name="type" value="{$title.can_multi}" />
-          </td>
-          <!-- {/foreach} -->
-        </tr>
-        <tr>
-          <td align="center"><br />
-            <input type="hidden" name="id" value="{$vote_id}" />
-            <input type="submit" name="submit" value="{$lang.submit_vote}" />
-            <input type="reset" value="{$lang.submit_reset}" />
-          </td>
-        </tr>
-      </table>
-    </form>
+     <!-- {/foreach} -->
+     <input type="hidden" name="id" value="{$vote_id}" />
+     <input type="submit" name="submit" style="border:none;" value="{$lang.submit}"  class="bnt_bonus" />
+     <input type="reset" style="border:none;" value="{$lang.reset}" class="bnt_blue" />
+     </form>
   </div>
+ </div>
 </div>
+</div>
+<div class="blank5"></div>
 <script type="text/javascript">
 {literal}
 /**

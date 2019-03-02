@@ -3,15 +3,14 @@
 /**
  * ECSHOP 管理中心模版相关公用函数库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: lib_template.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Author: zblikai $
+ * $Id: lib_template.php 15745 2009-03-16 03:43:40Z zblikai $
 */
 
 if (!defined('IN_ECS'))
@@ -25,7 +24,6 @@ $template_files = array(
     'article.dwt',
     'article_cat.dwt',
     'brand.dwt',
-    'catalog.dwt',
     'category.dwt',
     'user_clips.dwt',
     'compare.dwt',
@@ -47,6 +45,8 @@ $template_files = array(
     'style.css',
     'auction_list.dwt',
     'auction.dwt',
+    'message_board.dwt',
+    'exchange_list.dwt',
 );
 
 /* 每个模板允许设置的库项目 */
@@ -92,10 +92,6 @@ $page_libs = array(
         '/library/cart.lbi' => 0,
         '/library/vote.lbi' => 0,
     ),
-    'catalog' => array(
-        '/library/ur_here.lbi' => 0,
-        '/library/search_form.lbi' => 0,
-    ),
     'category' => array(
         '/library/ur_here.lbi' => 0,
         '/library/search_form.lbi' => 0,
@@ -134,7 +130,7 @@ $page_libs = array(
         '/library/recommend_best.lbi' => 3,
         '/library/recommend_new.lbi' => 3,
         '/library/recommend_hot.lbi' => 3,
-        '/library/recommend_promotion.lbi' => 3,
+        '/library/recommend_promotion.lbi' => 4,
         '/library/group_buy.lbi' => 3,
         '/library/auction.lbi' => 3,
         '/library/brands.lbi' => 0,
@@ -160,6 +156,7 @@ $page_libs = array(
         '/library/bought_goods.lbi' => 0,
         '/library/goods_related.lbi' => 0,
         '/library/goods_article.lbi' => 0,
+        '/library/relatetag.lbi' => 0,
     ),
     'search_result' => array(
         '/library/ur_here.lbi' => 0,
@@ -243,6 +240,26 @@ $page_libs = array(
         '/library/cart.lbi' => 0,
         '/library/top10.lbi' => 0,
         '/library/history.lbi' => 0,
+    ),
+    'message_board' => array(
+        '/library/ur_here.lbi' => 0,
+        '/library/search_form.lbi' => 0,
+        '/library/member.lbi' => 0,
+        '/library/category_tree.lbi' => 0,
+        '/library/promotion_info.lbi' => 0,
+        '/library/cart.lbi' => 0,
+        '/library/top10.lbi' => 0,
+        '/library/history.lbi' => 0,
+        '/library/message_list.lbi' => 10,
+    ),
+    'exchange_list' => array(
+        '/library/ur_here.lbi' => 0,
+        '/library/cart.lbi' => 0,
+        '/library/category_tree.lbi' => 0,
+        '/library/history.lbi' => 0,
+        '/library/pages.lbi' => 0,
+        '/library/exchange_hot.lbi' => 5,
+        '/library/exchange_list.lbi' => 0,
     ),
 );
 
@@ -418,7 +435,7 @@ function move_plugin_library($tmp_name, &$msg)
         //先移动，移动失败试则拷贝
         if (!@rename($source_dir . $row['library'], $target_dir . $row['library']))
         {
-            if (!@copy(ROOT_PATH . 'plugins/' . $row['code'] . '/templates' . $row['library'], $target_dir . $row['library']))
+            if (!@copy(ROOT_PATH . 'plugins/' . $row['code'] . '/temp' . $row['library'], $target_dir . $row['library']))
             {
                 $return_value = false;
                 $msg .= "\n moving " . $row['library'] . ' failed';

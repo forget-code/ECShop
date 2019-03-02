@@ -1,4 +1,4 @@
-<!-- $Id: user_rank_info.htm 13961 2008-01-07 06:54:44Z dolphin $ -->
+<!-- $Id: user_rank_info.htm 15053 2008-10-25 03:07:46Z testyang $ -->
 {include file="pageheader.htm"}
 
 <div class="main-div">
@@ -28,8 +28,10 @@
     <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="notice_special">{$lang.notice_special}</span></td>
   </tr>
   <tr>
-    <td class="label">{$lang.discount}: </td>
-    <td><input type="text" name="discount" value="{$rank.discount}" size="10" maxlength="20" />{$lang.require_field}</td>
+    <td class="label"><a href="javascript:showNotice('notice_discount');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.discount}: </td>
+    <td><input type="text" name="discount" value="{$rank.discount}" size="10" maxlength="20" />{$lang.require_field}
+    <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="notice_discount">{$lang.notice_discount}</span>
+    </td>
   </tr>
   <tr>
     <td colspan="2" align="center">

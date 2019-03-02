@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP 易捷ips支付系统语言文件
+ * ECSHOP 易捷ips支付系統語言文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
+ * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
  * @author:     liupeng <laupeng@163.com>
  * @version:    v1.0
@@ -17,13 +17,10 @@
 global $_LANG;
 
 $_LANG['express']            = '易捷IPS';
-$_LANG['express_desc']       = 'IPS易捷支付系統為中小型電子商務網站提供簡單的、便捷的、安全的、自助一站式的支付服務。IPS易捷支付的優勢不僅提供免年費、1%手續費、支援22家銀行的支付平臺，它更是一種服務用戶的創新方法。這是IPS為中小型電子商務網站提供服務和用戶體驗的根本轉變。'.
-'<a href="http://express.ips.com.cn/merchant/register_ecshop.asp" style="font-weight:bold; color:#CC0000" >點選註冊，立即開通</a> http://express.ips.com.cn';
+$_LANG['express_desc']       = 'IPS易捷支付系統為中小型電子商務網站提供簡單的、便捷的、安全的、自助一站式的支付服務。IPS易捷支付的優勢不僅提供免年費、1%手續費、支持22家銀行的支付平台，它更是一種服務用戶的創新方法。這是IPS為中小型電子商務網站提供服務和用戶體驗的根本轉變。'.
+'<a href="http://express.ips.com.cn/merchant/register_ecshop.asp" style="font-weight:bold; color:#CC0000" >點擊註冊，立即開通</a> http://express.ips.com.cn';
 
-$_LANG['ips_account']    = 'IPS商戶號';
-$_LANG['ips_key']        = 'ISP商戶密鑰';
-$_LANG['pay_button']     = '立即使用易捷IPS支付';
-$_LANG['please_select_bank'] = '請選擇支付銀行';
+
 $_LANG['ips_account']    = 'IPS商戶號';
 $_LANG['ips_key']        = 'ISP商戶密鑰';
 $_LANG['pay_button']     = '立即使用易捷IPS支付';

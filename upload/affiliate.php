@@ -3,15 +3,14 @@
 /**
  * ECSHOP 生成商品列表
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
- * $Id: affiliate.php 14079 2008-01-28 10:33:06Z testyang $
+ * $Id: affiliate.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -23,7 +22,7 @@ if ((DEBUG_MODE & 2) != 2)
     $smarty->caching = true;
 }
 
-$charset = empty($_GET['charset']) ? 'UTF8' : $_GET['charset'];
+//$charset = empty($_GET['charset']) ? 'UTF8' : $_GET['charset'];
 $display_mode = empty($_GET['display_mode']) ? 'javascript' : $_GET['display_mode'];
 
 if ( $display_mode == 'javascript' )
@@ -42,7 +41,7 @@ $userid = intval($_GET['u']);
 $type = intval($_GET['type']);
 
 
-$tpl = ROOT_PATH . 'data/affiliate.html';
+$tpl = ROOT_PATH . DATA_DIR . '/affiliate.html';
 if (!$smarty->is_cached($tpl, $cache_id))
 {
     $time = gmtime();
@@ -53,11 +52,11 @@ if (!$smarty->is_cached($tpl, $cache_id))
 
     $goods['shop_price'] = price_format($goods['shop_price']);
 
-    if ($charset != 'UTF8')
+    /*if ($charset != 'UTF8')
     {
         $goods['goods_name']  = ecs_iconv('UTF8', $charset, htmlentities($goods['goods_name'], ENT_QUOTES, 'UTF-8'));
         $goods['shop_price'] = ecs_iconv('UTF8', $charset, $goods['shop_price']);
-    }
+    }*/
 
     $smarty->assign('goods', $goods);
     $smarty->assign('userid', $userid);

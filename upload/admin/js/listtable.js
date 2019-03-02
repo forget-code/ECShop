@@ -1,4 +1,4 @@
-/* $Id: listtable.js 14139 2008-02-15 03:22:13Z fenghl $ */
+/* $Id: listtable.js 14980 2008-10-22 05:01:19Z testyang $ */
 if (typeof Ajax != 'object')
 {
   alert('Ajax object doesn\'t exists.');
@@ -291,7 +291,7 @@ listTable.getPageSize = function()
     document.cookie = "ECSCP[page_size]=" + ps + ";";
   }
 }
-  
+
 listTable.addRow = function(checkFunc)
 {
   cleanWhitespace(document.getElementById("listDiv"));
@@ -301,7 +301,7 @@ listTable.addRow = function(checkFunc)
   newRow.align = "center";
   var items = new Object();
   for(var i=0; i < firstRow.cells.length;i++) {
-    var cel = firstRow.cells[i]; 
+    var cel = firstRow.cells[i];
     var celName = cel.getAttribute("name");
     var newCel = newRow.insertCell(-1);
     if (!cel.getAttribute("ReadOnly") && cel.getAttribute("Type")=="TextBox")
@@ -371,5 +371,5 @@ listTable.addRow = function(checkFunc)
       //newCel.appendChild(delBtn);
     }
   }
-  
+
 }

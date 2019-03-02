@@ -3,15 +3,14 @@
 /**
  * ECSHOP API 公用初始化文件
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
- * $Id: init.php 14080 2008-01-28 11:27:47Z testyang $
+ * $Id: init.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -27,7 +26,7 @@ if (__FILE__ == '')
 }
 
 /* 取得当前ecshop所在的根目录 */
-define('ROOT_PATH', str_replace('api/init.php', '', str_replace('\\', '/', __FILE__)));
+define('ROOT_PATH', str_replace('api', '', str_replace('\\', '/', dirname(__FILE__))));
 
 /* 初始化设置 */
 @ini_set('memory_limit',          '16M');
@@ -65,9 +64,18 @@ if (PHP_VERSION >= '5.1' && !empty($timezone))
     date_default_timezone_set($timezone);
 }
 
+$php_self = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+if ('/' == substr($php_self, -1))
+{
+    $php_self .= 'index.php';
+}
+define('PHP_SELF', $php_self);
+
 require(ROOT_PATH . 'includes/inc_constant.php');
 require(ROOT_PATH . 'includes/cls_ecshop.php');
+require(ROOT_PATH . 'includes/lib_base.php');
 require(ROOT_PATH . 'includes/lib_common.php');
+require(ROOT_PATH . 'includes/lib_time.php');
 
 /* 对用户传入的变量进行转义操作。*/
 if (!get_magic_quotes_gpc())
@@ -87,6 +95,7 @@ if (!get_magic_quotes_gpc())
 
 /* 创建 ECSHOP 对象 */
 $ecs = new ECS($db_name, $prefix);
+$data_dir = $ecs->data_dir();
 
 /* 初始化数据库类 */
 require(ROOT_PATH . 'includes/cls_mysql.php');
@@ -100,6 +109,9 @@ $sess       = new cls_session($db, $ecs->table('sessions'), $ecs->table('session
 
 /* 载入系统参数 */
 $_CFG = load_config();
+
+/* 初始化用户插件 */
+$user =& init_users();
 
 if ((DEBUG_MODE & 1) == 1)
 {
@@ -120,6 +132,6 @@ if (gzip_enabled())
     ob_start('ob_gzhandler');
 }
 
-header('Content-type: text/html; charset=utf-8');
+header('Content-type: text/html; charset=' . EC_CHARSET);
 
 ?>

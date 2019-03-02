@@ -1,4 +1,4 @@
-<!-- $Id: comment_info.htm 13062 2007-10-18 08:19:36Z luhengqi $ -->
+<!-- $Id: comment_info.htm 15144 2008-11-03 01:50:47Z testyang $ -->
 
 {include file="pageheader.htm"}
 <!-- comment content list -->
@@ -15,7 +15,7 @@
     </tr>
     <tr>
       <td>
-        <div>{$msg.content}</div>
+        <div style="overflow:hidden; word-break:break-all;">{$msg.content}</div>
         <div align="right"><b>{$lang.comment_rank}:</b> {$msg.comment_rank}&nbsp;&nbsp;<b>{$lang.ip_address}</b>: {$msg.ip_address}</div>
       </td>
     </tr>
@@ -46,7 +46,7 @@
     </tr>
     <tr>
       <td>
-        <div>{$reply_info.content}</div>
+        <div style="overflow:hidden; word-break:break-all;">{$reply_info.content}</div>
         <div align="right"><b>{$lang.ip_address}</b>: {$reply_info.ip_address}</div>
       </td>
     </tr>
