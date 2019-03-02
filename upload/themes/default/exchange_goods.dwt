@@ -13,14 +13,14 @@
 {* 包含脚本文件 *}
 {insert_scripts files='common.js'}
 <script type="text/javascript">
-function $(element)
+function $id(element)
 {
   return document.getElementById(element);
 }
 //切屏--是按钮，_v是内容平台，_h是内容库
 function reg(str)
 {
-  var bt=$(str+"_b").getElementsByTagName("h2");
+  var bt=$id(str+"_b").getElementsByTagName("h2");
 
   for(var i=0;i<bt.length;i++)
   {
@@ -30,19 +30,19 @@ function reg(str)
 
     bt[i].onclick=function()
     {
-      $(this.subj+"_v").innerHTML=$(this.subj+"_h").getElementsByTagName("blockquote")[this.pai].innerHTML;
+      $id(this.subj+"_v").innerHTML=$id(this.subj+"_h").getElementsByTagName("blockquote")[this.pai].innerHTML;
 
-      for(var j=0;j<$(this.subj+"_b").getElementsByTagName("h2").length;j++)
+      for(var j=0;j<$id(this.subj+"_b").getElementsByTagName("h2").length;j++)
       {
-        var _bt=$(this.subj+"_b").getElementsByTagName("h2")[j];
+        var _bt=$id(this.subj+"_b").getElementsByTagName("h2")[j];
         var ison=j==this.pai;
         _bt.className=(ison?"":"h2bg");
       }
     }
   }
 
-  $(str+"_h").className="none";
-  $(str+"_v").innerHTML=$(str+"_h").getElementsByTagName("blockquote")[0].innerHTML;
+  $id(str+"_h").className="none";
+  $id(str+"_v").innerHTML=$id(str+"_h").getElementsByTagName("blockquote")[0].innerHTML;
 }
 
 </script>

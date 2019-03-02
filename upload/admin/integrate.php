@@ -3,14 +3,14 @@
 /**
  * ECSHOP 第三方程序会员数据整合插件管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: likai $
- * $Id: integrate.php 16294 2009-06-19 09:35:52Z likai $
+ * $Author: liubo $
+ * $Id: integrate.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -570,7 +570,7 @@ if ($_REQUEST['act'] == 'import_user')
     $ucdb->query("ALTER TABLE ".$cfg['db_pre']."members AUTO_INCREMENT=".($lastuid + 1), 'SILENT');
 
     //需要更新user_id的表
-    $up_user_table = array('account_log', 'affiliate_log', 'booking_goods', 'collect_goods', 'comment', 'feedback', 'order_info', 'snatch_log', 'tag', 'users', 'user_account', 'user_address', 'user_bonus');
+    $up_user_table = array('account_log', 'affiliate_log', 'booking_goods', 'collect_goods', 'comment', 'feedback', 'order_info', 'snatch_log', 'tag', 'users', 'user_account', 'user_address', 'user_bonus', 'reg_extend_info', 'user_feed', 'delivery_order', 'back_order');
     // 清空的表
     $truncate_user_table = array('cart', 'sessions', 'sessions_data');
 

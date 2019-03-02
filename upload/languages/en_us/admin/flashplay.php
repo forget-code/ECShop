@@ -3,19 +3,20 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: liubo $
- * $Id: flashplay.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Id: flashplay.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 $_LANG['schp_imgsrc'] = 'Carousel picture Address';
 $_LANG['schp_imgurl'] = 'Carousel Picture Link';
 $_LANG['schp_imgdesc'] = 'Photo Caption';
+$_LANG['schp_sort'] = 'Sort';
 $_LANG['trash_img_confirm'] = 'You want to delete this Carousel picture it?';
 $_LANG['custom_del_confirm'] = 'You want to delete it?';
 $_LANG['tab_change_alert'] = 'Close all of custom ADS before click Default AD';

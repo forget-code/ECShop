@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品分类
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: category.php 16451 2009-07-10 04:02:03Z sxc_shop $
+ * $Author: liubo $
+ * $Id: category.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -186,7 +186,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
             $price_grade[$temp_key]['price_range'] = $price_grade[$temp_key]['start'] . '&nbsp;-&nbsp;' . $price_grade[$temp_key]['end'];
             $price_grade[$temp_key]['formated_start'] = price_format($price_grade[$temp_key]['start']);
             $price_grade[$temp_key]['formated_end'] = price_format($price_grade[$temp_key]['end']);
-            $price_grade[$temp_key]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>$price_grade[$temp_key]['start'], 'price_max'=> $price_grade[$temp_key]['end'], 'filter_attr'=>$filter_attr_str));
+            $price_grade[$temp_key]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>$price_grade[$temp_key]['start'], 'price_max'=> $price_grade[$temp_key]['end'], 'filter_attr'=>$filter_attr_str), $cat['cat_name']);
 
             /* 判断价格区间是否被选中 */
             if (isset($_REQUEST['price_min']) && $price_grade[$temp_key]['start'] == $price_min && $price_grade[$temp_key]['end'] == $price_max)
@@ -202,7 +202,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
         $price_grade[0]['start'] = 0;
         $price_grade[0]['end'] = 0;
         $price_grade[0]['price_range'] = $_LANG['all_attribute'];
-        $price_grade[0]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>0, 'price_max'=> 0, 'filter_attr'=>$filter_attr_str));
+        $price_grade[0]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>0, 'price_max'=> 0, 'filter_attr'=>$filter_attr_str), $cat['cat_name']);
         $price_grade[0]['selected'] = empty($price_max) ? 1 : 0;
 
         $smarty->assign('price_grade',     $price_grade);
@@ -225,7 +225,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
     {
         $temp_key = $key + 1;
         $brands[$temp_key]['brand_name'] = $val['brand_name'];
-        $brands[$temp_key]['url'] = build_uri('category', array('cid' => $cat_id, 'bid' => $val['brand_id'], 'price_min'=>$price_min, 'price_max'=> $price_max, 'filter_attr'=>$filter_attr_str));
+        $brands[$temp_key]['url'] = build_uri('category', array('cid' => $cat_id, 'bid' => $val['brand_id'], 'price_min'=>$price_min, 'price_max'=> $price_max, 'filter_attr'=>$filter_attr_str), $cat['cat_name']);
 
         /* 判断品牌是否被选中 */
         if ($brand == $brands[$key]['brand_id'])
@@ -239,7 +239,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
     }
 
     $brands[0]['brand_name'] = $_LANG['all_attribute'];
-    $brands[0]['url'] = build_uri('category', array('cid' => $cat_id, 'bid' => 0, 'price_min'=>$price_min, 'price_max'=> $price_max, 'filter_attr'=>$filter_attr_str));
+    $brands[0]['url'] = build_uri('category', array('cid' => $cat_id, 'bid' => 0, 'price_min'=>$price_min, 'price_max'=> $price_max, 'filter_attr'=>$filter_attr_str), $cat['cat_name']);
     $brands[0]['selected'] = empty($brand) ? 1 : 0;
 
     $smarty->assign('brands', $brands);
@@ -277,7 +277,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
                 $temp_arrt_url_arr[$key] = 0;                           //“全部”的信息生成
                 $temp_arrt_url = implode('.', $temp_arrt_url_arr);
                 $all_attr_list[$key]['attr_list'][0]['attr_value'] = $_LANG['all_attribute'];
-                $all_attr_list[$key]['attr_list'][0]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>$price_min, 'price_max'=>$price_max, 'filter_attr'=>$temp_arrt_url));
+                $all_attr_list[$key]['attr_list'][0]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>$price_min, 'price_max'=>$price_max, 'filter_attr'=>$temp_arrt_url), $cat['cat_name']);
                 $all_attr_list[$key]['attr_list'][0]['selected'] = empty($filter_attr[$key]) ? 1 : 0;
 
                 foreach ($attr_list as $k => $v)
@@ -287,7 +287,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
                     $temp_arrt_url = implode('.', $temp_arrt_url_arr);
 
                     $all_attr_list[$key]['attr_list'][$temp_key]['attr_value'] = $v['attr_value'];
-                    $all_attr_list[$key]['attr_list'][$temp_key]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>$price_min, 'price_max'=>$price_max, 'filter_attr'=>$temp_arrt_url));
+                    $all_attr_list[$key]['attr_list'][$temp_key]['url'] = build_uri('category', array('cid'=>$cat_id, 'bid'=>$brand, 'price_min'=>$price_min, 'price_max'=>$price_max, 'filter_attr'=>$temp_arrt_url), $cat['cat_name']);
 
                     if (!empty($filter_attr[$key]) AND $filter_attr[$key] == $v['goods_id'])
                     {
@@ -314,7 +314,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
             {
                 if ($v != 0)
                 {
-                    $sql = $ext_sql . "a.attr_id = b.attr_id AND b.attr_value = a.attr_value AND a.attr_id = " . $cat_filter_attr[$k] ." AND a.goods_attr_id = " . $v;
+                    $sql = $ext_sql . "b.attr_value = a.attr_value AND b.attr_id = " . $cat_filter_attr[$k] ." AND a.goods_attr_id = " . $v;
                     $ext_group_goods = $db->getCol($sql);
                     $ext .= ' AND ' . db_create_in($ext_group_goods, 'g.goods_id');
                 }
@@ -345,7 +345,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
                         'brand_name'    => $GLOBALS['_LANG']['all_goods'],
                         'brand_logo'    => '',
                         'goods_num'     => '',
-                        'url'           => build_uri('category', array('cid'=>$cat_id))
+                        'url'           => build_uri('category', array('cid'=>$cat_id), $cat['cat_name'])
                     );
     }
     else
@@ -409,7 +409,7 @@ $smarty->display('category.dwt', $cache_id);
  */
 function get_cat_info($cat_id)
 {
-    return $GLOBALS['db']->getRow('SELECT keywords, cat_desc, style, grade, filter_attr, parent_id FROM ' . $GLOBALS['ecs']->table('category') .
+    return $GLOBALS['db']->getRow('SELECT cat_name, keywords, cat_desc, style, grade, filter_attr, parent_id FROM ' . $GLOBALS['ecs']->table('category') .
         " WHERE cat_id = '$cat_id'");
 }
 

@@ -10,10 +10,11 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liubo $
- * $Id: shop_config.php 16307 2009-06-23 03:22:55Z liubo $
+ * $Author: liuhui $
+ * $Id: shop_config.php 16710 2009-09-28 03:02:36Z liuhui $
  */
 
+require(ROOT_PATH.ADMIN_PATH.'/sms_url.php');
 $_LANG['cfg_name']['basic'] = 'Basic';
 $_LANG['cfg_name']['display'] = 'Display';
 $_LANG['cfg_name']['shop_info'] = 'Shop information';
@@ -193,9 +194,9 @@ $_LANG['cfg_desc']['shop_notice'] = 'Above will appear in the home store announc
 $_LANG['cfg_desc']['bgcolor'] = 'Color Please fill in the format # FFFFFF';
 $_LANG['cfg_desc']['use_how_oos'] = 'Out of stock when the deal with the future use order confirmation page allows the user to choose when out-of-stock approach.';
 $_LANG['cfg_desc']['cart_confirm'] = 'Allows users click on the "Add to Cart" after the prompt and the subsequent action.';
-$_LANG['cfg_desc']['send_service_email'] = 'If service email is empty,the option is invalid.
-';
+$_LANG['cfg_desc']['send_service_email'] = 'If service email is empty,the option is invalid.';
 $_LANG['cfg_desc']['send_mail_on'] = 'Enable this option, it will automatically send mail in the maillist';
+$_LANG['cfg_desc']['sms_shop_mobile'] = 'Please register your mobile SMS or mobile phone number and then';
 
 $_LANG['cfg_range']['cart_confirm'][1] = 'Prompts the user, click "OK" into the Shopping Cart
 ';
@@ -441,4 +442,6 @@ $_LANG['invoice_rate'] = 'Rate(%)';
 $_LANG['back_shop_config'] = 'Back to shop config';
 $_LANG['back_mail_settings'] = 'Return e-mail server settings';
 $_LANG['mail_settings'] = 'E-mail server settings';
+
+$_LANG['sms_url'] = '<a href="'.$url.'" target="_blank">Click here to register mobile phone short message service</a>';
 ?>

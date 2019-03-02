@@ -3,14 +3,14 @@
 /**
  * ECSHOP 广告处理文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: likai $
- * $Id: affiche.php 16427 2009-07-03 07:03:32Z likai $
+ * $Author: liubo $
+ * $Id: affiche.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -120,8 +120,12 @@ else
         }
         $db->query($sql);
         //$db->autoReplace($ecs->table('adsense'), array('from_ad' => -1, 'referer' => $site_name, 'clicks' => 1), array('clicks' => 1));
+        $sql = "SELECT goods_name FROM " .$ecs->table('goods'). " WHERE goods_id = $goods_id";
+        $res = $db->query($sql);
 
-        $uri = build_uri('goods', array('gid' => $goods_id));
+        $row = $db->fetchRow($res);
+
+        $uri = build_uri('goods', array('gid' => $goods_id), $row['goods_name']);
 
         ecs_header("Location: $uri\n");
 

@@ -3,20 +3,20 @@
 /**
  * ECSHOP 支付寶語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: alipay.php 15748 2009-03-18 05:27:23Z zblikai $
+ * $Author: liubo $
+ * $Id: alipay.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 global $_LANG;
 
 $_LANG['alipay'] = '支付寶';
-$_LANG['alipay_desc'] = '支付寶網站(www.alipay.com) 是國內先進的網上支付平臺。。<br/>ECShop聯合支付寶推出優惠套餐：無預付/年費，單筆費率1.5%，無流量限制。<br/><a href="https://www.alipay.com/himalayas/practicality_profile_edit.htm?market_type=from_agent_contract&customer_external_id=C4335319945672464113" target="_blank"><font color="red">立即在線申請</font></a>';
+$_LANG['alipay_desc'] = '支付寶網站(www.alipay.com) 是國內先進的網上支付平臺。。<br/>ECShop聯合支付寶推出優惠套餐：無預付/年費，單筆費率1.5%，無流量限制。<br/><a href="https://www.alipay.com/himalayas/practicality_customer.htm?customer_external_id=C4335319945672464113&market_type=from_agent_contract&pro_codes=6AECD60F4D75A7FB" target="_blank"><font color="red">立即在線申請</font></a>';
 $_LANG['alipay_account'] = '支付寶帳戶';
 $_LANG['alipay_key'] = '交易安全校驗碼';
 $_LANG['alipay_partner'] = '合作者身份ID';

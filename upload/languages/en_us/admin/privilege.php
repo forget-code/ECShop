@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: privilege.php 16320 2009-06-23 09:42:41Z sxc_shop $
+ * $Author: liuhui $
+ * $Id: privilege.php 16551 2009-08-17 07:31:49Z liuhui $
 */
 
 /* Field information */
@@ -48,6 +48,8 @@ $_LANG['move_up'] = 'Move up';
 $_LANG['move_down'] = 'Move down';
 $_LANG['continue_add'] = 'Continue add administrator.';
 $_LANG['back_list'] = 'Return to administrator list.';
+$_LANG['select_role'] = 'Choose role';
+$_LANG['select_please'] = 'Please select...';
 
 $_LANG['admin_edit'] = 'Edit administrator';
 $_LANG['edit_pwd'] = 'Edit password';

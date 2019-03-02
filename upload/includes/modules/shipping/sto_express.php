@@ -3,14 +3,14 @@
 /**
  * ECSHOP 申通快递 配送方式插件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: sto_express.php 16353 2009-06-25 05:17:30Z liubo $
+ * $Id: sto_express.php 16911 2009-12-21 03:14:45Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -141,8 +141,8 @@ class sto_express
      */
     function query($invoice_sn)
     {
-        $str = '<form style="margin:0px" methods="post" '.
-            'action="http://61.152.237.204:8081/query_result.asp" name="queryForm_' .$invoice_sn. '" target="_blank">'.
+        $str = '<form style="margin:0px" methods="get" '.
+            'action="http://218.83.161.253:8081/result.asp" name="queryForm_' .$invoice_sn. '" target="_blank">'.
             '<input type="hidden" name="wen" value="' .str_replace("<br>","\n",$invoice_sn). '" />'.
             '<a href="javascript:document.forms[\'queryForm_' .$invoice_sn. '\'].submit();">' .$invoice_sn. '</a>'.
             '</form>';

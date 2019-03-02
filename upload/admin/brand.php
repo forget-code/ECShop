@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心品牌管理
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: brand.php 16419 2009-07-01 14:03:01Z liuhui $
+ * $Author: liubo $
+ * $Id: brand.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -54,7 +54,7 @@ elseif ($_REQUEST['act'] == 'add')
     $smarty->assign('form_action', 'insert');
 
     assign_query_info();
-    $smarty->assign('brand', array('sort_order'=>0, 'is_show'=>1));
+    $smarty->assign('brand', array('sort_order'=>50, 'is_show'=>1));
     $smarty->display('brand_info.htm');
 }
 elseif ($_REQUEST['act'] == 'insert')

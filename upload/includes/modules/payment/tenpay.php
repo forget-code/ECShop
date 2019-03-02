@@ -3,14 +3,14 @@
 /**
  * ECSHOP 财付通插件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: tenpay.php 16302 2009-06-22 10:28:00Z liuhui $
+ * $Author: liubo $
+ * $Id: tenpay.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -51,7 +51,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['website'] = 'http://www.tenpay.com';
 
     /* 版本号 */
-    $modules[$i]['version'] = '1.0.0';
+    $modules[$i]['version'] = '2.0.0';
 
     /* 配置信息 */
     $modules[$i]['config']  = array(
@@ -153,13 +153,15 @@ class tenpay
             'purchaser_id'      => '',                          // 用户(买方)的财付通帐户,可以为空
             'bargainor_id'      => $payment['tenpay_account'],  // 商家的财付通商户号
             'transaction_id'    => $transaction_id,             // 交易号(订单号)，由商户网站产生(建议顺序累加)
-            'sp_billno'         => $sp_billno,                    // 商户系统内部的定单号,最多10位
+            'sp_billno'         => $sp_billno,                  // 商户系统内部的定单号,最多10位
             'total_fee'         => $total_fee,                  // 订单金额
             'fee_type'          => $fee_type,                   // 现金支付币种
             'return_url'        => $return_url,                 // 接收财付通返回结果的URL
             'attach'            => $attach,                     // 用户自定义签名
             'sign'              => $sign,                       // MD5签名
-            'sys_id'            => '542554970'                  //ecshop C账号 不参与签名
+            'sys_id'            => '542554970',                 //ecshop C账号 不参与签名
+            'sp_suggestuser'    => '1202822001'                 //财付通分配的商户号
+
         );
 
         $button  = '<br /><form style="text-align:center;" action="https://www.tenpay.com/cgi-bin/v1.0/pay_gate.cgi" target="_blank" style="margin:0px;padding:0px" >';

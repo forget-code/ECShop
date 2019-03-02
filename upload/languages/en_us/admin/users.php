@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: users.php 15646 2009-02-23 08:33:00Z zblikai $
+ * $Author: sxc_shop $
+ * $Id: users.php 16786 2009-11-10 03:04:51Z sxc_shop $
 */
 /* List page */
 $_LANG['label_user_name'] = 'Username:';
@@ -99,6 +99,8 @@ $_LANG['sign_building'] = 'Building signs';
 $_LANG['js_languages']['no_username'] = 'Please enter a username.';
 $_LANG['js_languages']['invalid_email'] = 'Please enter a valid eamil address.';
 $_LANG['js_languages']['no_password'] = 'Please enter your password.';
+$_LANG['js_languages']['less_password'] = 'The password entered can`t less than six.';
+$_LANG['js_languages']['passwd_balnk'] = 'The password entered can`t have blank';
 $_LANG['js_languages']['no_confirm_password'] = 'Please enter your confirm password.';
 $_LANG['js_languages']['password_not_same'] = 'the password and the confirm password is not same.';
 $_LANG['js_languages']['invalid_pay_points'] = 'The points of payment must be an integer.';

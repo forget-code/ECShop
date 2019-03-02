@@ -3,14 +3,14 @@
 /**
  * ECSHOP 虚拟卡商品管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: virtual_card.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: virtual_card.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
@@ -354,6 +354,8 @@ elseif ($_REQUEST['act'] == 'submit_change')
         {
             sys_msg($_LANG['same_string'], 1);
         }
+        
+        
 
         // 重新加密卡号和密码
         $old_crc32 = crc32($_POST['old_string']);
@@ -440,23 +442,24 @@ elseif ($_REQUEST['act'] == 'start_change')
 {
     $old_key = json_str_iconv(trim($_GET['old_key']));
     $new_key = json_str_iconv(trim($_GET['new_key']));
-
-    if ($old_key != OLD_AUTH_KEY)
-    {
-        make_json_error($GLOBALS['_LANG']['invalid_old_string']);
-    }
-
-    // 检查新加密串是否正确
-    if ($new_key != AUTH_KEY)
-    {
-        make_json_error($GLOBALS['_LANG']['invalid_new_string']);
-    }
-
     // 检查原加密串和新加密串是否相同
     if ($old_key == $new_key || crc32($old_key) == crc32($new_key))
     {
         make_json_error($GLOBALS['_LANG']['same_string']);
     }
+    if ($old_key != AUTH_KEY)
+    {
+        make_json_error($GLOBALS['_LANG']['invalid_old_string']);
+    }
+    else 
+    {
+        $f=ROOT_PATH . 'data/config.php'; 
+        file_put_contents($f,str_replace("'AUTH_KEY', '".AUTH_KEY."'","'AUTH_KEY', '".$new_key."'",file_get_contents($f))); 
+        file_put_contents($f,str_replace("'OLD_AUTH_KEY', '".OLD_AUTH_KEY."'","'OLD_AUTH_KEY', '".$old_key."'",file_get_contents($f))); 
+        @fclose($fp);
+    }
+
+
 
     // 查询统计信息：总记录，使用原串的记录，使用新串的记录，使用未知串的记录
     $stat = array('all' => 0, 'new' => 0, 'old' => 0, 'unknown' => 0);

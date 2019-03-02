@@ -3,14 +3,14 @@
 /**
  * ECSHOP 前台语言文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: common.php 16406 2009-06-30 05:21:49Z wangleisvn $
+ * $Author: sxc_shop $
+ * $Id: common.php 16924 2009-12-25 06:13:29Z sxc_shop $
 */
 
 /* 用户登录语言项 */
@@ -62,6 +62,8 @@ $_LANG['collect'] = '加入收藏夹';
 $_LANG['add_to_cart'] = '加入购物车';
 $_LANG['return_to_cart'] = '放回购物车';
 $_LANG['search_goods'] = '商品搜索';
+$_LANG['search'] = '搜索';
+$_LANG['wholesale_search'] = '搜索批发商品';
 $_LANG['article_title'] = '文章标题';
 $_LANG['article_author'] = '作者';
 $_LANG['article_add_time'] = '添加日期';
@@ -97,6 +99,7 @@ $_LANG['remark_package'] = '超值礼包';
 $_LANG['old_price'] = '原  价：';
 $_LANG['package_price'] = '礼包价：';
 $_LANG['then_old_price'] = '节  省：';
+$_LANG['free_goods'] = '免运费商品';
 
 $_LANG['searchkeywords_notice'] = '匹配多个关键字全部，可用 "空格" 或 "AND" 连接。如 win32 AND unix<br />匹配多个关键字其中部分，可用"+"或 "OR" 连接。如 win32 OR unix';
 $_LANG['hidden_outstock'] = '隐藏已脱销的商品';
@@ -117,6 +120,7 @@ $_LANG['goods_number'] = '商品库存：';
 $_LANG['goods_give_integral'] = '购买此商品赠送：';
 $_LANG['goods_integral'] = '购买此商品可使用：';
 $_LANG['goods_bonus'] = '购买此商品可获得红包：';
+$_LANG['goods_free_shipping'] = '此商品为<font class="shop">免运费</font>商品，计算配送金额时将不计入配送费用';
 $_LANG['goods_rank'] = '用户评价：';
 $_LANG['goods_compare'] = '商品比较';
 $_LANG['properties'] = '商品属性：';
@@ -130,6 +134,7 @@ $_LANG['compare'] = '比较';
 $_LANG['volume_price'] = '购买商品达到以下数量区间时可享受的优惠价格';
 $_LANG['number_to'] = '数量';
 $_LANG['article_list'] = '文章列表';
+
 
 /* 商品比较JS语言项 */
 $_LANG['compare_js']['button_compare'] = '比较选定商品';
@@ -179,6 +184,7 @@ $_LANG['oos_tips'] = '该商品已经库存不足。您现在要进行缺货登�
 
 $_LANG['addto_cart_success_1'] = "该商品已添加到购物车，您现在还需要继续购物吗？\n如果您希望马上结算，请点击“确定”按钮。\n如果您希望继续购物，请点击“取消”按钮。";
 $_LANG['addto_cart_success_2'] = "该商品已添加到购物车，您现在还需要继续购物吗？\n如果您希望继续购物，请点击“确定”按钮。\n如果您希望马上结算，请点击“取消”按钮。";
+$_LANG['no_keywords'] = "请输入搜索关键词！";
 
 /* 分页排序 */
 $_LANG['exchange_sort']['goods_id'] = '按上架时间排序';
@@ -217,6 +223,7 @@ $_LANG['cmt_spam_warning'] = '您至少在30秒后才可以继续发表评论!';
 $_LANG['cmt_lang']['captcha_not_null'] = '验证码不能为空!';
 $_LANG['cmt_lang']['cmt_invalid_comments'] = '无效的评论内容!';
 $_LANG['invalid_comments'] = '无效的评论内容!';
+$_LANG['error_email'] = '电子邮件地址格式不正确!';
 $_LANG['admin_username'] = "管理员：";
 $_LANG['reply_comment'] = '回复';
 $_LANG['comment_captcha'] = '验证码';
@@ -587,6 +594,7 @@ $_LANG['group_promotion'] = '[团购]';
 $_LANG['auction_promotion'] = '[拍卖]';
 $_LANG['favourable_promotion'] = '[优惠]';
 $_LANG['wholesale_promotion'] = '[批发]';
+$_LANG['package_promotion'] = '[礼包]';
 
 /* feed推送 */
 $_LANG['feed_user_buy'] = "购买了";
@@ -663,6 +671,7 @@ $_LANG['your_choice'] = '您的选择';
 $_LANG['system_info'] = '系统信息';
 $_LANG['all_tags'] = '所有标签';
 $_LANG['activity_list'] = '活动列表';
+$_LANG['package_list'] = '礼包列表';
 $_LANG['treasure_info'] = '宝贝详情';
 $_LANG['activity_desc'] = '活动描述';
 $_LANG['activity_intro'] = '活动介绍';
@@ -682,4 +691,33 @@ $_LANG['groupbuy_goods_info'] = '团购商品详情';
 $_LANG['act_time'] = '起止时间';
 $_LANG['top10'] = '销售排行';
 
+/* 优惠活动 */
+$_LANG['label_act_name'] = '优惠活动名称：';
+$_LANG['label_start_time'] = '优惠开始时间：';
+$_LANG['label_end_time'] = '优惠结束时间：';
+$_LANG['label_user_rank'] = '享受优惠的会员等级：';
+$_LANG['not_user'] = '非会员';
+$_LANG['label_act_range'] = '优惠范围：';
+$_LANG['far_all'] = '全部商品';
+$_LANG['far_category'] = '以下分类';
+$_LANG['far_brand'] = '以下品牌';
+$_LANG['far_goods'] = '以下商品';
+$_LANG['label_min_amount'] = '金额下限：';
+$_LANG['label_max_amount'] = '金额上限：';
+$_LANG['notice_max_amount'] = '0表示没有上限';
+$_LANG['label_act_type'] = '优惠方式：';
+$_LANG['fat_goods'] = '享受赠品（特惠品）';
+$_LANG['fat_price'] = '享受现金减免';
+$_LANG['fat_discount'] = '享受价格折扣';
+$_LANG['orgtotal'] = '原始价格';
+$_LANG['heart_buy'] = '心动不如行动';
+
+/* 其他模板涉及常用语言项 */
+$_LANG['label_regist'] = '用户注册';
+$_LANG['label_login'] = '用户登录';
+$_LANG['label_profile'] = '用户信息';
+$_LANG['label_collection'] = '我的收藏';
+$_LANG['article_list'] = '文章列表';
+$_LANG['preferences_price'] = '优惠价格';
+$_LANG['divided_into'] = '分成规则';
 ?>

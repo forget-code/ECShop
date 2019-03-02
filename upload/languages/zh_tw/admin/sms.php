@@ -2,14 +2,14 @@
 /**
  * ECSHOP 短信模塊語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: sms.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: liubo $
+ * $Id: sms.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 /* 導航條 */
@@ -20,6 +20,7 @@ $_LANG['email'] = '電子郵箱';
 $_LANG['password'] = '登錄密碼';
 $_LANG['domain'] = '網店域名';
 $_LANG['register_new'] = '註冊新賬號';
+$_LANG['error_tips'] = '請在商店設置->短信設置，先注冊短信服務并正確配置短信服務！';
 $_LANG['enable_old'] = '啟用已有賬號';
 
 /* 短信特服信息 */
@@ -37,7 +38,7 @@ $_LANG['disable'] = '註銷短信服務';
 $_LANG['phone'] = '手機號碼';
 $_LANG['phone_notice'] = '多個手機號碼用半角逗號分開';
 $_LANG['msg'] = '消息內容';
-$_LANG['msg_notice'] = '最長250字符';
+$_LANG['msg_notice'] = '最長70字符';
 $_LANG['send_date'] = '定時發送時間';
 $_LANG['send_date_notice'] = '格式為YYYY-MM-DD HH:II。為空表示立即發送。';
 $_LANG['back_send_history'] = '返回發送歷史列表';
@@ -80,6 +81,8 @@ $_LANG['sent_date'] = '發送日期';
 $_LANG['send_status'] = '發送狀態';
 $_LANG['status'][0] = '失敗';
 $_LANG['status'][1] = '成功';
+$_LANG['user_list'] = '全體會員';
+$_LANG['please_select'] = '請選擇會員等級';
 
 /* 提示 */
 $_LANG['test_now'] = '<span style="color:red;"></span>';
@@ -129,6 +132,8 @@ $_LANG['js_languages']['username_empty_error'] = '用戶名不能為空。';
 $_LANG['js_languages']['username_format_error'] = '用戶名格式不對。';
 $_LANG['js_languages']['domain_empty_error'] = '域名不能為空。';
 $_LANG['js_languages']['domain_format_error'] = '域名格式不對。';
+$_LANG['js_languages']['send_empty_error'] = '發送手機號與發送等級至少填寫一項！';
+
 //--發送
 $_LANG['js_languages']['phone_empty_error'] = '請填寫手機號。';
 $_LANG['js_languages']['phone_format_error'] = '手機號碼格式不對。';

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用戶中心語言項
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: user.php 15544 2009-01-09 01:54:28Z zblikai $
+ * $Author: liubo $
+ * $Id: user.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 
@@ -145,6 +145,8 @@ $_LANG['profile_js']['old_password_empty'] = '請輸入您的原密碼！';
 $_LANG['profile_js']['new_password_empty'] = '請輸入您的新密碼！';
 $_LANG['profile_js']['confirm_password_empty'] = '請輸入您的確認密碼！';
 $_LANG['profile_js']['both_password_error'] = '您現兩次輸入的密碼不一致！';
+$_LANG['profile_js']['msg_blank'] = '不能為空';
+$_LANG['profile_js']['no_select_question'] = '- 您沒有完成密碼提示問題的操作';
 
 /* 支付方式 */
 $_LANG['pay_name'] = '名稱';
@@ -194,6 +196,11 @@ $_LANG['parm_error'] = '參數錯誤，請返回！';
 $_LANG['edit_password_failure'] = '您輸入的原密碼不正確！';
 $_LANG['edit_password_success'] = '您的新密碼已設置成功！';
 $_LANG['username_not_match_email'] = '用戶名與電子郵件地址不匹配，請重新輸入！';
+$_LANG['get_question_username'] = '请输入您注册的用户名以取得您的密碼提示問題。';
+$_LANG['no_passwd_question'] = '您沒有設置密碼提示問題，無法通過這種方式找回密碼。';
+$_LANG['input_answer'] = '請根據您註冊時設置的密碼問題輸入設置的答案';
+$_LANG['wrong_passwd_answer'] = '您輸入的密碼答案是錯誤的';
+
 //JS語言項
 $_LANG['password_js']['user_name_empty'] = '請輸入您的用戶名！';
 $_LANG['password_js']['email_address_empty'] = '請輸入您的電子郵件地址！';
@@ -283,6 +290,8 @@ $_LANG['return_integral_on_cancel'] = '取消訂單 %s，退回支付訂單時�
 /* 訂單狀態 */
 $_LANG['os'][OS_UNCONFIRMED] = '未確認';
 $_LANG['os'][OS_CONFIRMED] = '已確認';
+$_LANG['os'][OS_SPLITED] = '已確認';
+$_LANG['os'][OS_SPLITING_PART] = '已確認';
 $_LANG['os'][OS_CANCELED] = '已取消';
 $_LANG['os'][OS_INVALID] = '無效';
 $_LANG['os'][OS_RETURNED] = '退貨';
@@ -291,6 +300,8 @@ $_LANG['ss'][SS_UNSHIPPED] = '未發貨';
 $_LANG['ss'][SS_PREPARING] = '配貨中';
 $_LANG['ss'][SS_SHIPPED] = '已發貨';
 $_LANG['ss'][SS_RECEIVED] = '收貨確認';
+$_LANG['ss'][SS_SHIPPED_PART] = '已發貨(部分商品)';
+$_LANG['ss'][SS_SHIPPED_ING] = '配貨中'; // 已分單
 
 $_LANG['ps'][PS_UNPAYED] = '未付款';
 $_LANG['ps'][PS_PAYING] = '付款中';
@@ -363,6 +374,9 @@ $_LANG['virtual_card_info'] = '虛擬卡信息';
 /* 取回密碼 */
 $_LANG['back_home_lnk'] = '返回首頁';
 $_LANG['get_password_lnk'] = '返回獲取密碼頁面';
+$_LANG['get_password_by_question'] = '密碼問題找回密碼';
+$_LANG['get_password_by_mail'] = '註冊郵件找回密碼';
+$_LANG['back_retry_answer'] = '返回重試';
 
 /* 登錄 註冊 */
 $_LANG['label_username'] = '用戶名';
@@ -413,6 +427,11 @@ $_LANG['email_exist'] = '%s 已經存在';
 $_LANG['email_not_allow'] = 'Email %s 不允許註冊';
 $_LANG['register'] = '註冊新用戶名';
 $_LANG['register_success'] = '用戶名 %s 註冊成功';
+
+$_LANG['passwd_question'] = '密碼提示問題';
+$_LANG['sel_question'] = '請選擇提示問題';
+$_LANG['passwd_answer'] = '密碼問題答案';
+$_LANG['passwd_balnk'] = '密碼中不能包含空格';
 
 /* 用戶中心默認頁面 */
 $_LANG['welcome_to'] = '歡迎您回到';
@@ -482,6 +501,9 @@ $_LANG['passport_js']['msg_can_rg'] = '* 可以註冊';
 $_LANG['passport_js']['msg_email_blank'] = '* 郵件地址不能為空';
 $_LANG['passport_js']['msg_email_registered'] = '* 郵箱已存在,請重新輸入';
 $_LANG['passport_js']['msg_email_format'] = '* 郵件地址不合法';
+$_LANG['passport_js']['msg_blank'] = '不能為空';
+$_LANG['passport_js']['no_select_question'] = '- 您還完成密碼提示問題的操作';
+$_LANG['passport_js']['passwd_balnk'] = '- 密碼中不能包含空格';
 
 
 /* user_clips.dwt js 語言文件 */
@@ -637,11 +659,23 @@ $_LANG['pwd_high'] = '強';
 $_LANG['user_reg_info'][0] = '如果您不是會員，請註冊';
 $_LANG['user_reg_info'][1] = '友情提示';
 $_LANG['user_reg_info'][2] = '不註冊為會員也可在本店購買商品';
+$_LANG['user_reg_info'][8] = '不註冊為會員也不可以在本店購買商品';
 $_LANG['user_reg_info'][3] = '但註冊之後您可以';
 $_LANG['user_reg_info'][4] = '保存您的個人資料';
 $_LANG['user_reg_info'][5] = '收藏您關注的商品';
 $_LANG['user_reg_info'][6] = '享受會員積分制度';
 $_LANG['user_reg_info'][7] = '訂閱本店商品信息';
 $_LANG['add_bonus'] = '添加紅包';
+
+/* 密碼找回問題 */
+$_LANG['passwd_questions']['friend_birthday'] = '我最好朋友的生日？';
+$_LANG['passwd_questions']['old_address']     = '我兒時居住地的地址？';
+$_LANG['passwd_questions']['motto']           = '我的座右銘是？';
+$_LANG['passwd_questions']['favorite_movie']  = '我最喜歡的電影？';
+$_LANG['passwd_questions']['favorite_song']   = '我最喜歡的歌曲？';
+$_LANG['passwd_questions']['favorite_food']   = '我最喜歡的食物？';
+$_LANG['passwd_questions']['interest']        = '我最大的愛好？';
+$_LANG['passwd_questions']['favorite_novel']  = '我最喜歡的小說？';
+$_LANG['passwd_questions']['favorite_equipe'] = '我最喜歡的運動隊？';
 
 ?>

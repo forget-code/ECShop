@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: priv_action.php 16320 2009-06-23 09:42:41Z sxc_shop $
+ * $Author: liuhui $
+ * $Id: priv_action.php 16707 2009-09-27 08:25:22Z liuhui $
 */
 /* Authorization management\'s the first grouping */
 $_LANG['goods'] = 'Product';
@@ -73,10 +73,12 @@ $_LANG['logs_drop'] = 'Delete management logs';
 $_LANG['template_manage'] = 'Template management';
 $_LANG['agency_manage'] = 'Agency management';
 $_LANG['suppliers_manage'] = 'Supplier management';
+$_LANG['role_manage'] = ' Role Management';
 
 //Authorization  of system setup management
 $_LANG['shop_config'] = 'Shop config';
 $_LANG['shop_authorized'] = 'Authorized';
+$_LANG['webcollect_manage'] = 'Webcollect';
 $_LANG['ship_manage'] = 'Shipping method management';
 $_LANG['payment'] = 'Payment method management';
 $_LANG['shiparea_manage'] = 'shipping region management';

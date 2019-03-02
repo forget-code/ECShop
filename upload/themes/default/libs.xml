@@ -181,6 +181,7 @@
     <region name="左边广告区域（宽200px）"/>
   </file>
   <file name="myship.dwt"/>
+  <file name="package.dwt"/>
   <file name="pick_out.dwt">
     <region name="左边区域">
       <lib>cart</lib>

@@ -45,7 +45,7 @@ var process_request = "{$lang.process_request}";
         }
         else
         {
-            alert("请输入搜索关键词！");
+            alert("{$lang.no_keywords}");
             return false;
         }
     }
@@ -70,6 +70,3 @@ var process_request = "{$lang.process_request}";
    </form>
 </div>
 <!--search end-->
-
-
-

@@ -716,6 +716,8 @@ region.isAdmin=true;
     // 显示属性
     var specCnt = 0; // 规格的数量
     var attrHtml = '';
+    var attrType = '';
+    var attrTypeArray = '';
     var attrCnt = result.attr_list.length;
     for (i = 0; i < attrCnt; i++)
     {
@@ -727,7 +729,20 @@ region.isAdmin=true;
         attrHtml += result.attr_list[i][0].attr_name + ': ';
         for (var j = 0; j < valueCnt; j++)
         {
-          attrHtml += '<input type="radio" name="spec_' + specCnt + '" value="' + result.attr_list[i][j].goods_attr_id + '"';
+          switch (result.attr_list[i][j].attr_type)
+          {
+            case '0' :
+            case '1' :
+              attrType = 'radio';
+              attrTypeArray = '';
+            break;
+
+            case '2' :
+              attrType = 'checkbox';
+              attrTypeArray = '[]';
+            break;
+          }
+          attrHtml += '<input type="' + attrType + '" name="spec_' + specCnt + attrTypeArray + '" value="' + result.attr_list[i][j].goods_attr_id + '"';
           if (j == 0)
           {
             attrHtml += ' checked';

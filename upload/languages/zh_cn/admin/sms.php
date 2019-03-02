@@ -2,14 +2,14 @@
 /**
  * ECSHOP 短信模块语言文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: sms.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: sms.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 /* 导航条 */
@@ -20,6 +20,7 @@ $_LANG['email'] = '电子邮箱';
 $_LANG['password'] = '登录密码';
 $_LANG['domain'] = '网店域名';
 $_LANG['register_new'] = '注册新账号';
+$_LANG['error_tips'] = '请在商店设置->短信设置，先注册短信服务并正确配置短信服务！';
 $_LANG['enable_old'] = '启用已有账号';
 
 /* 短信特服信息 */
@@ -34,10 +35,11 @@ $_LANG['sms_last_request'] = '最后一次请求时间：';
 $_LANG['disable'] = '注销短信服务';
 
 /* 发送短信 */
-$_LANG['phone'] = '手机号码';
+$_LANG['phone'] = '接收手机号码';
+$_LANG['user_rand'] = '按用户等级发送短消息';
 $_LANG['phone_notice'] = '多个手机号码用半角逗号分开';
 $_LANG['msg'] = '消息内容';
-$_LANG['msg_notice'] = '最长250字符';
+$_LANG['msg_notice'] = '最长70字符';
 $_LANG['send_date'] = '定时发送时间';
 $_LANG['send_date_notice'] = '格式为YYYY-MM-DD HH:II。为空表示立即发送。';
 $_LANG['back_send_history'] = '返回发送历史列表';
@@ -80,6 +82,8 @@ $_LANG['sent_date'] = '发送日期';
 $_LANG['send_status'] = '发送状态';
 $_LANG['status'][0] = '失败';
 $_LANG['status'][1] = '成功';
+$_LANG['user_list'] = '全体会员';
+$_LANG['please_select'] = '请选择会员等级';
 
 /* 提示 */
 $_LANG['test_now'] = '<span style="color:red;"></span>';
@@ -129,6 +133,7 @@ $_LANG['js_languages']['username_empty_error'] = '用户名不能为空。';
 $_LANG['js_languages']['username_format_error'] = '用户名格式不对。';
 $_LANG['js_languages']['domain_empty_error'] = '域名不能为空。';
 $_LANG['js_languages']['domain_format_error'] = '域名格式不对。';
+$_LANG['js_languages']['send_empty_error'] = '发送手机号与发送等级至少填写一项！';
 //--发送
 $_LANG['js_languages']['phone_empty_error'] = '请填写手机号。';
 $_LANG['js_languages']['phone_format_error'] = '手机号码格式不对。';

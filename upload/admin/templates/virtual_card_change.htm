@@ -71,7 +71,7 @@
 
             var row = tbl.insertRow(-1);
             var cell = row.insertCell(-1);
-            cell.innerHTML = updated_info;
+            //cell.innerHTML = updated_info;
 
             Ajax.call("virtual_card.php?is_ajax=1&act=on_change", "updated=0", on_change_response, "GET", "JSON");
         }

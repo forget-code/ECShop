@@ -3,14 +3,14 @@
 /**
  * ECSHOP 基础类
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: likai $
- * $Id: cls_ecshop.php 16457 2009-07-14 02:07:17Z likai $
+ * $Author: liubo $
+ * $Id: cls_ecshop.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -19,8 +19,8 @@ if (!defined('IN_ECS'))
 }
 
 define('APPNAME', 'ECSHOP');
-define('VERSION', 'v2.7.0');
-define('RELEASE', '20090714');
+define('VERSION', 'v2.7.1');
+define('RELEASE', '20091228');
 
 class ECS
 {
@@ -127,8 +127,8 @@ class ECS
      */
     function url()
     {
-        $curr = strpos(PHP_SELF, 'admin/') !== false ?
-                preg_replace('/(.*)(admin)(\/?)(.)*/i', '\1', dirname(PHP_SELF)) :
+        $curr = strpos(PHP_SELF, ADMIN_PATH . '/') !== false ?
+                preg_replace('/(.*)(' . ADMIN_PATH . ')(\/?)(.)*/i', '\1', dirname(PHP_SELF)) :
                 dirname(PHP_SELF);
 
         $root = str_replace('\\', '/', $curr);

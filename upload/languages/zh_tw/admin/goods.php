@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心起始頁語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: goods.php 16154 2009-06-03 06:29:03Z sxc_shop $
+ * $Author: liubo $
+ * $Id: goods.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 $_LANG['edit_goods'] = '編輯商品信息';
@@ -39,6 +39,7 @@ $_LANG['batch_hot_confirm'] = '您確實要把選中的商品設為熱銷嗎？'
 $_LANG['batch_not_hot_confirm'] = '您確實要把選中的商品取消熱銷嗎？';
 $_LANG['cannot_found_goods'] = '找不到指定的商品。';
 $_LANG['sel_goods_type'] = '請選擇商品類型';
+$_LANG['sel_goods_suppliers'] = '請選擇供貨商';
 
 /*------------------------------------------------------ */
 //-- 圖片處理相關提示信息
@@ -127,17 +128,19 @@ $_LANG['unit_g'] = '克';
 $_LANG['unit_kg'] = '千克';
 $_LANG['lab_goods_number'] = '商品庫存數量：';
 $_LANG['lab_warn_number'] = '庫存警告數量：';
-$_LANG['lab_integral'] = '積分購買額度：';
+$_LANG['lab_integral'] = '積分購買金額：';
 $_LANG['lab_give_integral'] = '贈送消費積分數：';
 $_LANG['lab_rank_integral'] = '贈送等級積分數：';
 $_LANG['lab_intro'] = '加入推薦：';
 $_LANG['lab_is_on_sale'] = '上架：';
 $_LANG['lab_is_alone_sale'] = '能作為普通商品銷售：';
+$_LANG['lab_is_free_shipping'] = '是否為免運費商品：';
+
 
 $_LANG['compute_by_mp'] = '按市場價計算';
 
 $_LANG['notice_goods_sn'] = '如果您不輸入商品貨號，系統將自動生成一個唯一的貨號。';
-$_LANG['notice_integral'] = '購買該商品時最多可以使用多少錢的積分';
+$_LANG['notice_integral'] = '（此處需填寫金額）購買該商品時最多可以使用積分的金額';
 $_LANG['notice_give_integral'] = '購買該商品時贈送消費積分數,-1表示按商品價格贈送';
 $_LANG['notice_rank_integral'] = '購買該商品時贈送等級積分數,-1表示按商品價格贈送';
 $_LANG['notice_seller_note'] = '僅供商家自己看的信息';
@@ -147,6 +150,7 @@ $_LANG['notice_goods_type'] = '請選擇商品的所屬類型，進而完善此�
 
 $_LANG['on_sale_desc'] = '打勾表示允許銷售，否則不允許銷售。';
 $_LANG['alone_sale'] = '打勾表示能作為普通商品銷售，否則只能作為配件或贈品銷售。';
+$_LANG['free_shipping'] = '打鉤表示此商品不會產生運費花銷，否則按照正常運費計算。';
 
 $_LANG['invalid_goods_img'] = '商品圖片格式不正確！';
 $_LANG['invalid_goods_thumb'] = '商品縮略圖格式不正確！';
@@ -175,6 +179,11 @@ $_LANG['volume_number'] = '優惠數量';
 $_LANG['volume_price'] = '優惠價格';
 $_LANG['notice_volume_price'] = '購買數量達到優惠數量時享受的優惠價格';
 $_LANG['volume_number_continuous'] = '優惠數量重複！';
+
+$_LANG['label_suppliers']          = '選擇供貨商：';
+$_LANG['suppliers_no']             = '不指定供貨商屬于本店商品';
+$_LANG['suppliers_move_to']        = '轉移到供貨商';
+$_LANG['lab_to_shopex']         = '轉移到網店';
 
 /*------------------------------------------------------ */
 //-- 關聯商品

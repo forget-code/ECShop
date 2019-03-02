@@ -3,14 +3,14 @@
 /**
  * ECSHOP 专题管理
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: topic.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: topic.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -26,6 +26,18 @@ else
 {
     $_REQUEST['act'] = trim($_REQUEST['act']);
 }
+
+/* 配置风格颜色选项 */
+$topic_style_color = array(
+                        '0'         => '008080',
+                        '1'         => '008000',
+                        '2'         => 'ffa500',
+                        '3'         => 'ff0000',
+                        '4'         => 'ffff00',
+                        '5'         => '9acd32',
+                        '6'         => 'ffd700'
+                          );
+$allow_suffix = array('gif', 'jpg', 'png', 'jpeg', 'bmp', 'swf');
 
 /*------------------------------------------------------ */
 //-- 专题列表页面
@@ -57,6 +69,7 @@ if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     admin_priv('topic_manage');
 
     $isadd     = $_REQUEST['act'] == 'add';
+    $smarty->assign('isadd', $isadd);
     $topic_id  = empty($_REQUEST['topic_id']) ? 0 : intval($_REQUEST['topic_id']);
 
     include_once(ROOT_PATH.'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
@@ -67,6 +80,17 @@ if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     $smarty->assign('cat_list',   cat_list(0, 1));
     $smarty->assign('brand_list', get_brand_list());
     $smarty->assign('cfg_lang',   $_CFG['lang']);
+    $smarty->assign('topic_style_color',   $topic_style_color);
+
+    $width_height = get_toppic_width_height();
+    if(isset($width_height['pic']['width']) && isset($width_height['pic']['height']))
+    {
+        $smarty->assign('width_height', sprintf($_LANG['tips_width_height'], $width_height['pic']['width'], $width_height['pic']['height']));
+    }
+    if(isset($width_height['title_pic']['width']) && isset($width_height['title_pic']['height']))
+    {
+        $smarty->assign('title_width_height', sprintf($_LANG['tips_title_width_height'], $width_height['title_pic']['width'], $width_height['title_pic']['height']));
+    }
 
     if (!$isadd)
     {
@@ -82,13 +106,33 @@ if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
         $json          = new JSON;
         $topic['data'] = addcslashes($topic['data'], "'");
         $topic['data'] = $json->encode(@unserialize($topic['data']));
-
         $topic['data'] = addcslashes($topic['data'], "'");
+
+        if (empty($topic['topic_img']) && empty($topic['htmls']))
+        {
+            $topic['topic_type'] = 0;
+        }
+        elseif ($topic['htmls'] != '')
+        {
+            $topic['topic_type'] = 2;
+        }
+        elseif (preg_match('/.swf$/i', $topic['topic_img']))
+        {
+            $topic['topic_type'] = 1;
+        }
+        else
+        {
+            $topic['topic_type'] = '';
+        }
+
         $smarty->assign('topic', $topic);
         $smarty->assign('act',   "update");
     }
     else
     {
+        $topic = array('title' => '', 'topic_type' => 0, 'url' => 'http://');
+        $smarty->assign('topic', $topic);
+
         create_html_editor('topic_intro');
         $smarty->assign('act', "insert");
     }
@@ -100,6 +144,102 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 
     $is_insert = $_REQUEST['act'] == 'insert';
     $topic_id  = empty($_POST['topic_id']) ? 0 : intval($_POST['topic_id']);
+    $topic_type= empty($_POST['topic_type']) ? 0 : intval($_POST['topic_type']);
+
+    switch ($topic_type)
+    {
+        case '0':
+        case '1':
+
+            // 主图上传
+            if ($_FILES['topic_img']['name'] && $_FILES['topic_img']['size'] > 0)
+            {
+                /* 检查文件合法性 */
+                if(!get_file_suffix($_FILES['topic_img']['name'], $allow_suffix))
+                {
+                    sys_msg($_LANG['invalid_type']);
+                }
+
+                /* 处理 */
+                $name = date('Ymd');
+                for ($i = 0; $i < 6; $i++)
+                {
+                    $name .= chr(mt_rand(97, 122));
+                }
+                $name .= '.' . end(explode('.', $_FILES['topic_img']['name']));
+                $target = ROOT_PATH . DATA_DIR . '/afficheimg/' . $name;
+
+                if (move_upload_file($_FILES['topic_img']['tmp_name'], $target))
+                {
+                    $topic_img = DATA_DIR . '/afficheimg/' . $name;
+                }
+            }
+            else if (!empty($_REQUEST['url']))
+            {
+                /* 来自互联网图片 不可以是服务器地址 */
+                if(strstr($_REQUEST['url'], 'http') && !strstr($_REQUEST['url'], $_SERVER['SERVER_NAME']))
+                {
+                    /* 取互联网图片至本地 */
+                    $topic_img = get_url_image($_REQUEST['url']);
+                }
+                else{
+                    sys_msg($_LANG['web_url_no']);
+                }
+            }
+            unset($name, $target);
+
+            $topic_img = empty($topic_img) ? $_POST['img_url'] : $topic_img;
+            $htmls = '';
+
+        break;
+
+        case '2':
+
+            $htmls     = $_POST['htmls'];
+
+            $topic_img = '';
+
+        break;
+    }
+
+    // 标题图上传
+    if ($_FILES['title_pic']['name'] && $_FILES['title_pic']['size'] > 0)
+    {
+        /* 检查文件合法性 */
+        if(!get_file_suffix($_FILES['title_pic']['name'], $allow_suffix))
+        {
+            sys_msg($_LANG['invalid_type']);
+        }
+
+        /* 处理 */
+        $name = date('Ymd');
+        for ($i = 0; $i < 6; $i++)
+        {
+            $name .= chr(mt_rand(97, 122));
+        }
+        $name .= '.' . end(explode('.', $_FILES['title_pic']['name']));
+        $target = ROOT_PATH . DATA_DIR . '/afficheimg/' . $name;
+
+        if (move_upload_file($_FILES['title_pic']['tmp_name'], $target))
+        {
+            $title_pic = DATA_DIR . '/afficheimg/' . $name;
+        }
+    }
+    else if (!empty($_REQUEST['title_url']))
+    {
+        /* 来自互联网图片 不可以是服务器地址 */
+        if(strstr($_REQUEST['title_url'], 'http') && !strstr($_REQUEST['title_url'], $_SERVER['SERVER_NAME']))
+        {
+            /* 取互联网图片至本地 */
+            $title_pic = get_url_image($_REQUEST['title_url']);
+        }
+        else{
+            sys_msg($_LANG['web_url_no']);
+        }
+    }
+    unset($name, $target);
+
+    $title_pic = empty($title_pic) ? $_POST['title_img_url'] : $title_pic;
 
     require(ROOT_PATH . 'includes/cls_json.php');
 
@@ -109,16 +249,19 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $json       = new JSON;
     $tmp_data   = $json->decode($_POST['topic_data']);
     $data       = serialize($tmp_data);
+    $base_style = $_POST['base_style'];
+    $keywords   = $_POST['keywords'];
+    $description= $_POST['description'];
 
     if ($is_insert)
     {
-        $sql = "INSERT INTO " . $ecs->table('topic') . " (title,start_time,end_time,data,intro,template,css)" .
-                "VALUES ('$_POST[topic_name]','$start_time','$end_time','$data','$_POST[topic_intro]','$_POST[topic_template_file]','$_POST[topic_css]')";
+        $sql = "INSERT INTO " . $ecs->table('topic') . " (title,start_time,end_time,data,intro,template,css,topic_img,title_pic,base_style, htmls,keywords,description)" .
+                "VALUES ('$_POST[topic_name]','$start_time','$end_time','$data','$_POST[topic_intro]','$_POST[topic_template_file]','$_POST[topic_css]', '$topic_img', '$title_pic', '$base_style', '$htmls','$keywords','$description')";
     }
     else
     {
         $sql = "UPDATE " . $ecs->table('topic') .
-                "SET title='$_POST[topic_name]',start_time='$start_time',end_time='$end_time',data='$data',intro='$_POST[topic_intro]',template='$_POST[topic_template_file]',css='$_POST[topic_css]'" .
+                "SET title='$_POST[topic_name]',start_time='$start_time',end_time='$end_time',data='$data',intro='$_POST[topic_intro]',template='$_POST[topic_template_file]',css='$_POST[topic_css]', topic_img='$topic_img', title_pic='$title_pic', base_style='$base_style', htmls='$htmls', keywords='$keywords', description='$description'" .
                " WHERE topic_id='$topic_id' LIMIT 1";
     }
 
@@ -265,4 +408,73 @@ function list_link($is_add = true, $text = '')
     return array('href' => $href, 'text' => $text);
 }
 
+function get_toppic_width_height()
+{
+    $width_height = array();
+
+    $file_path = ROOT_PATH . 'themes/' . $GLOBALS['_CFG']['template'] . '/topic.dwt';
+    if (!file_exists($file_path) || !is_readable($file_path))
+    {
+        return $width_height;
+    }
+
+    $string = file_get_contents($file_path);
+
+    $pattern_width = '/var\s*topic_width\s*=\s*"(\d+)";/';
+    $pattern_height = '/var\s*topic_height\s*=\s*"(\d+)";/';
+    preg_match($pattern_width, $string, $width);
+    preg_match($pattern_height, $string, $height);
+    if(isset($width[1]))
+    {
+        $width_height['pic']['width'] = $width[1];
+    }
+    if(isset($height[1]))
+    {
+        $width_height['pic']['height'] = $height[1];
+    }
+    unset($width, $height);
+
+    $pattern_width = '/TitlePicWidth:\s{1}(\d+)/';
+    $pattern_height = '/TitlePicHeight:\s{1}(\d+)/';
+    preg_match($pattern_width, $string, $width);
+    preg_match($pattern_height, $string, $height);
+    if(isset($width[1]))
+    {
+        $width_height['title_pic']['width'] = $width[1];
+    }
+    if(isset($height[1]))
+    {
+        $width_height['title_pic']['height'] = $height[1];
+    }
+
+    return $width_height;
+}
+
+function get_url_image($url)
+{
+    $ext = strtolower(end(explode('.', $url)));
+    if($ext != "gif" && $ext != "jpg" && $ext != "png" && $ext != "bmp" && $ext != "jpeg")
+    {
+        return $url;
+    }
+
+    $name = date('Ymd');
+    for ($i = 0; $i < 6; $i++)
+    {
+        $name .= chr(mt_rand(97, 122));
+    }
+    $name .= '.' . $ext;
+    $target = ROOT_PATH . DATA_DIR . '/afficheimg/' . $name;
+
+    $tmp_file = DATA_DIR . '/afficheimg/' . $name;
+    $filename = ROOT_PATH . $tmp_file;
+
+    $img = file_get_contents($url);
+
+    $fp = @fopen($filename, "a");
+    fwrite($fp, $img);
+    fclose($fp);
+
+    return $tmp_file;
+}
 ?>

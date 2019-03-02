@@ -3,7 +3,7 @@
 /**
  * ECSHOP 管理中心供貨商管理語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
@@ -21,6 +21,7 @@ $_LANG['suppliers_list'] = '供貨商列表';
 /* 列表页 */
 $_LANG['suppliers_name'] = '供貨商名稱';
 $_LANG['suppliers_desc'] = '供貨商描述';
+$_LANG['suppliers_check'] = '狀態';
 
 /* 详情页 */
 $_LANG['label_suppliers_name'] = '供貨商名稱：';
@@ -35,6 +36,7 @@ $_LANG['back_suppliers_list'] = '返回供貨商列表';
 $_LANG['add_suppliers_ok'] = '添加供貨商成功';
 $_LANG['edit_suppliers_ok'] = '編輯供貨商成功';
 $_LANG['batch_drop_ok'] = '批量删除成功';
+$_LANG['batch_drop_no'] = '批量删除失败';
 $_LANG['suppliers_edit_fail'] = '名称修改失败';
 $_LANG['no_record_selected'] = '没有选择任何记录';
 

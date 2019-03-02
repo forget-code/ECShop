@@ -1,4 +1,4 @@
-<!-- $Id: article_info.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: article_info.htm 16780 2009-11-09 09:28:30Z sxc_shop $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,selectzone.js,validator.js"}
 <!-- start goods form -->
@@ -17,7 +17,7 @@
       <tr>
         <td class="narrow-label">{$lang.title}</td>
         <td><input type="text" name="title" size ="40" maxlength="60" value="{$article.title|escape}" />{$lang.require_field}</td>
-      </tr>
+      </tr>          
       <!-- {if $article.cat_id >= 0} -->
       <tr>
         <td class="narrow-label">{$lang.cat} </td>
@@ -55,11 +55,15 @@
       </tr>
       <tr>
         <td class="narrow-label">{$lang.email}</td>
-        <td><input type="text" name="author_email" maxlength="60" value="{$article.email|escape}" /></td>
+        <td><input type="text" name="author_email" maxlength="60" value="{$article.author_email|escape}" /></td>
       </tr>
       <tr>
         <td class="narrow-label">{$lang.keywords}</td>
         <td><input type="text" name="keywords" maxlength="60" value="{$article.keywords|escape}" /></td>
+      </tr>
+      <tr>
+        <td class="narrow-label">{$lang.lable_description}</td>
+        <td><textarea name="description" id="description" cols="40" rows="5">{$article.description|escape}</textarea></td>
       </tr>
       <tr>
         <td class="narrow-label">{$lang.external_links}</td>

@@ -10,6 +10,7 @@ function addToCart(goodsId, parentId)
   var fittings_arr = new Array();
   var number       = 1;
   var formBuy      = document.forms['ECS_FORMBUY'];
+  var quick		   = 0;
 
   // 检查是否有商品规格 
   if (formBuy)
@@ -20,8 +21,11 @@ function addToCart(goodsId, parentId)
     {
       number = formBuy.elements['number'].value;
     }
+
+	quick = 1;
   }
 
+  goods.quick    = quick;
   goods.spec     = spec_arr;
   goods.goods_id = goodsId;
   goods.number   = number;
@@ -72,7 +76,7 @@ function addToCartResponse(result)
     // 没选规格，弹出属性选择框
     else if (result.error == 6)
     {
-      openSpeDiv(result.message, result.goods_id);
+      openSpeDiv(result.message, result.goods_id, result.parent);
     }
     else
     {
@@ -581,6 +585,16 @@ function display_mode(str)
     function doSubmit() {document.forms['listform'].submit();}
 }
 
+function display_mode_wholesale(str)
+{
+    document.getElementById('display').value = str;
+    setTimeout(doSubmit, 0);
+    function doSubmit() 
+    {
+        document.forms['wholesale_goods'].action = "wholesale.php";
+        document.forms['wholesale_goods'].submit();
+    }
+}
 
 /* 修复IE6以下版本PNG图片Alpha */
 function fixpng()
@@ -902,7 +916,7 @@ function docEle()
 }
 
 //生成属性选择层
-function openSpeDiv(message, goods_id) 
+function openSpeDiv(message, goods_id, parent) 
 {
   var _id = "speDiv";
   var m = "mask";
@@ -956,7 +970,14 @@ function openSpeDiv(message, goods_id)
       {
         for (var val_arr = 0; val_arr < message[spec]['values'].length; val_arr++)
         {
-          newDiv.innerHTML += "<input style='margin-left:15px;' type='radio' name='spec_" + message[spec]['attr_id'] + "' value='" + message[spec]['values'][val_arr]['id'] + "' id='spec_value_" + message[spec]['values'][val_arr]['id'] + "' /><font color=#555555>" + message[spec]['values'][val_arr]['label'] + '</font> [' + message[spec]['values'][val_arr]['format_price'] + ']</font><br />';      
+          if (val_arr == 0)
+          {
+            newDiv.innerHTML += "<input style='margin-left:15px;' type='radio' name='spec_" + message[spec]['attr_id'] + "' value='" + message[spec]['values'][val_arr]['id'] + "' id='spec_value_" + message[spec]['values'][val_arr]['id'] + "' checked /><font color=#555555>" + message[spec]['values'][val_arr]['label'] + '</font> [' + message[spec]['values'][val_arr]['format_price'] + ']</font><br />';      
+          }
+          else
+          {
+            newDiv.innerHTML += "<input style='margin-left:15px;' type='radio' name='spec_" + message[spec]['attr_id'] + "' value='" + message[spec]['values'][val_arr]['id'] + "' id='spec_value_" + message[spec]['values'][val_arr]['id'] + "' /><font color=#555555>" + message[spec]['values'][val_arr]['label'] + '</font> [' + message[spec]['values'][val_arr]['format_price'] + ']</font><br />';      
+          }
         } 
         newDiv.innerHTML += "<input type='hidden' name='spec_list' value='" + val_arr + "' />";
       }
@@ -969,7 +990,7 @@ function openSpeDiv(message, goods_id)
         newDiv.innerHTML += "<input type='hidden' name='spec_list' value='" + val_arr + "' />";
       }
   }
-  newDiv.innerHTML += "<br /><center>[<a href='javascript:submit_div(" + goods_id + ")' class='f6' >" + btn_buy + "</a>]&nbsp;&nbsp;[<a href='javascript:cancel_div()' class='f6' >" + is_cancel + "</a>]</center>";
+  newDiv.innerHTML += "<br /><center>[<a href='javascript:submit_div(" + goods_id + "," + parent + ")' class='f6' >" + btn_buy + "</a>]&nbsp;&nbsp;[<a href='javascript:cancel_div()' class='f6' >" + is_cancel + "</a>]</center>";
   document.body.appendChild(newDiv);
 
 
@@ -989,13 +1010,14 @@ function openSpeDiv(message, goods_id)
 } 
 
 //获取选择属性后，再次提交到购物车
-function submit_div(goods_id) 
+function submit_div(goods_id, parentId) 
 {
   var goods        = new Object();
   var spec_arr     = new Array();
   var fittings_arr = new Array();
   var number       = 1;
   var input_arr      = document.getElementsByTagName('input'); 
+  var quick		   = 1;
 
   var spec_arr = new Array();
   var j = 0;
@@ -1012,6 +1034,7 @@ function submit_div(goods_id)
     }
   }
 
+  goods.quick    = quick;
   goods.spec     = spec_arr;
   goods.goods_id = goods_id;
   goods.number   = number;

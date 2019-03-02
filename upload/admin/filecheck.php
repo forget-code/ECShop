@@ -3,7 +3,7 @@
 /**
  * ECSHOP 文件校验
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -48,7 +48,7 @@ elseif ($step == 3)
 
     $md5data = array();
     checkfiles('./', '\.php', 0);
-    checkfiles('admin/', '\.php|\.htm|\.js|\.css|\xml');
+    checkfiles(ADMIN_PATH . '/', '\.php|\.htm|\.js|\.css|\xml');
     checkfiles('api/', '\.php');
     checkfiles('includes/', '\.php|\.html|\.js', 1 ,'fckeditor');
     checkfiles('js/', '\.js|\.css');
@@ -66,6 +66,10 @@ elseif ($step == 3)
     foreach ($ecshopfiles as $line)
     {
         $file = trim(substr($line, 34));
+        if (ADMIN_PATH != 'admin')
+        {
+            $file = preg_replace('/^admin\//',ADMIN_PATH.'/',$file);
+        }
         $md5datanew[$file] = substr($line, 0, 32);
         if ($md5datanew[$file] != $md5data[$file])
         {

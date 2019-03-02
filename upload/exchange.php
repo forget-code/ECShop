@@ -3,14 +3,14 @@
 /**
  * ECSHOP 积分商城
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: exchange.php 16135 2009-06-01 02:28:51Z liuhui $
+ * $Author: liubo $
+ * $Id: exchange.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -181,7 +181,7 @@ elseif ($_REQUEST['act'] == 'view')
             $prev_gid = $db->getOne($sql);
             if (!empty($prev_gid))
             {
-                $prev_good['url'] = build_uri('exchange_goods', array('gid' => $prev_gid));
+                $prev_good['url'] = build_uri('exchange_goods', array('gid' => $prev_gid), $goods['goods_name']);
                 $smarty->assign('prev_good', $prev_good);//上一个商品
             }
 
@@ -189,7 +189,7 @@ elseif ($_REQUEST['act'] == 'view')
             $next_gid = $db->getOne($sql);
             if (!empty($next_gid))
             {
-                $next_good['url'] = build_uri('exchange_goods', array('gid' => $next_gid));
+                $next_good['url'] = build_uri('exchange_goods', array('gid' => $next_gid), $goods['goods_name']);
                 $smarty->assign('next_good', $next_good);//下一个商品
             }
 
@@ -217,10 +217,15 @@ elseif ($_REQUEST['act'] == 'view')
 
 elseif ($_REQUEST['act'] == 'buy')
 {
+    if (!isset($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
+    {
+        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'exchange.php?') ? $GLOBALS['_SERVER']['HTTP_REFERER'] : './index.php';
+    }
+
     /* 判断是否登录 */
     if ($_SESSION['user_id'] <= 0)
     {
-        show_message($_LANG['eg_error_login'], '', '', 'error');
+        show_message($_LANG['eg_error_login'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
 
     /* 取得参数：商品id */
@@ -239,21 +244,21 @@ elseif ($_REQUEST['act'] == 'buy')
         exit;
     }
     /* 检查兑换商品是否有库存 */
-    if($goods['goods_number'] == 0)
+    if($goods['goods_number'] == 0 && $_CFG['use_storage'] == 1)
     {
-        show_message($_LANG['eg_error_number'], '', '', 'error');
+        show_message($_LANG['eg_error_number'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
     /* 检查兑换商品是否是取消 */
     if ($goods['is_exchange'] == 0)
     {
-        show_message($_LANG['eg_error_status'], '', '', 'error');
+        show_message($_LANG['eg_error_status'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
 
     $user_info   = get_user_info($_SESSION['user_id']);
     $user_points = $user_info['pay_points']; // 用户的积分总数
     if ($goods['exchange_integral'] > $user_points)
     {
-        show_message($_LANG['eg_error_integral'], '', '', 'error');
+        show_message($_LANG['eg_error_integral'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
 
     /* 取得规格 */

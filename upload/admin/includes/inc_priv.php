@@ -3,7 +3,7 @@
 /**
  * ECSHOP 权限对照表
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -70,11 +70,13 @@ if (!defined('IN_ECS'))
     $purview['admin_logs']           = array('logs_manage', 'logs_drop');
     $purview['admin_list']           = array('admin_manage', 'admin_drop', 'allot_priv');
     $purview['agency_list']          = 'agency_manage';
-    //$purview['suppliers_list']          = 'suppliers_manage';//暂时取消供货商
+    $purview['suppliers_list']          = 'suppliers_manage'; // 供货商
+    $purview['admin_role']             = 'role_manage';
 
 //商店设置权限
     $purview['01_shop_config']       = 'shop_config';
     $purview['shop_authorized']       = 'shop_authorized';
+    $purview['shp_webcollect']            = 'webcollect_manage';
     $purview['02_payment_list']      = 'payment';
     $purview['03_shipping_list']     = array('ship_manage','shiparea_manage');
     $purview['04_mail_settings']     = 'shop_config';

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户中心
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: user.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: user.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -87,6 +87,13 @@ elseif ($act == 'order_list')
         $_LANG['confirm_cancel'] = '您确认要取消该订单吗？取消后此订单将视为无效订单';
         $_LANG['cancel'] = '取消订单';
         $orders = get_user_orders($_SESSION['user_id'], $page_num, ($page_num * ($page - 1)));
+        if (!empty($orders))
+        {
+            foreach ($orders as $key => $val)
+            {
+                $orders[$key]['total_fee'] = encode_output($val['total_fee']);
+            }
+        }
         //$merge  = get_user_merge($_SESSION['user_id']);
         $smarty->assign('orders', $orders);
     }

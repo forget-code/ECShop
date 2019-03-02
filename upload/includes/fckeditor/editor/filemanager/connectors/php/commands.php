@@ -160,6 +160,7 @@ function FileUpload( $resourceType, $currentFolder, $sCommand )
     if (!isset($_FILES)) {
         global $_FILES;
     }
+
     $sErrorNumber = '0' ;
     $sFileName = '' ;
 
@@ -267,6 +268,143 @@ function FileUpload( $resourceType, $currentFolder, $sCommand )
     $sFileUrl = CombinePaths( $sFileUrl, $sFileName ) ;
 
     SendUploadResults( $sErrorNumber, $sFileUrl, $sFileName ) ;
+
+    exit ;
+}
+
+function MoreFileUpload( $resourceType, $currentFolder, $sCommand )
+{
+    if (!isset($_FILES)) {
+        global $_FILES;
+    }
+
+    global $Config ;
+    $sErrorNumber = '0' ;
+    $sFileName = '' ;
+
+    if ( is_array($_FILES['NewFile']['name']) )
+    {
+        foreach ( $_FILES['NewFile']['name'] as $key => $value )
+        {
+            if ( !empty ( $_FILES['NewFile']['tmp_name'][$key] ) )
+            {
+                // Map the virtual path to the local server path.
+                $sServerDir = ServerMapFolder( $resourceType, $currentFolder, $sCommand ) ;
+
+                // Get the uploaded file name.
+                $sFileName = $_FILES['NewFile']['name'][$key] ;
+                $sFileName = SanitizeFileName( $sFileName ) ;
+
+                $sOriginalFileName = $sFileName ;
+
+                // Get the extension.
+                $sExtension = substr( $sFileName, ( strrpos($sFileName, '.') + 1 ) ) ;
+                $sExtension = strtolower( $sExtension ) ;
+
+                if ( isset( $Config['SecureImageUploads'] ) )
+                {
+                    if ( ( $isImageValid = IsImageValid( $_FILES['NewFile']['tmp_name'][$key], $sExtension ) ) === false )
+                    {
+                        $sErrorNumber = '202' ;
+                    }
+                }
+
+                if ( isset( $Config['HtmlExtensions'] ) )
+                {
+                    if ( !IsHtmlExtension( $sExtension, $Config['HtmlExtensions'] ) &&
+                        ( $detectHtml = DetectHtml( $_FILES['NewFile']['tmp_name'][$key] ) ) === true )
+                    {
+                        $sErrorNumber = '202' ;
+                    }
+                }
+
+                // Check if it is an allowed extension.
+                if ( !$sErrorNumber && IsAllowedExt( $sExtension, $resourceType ) )
+                {
+                    $iCounter = 0 ;
+
+                    while ( true )
+                    {
+                        $sFilePath = $sServerDir . $sFileName ;
+
+                        if ( is_file( $sFilePath ) )
+                        {
+                            $iCounter++ ;
+                            $sFileName = RemoveExtension( $sOriginalFileName ) . '(' . $iCounter . ').' . $sExtension ;
+                            $sErrorNumber = '201' ;
+                        }
+                        else
+                        {
+                            move_uploaded_file( $_FILES['NewFile']['tmp_name'][$key], $sFilePath ) ;
+
+                            if ( is_file( $sFilePath ) )
+                            {
+                                if ( isset( $Config['ChmodOnUpload'] ) && !$Config['ChmodOnUpload'] )
+                                {
+                                    break ;
+                                }
+
+                                $permissions = 0777;
+
+                                if ( isset( $Config['ChmodOnUpload'] ) && $Config['ChmodOnUpload'] )
+                                {
+                                    $permissions = $Config['ChmodOnUpload'] ;
+                                }
+
+                                $oldumask = umask(0) ;
+                                chmod( $sFilePath, $permissions ) ;
+                                umask( $oldumask ) ;
+                            }
+
+                            break ;
+                        }
+                    }
+
+                    if ( file_exists( $sFilePath ) )
+                    {
+                        //previous checks failed, try once again
+                        if ( isset( $isImageValid ) && $isImageValid === -1 && IsImageValid( $sFilePath, $sExtension ) === false )
+                        {
+                            @unlink( $sFilePath ) ;
+                            $sErrorNumber = '202' ;
+                        }
+                        else if ( isset( $detectHtml ) && $detectHtml === -1 && DetectHtml( $sFilePath ) === true )
+                        {
+                            @unlink( $sFilePath ) ;
+                            $sErrorNumber = '202' ;
+                        }
+                    }
+                }
+                else
+                    $sErrorNumber = '202' ;
+
+                    if ( $sErrorNumber == '202' )
+                    {
+                        $sFileUrl = CombinePaths( GetResourceTypePath( $resourceType, $sCommand ) , $currentFolder ) ;
+                        $sFileUrl = CombinePaths( $sFileUrl, $sFileName ) ;
+
+                        SendUploadResults( $sErrorNumber, $sFileUrl, $sFileName) ;
+                    }
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        $sFileUrl = CombinePaths( GetResourceTypePath( $resourceType, $sCommand ) , $currentFolder ) ;
+        $sFileUrl = CombinePaths( $sFileUrl, $sFileName ) ;
+
+        SendUploadResults( $sErrorNumber, $sFileUrl, $sFileName, $key) ;
+    }
+    else
+    {
+        $sErrorNumber = '202' ;
+        $sFileUrl = CombinePaths( GetResourceTypePath( $resourceType, $sCommand ) , $currentFolder ) ;
+        $sFileUrl = CombinePaths( $sFileUrl, $sFileName ) ;
+
+        SendUploadResults( $sErrorNumber, $sFileUrl, $sFileName ) ;
+    }
 
     exit ;
 }

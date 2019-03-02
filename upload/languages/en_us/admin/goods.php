@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: goods.php 16154 2009-06-03 06:29:03Z sxc_shop $
+ * $Author: liuhui $
+ * $Id: goods.php 16593 2009-08-21 09:20:58Z liuhui $
 */
 
 $_LANG['edit_goods'] ='Edit';
@@ -41,6 +41,7 @@ $_LANG['batch_hot_confirm']     = 'Are you sure set the checked product as hot?'
 $_LANG['batch_not_hot_confirm']='Are you surecancel the checked hot product?';
 $_LANG['cannot_found_goods'] = 'Don\'t find appointed product.';
 $_LANG['sel_goods_type'] = 'Please choose the type of merchandise';
+$_LANG['sel_goods_suppliers'] = 'Please select the suppliers';
 
 /*------------------------------------------------------ */
 //-- The picture processing is related to hint an information
@@ -129,17 +130,19 @@ $_LANG['unit_g'] ='Gram';
 $_LANG['unit_kg'] ='Kilogram';
 $_LANG['lab_goods_number'] ='Stock quantity:';
 $_LANG['lab_warn_number'] ='Stock warning quantity:';
-$_LANG['lab_integral'] ='Points limit for buying:';
+$_LANG['lab_integral'] ='Integral purchase amount:';
 $_LANG['lab_give_integral'] = 'Consumption presented a few points:';
 $_LANG['lab_rank_integral'] = 'Presented a number of grade points:';
 $_LANG['lab_intro'] ='Recommend:';
 $_LANG['lab_is_on_sale'] ='On sale:';
 $_LANG['lab_is_alone_sale'] ='Common product:';
+$_LANG['lab_is_free_shipping'] = 'Free shipping：';
+
 
 $_LANG['compute_by_mp'] ='Calculate';
 
 $_LANG['notice_goods_sn'] ='If you don\'t enter product NO., the system will create unique NO. automatically.';
-$_LANG['notice_integral'] ='How many points buy the product can be used.';
+$_LANG['notice_integral'] ='（This required amount）Buy the goods can use points.';
 $_LANG['notice_give_integral'] = 'Purchase the merchandise when presented fraction of consumption, express -1 presented by commodity prices';
 $_LANG['notice_rank_integral'] = 'Purchase the merchandise when presented fraction grading, express -1 presented by commodity prices';
 $_LANG['notice_seller_note'] ='Only provide information for shop owner.';
@@ -149,6 +152,7 @@ $_LANG['notice_goods_type'] = 'Please select the type of the goods, then complet
 
 $_LANG['on_sale_desc'] ='Checked means it can be allowed to sale, otherwise can be disallowed to sale.';
 $_LANG['alone_sale'] ='Checked means it can be sold as common product, otherwise can be sold as accessories or gifts.';
+$_LANG['free_shipping'] = 'Checked means it can shipped free, otherwise as regular.';
 
 $_LANG['invalid_goods_img'] ='Product picture format inaccuracy!';
 $_LANG['invalid_goods_thumb']='Product thumbnail format inaccuracy!';
@@ -177,6 +181,11 @@ $_LANG['volume_number'] = 'volume number';
 $_LANG['volume_price'] = 'Favourable price';
 $_LANG['notice_volume_price'] = 'Purchase quantity discount when the total number of preferential prices';
 $_LANG['volume_number_continuous'] = 'Repeat quantity discount!';
+
+$_LANG['label_suppliers']          = 'Choice of supplier:';
+$_LANG['suppliers_no']             = 'Do not specify a supplier of goods belonging to our';
+$_LANG['suppliers_move_to']        = 'Transferred to the supplier';
+$_LANG['lab_to_shopex']         = 'Transferred to the Shop';
 
 /*------------------------------------------------------ */
 //-- Connection product

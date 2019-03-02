@@ -2,14 +2,14 @@
 /**
  * ECSHOP 控制台首页
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: index.php 16445 2009-07-08 06:50:09Z wangleisvn $
+ * $Author: liubo $
+ * $Id: index.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -833,7 +833,7 @@ elseif ($_REQUEST['act'] == 'third')
         $cat_id = $db->insert_Id();
 
         //货号
-        require_once(ROOT_PATH . 'admin/includes/lib_goods.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_goods.php');
         $max_id     = $db->getOne("SELECT MAX(goods_id) + 1 FROM ".$ecs->table('goods'));
         $goods_sn   = generate_goods_sn($max_id);
 
@@ -1183,7 +1183,7 @@ elseif ($_REQUEST['act'] == 'license')
         $license = license_check();
         switch ($license['flag'])
         {
-            case 'succ':
+            case 'login_succ':
                 if (isset($license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str']) && $license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str'] != '')
                 {
                     make_json_result(process_login_license($license['request']['info']['service']['ecshop_b2c']['cert_auth']));

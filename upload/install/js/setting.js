@@ -353,7 +353,7 @@ function createAdminPassport() {
             + "admin_password=" + encodeURIComponent(f["js-admin-password"].value) + "&"
             + "admin_password2=" + encodeURIComponent(f["js-admin-password2"].value) + "&"
             + "admin_email=" + f["js-admin-email"].value + "&"
-            + "lang=" + getAddressLang();
+            + "lang=" + getCheckedRadio("js-system-lang").value;
 
     notice.innerHTML += $_LANG["create_admin_passport"];
 

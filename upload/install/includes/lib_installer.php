@@ -3,14 +3,14 @@
 /**
  * ECSHOP 安装程序 之 模型
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: lib_installer.php 16368 2009-06-26 03:39:19Z liuhui $
+ * $Author: liubo $
+ * $Id: lib_installer.php 16885 2009-12-14 09:38:40Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -328,10 +328,13 @@ function create_config_file($db_host, $db_port, $db_user, $db_pass, $db_name, $p
     $content .= "\$timezone    = \"$timezone\";\n\n";
     $content .= "\$cookie_path    = \"/\";\n\n";
     $content .= "\$cookie_domain    = \"\";\n\n";
-    $content .= "\$admin_dir = \"admin\";\n\n";
     $content .= "\$session = \"1440\";\n\n";
     $content .= "define('EC_CHARSET','".EC_CHARSET."');\n\n";
+    $content .= "define('ADMIN_PATH','admin');\n\n";
+    $content .= "define('AUTH_KEY', 'this is a key');\n\n";
+    $content .= "define('OLD_AUTH_KEY', '');\n\n";
     $content .= '?>';
+
 
     $fp = @fopen(ROOT_PATH . 'data/config.php', 'wb+');
     if (!$fp)
@@ -404,14 +407,14 @@ function create_admin_passport($admin_name, $admin_password, $admin_password2, $
     if(trim($_REQUEST['lang'])!='zh_cn')
     {
         global $err;
-        $system_lang = isset($_POST['system_lang'])     ? $_POST['system_lang'] : 'zh_cn';
-        include_once(ROOT_PATH . 'install/languages/' . $system_lang . '.php');
+        $system_lang = isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'zh_cn';
+        include(ROOT_PATH . 'install/languages/' . $system_lang . '.php');
     }
     else
     {
         global $err,$_LANG;
     }
-    
+
     if ($admin_password === '')
     {
         $err->add($_LANG['password_empty_error']);
@@ -694,7 +697,7 @@ function deal_aftermath()
     $sql = "INSERT INTO $prefix"."friend_link ".
                 "(link_name, link_url, link_logo, show_order)".
             "VALUES ".
-                "('".$_LANG['default_friend_link']."', 'http://www.ecshop.com/', 'http://www.ecshop.com/images/logo/ecshop_logo.gif','0')";
+                "('".$_LANG['default_friend_link']."', 'http://www.ecshop.com/', 'http://www.ecshop.com/images/logo/ecshop_logo.gif','50')";
     if (!$db->query($sql, 'SILENT'))
     {
         $err->add($db->errno() .' '. $db->error());
@@ -703,7 +706,7 @@ function deal_aftermath()
     $sql = "INSERT INTO $prefix"."friend_link ".
                 "(link_name, link_url, show_order)".
             "VALUES ".
-                "('".$_LANG['maifou_friend_link']."', 'http://www.maifou.net/','1')";
+                "('".$_LANG['maifou_friend_link']."', 'http://www.maifou.net/','51')";
     if (!$db->query($sql, 'SILENT'))
     {
         $err->add($db->errno() .' '. $db->error());

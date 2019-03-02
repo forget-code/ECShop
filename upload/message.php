@@ -3,14 +3,14 @@
 /**
  * ECSHOP 留言板
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: message.php 16333 2009-06-24 06:19:35Z sxc_shop $
+ * $Author: liubo $
+ * $Id: message.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -145,15 +145,39 @@ function get_msg_list($num, $start)
 {
     /* 获取留言数据 */
     $msg = array();
-
-    $sql = "(SELECT 'comment' AS tablename,   comment_id AS ID, content AS msg_content, null AS msg_title, add_time AS msg_time, id_value AS id_value, comment_rank AS comment_rank, null AS message_img, user_name AS user_name, '6' AS msg_type ";
-    $sql .= " FROM " .$GLOBALS['ecs']->table('comment');
-    $sql .= "WHERE STATUS =1 AND comment_type =0) ";
-    $sql .= " UNION ";
-    $sql .= "(SELECT 'feedback' AS tablename, msg_id AS ID, msg_content AS msg_content, msg_title AS msg_title, msg_time AS msg_time, null AS id_value, null AS comment_rank, message_img AS message_img, user_name AS user_name, msg_type AS msg_type ";
-    $sql .= " FROM " .$GLOBALS['ecs']->table('feedback');
-    $sql .= " WHERE `msg_area`='1' AND `msg_status` = '1') ";
-    $sql .= " ORDER BY msg_time DESC ";
+        
+    $mysql_ver = $GLOBALS['db']->version();
+    
+    if($mysql_ver > '3.2.3')
+    {
+        $sql = "(SELECT 'comment' AS tablename,   comment_id AS ID, content AS msg_content, null AS msg_title, add_time AS msg_time, id_value AS id_value, comment_rank AS comment_rank, null AS message_img, user_name AS user_name, '6' AS msg_type ";
+        $sql .= " FROM " .$GLOBALS['ecs']->table('comment');
+        $sql .= "WHERE STATUS =1 AND comment_type =0) ";
+        $sql .= " UNION ";
+        $sql .= "(SELECT 'feedback' AS tablename, msg_id AS ID, msg_content AS msg_content, msg_title AS msg_title, msg_time AS msg_time, null AS id_value, null AS comment_rank, message_img AS message_img, user_name AS user_name, msg_type AS msg_type ";
+        $sql .= " FROM " .$GLOBALS['ecs']->table('feedback');
+        $sql .= " WHERE `msg_area`='1' AND `msg_status` = '1') ";
+        $sql .= " ORDER BY msg_time DESC ";
+    }
+    else 
+    {
+        $con_sql = "SELECT 'comment' AS tablename,   comment_id AS ID, content AS msg_content, null AS msg_title, add_time AS msg_time, id_value AS id_value, comment_rank AS comment_rank, null AS message_img, user_name AS user_name, '6' AS msg_type ";
+        $con_sql .= " FROM " .$GLOBALS['ecs']->table('comment');
+        $con_sql .= "WHERE STATUS =1 AND comment_type =0 ";
+    
+        $fee_sql = "SELECT 'feedback' AS tablename, msg_id AS ID, msg_content AS msg_content, msg_title AS msg_title, msg_time AS msg_time, null AS id_value, null AS comment_rank, message_img AS message_img, user_name AS user_name, msg_type AS msg_type ";
+        $fee_sql .= " FROM " .$GLOBALS['ecs']->table('feedback');
+        $fee_sql .= " WHERE `msg_area`='1' AND `msg_status` = '1' ";
+    
+        
+        $cre_con = "CREATE TEMPORARY TABLE tmp_table ".$con_sql;
+        $GLOBALS['db']->query($cre_con);
+    
+        $cre_con = "INSERT INTO tmp_table ".$fee_sql;
+        $GLOBALS['db']->query($cre_con);
+    
+        $sql = "SELECT * FROM  " .$GLOBALS['ecs']->table('tmp_table') . " ORDER BY msg_time DESC ";
+    }
 
     $res = $GLOBALS['db']->SelectLimit($sql, $num, $start);
 
@@ -184,6 +208,7 @@ function get_msg_list($num, $start)
                 $sql_goods .= "WHERE goods_id= ".$rows['id_value'];
                 $goods_res = $GLOBALS['db']->getRow($sql_goods);
                 $msg[$rows['msg_time']]['goods_name'] = $goods_res['goods_name'];
+                $msg[$rows['msg_time']]['goods_url'] = build_uri('goods', array('gid' => $rows['id_value']), $goods_res['goods_name']);
             }
         }
 

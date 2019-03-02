@@ -151,10 +151,7 @@
             }
             else if (result.error == 6)
             {
-              if (confirm(result.message))
-              {
-                location.href = 'goods.php?id=' + result.goods_id;
-              }
+              openSpeDiv(result.message, result.goods_id);
             }
             else
             {
@@ -215,10 +212,7 @@
       }
       else if (result.error == 6)
       {
-        if (confirm(result.message))
-        {
-          location.href = 'goods.php?id=' + result.goods_id;
-        }
+        openSpeDiv(result.message, result.goods_id, result.parent);
       }
       else
       {
@@ -356,20 +350,21 @@
             <tr>
               <td bgcolor="#ffffff">
               <!-- {if $goods.goods_id gt 0 && $goods.extension_code eq 'package_buy'} -->
-	      <a href="javascript:void(0)" onclick="setSuitShow({$goods.goods_id})" class="f6">{$goods.goods_name}<span style="color:#FF0000;">（{$lang.remark_package}）</span></a>
-	      <div id="suit_{$goods.goods_id}" style="display:none">
-	          <!-- {foreach from=$goods.package_goods_list item=package_goods_list} -->
-		    <a href="goods.php?id={$package_goods_list.goods_id}" target="_blank" class="f6">{$package_goods_list.goods_name}</a><br />
-	          <!-- {/foreach} -->
-	      </div>
-	      <!-- { else } -->
-	      <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
+          <a href="javascript:void(0)" onclick="setSuitShow({$goods.goods_id})" class="f6">{$goods.goods_name}<span style="color:#FF0000;">（{$lang.remark_package}）</span></a>
+          <div id="suit_{$goods.goods_id}" style="display:none">
+              <!-- {foreach from=$goods.package_goods_list item=package_goods_list} -->
+            <a href="goods.php?id={$package_goods_list.goods_id}" target="_blank" class="f6">{$package_goods_list.goods_name}</a><br />
+              <!-- {/foreach} -->
+          </div>
+          <!-- { else } -->
+          <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
                 <!-- {if $goods.parent_id > 0} -->
                 <span style="color:#FF0000">（{$lang.accessories}）</span>
                 <!-- {elseif $goods.is_gift} -->
                 <span style="color:#FF0000">（{$lang.largess}）</span>
                 <!-- {/if} -->
-	      <!-- {/if} -->
+          <!-- {/if} -->
+          <!-- {if $goods.is_shipping} -->(<span style="color:#FF0000">{$lang.free_goods}</span>)<!-- {/if} -->
               </td>
               <td bgcolor="#ffffff">{$goods.goods_attr|nl2br}</td>
               <!-- {if $show_marketprice} -->
@@ -597,7 +592,7 @@
                 </select>
 
                 {$lang.input_bonus_no}
-                <input name="bonus_sn" type="text" class="inputBg" size="15" />
+                <input name="bonus_sn" type="text" class="inputBg" size="15" value="{$order.bonus_sn}" />
                 <input name="validate_bonus" type="button" class="bnt_blue_1" value="{$lang.validate_bonus}" onclick="validateBonus(document.forms['theForm'].elements['bonus_sn'].value)" style="vertical-align:middle;" />
               </td>
             </tr>
@@ -774,7 +769,7 @@
                   </tr>
                   <tr>
                     <td bgcolor="#ffffff"><div align="right"><strong>{$lang.password}</strong></div></td>
-                    <td bgcolor="#ffffff"><input name="password" class="inputBg" type="password" id="password" /></td>
+                    <td bgcolor="#ffffff"><input name="password" class="inputBg" type="password" /></td>
                   </tr>
                   <!-- 判断是否启用验证码{if $enabled_login_captcha} -->
                   <tr>
@@ -784,7 +779,7 @@
                   </tr>
                   <!--{/if}-->
                   <tr>
-                    <td bgcolor="#ffffff" colspan="2" align="center"><a href="user.php?act=get_password" class="f6">{$lang.forgot_password}</a></td>
+                    <td bgcolor="#ffffff" colspan="2" align="center"><a href="user.php?act=qpassword_name" class="f6">{$lang.get_password_by_question}</a>&nbsp;&nbsp;&nbsp;<a href="user.php?act=get_password" class="f6">{$lang.get_password_by_mail}</a></td>
                   </tr>
                   <tr>
                     <td bgcolor="#ffffff" colspan="2"><div align="center">
@@ -806,22 +801,22 @@
                   <tr>
                     <td bgcolor="#ffffff" align="right" width="25%"><strong>{$lang.username}</strong></td>
                     <td bgcolor="#ffffff"><input name="username" type="text" class="inputBg" id="username" onblur="is_registered(this.value);" /><br />
-		    <span id="username_notice" style="color:#FF0000"></span></td>
+            <span id="username_notice" style="color:#FF0000"></span></td>
                   </tr>
                   <tr>
                     <td bgcolor="#ffffff" align="right"><strong>{$lang.email_address}</strong></td>
                     <td bgcolor="#ffffff"><input name="email" type="text" class="inputBg" id="email" onblur="checkEmail(this.value);" /><br />
-		    <span id="email_notice" style="color:#FF0000"></span></td>
+            <span id="email_notice" style="color:#FF0000"></span></td>
                   </tr>
                   <tr>
                     <td bgcolor="#ffffff" align="right"><strong>{$lang.password}</strong></td>
-                    <td bgcolor="#ffffff"><input name="password" class="inputBg" type="password" id="password" onblur="check_password(this.value);" onkeyup="checkIntensity(this.value)" /><br />
-		    <span style="color:#FF0000" id="password_notice"></span></td>
+                    <td bgcolor="#ffffff"><input name="password" class="inputBg" type="password" id="password1" onblur="check_password(this.value);" onkeyup="checkIntensity(this.value)" /><br />
+            <span style="color:#FF0000" id="password_notice"></span></td>
                   </tr>
                   <tr>
                     <td bgcolor="#ffffff" align="right"><strong>{$lang.confirm_password}</strong></td>
                     <td bgcolor="#ffffff"><input name="confirm_password" class="inputBg" type="password" id="confirm_password" onblur="check_conform_password(this.value);" /><br />
-		    <span style="color:#FF0000" id="conform_password_notice"></span></td>
+            <span style="color:#FF0000" id="conform_password_notice"></span></td>
                   </tr>
                   <!-- 判断是否启用验证码{if $enabled_register_captcha} -->
                   <tr>

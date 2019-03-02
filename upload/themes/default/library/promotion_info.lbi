@@ -14,6 +14,8 @@
     <a href="auction.php" title="{$lang.$item.type}">{$lang.auction_promotion}</a>
     <!-- {elseif $item.type eq "favourable"} -->
     <a href="activity.php" title="{$lang.$item.type}">{$lang.favourable_promotion}</a>
+    <!-- {elseif $item.type eq "package"} -->
+    <a href="package.php" title="{$lang.$item.type}">{$lang.package_promotion}</a>
     <!-- {/if} -->
     <a href="{$item.url}" title="{$lang.$item.type} {$item.act_name}{$item.time}" style="background:none; padding-left:0px;">{$item.act_name}</a><br />
     <!-- {/foreach} -->

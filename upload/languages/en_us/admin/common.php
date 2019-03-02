@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liuhui $
- * $Id: common.php 16389 2009-06-26 07:40:48Z liuhui $
+ * $Id: common.php 16616 2009-08-27 01:56:35Z liuhui $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
@@ -35,6 +35,7 @@ $_LANG['password_rule'] = 'Password should only contain english character, figur
 $_LANG['username_rule'] = 'Username should be chinese ,english character, figure combination, between 3 and 15 bits.';
 $_LANG['plugins_not_found'] = 'Plug-in %s can\'t be fixed position';
 $_LANG['no_records'] = 'Did not find any record';
+$_LANG['role_describe'] = 'Description';
 
 $_LANG['require_field'] = '<span class="require-field">*</span>';
 $_LANG['yes'] = 'Yes';
@@ -158,11 +159,12 @@ $_LANG['13_batch_add'] = 'Upload Products';
 $_LANG['15_batch_edit'] = 'Batch Edit';
 $_LANG['16_goods_script'] = 'Product Code';
 $_LANG['17_tag_manage'] = 'Tag';
+$_LANG['53_suppliers_goods'] = 'Management of suppliers of goods';
 
 $_LANG['14_goods_export'] = 'Merchandise export volume';
 
-$_LANG['50_virtual_card_list'] = 'Virtual Card List';
-$_LANG['51_virtual_card_add'] = 'New Virtual Card';
+$_LANG['50_virtual_card_list'] = 'Virtual Goods List';
+$_LANG['51_virtual_card_add'] = 'New Virtual Goods';
 $_LANG['52_virtual_card_change'] = 'Change encrypt string';
 $_LANG['goods_auto'] = 'Automatic merchandise from top to bottom rack';
 $_LANG['article_auto'] = 'Published article automatically';
@@ -237,7 +239,11 @@ $_LANG['10_user_account_manage'] = 'account_manage';
 
 /* Authorization  management */
 $_LANG['admin_list'] = 'Administrators';
+$_LANG['admin_list_role'] = 'Role list';
+$_LANG['admin_role'] = 'Management role';
 $_LANG['admin_add'] = 'New Administrator';
+$_LANG['admin_add_role'] = 'Add role';
+$_LANG['admin_edit_role'] = 'Modify role';
 $_LANG['admin_logs'] = 'Logs';
 $_LANG['agency_list'] = 'Agency';
 $_LANG['suppliers_list'] = 'Suppliers';
@@ -245,6 +251,7 @@ $_LANG['suppliers_list'] = 'Suppliers';
 /* System setup */
 $_LANG['01_shop_config'] = 'Configuration';
 $_LANG['shop_authorized'] = 'Authorized';
+$_LANG['shp_webcollect'] = 'Webcollect';
 $_LANG['02_payment_list'] = 'Payment';
 $_LANG['03_shipping_list'] = 'Shipping';
 $_LANG['04_mail_settings'] = 'Mail Settings';

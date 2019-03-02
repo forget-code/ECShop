@@ -3,14 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: testyang $
- * $Id: attention_list.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: attention_list.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
@@ -59,16 +59,14 @@ elseif ($_REQUEST['act'] == 'addtolist')
         $sql = "SELECT u.user_name, u.email, g.goods_name, g.goods_id FROM " . $GLOBALS['ecs']->table('goods') . " g LEFT JOIN " . $GLOBALS['ecs']->table('collect_goods') . " c ON g.goods_id = c.goods_id LEFT JOIN " . $GLOBALS['ecs']->table('users') . " u ON c.user_id = u.user_id" .
                " WHERE c.is_attention = 1 AND g.is_delete = 0 AND c.goods_id = '$id' LIMIT $start,100";
         $query = $db->query($sql);
-        $add = '';
-
-        $goods_url = $ecs->url() . build_uri('goods', array('gid' => $id));
+        $add = '';        
         $template = $db->getRow("SELECT * FROM " . $ecs->table('mail_templates') . " WHERE  template_code = 'attention_list' AND type = 'template'");
 
         $i = 0;
         while ($rt = $db->fetch_array($query))
         {
             $time = time();
-
+            $goods_url = $ecs->url() . build_uri('goods', array('gid' => $id), $rt['goods_name']);
             $smarty->assign(array('user_name'=>$rt['user_name'],'goods_name'=>$rt['goods_name'],'goods_url'=>$goods_url,'shop_name'=>$_CFG['shop_title'], 'send_date'=>local_date($_CFG['date_format'])));
             $content = $smarty->fetch("str:$template[template_content]");
             $add .= $add ? ",('$rt[email]','$template[template_id]','$content','$pri','$time')" : "('$rt[email]','$template[template_id]','$content','$pri','$time')";
@@ -126,7 +124,7 @@ elseif ($_REQUEST['act'] == 'batch_addtolist')
         {
             $time = time();
 
-            $goods_url = $ecs->url() . build_uri('goods', array('gid' => $rt['goods_id']));
+            $goods_url = $ecs->url() . build_uri('goods', array('gid' => $rt['goods_id']), $rt['user_name']);
 
             $smarty->assign(array('user_name'=>$rt['user_name'],'goods_name'=>$rt['goods_name'],'goods_url'=>$goods_url));
             $content = $smarty->fetch("str:$template[template_content]");

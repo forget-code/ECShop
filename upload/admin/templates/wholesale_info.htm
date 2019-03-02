@@ -1,4 +1,4 @@
-<!-- $Id: wholesale_info.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: wholesale_info.htm 16644 2009-09-09 02:12:26Z wangleisvn $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="validator.js,../js/transport.js}
 <div class="main-div">
@@ -6,8 +6,14 @@
 <table width="100%">
   <!-- {if $form_action eq "insert"} 编辑时不能改商品名称 -->
   <tr>
-    <td align="right">{$lang.label_search_goods}</td>
-    <td><input name="keyword" type="text" id="keyword">
+    <td align="right">{$lang.pls_search_goods}</td>
+    <td><!-- 分类 -->
+      <select name="cat_id"><option value="0">{$lang.custom_goods_cat}</option>{$cat_list}</select>
+      <!-- 品牌 -->
+      <select name="brand_id"><option value="0">{$lang.custom_goods_brand}</option>{html_options options=$brand_list}</select>
+      <!-- 关键字 -->
+      {$lang.label_search_goods}<input name="keyword" type="text" id="keyword" size="10">
+      <!-- 搜索 -->
       <input name="search" type="button" id="search" value="{$lang.button_search}" class="button" onclick="searchGoods()" /></td>
   </tr>
   <!-- {/if} -->
@@ -106,6 +112,8 @@ function searchGoods()
 {
   var filter = new Object;
   filter.keyword  = document.forms['theForm'].elements['keyword'].value;
+	filter.cat_id  = document.forms['theForm'].elements['cat_id'].value;
+	filter.brand_id  = document.forms['theForm'].elements['brand_id'].value;
 
   Ajax.call('wholesale.php?is_ajax=1&act=search_goods', filter, searchGoodsResponse, 'GET', 'JSON');
 }
@@ -115,7 +123,7 @@ function searchGoodsResponse(result)
   if (result.error == '1' && result.message != '')
   {
     alert(result.message);
-	return;
+		return;
   }
 
   var sel = document.forms['theForm'].elements['goods_id'];
@@ -178,12 +186,17 @@ function getGoodsInfoResponse(result)
 	for (var i = 0; i < result.length; i++)
 	{
       var attr = result[i];
+			var re;
       html += attr.attr_name + ' <select name="attr_' + attr.attr_id + '[' + key + ']">';
       for (var goodsAttrId in attr.goods_attr_list)
       {
         if (goodsAttrId != 'toJSONString')
         {
-          html += ' <option value="' + goodsAttrId + '"> ' + attr.goods_attr_list[goodsAttrId] + '  </option> ';
+					// 去掉 goodsAttrId 中的字符 c
+					re = /c/g;
+					_goodsAttrId = goodsAttrId.replace(re, "");
+
+          html += ' <option value="' + _goodsAttrId + '"> ' + attr.goods_attr_list[goodsAttrId] + '  </option> ';
         }
       }
       html += ' </select> ';

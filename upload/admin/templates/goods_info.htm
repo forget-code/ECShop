@@ -1,4 +1,4 @@
-<!-- $Id: goods_info.htm 16161 2009-06-04 03:52:43Z sxc_shop $ -->
+<!-- $Id: goods_info.htm 16593 2009-08-21 09:20:58Z liuhui $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
@@ -74,7 +74,7 @@
           </tr>
           <tr>
             <td class="label">{$lang.lab_goods_brand}</td>
-            <td><select name="brand_id" onchange="hideBrandDiv()" ><option value="0">{$lang.select_please}</caption>{html_options options=$brand_list selected=$goods.brand_id}</select>
+            <td><select name="brand_id" onchange="hideBrandDiv()" ><option value="0">{$lang.select_please}{html_options options=$brand_list selected=$goods.brand_id}</select>
               {if $is_add}
               <a href="javascript:void(0)" title="{$lang.rapid_add_brand}" onclick="rapidBrandAdd()" class="special" >{$lang.rapid_add_brand}</a>
               <span id="brand_add" style="display:none;">
@@ -86,6 +86,15 @@
                {/if}
             </td>
           </tr>
+         {if $suppliers_exists eq 1}
+          <tr>
+            <td class="label">{$lang.label_suppliers}</td>
+            <td><select name="suppliers_id" id="suppliers_id">
+        <option value="0">{$lang.suppliers_no}</option>
+        {html_options options=$suppliers_list_name selected=$goods.suppliers_id}
+      </select></td>
+          </tr>
+         {/if}
           <tr>
             <td class="label">{$lang.lab_shop_price}</td>
             <td><input type="text" name="shop_price" value="{$goods.shop_price}" size="20" onblur="priceSetted()"/>
@@ -228,6 +237,10 @@
             <td><input type="checkbox" name="is_alone_sale" value="1" {if $goods.is_alone_sale}checked="checked"{/if} /> {$lang.alone_sale}</td>
           </tr>
           <tr>
+            <td class="label">{$lang.lab_is_free_shipping}</td>
+            <td><input type="checkbox" name="is_shipping" value="1" {if $goods.is_shipping}checked="checked"{/if} /> {$lang.free_shipping}</td>
+          </tr>
+          <tr>
             <td class="label">{$lang.lab_keywords}</td>
             <td><input type="text" name="keywords" value="{$goods.keywords|escape}" size="40" /> {$lang.notice_keywords}</td>
           </tr>
@@ -294,8 +307,8 @@
           <tr>
             <td colspan="3">
               <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
-              <select name="cat_id1"><option value="0">{$lang.all_category}</caption>{$cat_list}</select>
-              <select name="brand_id1"><option value="0">{$lang.all_brand}</caption>{html_options options=$brand_list}</select>
+              <select name="cat_id1"><option value="0">{$lang.all_category}{$cat_list}</select>
+              <select name="brand_id1"><option value="0">{$lang.all_brand}{html_options options=$brand_list}</select>
               <input type="text" name="keyword1" />
               <input type="button" value="{$lang.button_search}"  class="button"
                 onclick="searchGoods(sz1, 'cat_id1','brand_id1','keyword1')" />
@@ -335,8 +348,8 @@
           <tr>
             <td colspan="3">
               <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
-              <select name="cat_id2"><option value="0">{$lang.all_category}</caption>{$cat_list}</select>
-              <select name="brand_id2"><option value="0">{$lang.all_brand}</caption>{html_options options=$brand_list}</select>
+              <select name="cat_id2"><option value="0">{$lang.all_category}{$cat_list}</select>
+              <select name="brand_id2"><option value="0">{$lang.all_brand}{html_options options=$brand_list}</select>
               <input type="text" name="keyword2" />
               <input type="button" value="{$lang.button_search}" onclick="searchGoods(sz2, 'cat_id2', 'brand_id2', 'keyword2')" class="button" />
             </td>

@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: sxc_shop $
- * $Id: shopping_flow.php 15931 2009-05-07 09:48:05Z sxc_shop $
+ * $Id: shopping_flow.php 16625 2009-08-27 08:38:59Z sxc_shop $
 */
 
 $_LANG['flow_login_register']['username_not_null'] = 'Please enter username.';
@@ -173,4 +173,5 @@ $_LANG['bonus_is_ok'] = 'Bonus No. is avaible, can be used as %s';
 
 $_LANG['shopping_myship'] = 'My shipping';
 $_LANG['shopping_activity'] = 'Activity list';
+$_LANG['shopping_package'] = 'Package list';
 ?>

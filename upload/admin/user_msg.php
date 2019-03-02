@@ -3,20 +3,21 @@
 /**
  * ECSHOP 客户留言
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: user_msg.php 15897 2009-05-04 07:24:35Z liubo $
+ * $Id: user_msg.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-
+/* 权限判断 */
+admin_priv('feedback_priv');
 /*初始化数据交换对象 */
 $exc = new exchange($ecs->table("feedback"), $db, 'msg_id', 'msg_title');
 
@@ -63,8 +64,6 @@ if ($_REQUEST['act']=='insert')
 
 if ($_REQUEST['act'] == 'remove_msg')
 {
-    /* 权限判断 */
-    admin_priv('feedback_priv');
     $msg_id = empty($_GET['msg_id']) ? 0 : intval($_GET['msg_id']);
     $order_id = empty($_GET['order_id']) ? 0 : intval($_GET['order_id']);
     $user_id = empty($_GET['user_id']) ? 0 : intval($_GET['user_id']);
@@ -190,9 +189,6 @@ elseif ($_REQUEST['act'] == 'remove')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act']=='view')
 {
-    /* 权限判断 */
-    admin_priv('feedback_priv');
-
     $smarty->assign('msg',         get_feedback_detail(intval($_REQUEST['id'])));
     $smarty->assign('ur_here',     $_LANG['reply']);
     $smarty->assign('action_link', array('text' => $_LANG['08_unreply_msg'], 'href'=>'user_msg.php?act=list_all'));
@@ -202,9 +198,6 @@ elseif ($_REQUEST['act']=='view')
 }
 elseif ($_REQUEST['act']=='action')
 {
-    /* 权限判断 */
-    admin_priv('feedback_priv');
-
     if (empty($_REQUEST['parent_id']))
     {
         $sql = "INSERT INTO ".$ecs->table('feedback')." (msg_title, msg_time, user_id, user_name , ".
@@ -231,9 +224,6 @@ elseif ($_REQUEST['act']=='action')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'drop_file')
 {
-    /* 权限判断 */
-    admin_priv('feedback_priv');
-
     /* 删除上传的文件 */
     $file = $_GET['file'];
     @unlink('../' . DATA_DIR . '/feedbackimg/'.$file);

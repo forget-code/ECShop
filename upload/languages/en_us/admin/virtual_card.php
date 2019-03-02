@@ -11,14 +11,14 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liubo $
- * $Id: virtual_card.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Author: liuhui $
+ * $Id: virtual_card.php 16624 2009-08-27 08:00:00Z liuhui $
 */
 
 /*------------------------------------------------------ */
 //-- Card information
 /*------------------------------------------------------ */
-$_LANG['virtual_card_list'] = 'Virtual Card List';
+$_LANG['virtual_card_list'] = 'Virtual Goods List';
 $_LANG['lab_goods_name'] = 'Name:';
 $_LANG['replenish'] = 'Replenish';
 $_LANG['lab_card_id'] = 'ID';
@@ -71,8 +71,8 @@ $_LANG['virtual_card_change'] = 'Change encrypt string';
 $_LANG['user_guide'] = 'Direction:' .
         '<ol>' .
           '<li>Encrypt string use for ID and passwrod of encrypt virtual card</li>' .
-          '<li>Encrypt string saved in includes/lib_code.php, corresponding constants is AUTH_KEY</li>' .
-          '<li>If you want to change encrypt string, you should modify lib_code.php, set OLD_AUTH_KEY as old encrypt string, set AUTH_KEY as new encrypt string; and enter old encrypt string and new encrypt string in the textbox, check \'Confirm\' push the button</li>' .
+          '<li>Encrypt string saved in data/config.php, corresponding constants is AUTH_KEY</li>' .
+          '<li>If you want to change encrypt string, enter old encrypt string and new encrypt string in the textbox, check \'Confirm\' push the button</li>' .
         '</ol>';
 $_LANG['label_old_string'] = 'Old encrypt string';
 $_LANG['label_new_string'] = 'New encrypt string';

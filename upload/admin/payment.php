@@ -3,14 +3,14 @@
 /**
  * ECSHOP 支付方式管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: payment.php 16453 2009-07-13 07:21:20Z liubo $
+ * $Id: payment.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -39,7 +39,7 @@ if ($_REQUEST['act'] == 'list')
     for ($i = 0; $i < count($modules); $i++)
     {
         $code = $modules[$i]['code'];
-
+        $modules[$i]['pay_code'] = $modules[$i]['code'];
         /* 如果数据库中有，取数据库中的名称和描述 */
         if (isset($pay_list[$code]))
         {
@@ -60,29 +60,14 @@ if ($_REQUEST['act'] == 'list')
             $modules[$i]['desc'] = $_LANG[$modules[$i]['desc']];
             $modules[$i]['install'] = '0';
         }
-
-        //取得财付通支付方式
-        if ($modules[$i]['code'] == 'tenpay')
-        {
-            $arr_pay1 = $modules[$i];
-            $j=$i;
-       }
-        //取得快钱支付方式
-       elseif ($modules[$i]['code'] == 'kuaiqian')
-       {
-            $arr_pay2 = $modules[$i];
-            $k=$i;
-       }
-       elseif ($modules[$i]['code'] == 'tenpayc2c')
+       if ($modules[$i]['pay_code'] == 'tenpayc2c')
        {
             $tenpayc2c = $modules[$i];
-            //unset($modules[$i]);
        }
     }
-    //将快钱支付方式显示在第一位，财富通显示在第二位
-    unset($modules[$j]);
-    unset($modules[$k]);
-    array_unshift($modules,$arr_pay2,$arr_pay1);
+
+    include_once(ROOT_PATH.'includes/lib_compositor.php');
+
     assign_query_info();
 
     $smarty->assign('ur_here', $_LANG['02_payment_list']);

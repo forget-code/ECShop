@@ -3,7 +3,7 @@
 /**
  * ECSHOP LICENSE 相关函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -75,9 +75,10 @@ function make_shopex_ac($post_params, $token)
  *
  * @param   array     $certi    登录参数
  * @param   array     $license  网店license信息
+ * @param   bool      $use_lib  使用哪一个json库，0为ec，1为shopex
  * @return  array
  */
-function exchange_shop_license($certi, $license)
+function exchange_shop_license($certi, $license, $use_lib = 0)
 {
     if (!is_array($certi))
     {
@@ -99,8 +100,16 @@ function exchange_shop_license($certi, $license)
     $request = $transport->request($license['certi'], $params, 'POST');
     $request_str = json_str_iconv($request['body']);
 
-    $json = new JSON();
-    $request_arr = $json->decode($request_str, 1);
+    if (empty($use_lib))
+    {
+        $json = new JSON();
+        $request_arr = $json->decode($request_str, 1);
+    }
+    else
+    {
+        include_once(ROOT_PATH . 'includes/shopex_json.php');
+        $request_arr = json_decode($request_str, 1);
+    }
 
     return $request_arr;
 }
@@ -146,7 +155,8 @@ function license_login($certi_added = '')
     $certi['certi_app'] = ''; // 证书方法
     $certi['app_id'] = 'ecshop_b2c'; // 说明客户端来源
     $certi['app_instance_id'] = ''; // 应用服务ID
-    $certi['version'] = VERSION . '#' .  RELEASE; // 网店软件版本号
+    $certi['version'] = LICENSE_VERSION; // license接口版本号
+    $certi['shop_version'] = VERSION . '#' .  RELEASE; // 网店软件版本号
     $certi['certi_url'] = sprintf($GLOBALS['ecs']->url()); // 网店URL
     $certi['certi_session'] = $GLOBALS['sess']->get_session_id(); // 网店SESSION标识
     $certi['certi_validate_url'] = sprintf($GLOBALS['ecs']->url() . 'certi.php'); // 网店提供于官方反查接口
@@ -217,7 +227,8 @@ function license_reg($certi_added = '')
     $certi['certi_app'] = ''; // 证书方法
     $certi['app_id'] = 'ecshop_b2c'; // 说明客户端来源
     $certi['app_instance_id'] = ''; // 应用服务ID
-    $certi['version'] = VERSION . '#' .  RELEASE; // 网店软件版本号
+    $certi['version'] = LICENSE_VERSION; // license接口版本号
+    $certi['shop_version'] = VERSION . '#' .  RELEASE; // 网店软件版本号
     $certi['certi_url'] = sprintf($GLOBALS['ecs']->url()); // 网店URL
     $certi['certi_session'] = $GLOBALS['sess']->get_session_id(); // 网店SESSION标识
     $certi['certi_validate_url'] = sprintf($GLOBALS['ecs']->url() . 'certi.php'); // 网店提供于官方反查接口

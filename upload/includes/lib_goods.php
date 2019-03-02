@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品相关函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: lib_goods.php 16147 2009-06-01 09:52:08Z liuhui $
+ * $Author: liubo $
+ * $Id: lib_goods.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -122,6 +122,7 @@ function get_child_tree($tree_id = 0)
  */
 function get_top10($cats = '')
 {
+    $cats = get_children($cats);
     $where = !empty($cats) ? "AND ($cats OR " . get_extension_goods($cats) . ") " : '';
 
     /* 排行统计的时间 */
@@ -154,7 +155,7 @@ function get_top10($cats = '')
         $sql .= " AND g.goods_number > 0 ";
     }
     $sql .= ' AND og.order_id = o.order_id AND og.goods_id = g.goods_id ' .
-           "AND o.order_status = '" . OS_CONFIRMED . "' " .
+           "AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
            "AND (o.pay_status = '" . PS_PAYED . "' OR o.pay_status = '" . PS_PAYING . "') " .
            "AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') " .
            'GROUP BY g.goods_id ORDER BY goods_number DESC, g.goods_id DESC LIMIT ' . $GLOBALS['_CFG']['top_number'];
@@ -449,6 +450,7 @@ function get_category_recommend_goods($type = '', $cats = '', $brand = 0, $min =
     {
         $sql .= " AND (" . $cats . " OR " . get_extension_goods($cats) .")";
     }
+
     $order_type = $GLOBALS['_CFG']['recommend_order'];
     $sql .= ($order_type == 0) ? ' ORDER BY g.sort_order, g.last_update DESC' : ' ORDER BY RAND()';
     $res = $GLOBALS['db']->selectLimit($sql, $num);
@@ -688,7 +690,7 @@ function get_same_attribute_goods($attr)
                     'LEFT JOIN ' . $GLOBALS['ecs']->table('goods_attr') . ' as a ON g.goods_id = a.goods_id ' .
                     "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
                         "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
-                    "WHERE a.attr_id = '$key' AND a.attr_value = '$val[value]' AND g.goods_id <> '$_REQUEST[id]' " .
+                    "WHERE a.attr_id = '$key' AND g.is_on_sale=1 AND a.attr_value = '$val[value]' AND g.goods_id <> '$_REQUEST[id]' " .
                     'LIMIT ' . $GLOBALS['_CFG']['attr_related_number'];
             $res = $GLOBALS['db']->getAll($sql);
 
@@ -887,17 +889,10 @@ function assign_brand_goods($brand_id, $num = 0, $cat_id = 0)
  */
 function get_extension_goods($cats)
 {
-    static $extension_goods_array = '';
-    if ($extension_goods_array !== '')
-    {
-        return db_create_in($extension_goods_array, 'g.goods_id');
-    }
-    else
-    {
-        $sql = 'SELECT goods_id FROM ' . $GLOBALS['ecs']->table('goods_cat') . " AS g WHERE $cats";
-        $extension_goods_array = $GLOBALS['db']->getCol($sql);
-        return db_create_in($extension_goods_array, 'g.goods_id');
-    }
+    $extension_goods_array = '';
+    $sql = 'SELECT goods_id FROM ' . $GLOBALS['ecs']->table('goods_cat') . " AS g WHERE $cats";
+    $extension_goods_array = $GLOBALS['db']->getCol($sql);
+    return db_create_in($extension_goods_array, 'g.goods_id');
 }
 
 /**
@@ -1052,14 +1047,23 @@ function group_buy_info($group_buy_id, $current_num = 0)
  */
 function group_buy_stat($group_buy_id, $deposit)
 {
-    /* 取得总订单数和总商品数 */
     $group_buy_id = intval($group_buy_id);
+
+    /* 取得团购活动商品ID */
+    $sql = "SELECT goods_id " .
+           "FROM " . $GLOBALS['ecs']->table('goods_activity') .
+           "WHERE act_id = '$group_buy_id' " .
+           "AND act_type = '" . GAT_GROUP_BUY . "'";
+    $group_buy_goods_id = $GLOBALS['db']->getOne($sql);
+
+    /* 取得总订单数和总商品数 */
     $sql = "SELECT COUNT(*) AS total_order, SUM(g.goods_number) AS total_goods " .
             "FROM " . $GLOBALS['ecs']->table('order_info') . " AS o, " .
                 $GLOBALS['ecs']->table('order_goods') . " AS g " .
             " WHERE o.order_id = g.order_id " .
             "AND o.extension_code = 'group_buy' " .
             "AND o.extension_id = '$group_buy_id' " .
+            "AND g.goods_id = '$group_buy_goods_id' " .
             "AND (order_status = '" . OS_CONFIRMED . "' OR order_status = '" . OS_UNCONFIRMED . "')";
     $stat = $GLOBALS['db']->getRow($sql);
     if ($stat['total_order'] == 0)

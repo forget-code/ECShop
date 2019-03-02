@@ -11,14 +11,14 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: alipay.php 15748 2009-03-18 05:27:23Z zblikai $
+ * $Author: liuhui $
+ * $Id: alipay.php 16569 2009-08-19 02:19:10Z liuhui $
  */
 
 global $_LANG;
 
 $_LANG['alipay']            = 'Alipay';
-$_LANG['alipay_desc']       = 'Alipay web (www.alipay.com) is an advanced platform for online payment. Bao <br/> ECShop pay packages offered by United Package: No pre-paid/annual fee, single rate of 1.5%, no flow restrictions.<br/><a href="https://www.alipay.com/himalayas/practicality_profile_edit.htm?market_type=from_agent_contract&customer_external_id=C4335319945672464113" target="_blank"><font color="red">Immediately online application</font></a>';
+$_LANG['alipay_desc']       = 'Alipay web (www.alipay.com) is an advanced platform for online payment. Bao <br/> ECShop pay packages offered by United Package: No pre-paid/annual fee, single rate of 1.5%, no flow restrictions.<br/><a href="https://www.alipay.com/himalayas/practicality_customer.htm?customer_external_id=C4335319945672464113&market_type=from_agent_contract&pro_codes=6AECD60F4D75A7FB" target="_blank"><font color="red">Immediately online application</font></a>';
 $_LANG['alipay_account']    = 'Alipay accounts';
 $_LANG['alipay_key']        = 'Verification code for safe dealings';
 $_LANG['alipay_partner']    = 'Partner ID';

@@ -3,7 +3,7 @@
 /**
  * ECSHOP
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -28,6 +28,7 @@ $_LANG['search_goods'] = 'Merchandise search';
 $_LANG['all_goods'] = 'Optional merchandise';
 $_LANG['package_goods'] = 'The gift of merchandise';
 $_LANG['goods_number'] = 'Amount';
+$_LANG['saving'] = 'Saving';
 
 /* 提示信息 */
 $_LANG['no_goods'] = 'Merchandise you entered does not exist, please check before importation';

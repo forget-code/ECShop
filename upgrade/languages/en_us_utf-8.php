@@ -21,7 +21,7 @@ $_LANG['readme_title'] = 'ECSHOP upgrade program, the 2 step / 3 steps, readme p
 $_LANG['checking_title'] = 'ECShop upgrade program, the 3 step / 3steps, check environment';
 $_LANG['check_system_environment'] = 'Check system environment';
 
-$_LANG['copyright'] = '&copy; 2005-2008 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a>. All right reserved';
+$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a>. All right reserved';
 $_LANG['is_last_version'] = 'Your ECSHOP has been the newest version, needn\'t upgrade.';
 
 $_LANG['readme_page'] = 'Readme page';

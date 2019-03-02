@@ -1,4 +1,4 @@
-<!-- $Id: articlecat_info.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: articlecat_info.htm 16752 2009-10-20 09:59:38Z wangleisvn $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form method="post" action="articlecat.php" name="theForm"  onsubmit="return validate()">
@@ -19,7 +19,7 @@
   <tr>
     <td class="label">{$lang.sort_order}:</td>
     <td>
-      <input type="text" name='sort_order' {if $cat.sort_order}value='{$cat.sort_order}'{else} value="0"{/if} size="15" />
+      <input type="text" name='sort_order' {if $cat.sort_order}value='{$cat.sort_order}'{else} value="50"{/if} size="15" />
     </td>
   </tr>
     <tr>

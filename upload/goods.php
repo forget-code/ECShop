@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品详情
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: goods.php 15921 2009-05-07 05:35:58Z sxc_shop $
+ * $Author: liubo $
+ * $Id: goods.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -144,14 +144,14 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
         $prev_gid = $db->getOne("SELECT goods_id FROM " .$ecs->table('goods'). " WHERE cat_id=" . $goods['cat_id'] . " AND goods_id > " . $goods['goods_id'] . " AND is_on_sale = 1 AND is_alone_sale = 1 AND is_delete = 0 LIMIT 1");
         if (!empty($prev_gid))
         {
-            $prev_good['url'] = build_uri('goods', array('gid' => $prev_gid));
+            $prev_good['url'] = build_uri('goods', array('gid' => $prev_gid), $goods['goods_name']);
             $smarty->assign('prev_good', $prev_good);//上一个商品
         }
 
         $next_gid = $db->getOne("SELECT max(goods_id) FROM " . $ecs->table('goods') . " WHERE cat_id=".$goods['cat_id']." AND goods_id < ".$goods['goods_id'] . " AND is_on_sale = 1 AND is_alone_sale = 1 AND is_delete = 0");
         if (!empty($next_gid))
         {
-            $next_good['url'] = build_uri('goods', array('gid' => $next_gid));
+            $next_good['url'] = build_uri('goods', array('gid' => $next_gid), $goods['goods_name']);
             $smarty->assign('next_good', $next_good);//下一个商品
         }
 
@@ -177,14 +177,6 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
         //获取tag
         $tag_array = get_tags($goods_id);
         $smarty->assign('tags',                $tag_array);                                       // 商品的标记
-        //获取关联tag
-        $tag_data = "";
-        foreach($tag_array as $temp_data)
-        {
-            $tag_data[] = $temp_data['tag_words'];
-        }
-        $tag_linked_data = user_uc_call('get_linked_tags', array($tag_data));
-        $smarty->assign('tag_linked_data', $tag_linked_data);
 
         //获取关联礼包
         $package_goods_list = get_package_goods_list($goods['goods_id']);
@@ -418,8 +410,8 @@ function get_goods_rank($goods_id)
         'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
             $GLOBALS['ecs']->table('order_goods') . ' AS g ' .
         "WHERE o.order_id = g.order_id " .
-        "AND o.order_status = '" . OS_CONFIRMED . "' " .
-        "AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
+        " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
+        " AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
         " AND o.pay_status " . db_create_in(array(PS_PAYED, PS_PAYING)) .
         " AND g.goods_id = '$goods_id'" . $ext;
     $sales_count = $GLOBALS['db']->getOne($sql);
@@ -431,8 +423,8 @@ function get_goods_rank($goods_id)
                 'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
                     $GLOBALS['ecs']->table('order_goods') . ' AS g ' .
                 "WHERE o.order_id = g.order_id " .
-                "AND o.order_status = '" . OS_CONFIRMED . "' " .
-                "AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
+                " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
+                " AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
                 " AND o.pay_status " . db_create_in(array(PS_PAYED, PS_PAYING)) . $ext .
                 " GROUP BY g.goods_id HAVING num > $sales_count";
         $res = $GLOBALS['db']->query($sql);

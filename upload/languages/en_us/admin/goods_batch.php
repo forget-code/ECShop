@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: goods_batch.php 15646 2009-02-23 08:33:00Z zblikai $
+ * $Author: liuhui $
+ * $Id: goods_batch.php 16777 2009-11-09 07:56:49Z liuhui $
  */
 
 $_LANG['select_method'] ='Product method:';
@@ -44,6 +44,11 @@ $_LANG['give_integral'] = 'Free points';
 $_LANG['goods_number'] ='Stock';
 $_LANG['brand'] ='Brand';
 
+$_LANG['export_format'] = 'Data formats';
+$_LANG['export_ecshop'] = 'ecshop to support data formats';
+$_LANG['export_taobao'] = 'taobao Assistant to support data formats';
+$_LANG['export_paipai'] = 'paipai Assistant to support data formats';
+$_LANG['export_paipai3'] = 'paipai 3.0 Assistant to support data formats';
 $_LANG['batch_edit_ok'] ='Batch modify successfully.';
 
 $_LANG['goods_cat'] ='Category:';
@@ -57,6 +62,7 @@ $_LANG['use_help'] ='Help:' .
           '<Li>Fill in the csv file, can use the excel or text editor to open a csv file;<br />' .
               'If "Best product" and so on, fill in numeral 0 or 1, 0 means "NO", 1 mean "YES";<br />' .
               'Please fill in file name with path for product picture and thumbnail, the path is relative path [root directory]/images/, for example, the picture path is [root catalogue]/images/200610/abc.jpg, fill in 200610/abc.jpg;<br />'.
+              '<font style="color:#FE596A;">If Taobao Assistant cvs encoding format, make sure the code on the site, such as the code is incorrect, you can use editing software transcoding.</font></li>' .
           '<Li>Upload the product picture and thumbnail to correspond directory, for example:[Root catalogue]/images/200610/;</li>' .
               '<font style="color:#FE596A;">Please upload pictures of goods and commodities csv file and upload the thumbnails, or picture can not be processed.</font></li>' .
           '<Li>Select category and file code to upload, upload the csv file.</li>'.

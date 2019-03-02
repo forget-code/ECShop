@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品分类管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: category.php 15911 2009-05-05 10:19:34Z sxc_shop $
+ * $Author: liubo $
+ * $Id: category.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -134,7 +134,7 @@ if ($_REQUEST['act'] == 'insert')
             //显示在自定义导航栏中
             $sql = "INSERT INTO " . $ecs->table('nav') .
                 " (name,ctype,cid,ifshow,vieworder,opennew,url,type)".
-                " VALUES('" . $cat['cat_name'] . "', 'c', '".$db->insert_id()."','1','$vieworder','0', '" . build_uri('category', array('cid'=> $cat_id)) . "','middle')";
+                " VALUES('" . $cat['cat_name'] . "', 'c', '".$db->insert_id()."','1','$vieworder','0', '" . build_uri('category', array('cid'=> $cat_id), $cat['cat_name']) . "','middle')";
             $db->query($sql);
         }
         insert_cat_recommend($cat['cat_recommend'], $cat_id);
@@ -316,7 +316,7 @@ if ($_REQUEST['act'] == 'update')
                     //不存在
                     $vieworder = $db->getOne("SELECT max(vieworder) FROM ". $ecs->table('nav') . " WHERE type = 'middle'");
                     $vieworder += 2;
-                    $uri = build_uri('category', array('cid'=> $cat_id));
+                    $uri = build_uri('category', array('cid'=> $cat_id), $cat['cat_name']);
 
                     $sql = "INSERT INTO " . $ecs->table('nav') . " (name,ctype,cid,ifshow,vieworder,opennew,url,type) VALUES('" . $cat['cat_name'] . "', 'c', '$cat_id','1','$vieworder','0', '" . $uri . "','middle')";
                 }
@@ -492,7 +492,7 @@ if ($_REQUEST['act'] == 'toggle_show_in_nav')
             $catname = $db->getOne("SELECT cat_name FROM ". $ecs->table('category') . " WHERE cat_id = '$id'");
             //显示在自定义导航栏中
             $_CFG['rewrite'] = 0;
-            $uri = build_uri('category', array('cid'=> $id));
+            $uri = build_uri('category', array('cid'=> $id), $catname);
 
             $nid = $db->getOne("SELECT id FROM ". $ecs->table('nav') . " WHERE ctype = 'c' AND cid = '" . $id . "' AND type = 'middle'");
             if(empty($nid))

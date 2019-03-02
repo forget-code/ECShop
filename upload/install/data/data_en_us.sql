@@ -117,9 +117,11 @@ INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES 
 (128, 7, 'exchange_goods'),
 (129, 6, 'delivery_view'),
 (130, 6, 'back_view'),
+(131, 5, 'reg_fields'),
 (132, 5, 'shop_authorized'),
-(133, 5, 'reg_fields');
-
+(133, 5, 'webcollect_manage'),
+(134, 4, 'suppliers_manage'),
+(135, 4, 'role_manage');
 
 --
 --  `ecs_mail_templates`
@@ -3735,9 +3737,9 @@ VALUES (NULL, 'Registered users', '0', '10000', '100', 1, 0);
 
 
 -- 文章默认分类
-INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (1, 'Classification system', 2, '', 'Reserved classification', 0, 0);
-INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (2, 'Online information', 3, '', 'Online information classification', 0, 1);
-INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (3, 'Online help classification', 4, '', 'Online help classification', 0, 1);
+INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (1, 'Classification system', 2, '', 'Reserved classification', 50, 0);
+INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (2, 'Online information', 3, '', 'Online information classification', 50, 1);
+INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (3, 'Online help classification', 4, '', 'Online help classification', 50, 1);
 
 --
 -- `ecs_article`
@@ -3778,3 +3780,16 @@ INSERT INTO `ecs_template` (`filename`, `region`, `library`, `sort_order`, `id`,
 ('category', '左边区域', '/library/cart.lbi', 0, 0, 0, 0, 'default', ''),
 ('category', '左边区域', '/library/price_grade.lbi', 3, 0, 0, 0, 'default', ''),
 ('category', '左边区域', '/library/filter_attr.lbi', 2, 0, 0, 0, 'default', '');
+
+
+--
+-- 会员注册项 ecs_reg_fields
+--
+
+INSERT INTO `ecs_reg_fields` (`id`, `reg_field_name`, `dis_order`, `display`, `type`, `is_need`) VALUES 
+(1, 'MSN', 0, 1, 1, 1), 
+(2, 'QQ', 0, 1, 1, 1), 
+(3, 'Office phone', 0, 1, 1, 1), 
+(4, 'Home phone', 0, 1, 1, 1), 
+(5, 'Mobile phone', 0, 1, 1, 1),
+(6, 'Get back password by question', 0, 1, 1, 1);

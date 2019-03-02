@@ -1,4 +1,4 @@
-<!-- $Id: sale_general.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: sale_general.htm 16868 2009-12-10 10:30:12Z liuhui $ -->
 <script src="DWConfiguration/ActiveContent/IncludeFiles/AC_RunActiveContent.js" type="text/javascript"></script>
 
 {include file="pageheader.htm"}
@@ -37,6 +37,7 @@
             <param NAME="bgcolor" VALUE="#FFFFFF">
             <embed src="images/charts/column3d.swf?dataXML={$data_count}" quality="high" bgcolor="#FFFFFF"  width="565" height="420" name="FCColumn2" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
           </object>
+          <div>{$data_count_name}</div>
         </td></tr>
       </table>
 
@@ -51,6 +52,7 @@
             <param NAME="bgcolor" VALUE="#FFFFFF">
             <embed src="images/charts/column3d.swf?dataXML={$data_amount}" quality="high" bgcolor="#FFFFFF"  width="565" height="420" name="FCColumn2" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
           </object>
+          <div>{$data_amount_name}</div>
         </td></tr>
       </table>
     </div>

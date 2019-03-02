@@ -1,7 +1,7 @@
-<!-- $Id: topic_edit.htm 14668 2008-06-10 08:17:16Z testyang $ -->
+<!-- $Id: topic_edit.htm 16729 2009-10-10 09:05:34Z wangleisvn $ -->
 
 {include file="pageheader.htm"}
-{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector_topic.js"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
 <link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
 {if $warning}
@@ -17,12 +17,80 @@
   </div>
   <!-- tab body -->
   <div id="tabbody-div">
-    <form action="topic.php" method="post" name="theForm">
+    <form action="topic.php" method="post" name="theForm" enctype="multipart/form-data">
       <table cellspacing="1"  id="general-table" cellpadding="3" width="100%">
         <tr>
           <td class="label">{$lang.topic_title}</td>
           <td><input name="topic_name" type="text" value="{$topic.title}" size="40" /></td>
         </tr>
+        <tr>
+          <td class="label">{$lang.lable_topic_keywords}</td>
+          <td><textarea name="keywords" id="keywords" cols="40" rows="3">{$topic.keywords}</textarea></td>
+        </tr>
+        <tr>
+          <td class="label">{$lang.lable_topic_description}</td>
+          <td><textarea name="description" id="description" cols="40" rows="5">{$topic.description}</textarea></td>
+        </tr>
+        <tr>
+          <td class="label">{$lang.lable_topic_type}</td>
+          <td><select name="topic_type" id="topic_type" onchange="showMedia(this.value)">
+       <option value='0'>{$lang.top_img}</option>
+       <option value='1'>{$lang.top_flash}</option>
+       <option value='2'>{$lang.top_html}</option>
+       </select></td>
+        </tr>
+        <tbody id="content_01">
+          <tr>
+            <td  class="label">
+              <a href="javascript:showNotice('title_upload');" title="{$lang.form_notice}">
+              <img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.lable_upload}</td>
+            <td>
+              <input type='file' name='topic_img' id='topic_img' size='35' />
+              <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="title_upload">{$width_height}</span></td>
+          </tr>
+          <tr>
+            <td class="label">{$lang.lable_from_web}</td>
+            <td><input type="text" name="url" id="url" value="" size="35" /></td>
+          </tr>
+        </tbody>
+        
+        <tbody id="edit_img">
+          <tr>
+            <td class="label">&nbsp;</td>
+            <td><input type="text" name="img_url" id="img_url" value="{$topic.topic_img}" size="35" readonly="readonly"/></td>
+          </tr>
+        </tbody>
+
+        <tbody id="content_23">
+          <tr>
+            <td class="label">{$lang.lable_content}</td>
+            <td><textarea name="htmls" id="htmls" cols="50" rows="7">{$topic.htmls}</textarea></td>
+          </tr>
+        </tbody>
+        
+        <tr>
+          <td  class="label"><a href="javascript:showNotice('title_pic_upload');" title="{$lang.form_notice}">
+              <img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.lable_title_upload}</td>
+          <td><input type='file' name='title_pic' id='title_pic' size='35' />
+          <br /><span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="title_pic_upload">{$title_width_height}</span></td>
+        </tr>
+        <tr>
+          <td class="label">{$lang.lable_from_web}</td>
+          <td><input type="text" name="title_url" id="title_url" value="" size="35" /></td>
+        </tr>
+
+        <tbody id="edit_title_img">
+          <tr>
+            <td class="label">&nbsp;</td>
+            <td><input type="text" name="title_img_url" id="title_img_url" value="{$topic.title_pic}" size="35" readonly="readonly"/></td>
+          </tr>
+        </tbody>
+
+        <tr>
+          <td class="label">{$lang.lable_base_style}</td>
+          <td><input type="text" name="base_style" id="base_style" value="{$topic.base_style}" size="7" maxlength="6" style="float:left;color:{$goods_name_color};" size="30"/><div style="background-color:#{$topic.base_style};float:left;margin-left:2px;" id="font_color" onclick="ColorSelecter.Show(this);"><img src="images/color_selecter.gif" style="margin-top:-1px;" /></div></td>
+        </tr>
+
         <tr>
           <td class="label">{$lang.cycle}</td>
           <td><input name="start_time" type="text" id="start_time" size="12" value='{$topic.start_time}' readonly="readonly" />
@@ -31,7 +99,6 @@
             <input name="end_time" type="text" id="end_time" size="12" value='{$topic.end_time}' readonly="readonly" />
             <input name="selbtn2" type="button" id="selbtn2" onclick="return showCalendar('end_time', '%Y-%m-%d', false, false, 'selbtn2');" value="{$lang.btn_select}" class="button"/></td>
         </tr>
-      
       </table>
       <table width="90%" border="0"  align="center" cellpadding="0" cellspacing="0" id="goods-table" style="display:none;" >
         <tr>
@@ -112,9 +179,10 @@
 <script type="Text/Javascript" language="JavaScript">
 <!--
 var data = '{$topic.data}';
-var defaultClass = "{$lang.default_class}" 
+var defaultClass = "{$lang.default_class}";
 {literal}
 var myTopic = Object();
+var status_code = "{$topic.topic_type}"; // 初始页面参数
 
 onload = function()
 {
@@ -122,6 +190,9 @@ onload = function()
   // 开始检查订单
   startCheckOrder();
   var classList = document.getElementById("topic_class_list");
+
+  // 初始化表单项
+  initialize_form(status_code);
 
   if (data == "")
   {
@@ -150,6 +221,58 @@ onload = function()
     }
   }
   showTargetList();
+}
+
+/**
+ * 初始化表单项目
+ */
+function initialize_form(status_code)
+{
+  var nt = navigator_type();
+  var display_yes = (nt == 'IE') ? 'block' : 'table-row-group';
+  status_code = parseInt(status_code);
+  status_code = status_code ? status_code : 0;
+  document.getElementById('topic_type').options[status_code].selected = true;
+
+  switch (status_code)
+  {
+    case 0 :
+      document.getElementById('content_01').style.display = display_yes;
+      document.getElementById('content_23').style.display = 'none';
+			document.getElementById('title_upload').innerHTML = '{$width_height}';
+			document.getElementById('edit_img').style.display = display_yes;
+    break;
+		
+    case 1 :
+      document.getElementById('content_01').style.display = display_yes;
+      document.getElementById('content_23').style.display = 'none';
+			document.getElementById('title_upload').innerHTML = '{$lang.tips_upload_notice}';
+			document.getElementById('edit_img').style.display = display_yes;
+    break;
+		
+    case 2 :
+      document.getElementById('content_01').style.display = 'none';
+      document.getElementById('content_23').style.display = display_yes;
+			document.getElementById('edit_img').style.display = 'none';
+    break;
+  }
+
+	{if $isadd eq 'isadd'}
+	document.getElementById('edit_img').style.display = 'none';
+	document.getElementById('edit_title_img').style.display = 'none';
+	{/if}
+
+  return true;
+}
+
+/**
+ * 类型表单项切换
+ */
+function showMedia(code)
+{
+  var obj = document.getElementById('topic_type');
+
+  initialize_form(code);
 }
 
 function checkForm()
@@ -381,6 +504,37 @@ function removeItem(sender,isAll)
     myTopic[key] = new Array();
     sender.innerHTML = "";
   }
+}
+
+/**
+ * 判断当前浏览器类型
+ */
+function navigator_type()
+{
+  var type_name = '';
+
+  if (navigator.userAgent.indexOf('MSIE') != -1)
+  {
+    type_name = 'IE'; // IE
+  }
+  else if(navigator.userAgent.indexOf('Firefox') != -1)
+  {
+    type_name = 'FF'; // FF
+  }
+  else if(navigator.userAgent.indexOf('Opera') != -1)
+  {
+    type_name = 'Opera'; // Opera
+  }
+  else if(navigator.userAgent.indexOf('Safari') != -1)
+  {
+    type_name = 'Safari'; // Safari
+  }
+  else if(navigator.userAgent.indexOf('Chrome') != -1)
+  {
+    type_name = 'Chrome'; // Chrome
+  }
+
+  return type_name;
 }
 {/literal}
 //-->

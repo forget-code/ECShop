@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理员信息以及权限管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: privilege.php 16291 2009-06-19 08:49:39Z sxc_shop $
+ * $Author: liubo $
+ * $Id: privilege.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -83,15 +83,26 @@ elseif ($_REQUEST['act'] == 'signin')
     $_POST['password'] = isset($_POST['password']) ? trim($_POST['password']) : '';
 
     /* 检查密码是否正确 */
-    $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login".
+    $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login, suppliers_id".
             " FROM " . $ecs->table('admin_user') .
             " WHERE user_name = '" . $_POST['username']. "' AND password = '" . md5($_POST['password']) . "'";
     $row = $db->getRow($sql);
 
     if ($row)
     {
-            // 登录成功
+        // 检查是否为供货商的管理员 所属供货商是否有效
+        if (!empty($row['suppliers_id']))
+        {
+            $supplier_is_check = suppliers_list_info(' is_check = 1 AND suppliers_id = ' . $row['suppliers_id']);
+            if (empty($supplier_is_check))
+            {
+                sys_msg($_LANG['login_disable'], 1);
+            }
+        }
+
+        // 登录成功
         set_admin_session($row['user_id'], $row['user_name'], $row['action_list'], $row['last_login']);
+        $_SESSION['suppliers_id'] = $row['suppliers_id'];
 
         if($row['action_list'] == 'all' && empty($row['last_login']))
         {
@@ -162,6 +173,7 @@ elseif ($_REQUEST['act'] == 'add')
     $smarty->assign('action_link', array('href'=>'privilege.php?act=list', 'text' => $_LANG['admin_list']));
     $smarty->assign('form_act',    'insert');
     $smarty->assign('action',      'add');
+    $smarty->assign('select_role',  get_role_list());
 
     /* 显示页面 */
     assign_query_info();
@@ -200,12 +212,22 @@ elseif ($_REQUEST['act'] == 'insert')
     /* 获取添加日期及密码 */
     $add_time = gmtime();
     $password  = md5($_POST['password']);
+    $role_id = '';
+    $action_list = '';
+    if (!empty($_POST['select_role']))
+    {
+        $sql = "SELECT action_list FROM " . $ecs->table('role') . " WHERE role_id = '".$_POST['select_role']."'";
+        $row = $db->getRow($sql);
+        $action_list = $row['action_list'];
+        $role_id = $_POST['select_role'];
+    }
 
-    $sql = "SELECT nav_list FROM " . $ecs->table('admin_user') . " WHERE action_list = 'all'";
-    $row = $db->getRow($sql);
+        $sql = "SELECT nav_list FROM " . $ecs->table('admin_user') . " WHERE action_list = 'all'";
+        $row = $db->getRow($sql);
 
-    $sql = "INSERT INTO ".$ecs->table('admin_user')." (user_name, email, password, add_time, nav_list) ".
-           "VALUES ('".trim($_POST['user_name'])."', '".trim($_POST['email'])."', '$password', '$add_time', '$row[nav_list]')";
+
+    $sql = "INSERT INTO ".$ecs->table('admin_user')." (user_name, email, password, add_time, nav_list, action_list, role_id) ".
+           "VALUES ('".trim($_POST['user_name'])."', '".trim($_POST['email'])."', '$password', '$add_time', '$row[nav_list]', '$action_list', '$role_id')";
 
     $db->query($sql);
     /* 转入权限分配列表 */
@@ -245,9 +267,10 @@ elseif ($_REQUEST['act'] == 'edit')
     }
 
     /* 获取管理员信息 */
-    $sql = "SELECT user_id, user_name, email, password, agency_id FROM " .$ecs->table('admin_user').
+    $sql = "SELECT user_id, user_name, email, password, agency_id, role_id FROM " .$ecs->table('admin_user').
            " WHERE user_id = '".$_REQUEST['id']."'";
     $user_info = $db->getRow($sql);
+    
 
     /* 取得该管理员负责的办事处名称 */
     if ($user_info['agency_id'] > 0)
@@ -260,7 +283,15 @@ elseif ($_REQUEST['act'] == 'edit')
     $smarty->assign('ur_here',     $_LANG['admin_edit']);
     $smarty->assign('action_link', array('text' => $_LANG['admin_list'], 'href'=>'privilege.php?act=list'));
     $smarty->assign('user',        $user_info);
+    
+    /* 获得该管理员的权限 */
+    $priv_str = $db->getOne("SELECT action_list FROM " .$ecs->table('admin_user'). " WHERE user_id = '$_GET[id]'");
 
+    /* 如果被编辑的管理员拥有了all这个权限，将不能编辑 */
+    if ($priv_str != 'all')
+    {
+       $smarty->assign('select_role',  get_role_list());
+    }
     $smarty->assign('form_act',    'update');
     $smarty->assign('action',      'edit');
 
@@ -343,10 +374,21 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
         }
     }
 
+    $role_id = '';
+    $action_list = '';
+    if (!empty($_POST['select_role']))
+    {
+        $sql = "SELECT action_list FROM " . $ecs->table('role') . " WHERE role_id = '".$_POST['select_role']."'";
+        $row = $db->getRow($sql);
+        $action_list = ', action_list = \''.$row['action_list'].'\'';
+        $role_id = ', role_id = '.$_POST['select_role'].' ';
+    }
     //更新管理员信息
     $sql = "UPDATE " .$ecs->table('admin_user'). " SET ".
            "user_name = '$admin_name', ".
-           "email = '$admin_email'".
+           "email = '$admin_email' ".
+           $action_list.
+           $role_id.
            $password.
            $nav_list.
            "WHERE user_id = '$admin_id'";
@@ -534,7 +576,7 @@ elseif ($_REQUEST['act'] == 'update_allot')
 
     /* 更新管理员的权限 */
     $act_list = @join(",", $_POST['action_code']);
-    $sql = "UPDATE " .$ecs->table('admin_user'). " SET action_list = '$act_list' ".
+    $sql = "UPDATE " .$ecs->table('admin_user'). " SET action_list = '$act_list', role_id = '' ".
            "WHERE user_id = '$_POST[id]'";
 
     $db->query($sql);
@@ -628,6 +670,16 @@ function clear_cart()
     $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
             " WHERE session_id NOT " . db_create_in($valid_sess);
     $GLOBALS['db']->query($sql);
+}
+
+/* 获取角色列表 */
+function get_role_list()
+{
+    $list = array();
+    $sql  = 'SELECT role_id, role_name, action_list '.
+            'FROM ' .$GLOBALS['ecs']->table('role');
+    $list = $GLOBALS['db']->getAll($sql);
+    return $list;
 }
 
 ?>

@@ -1,8 +1,15 @@
-<!-- $Id: goods_batch_add.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: goods_batch_add.htm 16544 2009-08-13 07:55:57Z liuhui $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form action="goods_batch.php?act=upload" method="post" enctype="multipart/form-data" name="theForm" onsubmit="return formValidate()">
 <table cellspacing="1" cellpadding="3" width="100%">
+<tr>
+    <td class="label">{$lang.export_format}</td>
+    <td><select name="data_cat" id="data_cat">
+      <option value="0">{$lang.select_please}</option>
+      {html_options options=$data_format}
+    </select></td>
+  </tr>
   <tr>
     <td class="label">{$lang.goods_cat}</td>
     <td><select name="cat" id="cat">

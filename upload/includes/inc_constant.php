@@ -3,14 +3,14 @@
 /**
  * ECSHOP 常量
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: inc_constant.php 16277 2009-06-19 06:05:47Z sxc_shop $
+ * $Author: liubo $
+ * $Id: inc_constant.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -69,6 +69,8 @@ define('OS_CONFIRMED',              1); // 已确认
 define('OS_CANCELED',               2); // 已取消
 define('OS_INVALID',                3); // 无效
 define('OS_RETURNED',               4); // 退货
+define('OS_SPLITED',                5); // 已分单
+define('OS_SPLITING_PART',          6); // 部分分单
 
 /* 支付类型 */
 define('PAY_ORDER',                 0); // 订单支付
@@ -80,6 +82,7 @@ define('SS_SHIPPED',                1); // 已发货
 define('SS_RECEIVED',               2); // 已收货
 define('SS_PREPARING',              3); // 备货中
 define('SS_SHIPPED_PART',           4); // 已发货(部分商品)
+define('SS_SHIPPED_ING',            5); // 发货中(处理分单)
 
 /* 支付状态 */
 define('PS_UNPAYED',                0); // 未付款
@@ -227,5 +230,8 @@ define('COMMENT_GOODS',             2); //添加商品评论
 define('SEND_LIST', 0);
 define('SEND_USER', 1);
 define('SEND_RANK', 2);
+
+/* license接口 */
+define('LICENSE_VERSION', '1.0');
 
 ?>

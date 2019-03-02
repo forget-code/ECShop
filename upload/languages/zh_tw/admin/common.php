@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心共用語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: liuhui $
- * $Id: common.php 16378 2009-06-26 06:34:14Z liuhui $
+ * $Author: liubo $
+ * $Id: common.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
@@ -33,6 +33,7 @@ $_LANG['password_rule'] = '密碼應只包含英文字符、數字.長度在6--1
 $_LANG['username_rule'] = '用戶名應為漢字、英文字符、數字組合，3到15位';
 $_LANG['plugins_not_found'] = '插件 %s 無法定位';
 $_LANG['no_records'] = '沒有找到任何記錄';
+$_LANG['role_describe'] = '角色描述';
 
 $_LANG['require_field'] = '<span class="require-field">*</span>';
 $_LANG['yes'] = '是';
@@ -156,11 +157,11 @@ $_LANG['13_batch_add'] = '商品批量上傳';
 $_LANG['15_batch_edit'] = '商品批量修改';
 $_LANG['16_goods_script'] = '生成商品代碼';
 $_LANG['17_tag_manage'] = '標籤管理';
-
+$_LANG['53_suppliers_goods'] = '供貨商商品管理';
 $_LANG['14_goods_export'] = '商品批量導出';
 
-$_LANG['50_virtual_card_list'] = '虛擬卡列表';
-$_LANG['51_virtual_card_add'] = '添加新虛擬卡';
+$_LANG['50_virtual_card_list'] = '虛擬卡商品列表';
+$_LANG['51_virtual_card_add'] = '添加虛擬商品';
 $_LANG['52_virtual_card_change'] = '更改加密串';
 $_LANG['goods_auto'] = '商品自動上下架';
 $_LANG['article_auto'] = '文章自動發佈';
@@ -235,7 +236,11 @@ $_LANG['10_user_account_manage'] = '資金管理';
 
 /* 權限管理 */
 $_LANG['admin_list'] = '管理員列表';
+$_LANG['admin_list_role'] = '角色列表';
+$_LANG['admin_role'] = '角色管理';
+$_LANG['admin_edit_role'] = '修改角色';
 $_LANG['admin_add'] = '添加管理員';
+$_LANG['admin_add_role'] = '添加角色';
 $_LANG['admin_logs'] = '管理員日誌';
 $_LANG['agency_list'] = '辦事處列表';
 $_LANG['suppliers_list'] = '供貨商列表';
@@ -243,6 +248,7 @@ $_LANG['suppliers_list'] = '供貨商列表';
 /* 系統設置 */
 $_LANG['01_shop_config'] = '商店設置';
 $_LANG['shop_authorized'] = '授權證書';
+$_LANG['shp_webcollect'] = '網羅天下';
 $_LANG['02_payment_list'] = '支付方式';
 $_LANG['03_shipping_list'] = '配送方式';
 $_LANG['04_mail_settings'] = '郵件服務器設置';

@@ -108,7 +108,7 @@ function validate()
 {
     validator = new Validator("theForm");
     validator.required("package_name",  no_name);
-    validator.isNullOption("goods_id", no_goods_id);
+    //validator.isNullOption("goods_id", no_goods_id);
     validator.isTime("start_time", invalid_starttime, true);
     validator.isTime("end_time", invalid_endtime, true);
     validator.gt("end_time", "start_time", invalid_gt);

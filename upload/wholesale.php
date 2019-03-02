@@ -3,7 +3,7 @@
 /**
  * ECSHOP 批发前台文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -12,8 +12,8 @@
  * @author:     scott ye <scott.yell@gmail.com>
  * @version:    v2.x
  * ---------------------------------------------
- * $Author: sunxiaodong $
- * $Id: wholesale.php 15569 2009-01-15 10:40:56Z sunxiaodong $
+ * $Author: wangleisvn $
+ * $Id: wholesale.php 16927 2009-12-25 07:27:09Z wangleisvn $
  */
 
 define('IN_ECS', true);
@@ -39,15 +39,44 @@ if (empty($_REQUEST['act']))
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'list')
 {
+
+    $search_category = empty($_REQUEST['search_category']) ? 0 : intval($_REQUEST['search_category']);
+    $search_keywords = isset($_REQUEST['search_keywords']) ? trim($_REQUEST['search_keywords']) : '';
+    $param = array(); // 翻页链接所带参数列表
+
     /* 查询条件：当前用户的会员等级（搜索关键字） */
-    $where = " WHERE w.enabled = 1 AND CONCAT(',', w.rank_ids, ',') LIKE '" . '%,' . $_SESSION['user_rank'] . ',%' . "'";
+    $where = " WHERE g.goods_id = w.goods_id
+               AND w.enabled = 1
+               AND CONCAT(',', w.rank_ids, ',') LIKE '" . '%,' . $_SESSION['user_rank'] . ',%' . "' ";
+
+    /* 搜索 */
+    /* 搜索类别 */
+    if ($search_category)
+    {
+        $where .= " AND g.cat_id = '$search_category' ";
+        $param['search_category'] = $search_category;
+        $smarty->assign('search_category', $search_category);
+    }
+    /* 搜索商品名称和关键字 */
+    if ($search_keywords)
+    {
+        $where .= " AND (g.keywords LIKE '%$search_keywords%'
+                    OR g.goods_name LIKE '%$search_keywords%') ";
+        $param['search_keywords'] = $search_keywords;
+        $smarty->assign('search_keywords', $search_keywords);
+    }
 
     /* 取得批发商品总数 */
-    $sql = "SELECT COUNT(*) FROM " . $ecs->table('wholesale') . " AS w " . $where;
+    $sql = "SELECT COUNT(*) FROM " . $ecs->table('wholesale') . " AS w, " . $ecs->table('goods') . " AS g " . $where;
     $count = $db->getOne($sql);
 
     if ($count > 0)
     {
+        $default_display_type = $_CFG['show_order_type'] == '0' ? 'list' : 'text';
+        $display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'text'))) ? trim($_REQUEST['display']) : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
+        $display  = in_array($display, array('list', 'text')) ? $display : 'text';
+        setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
+
         /* 取得每页记录数 */
         $size = isset($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
 
@@ -60,9 +89,11 @@ if ($_REQUEST['act'] == 'list')
 
         /* 取得当前页的批发商品 */
         $wholesale_list = wholesale_list($size, $page, $where);
-        $smarty->assign('wholesale_list',  $wholesale_list);
+        $smarty->assign('wholesale_list', $wholesale_list);
 
-        $pager = get_pager('wholesale.php', array('act' => 'list'), $count, $page, $size);
+        $param['act'] = 'list';
+        $pager = get_pager('wholesale.php', array_reverse ($param, TRUE), $count, $page, $size);
+        $pager['display'] = $display;
         $smarty->assign('pager', $pager);
 
         /* 批发商品购物车 */
@@ -133,16 +164,43 @@ elseif ($_REQUEST['act'] == 'price_list')
 elseif ($_REQUEST['act'] == 'add_to_cart')
 {
     /* 取得参数 */
-    $act_id = intval($_POST['act_id']);
-    $goods_number = intval($_POST['goods_number'][$act_id]);
-    $goods_attr = isset($_POST['attr'][$act_id]) ? $_POST['attr'][$act_id] : array();
-    ksort($goods_attr);
+    $act_id         = intval($_POST['act_id']);
+    $goods_number   = $_POST['goods_number'][$act_id];
+    $attr_id        = isset($_POST['attr_id']) ? $_POST['attr_id'] : array();
+    if(isset($attr_id[$act_id]))
+    {
+        $goods_attr     = $attr_id[$act_id];
+    }
+
+    /* 用户提交必须全部通过检查，才能视为完成操作 */
 
     /* 检查数量 */
-    if ($goods_number <= 0)
+    if (empty($goods_number) || (is_array($goods_number) && array_sum($goods_number) <= 0))
     {
         show_message($_LANG['ws_invalid_goods_number']);
     }
+
+    /* 确定购买商品列表 */
+    $goods_list = array();
+    if (is_array($goods_number))
+    {
+        foreach ($goods_number as $key => $value)
+        {
+            if (!$value)
+            {
+                unset($goods_number[$key], $goods_attr[$key]);
+                continue;
+            }
+
+            $goods_list[] = array('number' => $goods_number[$key], 'goods_attr' => $goods_attr[$key]);
+        }
+    }
+    else
+    {
+        $goods_list[0] = array('number' => $goods_number, 'goods_attr' => '');
+    }
+
+    /* 取批发相关数据 */
     $wholesale = wholesale_info($act_id);
 
     /* 检查session中该商品，该属性是否存在 */
@@ -150,23 +208,36 @@ elseif ($_REQUEST['act'] == 'add_to_cart')
     {
         foreach ($_SESSION['wholesale_goods'] as $goods)
         {
-            if ($goods['goods_id'] == $wholesale['goods_id'] &&
-                $goods['goods_attr_id'] == $goods_attr)
+            if ($goods['goods_id'] == $wholesale['goods_id'])
             {
-                show_message($_LANG['ws_goods_attr_exists']);
+                if (empty($goods_attr))
+                {
+                    show_message($_LANG['ws_goods_attr_exists']);
+                }
+                elseif (in_array($goods['goods_attr_id'], $goods_attr))
+                {
+                    show_message($_LANG['ws_goods_attr_exists']);
+                }
             }
         }
     }
 
-    /* 检查批发价格单中该属性是否存在 */
+    /* 获取购买商品的批发方案的价格阶梯 （一个方案多个属性组合、一个属性组合、一个属性、无属性） */
     $attr_matching = false;
     foreach ($wholesale['price_list'] as $attr_price)
     {
-        if (empty($attr_price['attr']) || is_attr_matching($goods_attr, $attr_price['attr']))
+        // 没有属性
+        if (empty($attr_price['attr']))
         {
             $attr_matching = true;
-            $qp_list = $attr_price['qp_list'];
+            $goods_list[0]['qp_list'] = $attr_price['qp_list'];
             break;
+        }
+        // 有属性
+        elseif (($key = is_attr_matching($goods_list, $attr_price['attr'])) !== false)
+        {
+            $attr_matching = true;
+            $goods_list[$key]['qp_list'] = $attr_price['qp_list'];
         }
     }
     if (!$attr_matching)
@@ -175,41 +246,60 @@ elseif ($_REQUEST['act'] == 'add_to_cart')
     }
 
     /* 检查数量是否达到最低要求 */
-    if ($goods_number < $qp_list[0]['quantity'])
+    foreach ($goods_list as $goods_key => $goods)
     {
-        show_message($_LANG['ws_goods_number_not_enough']);
-    }
-    else
-    {
-        $goods_price = 0;
-        foreach ($qp_list as $qp)
+        if ($goods['number'] < $goods['qp_list'][0]['quantity'])
         {
-            if ($goods_number >= $qp['quantity'])
+            show_message($_LANG['ws_goods_number_not_enough']);
+        }
+        else
+        {
+            $goods_price = 0;
+            foreach ($goods['qp_list'] as $qp)
             {
-                $goods_price = $qp['price'];
-            }
-            else
-            {
-                break;
+                if ($goods['number'] >= $qp['quantity'])
+                {
+                    $goods_list[$goods_key]['goods_price'] = $qp['price'];
+                }
+                else
+                {
+                    break;
+                }
             }
         }
     }
 
     /* 写入session */
-    $sql = "SELECT attr_value FROM " . $ecs->table('goods_attr') . " WHERE goods_attr_id " . db_create_in($goods_attr);
-    $goods_attr_name = join(',', $db->getCol($sql));
-    $_SESSION['wholesale_goods'][] = array(
-        'goods_id'      => $wholesale['goods_id'],
-        'goods_name'    => $wholesale['goods_name'],
-        'goods_attr_id' => $goods_attr,
-        'goods_attr'    => $goods_attr_name,
-        'goods_number'  => $goods_number,
-        'goods_price'   => $goods_price,
-        'subtotal'      => $goods_number * $goods_price,
-        'formated_goods_price'  => price_format($goods_price, false),
-        'formated_subtotal'     => price_format($goods_number * $goods_price, false),
-        'goods_url'     => build_uri('goods', array('gid' => $wholesale['goods_id'])),
-    );
+    foreach ($goods_list as $goods_key => $goods)
+    {
+        // 属性名称
+        $goods_attr_name = '';
+        if (!empty($goods['goods_attr']))
+        {
+            foreach ($goods['goods_attr'] as $attr)
+            {
+                $goods_attr_name .= $attr['attr_name'] . '：' . $attr['attr_val'] . '&nbsp;';
+            }
+        }
+
+        // 总价
+        $total = $goods['number'] * $goods['goods_price'];
+
+        $_SESSION['wholesale_goods'][] = array(
+            'goods_id'      => $wholesale['goods_id'],
+            'goods_name'    => $wholesale['goods_name'],
+            'goods_attr_id' => $goods['goods_attr'],
+            'goods_attr'    => $goods_attr_name,
+            'goods_number'  => $goods['number'],
+            'goods_price'   => $goods['goods_price'],
+            'subtotal'      => $total,
+            'formated_goods_price'  => price_format($goods['goods_price'], false),
+            'formated_subtotal'     => price_format($total, false),
+            'goods_url'     => build_uri('goods', array('gid' => $wholesale['goods_id']), $wholesale['goods_name']),
+        );
+    }
+
+    unset($goods_attr, $attr_id, $goods_list, $wholesale, $goods_attr_name);
 
     /* 刷新页面 */
     ecs_header("Location: ./wholesale.php\n");
@@ -349,7 +439,7 @@ function wholesale_list($size, $page, $where)
         {
             $row['goods_thumb'] = $GLOBALS['_CFG']['no_picture'];
         }
-        $row['goods_url'] = build_uri('goods', array('gid'=>$row['goods_id']));
+        $row['goods_url'] = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
 
         $properties = get_goods_properties($row['goods_id']);
         $row['goods_attr'] = $properties['pro'];
@@ -363,18 +453,59 @@ function wholesale_list($size, $page, $where)
     return $list;
 }
 
+/**
+ * 商品价格阶梯
+ * @param   int     $goods_id     商品ID
+ * @return  array
+ */
 function get_price_ladder($goods_id)
 {
+    /* 显示商品规格 */
+    $goods_attr_list = array_values(get_goods_attr($goods_id));
     $sql = "SELECT prices FROM " . $GLOBALS['ecs']->table('wholesale') .
             "WHERE goods_id = " . $goods_id;
     $row = $GLOBALS['db']->getRow($sql);
 
     $arr = array();
-    foreach(unserialize($row['prices']) as $key => $val)
+    $_arr = unserialize($row['prices']);
+    if (is_array($_arr))
     {
-        foreach($val['qp_list'] as $index => $qp)
+        foreach(unserialize($row['prices']) as $key => $val)
         {
-            $arr[$qp['quantity']] = price_format($qp['price']);
+            // 显示属性
+            if (!empty($val['attr']))
+            {
+                foreach ($val['attr'] as $attr_key => $attr_val)
+                {
+                    // 获取当前属性 $attr_key 的信息
+                    $goods_attr = array();
+                    foreach ($goods_attr_list as $goods_attr_val)
+                    {
+                        if ($goods_attr_val['attr_id'] == $attr_key)
+                        {
+                            $goods_attr = $goods_attr_val;
+                            break;
+                        }
+                    }
+
+                    // 重写商品规格的价格阶梯信息
+                    if (!empty($goods_attr))
+                    {
+                        $arr[$key]['attr'][] = array(
+                            'attr_id'       => $goods_attr['attr_id'],
+                            'attr_name'     => $goods_attr['attr_name'],
+                            'attr_val'      => (isset($goods_attr['goods_attr_list'][$attr_val]) ? $goods_attr['goods_attr_list'][$attr_val] : ''),
+                            'attr_val_id'   => $attr_val
+                        );
+                    }
+                }
+            }
+
+            // 显示数量与价格
+            foreach($val['qp_list'] as $index => $qp)
+            {
+                $arr[$key]['qp_list'][$qp['quantity']] = price_format($qp['price']);
+            }
         }
     }
 
@@ -383,20 +514,64 @@ function get_price_ladder($goods_id)
 
 /**
  * 商品属性是否匹配
- * @param   array   $goods_attr     用户选择的商品属性
+ * @param   array   $goods_list     用户选择的商品
  * @param   array   $reference      参照的商品属性
  * @return  bool
  */
-function is_attr_matching($goods_attr, $reference)
+function is_attr_matching(&$goods_list, $reference)
 {
-    foreach ($goods_attr as $attr_id => $goods_attr_id)
+    foreach ($goods_list as $key => $goods)
     {
-        if (isset($reference[$attr_id]) && $reference[$attr_id] != 0 && $reference[$attr_id] != $goods_attr_id)
+        // 需要相同的元素个数
+        if (count($goods['goods_attr']) != count($reference))
         {
-            return false;
+            break;
+        }
+
+        // 判断用户提交与批发属性是否相同
+        $is_check = true;
+        if (is_array($goods['goods_attr']))
+        {
+            foreach ($goods['goods_attr'] as $attr)
+            {
+                if (!(array_key_exists($attr['attr_id'], $reference) && $attr['attr_val_id'] == $reference[$attr['attr_id']]))
+                {
+                    $is_check = false;
+                    break;
+                }
+            }
+        }
+        if ($is_check)
+        {
+            return $key;
+            break;
         }
     }
 
-    return true;
+
+//    foreach ($goods_attr as $attr_id => $goods_attr_id)
+//    {
+//        if (isset($reference[$attr_id]) && $reference[$attr_id] != 0 && $reference[$attr_id] != $goods_attr_id)
+//        {
+//            return false;
+//        }
+//    }
+
+    return false;
 }
+
+///**
+// * 购物车中的商品属性与当前购买的商品属性是否匹配
+// * @param   array   $goods_attr     用户选择的商品属性
+// * @param   array   $reference      参照的商品属性
+// * @return  bool
+// */
+//function is_attr_same($goods_attr, $reference)
+//{
+//    /* 比较元素个数是否相同 */
+//    if (count($goods_attr) == count($reference)) {
+//    }
+//
+//    return true;
+//}
 ?>

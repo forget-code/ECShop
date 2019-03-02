@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: index.php 16443 2009-07-08 06:20:02Z wangleisvn $
+ * $Author: liubo $
+ * $Id: index.php 16931 2009-12-28 02:36:45Z liubo $
 */
 
 $_LANG['shop_guide'] = 'Shop guide';
@@ -71,7 +71,7 @@ $_LANG['new_booking'] ='Booking [New]:';
 $_LANG['new_reimburse'] ='Refund application:';
 
 $_LANG['goods_stat'] ='Products Statistics Information';
-$_LANG['virtual_card_stat'] = 'Virtual Card Statistics Information';
+$_LANG['virtual_card_stat'] = 'Virtual Goods Statistics Information';
 $_LANG['goods_count'] ='Products quantity:';
 $_LANG['sales_count'] ='Promotion products:';
 $_LANG['new_goods'] ='New products:';
@@ -140,6 +140,7 @@ $_LANG['official_site'] ='Official website';
 $_LANG['site_url'] ='Website:';
 $_LANG['support_center'] ='Support center:';
 $_LANG['support_forum'] ='Technical support:';
+$_LANG['help_center'] = 'Help Center:';
 // 邮件群发
 $_LANG['mailsend_fail'] = 'Send e-mail %s failed!';
 $_LANG['mailsend_ok'] = 'Send e-mail %s success! There are %s message was not sent!';

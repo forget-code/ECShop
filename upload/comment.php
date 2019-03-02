@@ -3,14 +3,14 @@
 /**
  * ECSHOP 提交用户评论
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: comment.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: comment.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -40,10 +40,15 @@ if (empty($_REQUEST['act']))
     $cmt->id   = !empty($cmt->id)   ? intval($cmt->id) : 0;
     $cmt->type = !empty($cmt->type) ? intval($cmt->type) : 0;
 
-    if (empty($cmt) || !isset($cmt->type) || !isset($cmt->id) || !is_email($cmt->email))
+    if (empty($cmt) || !isset($cmt->type) || !isset($cmt->id))
     {
         $result['error']   = 1;
         $result['message'] = $_LANG['invalid_comments'];
+    }
+    elseif (!is_email($cmt->email))
+    {
+        $result['error']   = 1;
+        $result['message'] = $_LANG['error_email'];
     }
     else
     {
@@ -79,7 +84,7 @@ if (empty($_REQUEST['act']))
                             {
                                 $sql = "SELECT o.order_id FROM " . $ecs->table('order_info') . " AS o ".
                                        " WHERE user_id = '" . $_SESSION['user_id'] . "'".
-                                       " AND o.order_status = '" . OS_CONFIRMED . "' ".
+                                       " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
                                        " AND (o.pay_status = '" . PS_PAYED . "' OR o.pay_status = '" . PS_PAYING . "') ".
                                        " AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') ".
                                        " LIMIT 1";
@@ -108,7 +113,7 @@ if (empty($_REQUEST['act']))
                                        " WHERE o.order_id = og.order_id".
                                        " AND o.user_id = '" . $_SESSION['user_id'] . "'".
                                        " AND og.goods_id = '" . $cmt->id . "'".
-                                       " AND o.order_status = '" . OS_CONFIRMED . "' ".
+                                       " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
                                        " AND (o.pay_status = '" . PS_PAYED . "' OR o.pay_status = '" . PS_PAYING . "') ".
                                        " AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') ".
                                        " LIMIT 1";
@@ -169,7 +174,7 @@ if (empty($_REQUEST['act']))
                             {
                                 $sql = "SELECT o.order_id FROM " . $ecs->table('order_info') . " AS o ".
                                        " WHERE user_id = '" . $_SESSION['user_id'] . "'".
-                                       " AND o.order_status = '" . OS_CONFIRMED . "' ".
+                                       " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
                                        " AND (o.pay_status = '" . PS_PAYED . "' OR o.pay_status = '" . PS_PAYING . "') ".
                                        " AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') ".
                                        " LIMIT 1";
@@ -198,7 +203,7 @@ if (empty($_REQUEST['act']))
                                        " WHERE o.order_id = og.order_id".
                                        " AND o.user_id = '" . $_SESSION['user_id'] . "'".
                                        " AND og.goods_id = '" . $cmt->id . "'".
-                                       " AND o.order_status = '" . OS_CONFIRMED . "' ".
+                                       " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
                                        " AND (o.pay_status = '" . PS_PAYED . "' OR o.pay_status = '" . PS_PAYING . "') ".
                                        " AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') ".
                                        " LIMIT 1";

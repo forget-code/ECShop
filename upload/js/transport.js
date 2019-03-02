@@ -621,13 +621,16 @@ if ( ! Object.prototype.toJSONString) {
                 // typeof null is 'object', so watch out for that case.
 
                 case 'object':
-                    if (v) {
-                        if (typeof v.toJSONString === 'function') {
-                            p(v.toJSONString());
-                        }
-                    } else {
-                        p("null");
-                    }
+					if (this !== window)
+					{
+					  if (v) {
+						  if (typeof v.toJSONString === 'function') {
+							  p(v.toJSONString());
+						  }
+					  } else {
+						  p("null");
+					  }
+					}
                     break;
                 default:
                     p(v.toJSONString());

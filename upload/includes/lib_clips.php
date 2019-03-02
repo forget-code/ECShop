@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户相关函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: lib_clips.php 16388 2009-06-26 07:30:19Z liuhui $
+ * $Author: liubo $
+ * $Id: lib_clips.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -454,39 +454,11 @@ function get_online_payment_list($include_balance = true)
         $sql .= " AND pay_code <> 'balance' ";
     }
 
-    $pay_list = $GLOBALS['db']->getAll($sql);
+    $modules = $GLOBALS['db']->getAll($sql);
 
-    /* 将快钱在冲值页面提至第一位，财付通在冲值页面提至第二位显示   */
-    foreach ($pay_list as $key => $val )
-    {
-        if ($val['pay_code'] == 'tenpayc2c')
-        {
-            unset($pay_list[$key]);
-        }
-        if ($val['pay_code'] == 'tenpay')
-        {
-            $tenpay = $val;
-            unset($pay_list[$key]);
-        }
-        if ($val['pay_code'] == 'kuaiqian')
-        {
-            $tenpay2 = $val;
-            unset($pay_list[$key]);
-        }
-    }
-    if(isset($tenpay2) !='' && isset($tenpay) =='')
-    {
-        array_unshift($pay_list, $tenpay2);
-    }
-    if(isset($tenpay) !='' && isset($tenpay2) =='')
-    {
-        array_unshift($pay_list, $tenpay);
-    }
-    if(isset($tenpay2) !='' && isset($tenpay) ==!'')
-    {
-        array_unshift($pay_list, $tenpay2, $tenpay);
-    }
-    return $pay_list;
+    include_once(ROOT_PATH.'includes/lib_compositor.php');
+
+    return $modules;
 }
 
 /**
@@ -644,7 +616,7 @@ function add_tag($id, $tag)
         return;
     }
 
-    $arr = explode(' ', $tag);
+    $arr = explode(',', $tag);
 
     foreach ($arr AS $val)
     {

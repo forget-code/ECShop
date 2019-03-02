@@ -3,7 +3,7 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -80,7 +80,7 @@ elseif ($_REQUEST['act']== 'upload')
     /* 接收上传文件 */
     /* 取出证书内容 */
     $license_arr = array();
-    if (isset($_FILES['license']['error']) && $_FILES['license']['error'] == 0 && eregi('CER$' ,$_FILES['license']['name']))
+    if (isset($_FILES['license']['error']) && $_FILES['license']['error'] == 0 && preg_match('/CER$/i' ,$_FILES['license']['name']))
     {
         if (file_exists($_FILES['license']['tmp_name']) && is_readable($_FILES['license']['tmp_name']))
         {

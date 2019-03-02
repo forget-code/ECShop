@@ -3,14 +3,14 @@
 /**
  * ECSHOP 公用函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: lib_common.php 16363 2009-06-25 08:29:25Z liuhui $
+ * $Author: liubo $
+ * $Id: lib_common.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -255,14 +255,28 @@ function cat_list($cat_id = 0, $selected = 0, $re_type = true, $level = 0, $is_s
             $res = $GLOBALS['db']->getAll($sql);
 
             $sql = "SELECT cat_id, COUNT(*) AS goods_num " .
-                    " FROM " . $GLOBALS['ecs']->table('goods') . " AS g " .
+                    " FROM " . $GLOBALS['ecs']->table('goods') .
+                    " WHERE is_delete = 0 AND is_on_sale = 1 " .
                     " GROUP BY cat_id";
             $res2 = $GLOBALS['db']->getAll($sql);
+
+            $sql = "SELECT gc.cat_id, COUNT(*) AS goods_num " .
+                    " FROM " . $GLOBALS['ecs']->table('goods_cat') . " AS gc , " . $GLOBALS['ecs']->table('goods') . " AS g " .
+                    " WHERE g.goods_id = gc.goods_id AND g.is_delete = 0 AND g.is_on_sale = 1 " .
+                    " GROUP BY gc.cat_id";
+            $res3 = $GLOBALS['db']->getAll($sql);
 
             $newres = array();
             foreach($res2 as $k=>$v)
             {
                 $newres[$v['cat_id']] = $v['goods_num'];
+                foreach($res3 as $ks=>$vs)
+                {
+                    if($v['cat_id'] == $vs['cat_id'])
+                    {
+                    $newres[$v['cat_id']] = $v['goods_num'] + $vs['goods_num'];
+                    }
+                }
             }
 
             foreach($res as $k=>$v)
@@ -645,7 +659,7 @@ function get_brands($cat = 0, $app = 'brand')
     global $page_libs;
     $template = basename(PHP_SELF);
     $template = substr($template, 0, strrpos($template, '.'));
-    include_once(ROOT_PATH . 'admin/includes/lib_template.php');
+    include_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_template.php');
     static $static_page_libs = null;
     if ($static_page_libs == null)
     {
@@ -687,6 +701,7 @@ function get_promotion_info($goods_id = '')
     $snatch = array();
     $group = array();
     $auction = array();
+    $package = array();
     $favourable = array();
 
     $gmtime = gmtime();
@@ -722,6 +737,14 @@ function get_promotion_info($goods_id = '')
                 $auction[$data['act_id']]['time'] = sprintf($GLOBALS['_LANG']['promotion_time'], local_date('Y-m-d', $data['start_time']), local_date('Y-m-d', $data['end_time']));
                 $auction[$data['act_id']]['sort'] = $data['start_time'];
                 $auction[$data['act_id']]['type'] = 'auction';
+                break;
+
+            case GAT_PACKAGE: //礼包
+                $package[$data['act_id']]['act_name'] = $data['act_name'];
+                $package[$data['act_id']]['url'] = 'package.php#' . $data['act_id'];
+                $package[$data['act_id']]['time'] = sprintf($GLOBALS['_LANG']['promotion_time'], local_date('Y-m-d', $data['start_time']), local_date('Y-m-d', $data['end_time']));
+                $package[$data['act_id']]['sort'] = $data['start_time'];
+                $package[$data['act_id']]['type'] = 'package';
                 break;
         }
     }
@@ -815,7 +838,7 @@ function get_promotion_info($goods_id = '')
 //    }
 
     $sort_time = array();
-    $arr = array_merge($snatch, $group, $auction, $favourable);
+    $arr = array_merge($snatch, $group, $auction, $package, $favourable);
     foreach($arr as $key => $value)
     {
         $sort_time[] = $value['sort'];
@@ -878,7 +901,7 @@ function get_mail_template($tpl_name)
  * @param   string  $username           用户名，用户自己的操作则为 buyer
  * @return  void
  */
-function order_action($order_sn, $order_status, $shipping_status, $pay_status, $note = '', $username = null)
+function order_action($order_sn, $order_status, $shipping_status, $pay_status, $note = '', $username = null, $place = 0)
 {
     if (is_null($username))
     {
@@ -886,9 +909,9 @@ function order_action($order_sn, $order_status, $shipping_status, $pay_status, $
     }
 
     $sql = 'INSERT INTO ' . $GLOBALS['ecs']->table('order_action') .
-                ' (order_id, action_user, order_status, shipping_status, pay_status, action_note, log_time) ' .
+                ' (order_id, action_user, order_status, shipping_status, pay_status, action_place, action_note, log_time) ' .
             'SELECT ' .
-                "order_id, '$username', '$order_status', '$shipping_status', '$pay_status', '$note', '" .gmtime() . "' " .
+                "order_id, '$username', '$order_status', '$shipping_status', '$pay_status', '$place', '$note', '" .gmtime() . "' " .
             'FROM ' . $GLOBALS['ecs']->table('order_info') . " WHERE order_sn = '$order_sn'";
     $GLOBALS['db']->query($sql);
 }

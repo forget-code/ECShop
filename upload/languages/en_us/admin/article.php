@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liubo $
- * $Id: article.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Author: wangleisvn $
+ * $Id: article.php 16615 2009-08-26 10:07:39Z wangleisvn $
 */
 
 $_LANG['title'] ='Title';
@@ -22,6 +22,7 @@ $_LANG['article_type'] ='Importance';
 $_LANG['author'] ='Author';
 $_LANG['email'] ='Email';
 $_LANG['keywords'] ='Keywords';
+$_LANG['lable_description'] ='Page Description';
 $_LANG['content'] ='Content';
 $_LANG['is_open'] ='Display';
 $_LANG['article_id'] ='ID';
@@ -43,6 +44,10 @@ $_LANG['no_select_article'] = 'Please select an article.';
 $_LANG['display'] = 'Display the article content.';
 $_LANG['download'] = 'Download';
 $_LANG['both'] = 'Both display content and download files.';
+$_LANG['button_remove'] ='Batch delete';
+$_LANG['button_hide'] ='Batch hidden';
+$_LANG['button_show'] ='Batch show';
+$_LANG['move_to'] = 'Transfer to the classification';
 
 $_LANG['button_remove'] ='Batch delete';
 
@@ -69,6 +74,7 @@ $_LANG['batch_remove_succeed'] = 'You have deleted %d articles successfully.';
 $_LANG['js_languages']['no_title'] = 'No title';
 $_LANG['js_languages']['no_cat'] = 'Please select a category.';
 $_LANG['js_languages']['not_allow_add'] = 'System to retain the classification in the classification does not allow to add article';
+$_LANG['js_languages']['drop_confirm'] = 'Are you sure you want to delete this?';
 
 $_LANG['all_cat'] = 'All Categories';
 

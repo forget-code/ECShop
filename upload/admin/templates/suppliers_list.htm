@@ -14,6 +14,7 @@
           <a href="javascript:listTable.sort('suppliers_id'); ">{$lang.record_id}</a>{$sort_suppliers_id} </th>
       <th><a href="javascript:listTable.sort('suppliers_name'); ">{$lang.suppliers_name}</a>{$sort_suppliers_name}</th>
       <th>{$lang.suppliers_desc}</th>
+      <th>{$lang.suppliers_check}</th>
       <th>{$lang.handler}</th>
     </tr>
     {foreach from=$suppliers_list item=suppliers}
@@ -23,6 +24,7 @@
       <td class="first-cell">
         <span onclick="javascript:listTable.edit(this, 'edit_suppliers_name', {$suppliers.suppliers_id})">{$suppliers.suppliers_name|escape:html}      </span></td>
       <td>{$suppliers.suppliers_desc|nl2br}</td>
+			<td align="center"><img src="images/{if $suppliers.is_check eq 1}yes{else}no{/if}.gif" onclick="listTable.toggle(this, 'is_check', {$suppliers.suppliers_id})" style="cursor:pointer;"/></td>
       <td align="center">
         <a href="suppliers.php?act=edit&id={$suppliers.suppliers_id}" title="{$lang.edit}">{$lang.edit}</a> |
         <a href="javascript:void(0);" onclick="listTable.remove({$suppliers.suppliers_id}, '{$lang.drop_confirm}')" title="{$lang.remove}">{$lang.remove}</a>      </td>

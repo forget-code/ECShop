@@ -3,14 +3,14 @@
 /**
  * ECSHOP 生成商品列表
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: affiliate.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: affiliate.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
@@ -49,7 +49,8 @@ if (!$smarty->is_cached($tpl, $cache_id))
 
     $goods_url = $ecs->url() . "goods.php?u=$userid&id=";
     $goods = get_goods_info($goodsid);
-
+    $goods['goods_thumb'] = (strpos($goods['goods_thumb'], 'http://') === false && strpos($goods['goods_thumb'], 'https://') === false) ? $ecs->url() . $goods['goods_thumb'] : $goods['goods_thumb'];
+    $goods['goods_img'] = (strpos($goods['goods_img'], 'http://') === false && strpos($goods['goods_img'], 'https://') === false) ? $ecs->url() . $goods['goods_img'] : $goods['goods_img'];
     $goods['shop_price'] = price_format($goods['shop_price']);
 
     /*if ($charset != 'UTF8')

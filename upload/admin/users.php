@@ -3,14 +3,14 @@
 /**
  * ECSHOP 会员管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: users.php 16268 2009-06-19 02:28:46Z sxc_shop $
+ * $Author: liubo $
+ * $Id: users.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -83,7 +83,7 @@ elseif ($_REQUEST['act'] == 'add')
                     'credit_line'   => 0
                     );
     /* 取出注册扩展字段 */
-    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';
+    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' WHERE type < 2 AND display = 1 AND id != 6 ORDER BY dis_order, id';
     $extend_info_list = $db->getAll($sql);
     $smarty->assign('extend_info_list', $extend_info_list);
 
@@ -156,7 +156,7 @@ elseif ($_REQUEST['act'] == 'insert')
     }
 
     /*把新注册用户的扩展信息插入数据库*/
-    $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';   //读出所有扩展字段的id
+    $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' WHERE type = 0 AND display = 1 ORDER BY dis_order, id';   //读出所有扩展字段的id
     $fields_arr = $db->getAll($sql);
 
     $extend_field_str = '';    //生成扩展字段的内容字符串
@@ -184,14 +184,14 @@ elseif ($_REQUEST['act'] == 'insert')
     $other['user_rank']  = $rank;
     $other['sex']        = $sex;
     $other['birthday']   = $birthday;
+    $other['reg_time'] = local_strtotime(local_date('Y-m-d H:i:s'));
 
-    foreach ($_POST['other'] as $key=>$val)
-    {
-        if (!empty($val))
-        {
-            $other[$key] = htmlspecialchars(trim($val));
-        }
-    }
+    $other['msn'] = isset($_POST['extend_field1']) ? htmlspecialchars(trim($_POST['extend_field1'])) : '';
+    $other['qq'] = isset($_POST['extend_field2']) ? htmlspecialchars(trim($_POST['extend_field2'])) : '';
+    $other['office_phone'] = isset($_POST['extend_field3']) ? htmlspecialchars(trim($_POST['extend_field3'])) : '';
+    $other['home_phone'] = isset($_POST['extend_field4']) ? htmlspecialchars(trim($_POST['extend_field4'])) : '';
+    $other['mobile_phone'] = isset($_POST['extend_field5']) ? htmlspecialchars(trim($_POST['extend_field5'])) : '';
+
     $db->autoExecute($ecs->table('users'), $other, 'UPDATE', "user_name = '$username'");
 
     /* 记录管理员操作 */
@@ -212,8 +212,7 @@ elseif ($_REQUEST['act'] == 'edit')
     /* 检查权限 */
     admin_priv('users_manage');
 
-    $sql = "SELECT u.user_name, u.sex, u.birthday, u.pay_points, u.rank_points, u.user_rank , u.user_money, u.frozen_money, u.credit_line, u.parent_id, u2.user_name as parent_username, u.qq,
-    u.msn, u.office_phone, u.home_phone, u.mobile_phone".
+    $sql = "SELECT u.user_name, u.sex, u.birthday, u.pay_points, u.rank_points, u.user_rank , u.user_money, u.frozen_money, u.credit_line, u.parent_id, u2.user_name as parent_username, u.qq, u.msn, u.office_phone, u.home_phone, u.mobile_phone".
         " FROM " .$ecs->table('users'). " u LEFT JOIN " . $ecs->table('users') . " u2 ON u.parent_id = u2.user_id WHERE u.user_id='$_GET[id]'";
 
     $row = $db->GetRow($sql);
@@ -261,7 +260,7 @@ elseif ($_REQUEST['act'] == 'edit')
      }
 
     /* 取出注册扩展字段 */
-    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';
+    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' WHERE type < 2 AND display = 1 AND id != 6 ORDER BY dis_order, id';
     $extend_info_list = $db->getAll($sql);
 
     $sql = 'SELECT reg_field_id, content ' .
@@ -277,7 +276,15 @@ elseif ($_REQUEST['act'] == 'edit')
 
     foreach ($extend_info_list AS $key => $val)
     {
-        $extend_info_list[$key]['content'] = empty($temp_arr[$val['id']]) ? '' : $temp_arr[$val['id']] ;
+        switch ($val['id'])
+        {
+            case 1:     $extend_info_list[$key]['content'] = $user['msn']; break;
+            case 2:     $extend_info_list[$key]['content'] = $user['qq']; break;
+            case 3:     $extend_info_list[$key]['content'] = $user['office_phone']; break;
+            case 4:     $extend_info_list[$key]['content'] = $user['home_phone']; break;
+            case 5:     $extend_info_list[$key]['content'] = $user['mobile_phone']; break;
+            default:    $extend_info_list[$key]['content'] = empty($temp_arr[$val['id']]) ? '' : $temp_arr[$val['id']] ;
+        }
     }
 
     $smarty->assign('extend_info_list', $extend_info_list);
@@ -324,7 +331,7 @@ elseif ($_REQUEST['act'] == 'update')
     }
 
     /* 更新用户扩展字段的数据 */
-    $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';   //读出所有扩展字段的id
+    $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' WHERE type = 0 AND display = 1 ORDER BY dis_order, id';   //读出所有扩展字段的id
     $fields_arr = $db->getAll($sql);
     $user_id_arr = $users->get_profile_by_name($username);
     $user_id = $user_id_arr['user_id'];
@@ -355,13 +362,12 @@ elseif ($_REQUEST['act'] == 'update')
     $other['credit_line'] = $credit_line;
     $other['user_rank'] = $rank;
 
-    foreach ($_POST['other'] as $key=>$val)
-    {
-        if (!empty($val))
-        {
-            $other[$key] = htmlspecialchars(trim($val));
-        }
-    }
+    $other['msn'] = isset($_POST['extend_field1']) ? htmlspecialchars(trim($_POST['extend_field1'])) : '';
+    $other['qq'] = isset($_POST['extend_field2']) ? htmlspecialchars(trim($_POST['extend_field2'])) : '';
+    $other['office_phone'] = isset($_POST['extend_field3']) ? htmlspecialchars(trim($_POST['extend_field3'])) : '';
+    $other['home_phone'] = isset($_POST['extend_field4']) ? htmlspecialchars(trim($_POST['extend_field4'])) : '';
+    $other['mobile_phone'] = isset($_POST['extend_field5']) ? htmlspecialchars(trim($_POST['extend_field5'])) : '';
+
     $db->autoExecute($ecs->table('users'), $other, 'UPDATE', "user_name = '$username'");
 
     /* 记录管理员操作 */

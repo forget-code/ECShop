@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户评论管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: comment_manage.php 16255 2009-06-18 02:46:38Z sxc_shop $
+ * $Author: liubo $
+ * $Id: comment_manage.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -87,7 +87,7 @@ if ($_REQUEST['act']=='reply')
     $sql = "SELECT * FROM " .$ecs->table('comment'). " WHERE comment_id = '$_REQUEST[id]'";
     $comment_info = $db->getRow($sql);
     $comment_info['content']  = str_replace('\r\n', '<br />', htmlspecialchars($comment_info['content']));
-    $comment_info['content']  = str_replace('\n', '<br />', $comment_info['content']);
+    $comment_info['content']  = nl2br(str_replace('\n', '<br />', $comment_info['content']));
     $comment_info['add_time'] = local_date($_CFG['time_format'], $comment_info['add_time']);
 
     /* 获得评论回复内容 */

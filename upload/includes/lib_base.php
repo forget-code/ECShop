@@ -3,14 +3,14 @@
 /**
  * ECSHOP 基础函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: lib_base.php 16062 2009-05-21 10:31:48Z sxc_shop $
+ * $Author: liubo $
+ * $Id: lib_base.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -1140,6 +1140,44 @@ function json_str_iconv($str)
             foreach ($str as $key => $value)
             {
                 $str->$key = json_str_iconv($value);
+            }
+            return $str;
+        }
+        else
+        {
+            return $str;
+        }
+    }
+    return $str;
+}
+
+/**
+ * 循环转码成utf8内容
+ *
+ * @param string $str
+ * @return string
+ */
+function to_utf8_iconv($str)
+{
+    if (EC_CHARSET != 'utf-8')
+    {
+        if (is_string($str))
+        {
+            return ecs_iconv(EC_CHARSET, 'utf-8', $str);
+        }
+        elseif (is_array($str))
+        {
+            foreach ($str as $key => $value)
+            {
+                $str[$key] = to_utf8_iconv($value);
+            }
+            return $str;
+        }
+        elseif (is_object($str))
+        {
+            foreach ($str as $key => $value)
+            {
+                $str->$key = to_utf8_iconv($value);
             }
             return $str;
         }

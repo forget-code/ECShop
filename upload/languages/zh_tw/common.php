@@ -3,14 +3,14 @@
 /**
  * ECSHOP 前台語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: common.php 16406 2009-06-30 05:21:49Z wangleisvn $
+ * $Author: sxc_shop $
+ * $Id: common.php 16924 2009-12-25 06:13:29Z sxc_shop $
 */
 
 /* 用戶登錄語言項 */
@@ -62,6 +62,8 @@ $_LANG['collect'] = '加入收藏夾';
 $_LANG['add_to_cart'] = '加入購物車';
 $_LANG['return_to_cart'] = '放回購物車';
 $_LANG['search_goods'] = '商品搜索';
+$_LANG['search'] = '搜索';
+$_LANG['wholesale_search'] = '搜索批發商品';
 $_LANG['article_title'] = '文章標題';
 $_LANG['article_author'] = '作者';
 $_LANG['article_add_time'] = '添加日期';
@@ -97,6 +99,7 @@ $_LANG['remark_package'] = '超值禮包';
 $_LANG['old_price'] = '原  價：';
 $_LANG['package_price'] = '禮包價：';
 $_LANG['then_old_price'] = '節  省：';
+$_LANG['free_goods'] = '免運費商品';
 
 $_LANG['searchkeywords_notice'] = '匹配多個關鍵字全部，可用 "空格" 或 "AND" 連接。如 win32 AND unix<br />匹配多個關鍵字其中部分，可用"+"或 "OR" 連接。如 win32 OR unix';
 $_LANG['hidden_outstock'] = '隱藏已脫銷的商品';
@@ -116,6 +119,7 @@ $_LANG['goods_weight'] = '商品重量：';
 $_LANG['goods_number'] = '商品庫存：';
 $_LANG['goods_give_integral'] = '購買此商品贈送：';
 $_LANG['goods_integral'] = '購買此商品可使用：';
+$_LANG['goods_free_shipping'] = '此商品為<font class="shop">免運費</font>商品，計算配送金額時將不計入配送費用';
 $_LANG['goods_bonus'] = '購買此商品可獲得紅包：';
 $_LANG['goods_rank'] = '用戶評價：';
 $_LANG['goods_compare'] = '商品比較';
@@ -179,6 +183,7 @@ $_LANG['oos_tips'] = '該商品已經庫存不足。您現在要進行缺貨登�
 
 $_LANG['addto_cart_success_1'] = "該商品已添加到購物車，您現在還需要繼續購物嗎？\n如果您希望馬上結算，請點擊「確定」按鈕。\n如果您希望繼續購物，請點擊「取消」按鈕。";
 $_LANG['addto_cart_success_2'] = "該商品已添加到購物車，您現在還需要繼續購物嗎？\n如果您希望繼續購物，請點擊「確定」按鈕。\n如果您希望馬上結算，請點擊「取消」按鈕。";
+$_LANG['no_keywords'] = "請輸入搜索關鍵字！";
 
 /* 分頁排序 */
 $_LANG['exchange_sort']['goods_id'] = '按上架時間排序';
@@ -217,6 +222,7 @@ $_LANG['cmt_spam_warning'] = '您至少在30秒後才可以繼續發表評論!';
 $_LANG['cmt_lang']['captcha_not_null'] = '驗證碼不能為空!';
 $_LANG['cmt_lang']['cmt_invalid_comments'] = '無效的評論內容!';
 $_LANG['invalid_comments'] = '無效的評論內容!';
+$_LANG['error_email'] = '電子郵件地址格式不正確!';
 $_LANG['admin_username'] = "管理員：";
 $_LANG['reply_comment'] = '回復';
 $_LANG['comment_captcha'] = '驗證碼';
@@ -587,6 +593,7 @@ $_LANG['group_promotion'] = '[團購]';
 $_LANG['auction_promotion'] = '[拍賣]';
 $_LANG['favourable_promotion'] = '[優惠]';
 $_LANG['wholesale_promotion'] = '[批發]';
+$_LANG['package_promotion'] = '[禮包]';
 
 /* feed推送 */
 $_LANG['feed_user_buy'] = "購買了";
@@ -663,6 +670,7 @@ $_LANG['your_choice'] = '您的選擇';
 $_LANG['system_info'] = '系統信息';
 $_LANG['all_tags'] = '所有標籤';
 $_LANG['activity_list'] = '活動列表';
+$_LANG['package_list'] = '禮包列表';
 $_LANG['treasure_info'] = '寶貝詳情';
 $_LANG['activity_desc'] = '活動描述';
 $_LANG['activity_intro'] = '活動介紹';
@@ -682,4 +690,33 @@ $_LANG['groupbuy_goods_info'] = '團購商品詳情';
 $_LANG['act_time'] = '起止時間';
 $_LANG['top10'] = '銷售排行';
 
+/* 優惠活動 */
+$_LANG['label_act_name'] = '優惠活動名稱：';
+$_LANG['label_start_time'] = '優惠開始時間：';
+$_LANG['label_end_time'] = '優惠結束時間：';
+$_LANG['label_user_rank'] = '享受優惠的會員等級：';
+$_LANG['not_user'] = '非會員';
+$_LANG['label_act_range'] = '優惠範圍：';
+$_LANG['far_all'] = '全部商品';
+$_LANG['far_category'] = '以下分類';
+$_LANG['far_brand'] = '以下品牌';
+$_LANG['far_goods'] = '以下商品';
+$_LANG['label_min_amount'] = '金額下限：';
+$_LANG['label_max_amount'] = '金額上限：';
+$_LANG['notice_max_amount'] = '0表示沒有上限';
+$_LANG['label_act_type'] = '優惠方式：';
+$_LANG['fat_goods'] = '享受贈品（特惠品）';
+$_LANG['fat_price'] = '享受現金減免';
+$_LANG['fat_discount'] = '享受價格折扣';
+$_LANG['orgtotal'] = '原始價格';
+$_LANG['heart_buy'] = '心動不如行動';
+
+/* 其他模板涉及常用语言项 */
+$_LANG['label_regist'] = '用戶註冊';
+$_LANG['label_login'] = '用戶登錄';
+$_LANG['label_profile'] = '用戶信息';
+$_LANG['label_collection'] = '我的收藏';
+$_LANG['article_list'] = '文章列表';
+$_LANG['Preferences_price'] = '優惠價格';
+$_LANG['divided_into'] = '分成規則';
 ?>

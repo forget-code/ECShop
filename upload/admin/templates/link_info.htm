@@ -1,4 +1,4 @@
-<!-- $Id: link_info.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: link_info.htm 16752 2009-10-20 09:59:38Z wangleisvn $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form action="friend_link.php" method="post" name="theForm" enctype="multipart/form-data" onsubmit="return validate()">
@@ -20,7 +20,7 @@
   <tr>
     <td class="label">{$lang.show_order}</td>
     <td>
-      <input type='text' name='show_order' {if $link_arr.show_order} value="{$link_arr.show_order}" {else} value="0" {/if} size="30"  />
+      <input type='text' name='show_order' {if $link_arr.show_order} value="{$link_arr.show_order}" {else} value="50" {/if} size="30"  />
     </td>
   </tr>
 {if $action eq "add"}

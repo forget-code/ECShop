@@ -5,6 +5,7 @@
 
 <div class="list-div" style="margin-bottom: 5px">
 <table width="100%" cellpadding="3" cellspacing="1">
+<form action="order.php" method="post" name="theForm">
   <tr>
     <th colspan="4">{$lang.base_info}</th>
   </tr>
@@ -40,8 +41,9 @@
   </tr>
   <tr>
     <td><div align="right"><strong>{$lang.label_invoice_no}</strong></div></td>
-    <td colspan="3">{$delivery_order.invoice_no}</td>
+    <td colspan="3">{if $delivery_order.status neq 1}<input name="invoice_no" type="text" value="{$delivery_order.invoice_no}" {if $delivery_order.status eq 0} readonly="readonly" {/if}>{else}{$delivery_order.invoice_no}{/if}</td>
   </tr>
+  
   <tr>
     <th colspan="4">{$lang.consignee_info}</th>
     </tr>
@@ -84,6 +86,7 @@
   <tr>
     <td scope="col"><div align="center"><strong>{$lang.goods_name_brand}</strong></div></td>
     <td scope="col"><div align="center"><strong>{$lang.goods_sn}</strong></div></td>
+    <td scope="col"><div align="center"><strong>{$lang.goods_attr}</strong></div></td>
     <td scope="col"><div align="center"><strong>{$lang.label_send_number}</strong></div></td>
   </tr>
   {foreach from=$goods_list item=goods}
@@ -92,6 +95,7 @@
     <a href="../goods.php?id={$goods.goods_id}" target="_blank">{$goods.goods_name} {if $goods.brand_name}[ {$goods.brand_name} ]{/if}
     </td>
     <td><div align="left">{$goods.goods_sn}</div></td>
+    <td><div align="left">{$goods.goods_attr|nl2br}</div></td>
     <td><div align="left">{$goods.send_number}</div></td>
   </tr>
   {/foreach}
@@ -103,12 +107,47 @@
   <tr>
     <th colspan="6">{$lang.op_ship}{$lang.action_info}</th>
   </tr>
+
   <tr>
     <td><div align="right"><strong>{$lang.action_user}</strong></div></td>
     <td>{$delivery_order.action_user}</td>
     <td><div align="right"><strong>{$lang.label_agency}</strong></div></td>
-    <td>{$delivery_order.agency_name}</td>
+    <td colspan="5">{$delivery_order.agency_name}</td>
   </tr>
+  {if $delivery_order.status neq 1}
+  <tr>
+    <td><div align="right"><strong>{$lang.label_action_note}</strong></div></td>
+  <td colspan="5"><textarea name="action_note" cols="80" rows="3"></textarea></td>
+  </tr>
+  <tr>
+    <td><div align="right"><strong>{$lang.label_operable_act}</strong></div></td>
+    <td colspan="6" align="left">{if $delivery_order.status eq 2}<input name="delivery_confirmed" type="submit" value="{$lang.op_ship}" class="button"/>&nbsp;&nbsp;{else}<input name="unship" type="submit" value="{$lang.op_cancel_ship}" class="button" />{/if}
+        <input name="order_id" type="hidden" value="{$delivery_order.order_id}">
+        <input name="delivery_id" type="hidden" value="{$delivery_order.delivery_id}">
+        <input name="act" type="hidden" value="{$action_act}">
+    </td>
+  </tr>
+  {/if}
+
+  <tr>
+    <th>{$lang.action_user}</th>
+    <th>{$lang.action_time}</th>
+    <th>{$lang.order_status}</th>
+    <th>{$lang.pay_status}</th>
+    <th>{$lang.shipping_status}</th>
+    <th>{$lang.action_note}</th>
+  </tr>
+  {foreach from=$action_list item=action}
+  <tr>
+    <td><div align="center">{$action.action_user}</div></td>
+    <td><div align="center">{$action.action_time}</div></td>
+    <td><div align="center">{$action.order_status}</div></td>
+    <td><div align="center">{$action.pay_status}</div></td>
+    <td><div align="center">{$action.shipping_status}</div></td>
+    <td>{$action.action_note|nl2br}</td>
+  </tr>
+  {/foreach}
+    </form>
 </table>
 </div>
 {literal}

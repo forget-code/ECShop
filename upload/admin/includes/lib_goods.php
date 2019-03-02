@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心商品相关函数
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_goods.php 16345 2009-06-24 09:36:23Z liubo $
+ * $Id: lib_goods.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -693,9 +693,10 @@ function get_goods_articles($goods_id)
  * @access  public
  * @params  integer $isdelete
  * @params  integer $real_goods
+ * @params  integer $conditions
  * @return  array
  */
-function goods_list($is_delete, $real_goods=1)
+function goods_list($is_delete, $real_goods=1, $conditions = '')
 {
     /* 过滤条件 */
     $param_str = '-' . $is_delete . '-' . $real_goods;
@@ -711,7 +712,9 @@ function goods_list($is_delete, $real_goods=1)
         $filter['stock_warning']    = empty($_REQUEST['stock_warning']) ? 0 : intval($_REQUEST['stock_warning']);
         $filter['brand_id']         = empty($_REQUEST['brand_id']) ? 0 : intval($_REQUEST['brand_id']);
         $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
-        if ($_REQUEST['is_ajax'] == 1)
+        $filter['suppliers_id'] = isset($_REQUEST['suppliers_id']) ? (empty($_REQUEST['suppliers_id']) ? '' : trim($_REQUEST['suppliers_id'])) : '';
+        $filter['is_on_sale'] = isset($_REQUEST['is_on_sale']) ? ((empty($_REQUEST['is_on_sale']) && $_REQUEST['is_on_sale'] === 0) ? '' : trim($_REQUEST['is_on_sale'])) : '';
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keyword'] = json_str_iconv($filter['keyword']);
         }
@@ -770,6 +773,20 @@ function goods_list($is_delete, $real_goods=1)
         {
             $where .= " AND is_real='$real_goods'";
         }
+
+        /* 上架 */
+        if ($filter['is_on_sale'] !== '')
+        {
+            $where .= " AND (is_on_sale = '" . $filter['is_on_sale'] . "')";
+        }
+
+        /* 供货商 */
+        if (!empty($filter['suppliers_id']))
+        {
+            $where .= " AND (suppliers_id = '" . $filter['suppliers_id'] . "')";
+        }
+
+        $where .= $conditions;
 
         /* 记录总数 */
         $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('goods'). " AS g WHERE is_delete='$is_delete' $where";

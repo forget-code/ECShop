@@ -3,14 +3,14 @@
 /**
  * ECSHOP 前台公用函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: lib_main.php 16443 2009-07-08 06:20:02Z wangleisvn $
+ * $Author: liubo $
+ * $Id: lib_main.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -1588,7 +1588,7 @@ function assign_comment($id, $type, $page = 1)
         $arr[$row['comment_id']]['email']    = $row['email'];
         $arr[$row['comment_id']]['username'] = $row['user_name'];
         $arr[$row['comment_id']]['content']  = str_replace('\r\n', '<br />', htmlspecialchars($row['content']));
-        $arr[$row['comment_id']]['content']  = str_replace('\n', '<br />', $arr[$row['comment_id']]['content']);
+        $arr[$row['comment_id']]['content']  = nl2br(str_replace('\n', '<br />', $arr[$row['comment_id']]['content']));
         $arr[$row['comment_id']]['rank']     = $row['comment_rank'];
         $arr[$row['comment_id']]['add_time'] = local_date($GLOBALS['_CFG']['time_format'], $row['add_time']);
     }
@@ -1600,7 +1600,7 @@ function assign_comment($id, $type, $page = 1)
         $res = $GLOBALS['db']->query($sql);
         while ($row = $GLOBALS['db']->fetch_array($res))
         {
-            $arr[$row['parent_id']]['re_content']  = str_replace('\n', '<br />', htmlspecialchars($row['content']));
+            $arr[$row['parent_id']]['re_content']  = nl2br(str_replace('\n', '<br />', htmlspecialchars($row['content'])));
             $arr[$row['parent_id']]['re_add_time'] = local_date($GLOBALS['_CFG']['time_format'], $row['add_time']);
             $arr[$row['parent_id']]['re_email']    = $row['email'];
             $arr[$row['parent_id']]['re_username'] = $row['user_name'];
@@ -1917,7 +1917,7 @@ function get_library_number($library, $template = null)
     else
     {
         /* 模板设置文件查找默认值 */
-        include_once(ROOT_PATH . 'admin/includes/lib_template.php');
+        include_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_template.php');
         static $static_page_libs = null;
         if ($static_page_libs == null)
         {

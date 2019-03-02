@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心文章处理程序文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: article.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: article.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -167,10 +167,10 @@ if ($_REQUEST['act'] == 'insert')
         $_POST['cat_id'] = 0;
     }
     $sql = "INSERT INTO ".$ecs->table('article')."(title, cat_id, article_type, is_open, author, ".
-                "author_email, keywords, content, add_time, file_url, open_type, link) ".
+                "author_email, keywords, content, add_time, file_url, open_type, link, description) ".
             "VALUES ('$_POST[title]', '$_POST[article_cat]', '$_POST[article_type]', '$_POST[is_open]', ".
                 "'$_POST[author]', '$_POST[author_email]', '$_POST[keywords]', '$_POST[FCKeditor1]', ".
-                "'$add_time', '$file_url', '$open_type', '$_POST[link_url]')";
+                "'$add_time', '$file_url', '$open_type', '$_POST[link_url]', '$_POST[description]')";
     $db->query($sql);
 
     /* 处理关联商品 */
@@ -284,7 +284,7 @@ if ($_REQUEST['act'] =='update')
         @unlink(ROOT_PATH . $old_url);
     }
 
-    if ($exc->edit("title='$_POST[title]', cat_id='$_POST[article_cat]', article_type='$_POST[article_type]', is_open='$_POST[is_open]', author='$_POST[author]', author_email='$_POST[author_email]', keywords ='$_POST[keywords]', file_url ='$file_url', open_type='$open_type', content='$_POST[FCKeditor1]', link='$_POST[link_url]' ", $_POST['id']))
+    if ($exc->edit("title='$_POST[title]', cat_id='$_POST[article_cat]', article_type='$_POST[article_type]', is_open='$_POST[is_open]', author='$_POST[author]', author_email='$_POST[author_email]', keywords ='$_POST[keywords]', file_url ='$file_url', open_type='$open_type', content='$_POST[FCKeditor1]', link='$_POST[link_url]', description = '$_POST[description]'", $_POST['id']))
     {
         $link[0]['text'] = $_LANG['back_list'];
         $link[0]['href'] = 'article.php?act=list&' . list_link_postfix();
@@ -364,47 +364,7 @@ elseif ($_REQUEST['act'] == 'toggle_type')
     make_json_result($val);
 }
 
-/*------------------------------------------------------ */
-//-- 批量删除文章
-/*------------------------------------------------------ */
-elseif ($_REQUEST['act'] == 'batch_remove')
-{
-    admin_priv('article_manage');
 
-    if (!isset($_POST['checkboxes']) || !is_array($_POST['checkboxes']))
-    {
-        sys_msg($_LANG['no_select_article'], 1);
-    }
-
-    /* 删除原来的文件 */
-    $sql = "SELECT file_url FROM " . $ecs->table('article') .
-            " WHERE article_id " . db_create_in(join(',', $_POST['checkboxes'])) .
-            " AND file_url <> ''";
-    $res = $db->query($sql);
-    while ($row = $db->fetchRow($res))
-    {
-        $old_url = $row['file_url'];
-        if (strpos($old_url, 'http://') === false && strpos($old_url, 'https://') === false)
-        {
-            @unlink(ROOT_PATH . $old_url);
-        }
-    }
-
-    $count = 0;
-    foreach ($_POST['checkboxes'] AS $key => $id)
-    {
-        if ($exc->drop($id))
-        {
-            $name = $exc->get_name($id);
-            admin_log(addslashes($name),'remove','article');
-
-            $count++;
-        }
-    }
-
-    $lnk[] = array('text' => $_LANG['back_list'], 'href' => 'article.php?act=list');
-    sys_msg(sprintf($_LANG['batch_remove_succeed'], $count), 0, $lnk);
-}
 
 /*------------------------------------------------------ */
 //-- 删除文章主题
@@ -535,6 +495,101 @@ if ($_REQUEST['act'] == 'get_goods_list')
 
     make_json_result($opt);
 }
+/*------------------------------------------------------ */
+//-- 批量操作
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'batch')
+{
+    /* 批量删除 */
+    if (isset($_POST['type']))
+    {
+        if ($_POST['type'] == 'button_remove')
+        {
+            admin_priv('article_manage');
+
+            if (!isset($_POST['checkboxes']) || !is_array($_POST['checkboxes']))
+            {
+                sys_msg($_LANG['no_select_article'], 1);
+            }
+
+            /* 删除原来的文件 */
+            $sql = "SELECT file_url FROM " . $ecs->table('article') .
+                    " WHERE article_id " . db_create_in(join(',', $_POST['checkboxes'])) .
+                    " AND file_url <> ''";
+
+            $res = $db->query($sql);
+            while ($row = $db->fetchRow($res))
+            {
+                $old_url = $row['file_url'];
+                if (strpos($old_url, 'http://') === false && strpos($old_url, 'https://') === false)
+                {
+                    @unlink(ROOT_PATH . $old_url);
+                }
+            }
+
+            foreach ($_POST['checkboxes'] AS $key => $id)
+            {
+                if ($exc->drop($id))
+                {
+                    $name = $exc->get_name($id);
+                    admin_log(addslashes($name),'remove','article');
+                }
+            }
+
+        }
+
+        /* 批量隐藏 */
+        if ($_POST['type'] == 'button_hide')
+        {
+            check_authz_json('article_manage');
+            if (!isset($_POST['checkboxes']) || !is_array($_POST['checkboxes']))
+            {
+                sys_msg($_LANG['no_select_article'], 1);
+            }
+
+            foreach ($_POST['checkboxes'] AS $key => $id)
+            {
+              $exc->edit("is_open = '0'", $id);
+            }
+        }
+
+        /* 批量显示 */
+        if ($_POST['type'] == 'button_show')
+        {
+            check_authz_json('article_manage');
+            if (!isset($_POST['checkboxes']) || !is_array($_POST['checkboxes']))
+            {
+                sys_msg($_LANG['no_select_article'], 1);
+            }
+
+            foreach ($_POST['checkboxes'] AS $key => $id)
+            {
+              $exc->edit("is_open = '1'", $id);
+            }
+        }
+
+        /* 批量移动分类 */
+        if ($_POST['type'] == 'move_to')
+        {
+            check_authz_json('article_manage');
+            if (!isset($_POST['checkboxes']) || !is_array($_POST['checkboxes']))
+            {
+                sys_msg($_LANG['no_select_article'], 1);
+            }
+
+            foreach ($_POST['checkboxes'] AS $key => $id)
+            {
+              $exc->edit("cat_id = '".$_POST['target_cat']."'", $id);
+            }
+        }
+    }
+
+    /* 清除缓存 */
+    clear_cache_files();
+    $lnk[] = array('text' => $_LANG['back_list'], 'href' => 'article.php?act=list');
+    sys_msg($_LANG['batch_handle_ok'], 0, $lnk);
+}
 
 /* 把商品删除关联 */
 function drop_link_goods($goods_id, $article_id)
@@ -566,7 +621,7 @@ function get_articleslist()
     {
         $filter = array();
         $filter['keyword']    = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keyword'] = json_str_iconv($filter['keyword']);
         }

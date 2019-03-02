@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liubo $
- * $Id: order.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Author: wangleisvn $
+ * $Id: order.php 16763 2009-10-29 06:04:29Z wangleisvn $
  */
 
 /* Order search*/
@@ -35,17 +35,21 @@ $_LANG['os'][OS_CONFIRMED] = 'Confirmed';
 $_LANG['os'][OS_CANCELED] = 'Canceled';
 $_LANG['os'][OS_INVALID] = 'Invalid';
 $_LANG['os'][OS_RETURNED] = 'Returned';
+$_LANG['os'][OS_SPLITED] = 'Had been a single';
+$_LANG['os'][OS_SPLITING_PART] = 'Part of the sub-single-';
 
 $_LANG['ss'][SS_UNSHIPPED] = 'Unshipped';
 $_LANG['ss'][SS_PREPARING] = 'Preparing';
 $_LANG['ss'][SS_SHIPPED] = 'Shipped';
 $_LANG['ss'][SS_RECEIVED] = 'Received';
 $_LANG['ss'][SS_SHIPPED_PART] = 'Partially Shipped';
+$_LANG['ss'][SS_SHIPPED_ING] = 'No shippings';// Shipped in
 
 $_LANG['ps'][PS_UNPAYED] = 'Unpaid';
 $_LANG['ps'][PS_PAYING] = 'Paying';
 $_LANG['ps'][PS_PAYED] = 'Paid';
 
+$_LANG['ss_admin'][SS_SHIPPED_ING] = 'Shipped in（Future state：No shippings）';
 /* Order operate */
 $_LANG['label_operable_act'] = 'Current executable operation:';
 $_LANG['label_action_note'] = 'Operate remarks:';
@@ -62,6 +66,7 @@ $_LANG['op_invalid'] = 'Invalid';
 $_LANG['op_return'] = 'Refundment';
 $_LANG['op_unpay'] = 'Set Unpaid';
 $_LANG['op_unship'] = 'Unshipped';
+$_LANG['op_cancel_ship'] = 'Cancellation Shipping';
 $_LANG['op_receive'] = 'Received';
 $_LANG['op_assign'] = 'Assign to';
 $_LANG['op_after_service'] = 'Aftermarket';
@@ -74,6 +79,8 @@ $_LANG['notice_gb_ship'] = 'Notice: You can\'t shipping until you deal with the 
 $_LANG['back_list'] = 'Return order list.';
 $_LANG['op_remove'] = 'Remove';
 $_LANG['op_you_can'] = 'The operation you can do';
+$_LANG['op_split'] = 'Am single';
+$_LANG['op_to_delivery'] = 'To delivery';
 
 /* order list */
 $_LANG['order_amount'] = 'Orders money';
@@ -118,6 +125,7 @@ $_LANG['print_buy_name'] = 'Buyer:';
 $_LANG['label_consignee_address'] = 'Receipt address';
 $_LANG['no_print_shipping'] = 'sorry,not print';
 $_LANG['suppliers_no'] = 'At my disposal(without suppliers)';
+$_LANG['restaurant'] = 'Restaurant';
 
 $_LANG['order_info'] = 'Order information';
 $_LANG['base_info'] = 'Essential information';
@@ -150,6 +158,7 @@ $_LANG['label_print_time'] = 'Print time:';
 
 $_LANG['label_suppliers'] ='Choose suppliers:';
 $_LANG['label_agency'] = 'Agency:';
+$_LANG['suppliers_name'] = 'Suppliers';
 
 $_LANG['goods_info'] = 'Product information';
 $_LANG['goods_name'] = 'Product name';
@@ -195,6 +204,7 @@ $_LANG['pay_note'] = 'Pay remarks';
 
 $_LANG['sms_time_format'] = 'j/m G o\'clock';
 $_LANG['order_shipped_sms'] ='Your order %s hss already shipped in %s. [%s]';
+$_LANG['order_splited_sms'] = 'Your order%s,%sIs%s [%s]';
 $_LANG['order_removed'] ='Delete order successfully.';
 $_LANG['return_list'] ='Return order list';
 
@@ -364,6 +374,7 @@ $_LANG['delivery_sn'] = 'Invoice';
 /* 发货单状态 */
 $_LANG['delivery_status'][0] = 'Normal';
 $_LANG['delivery_status'][1] = 'Refunded';
+$_LANG['delivery_status'][2] = 'Has shipped';
 
 /* 发货单标签 */
 $_LANG['label_delivery_status'] = 'Invoice Status';
@@ -373,10 +384,16 @@ $_LANG['label_add_time'] = 'Order Time';
 $_LANG['label_update_time'] = 'Shipped Time';
 $_LANG['label_send_number'] = 'Shipped quantity';
 
+/* 发货单提示 */
+$_LANG['tips_delivery_del'] = 'Delete invoice success!';
+
 /* 退货单操作 */
 $_LANG['back_operate'] = 'Returned Note Operation：';
 
 /* 退货单标签 */
 $_LANG['return_time'] = 'Returned Time:';
 $_LANG['label_return_time'] = 'Returned Time';
+
+/* 退货单提示 */
+$_LANG['tips_back_del'] = 'Return a single deletion of success!';
 ?>

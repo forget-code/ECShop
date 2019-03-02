@@ -3,14 +3,14 @@
 /**
  * shopex4.7转换程序插件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: shopex47.php 16038 2009-05-19 07:05:29Z liuhui $
+ * $Author: liubo $
+ * $Id: shopex47.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -68,7 +68,7 @@ class shopex47
         $this->sprefix = $sprefix;
         $this->sroot = $sroot;
         $this->troot = str_replace('/includes/modules/convert', '', str_replace('\\', '/', dirname(__FILE__)));
-        $this->tdocroot = str_replace('/admin', '', dirname(PHP_SELF));
+        $this->tdocroot = str_replace('/' . ADMIN_PATH, '', dirname(PHP_SELF));
         $this->scharset = $scharset;
         if (EC_CHARSET == 'utf-8')
         {
@@ -384,6 +384,7 @@ class shopex47
             $goods['is_hot']        = $row['hot2'];
             $goods['is_promote']    = $row['tejia2'];
             $goods['goods_type']    = isset($cat_type_list[$row['catid']]) ? $cat_type_list[$row['catid']] : 0;
+            $goods['last_update'] = gmtime();
 
             /* 图片：如果没有本地文件，取远程图片 */
             $file = $this->troot . '/images/' . date('Ym') . '/small_' . $row['gid'];

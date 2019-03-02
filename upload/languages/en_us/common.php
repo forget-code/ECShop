@@ -9,8 +9,8 @@
  * This is a free/open source software；it means that you can modify, use and
  * republish the program code, on the premise of that your behavior is not for commercial purposes.
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: common.php 16406 2009-06-30 05:21:49Z wangleisvn $
+ * $Author: sxc_shop $
+ * $Id: common.php 16924 2009-12-25 06:13:29Z sxc_shop $
 */
 
 /* 用户登录语言项 */
@@ -32,7 +32,7 @@ $_LANG['icp_number'] = 'ICP';
 $_LANG['plugins_not_found'] = "Plug-in %s not found";
 $_LANG['home']  = 'Home';
 $_LANG['back_up_page'] = 'Previous';
-$_LANG['close_window'] = 'superman wear the underwear out of the trousers';
+$_LANG['close_window'] = 'Close';
 $_LANG['back_home'] = 'Home';
 $_LANG['ur_here'] = 'Your Position:';
 $_LANG['all_goods'] = 'All products';
@@ -62,6 +62,8 @@ $_LANG['collect'] = 'Collect';
 $_LANG['add_to_cart'] = '| Add to cart |';
 $_LANG['return_to_cart'] = 'Return to cart';
 $_LANG['search_goods'] = 'Product search';
+$_LANG['search'] = 'Search';
+$_LANG['wholesale_search'] = 'Search for wholesale merchandise';
 $_LANG['article_title'] = 'Article title';
 $_LANG['article_author'] = 'Author';
 $_LANG['article_add_time'] = 'Date';
@@ -97,6 +99,7 @@ $_LANG['remark_package'] = 'Preferential Packeage';
 $_LANG['old_price'] = 'Old Price：';
 $_LANG['package_price'] = 'Packeage Price：';
 $_LANG['then_old_price'] = 'Then old Price：';
+$_LANG['free_goods'] = 'Free shipping goods';
 
 $_LANG['searchkeywords_notice'] = 'Search by more keywords, can be linked by keywords or "AND". Eg. win32 AND unix<br /> Search by part of "+", can be linked by rank or "OR". Eg. win32 OR unix';
 $_LANG['hidden_outstock'] = 'Hide outstock products';
@@ -116,6 +119,7 @@ $_LANG['goods_weight'] = 'Weight:';
 $_LANG['goods_number'] = 'Quantity:';
 $_LANG['goods_give_integral'] = 'gifts for buying:';
 $_LANG['goods_integral'] = 'Limit points for buying:';
+$_LANG['goods_free_shipping'] = 'This goods is <font class="shop">Free shipping</font>, it is not included in the total fee distribution when calculating the distribution amount';
 $_LANG['goods_bonus'] = 'Bonus for buying:';
 $_LANG['goods_rank'] = 'Rank:';
 $_LANG['goods_compare'] = 'Compare products';
@@ -179,6 +183,7 @@ $_LANG['oos_tips'] = 'Out-of-stock. Would you want to register stock?';
 
 $_LANG['addto_cart_success_1'] = 'Add to the cart successfully, would you shopping continue? \n If you want to check out, please click "Yes". \n If you want to continue shopping, please click "No".';
 $_LANG['addto_cart_success_2'] = 'Add to the cart successfully, would you shopping continue? \n If you want to continue shopping, please click "Yes". \n If you want to check out, please click "No". ';
+$_LANG['no_keywords'] = "Please enter keywords!";
 
 /* 分页排序 */
 $_LANG['exchange_sort']['goods_id'] = 'Sort by time';
@@ -217,6 +222,7 @@ $_LANG['cmt_spam_warning'] = 'You can pass an new opinion after 30 seconds!';
 $_LANG['cmt_lang']['captcha_not_null'] = 'Please enter verification code!';
 $_LANG['cmt_lang']['cmt_invalid_comments'] = 'Invalid commentary contents!';
 $_LANG['invalid_comments'] = 'Invalid commentary contents!';
+$_LANG['error_email'] = 'Please enter a valid email address.';
 $_LANG['admin_username'] = 'Administrator';
 $_LANG['reply_comment'] = 'Reply';
 $_LANG['comment_captcha'] = 'Verification code';
@@ -588,6 +594,7 @@ $_LANG['group_promotion'] = '[Groupbuy]';
 $_LANG['auction_promotion'] = '[Auction]';
 $_LANG['favourable_promotion'] = '[Favourable]';
 $_LANG['wholesale_promotion'] = '[Wholesale]';
+$_LANG['package_promotion'] = '[Package]';
 
 /* feed推送 */
 $_LANG['feed_user_buy'] = "Feeds of user buy";
@@ -664,6 +671,7 @@ $_LANG['your_choice'] = 'Choice';
 $_LANG['system_info'] = 'System Info';
 $_LANG['all_tags'] = 'Tags';
 $_LANG['activity_list'] = 'Activity List';
+$_LANG['package_list'] = 'Package List';
 $_LANG['treasure_info'] = 'Treasure Info';
 $_LANG['activity_desc'] = 'Activity Description';
 $_LANG['activity_intro'] = 'Activity Intro';
@@ -683,4 +691,33 @@ $_LANG['groupbuy_goods_info'] = 'Groupbuy Goods Info';
 $_LANG['act_time'] = 'Act Time';
 $_LANG['top10'] = 'Top 10';
 
+/* Events */
+$_LANG['label_act_name'] = 'Events Offers Name:';
+$_LANG['label_start_time'] = 'Offer Start Time:';
+$_LANG['label_end_time'] = 'Offers End time:';
+$_LANG['label_user_rank'] = 'To enjoy the preferential treatment of members rating:';
+$_LANG['not_user'] = 'Non-Member';
+$_LANG['label_act_range'] = 'Offer Range:';
+$_LANG['far_all'] = 'All merchandise';
+$_LANG['far_category'] = 'The following classification';
+$_LANG['far_brand'] = 'The following brands';
+$_LANG['far_goods'] = 'The following merchandise';
+$_LANG['label_min_amount'] = 'The amount of the minimum:';
+$_LANG['label_max_amount'] = 'The upper limit:';
+$_LANG['notice_max_amount'] = '0 that there is no upper limit';
+$_LANG['label_act_type'] = 'Discount method:';
+$_LANG['fat_goods'] = 'Enjoy the gift (for ex-gratia goods)';
+$_LANG['fat_price'] = 'Enjoy cash relief';
+$_LANG['fat_discount'] = 'Enjoy the price discounts';
+$_LANG['orgtotal'] = 'Original Price';
+$_LANG['heart_buy'] = 'Take Action';
+
+/* 其他模板涉及常用语言项 */
+$_LANG['label_regist'] = 'regist';
+$_LANG['label_login'] = 'login';
+$_LANG['label_profile'] = 'user profile';
+$_LANG['label_collection'] = 'my collection';
+$_LANG['article_list'] = 'article list';
+$_LANG['Preferences_price'] = 'Preferences price';
+$_LANG['divided_into'] = 'Into rules';
 ?>

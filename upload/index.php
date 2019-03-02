@@ -3,14 +3,14 @@
 /**
  * ECSHOP 首页文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: index.php 16075 2009-05-22 02:19:40Z wangleisvn $
+ * $Author: liubo $
+ * $Id: index.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -189,7 +189,7 @@ function index_get_invoice_query()
  */
 function index_get_new_articles()
 {
-    $sql = 'SELECT a.article_id, a.title, ac.cat_name, a.add_time, a.file_url, a.open_type, ac.cat_id ' .
+    $sql = 'SELECT a.article_id, a.title, ac.cat_name, a.add_time, a.file_url, a.open_type, ac.cat_id, ac.cat_name ' .
             ' FROM ' . $GLOBALS['ecs']->table('article') . ' AS a, ' .
                 $GLOBALS['ecs']->table('article_cat') . ' AS ac' .
             ' WHERE a.is_open = 1 AND a.cat_id = ac.cat_id AND ac.cat_type = 1' .
@@ -207,7 +207,7 @@ function index_get_new_articles()
         $arr[$idx]['add_time']    = local_date($GLOBALS['_CFG']['date_format'], $row['add_time']);
         $arr[$idx]['url']         = $row['open_type'] != 1 ?
                                         build_uri('article', array('aid' => $row['article_id']), $row['title']) : trim($row['file_url']);
-        $arr[$idx]['cat_url']     = build_uri('article_cat', array('acid' => $row['cat_id']));
+        $arr[$idx]['cat_url']     = build_uri('article_cat', array('acid' => $row['cat_id']), $row['cat_name']);
     }
 
     return $arr;

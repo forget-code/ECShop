@@ -67,40 +67,33 @@
                 </tr>
                 <tr>
                   <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.email}： </td>
-                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="email" type="text" value="{$profile.email}" size="25" class="inputBg" /></td>
-                </tr>
-                <tr>
-                  <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.other_msn}：</td>
-                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="other[msn]" type="text" value="{$profile.msn}" class="inputBg" />
-                  </td>
-                </tr>
-                <tr>
-                  <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.other_qq}：</td>
-                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="other[qq]" type="text" value="{$profile.qq}" class="inputBg" />
-                  </td>
-                </tr>
-                <tr>
-                  <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.other_office_phone}：</td>
-                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="other[office_phone]" type="text" value="{$profile.office_phone}" class="inputBg" />
-                  </td>
-                </tr>
-                <tr>
-                  <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.other_home_phone}：</td>
-                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="other[home_phone]" type="text" value="{$profile.home_phone}" class="inputBg" />
-                  </td>
-                </tr>
-                <tr>
-                  <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.other_mobile_phone}：</td>
-                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="other[mobile_phone]" type="text" value="{$profile.mobile_phone}" class="inputBg" />
-                  </td>
+                  <td width="72%" align="left" bgcolor="#FFFFFF"><input name="email" type="text" value="{$profile.email}" size="25" class="inputBg" /><span style="color:#FF0000"> *</span></td>
                 </tr>
 		{foreach from=$extend_info_list item=field}
+		<!-- {if $field.id eq 6} -->
 		<tr>
-			<td width="28%" align="right" bgcolor="#FFFFFF">{$field.reg_field_name}：</td>
+		  <td width="28%" align="right" bgcolor="#FFFFFF">{$lang.passwd_question}：</td>
+		  <td width="72%" align="left" bgcolor="#FFFFFF">
+		  <select name='sel_question'>
+		  <option value='0'>{$lang.sel_question}</option>
+		  {html_options options=$passwd_questions selected=$profile.passwd_question}
+		  </select>
+		  </td>
+		</tr>
+		<tr>
+		  <td width="28%" align="right" bgcolor="#FFFFFF" <!-- {if $field.is_need} -->id="passwd_quesetion"<!--{/if}-->>{$lang.passwd_answer}：</td>
+		  <td width="72%" align="left" bgcolor="#FFFFFF">
+		  <input name="passwd_answer" type="text" size="25" class="inputBg" maxlengt='20' value="{$profile.passwd_answer}"/><!-- {if $field.is_need} --><span style="color:#FF0000"> *</span><!-- {/if} -->
+		  </td>
+		</tr>
+		<!-- {else} -->
+		<tr>
+			<td width="28%" align="right" bgcolor="#FFFFFF" <!-- {if $field.is_need} -->id="extend_field{$field.id}i"<!--{/if}-->>{$field.reg_field_name}：</td>
 			<td width="72%" align="left" bgcolor="#FFFFFF">
-			<input name="extend_field{$field.id}" type="text" class="inputBg" value="{$field.content}"/>
+			<input name="extend_field{$field.id}" type="text" class="inputBg" value="{$field.content}"/><!-- {if $field.is_need} --><span style="color:#FF0000"> *</span><!-- {/if} -->
 			</td>
 		</tr>
+		<!-- {/if} -->
 		{/foreach}
                 <tr>
                   <td colspan="2" align="center" bgcolor="#FFFFFF"><input name="act" type="hidden" value="act_edit_profile" />

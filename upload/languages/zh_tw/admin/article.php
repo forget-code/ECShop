@@ -3,14 +3,14 @@
 /**
  * ECSHOP 文章管理語言項
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: article.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: liubo $
+ * $Id: article.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 $_LANG['title'] ='文章標題';
@@ -20,6 +20,7 @@ $_LANG['article_type'] ='文章重要性';
 $_LANG['author'] ='文章作者';
 $_LANG['email'] ='作者email';
 $_LANG['keywords'] ='關鍵字';
+$_LANG['lable_description'] ='網頁描述';
 $_LANG['content'] ='文章內容';
 $_LANG['is_open'] ='是否顯示';
 $_LANG['article_id'] ='編號';
@@ -43,6 +44,9 @@ $_LANG['download'] = '下載文件';
 $_LANG['both'] = '既顯示文章內容又下載文件';
 
 $_LANG['button_remove'] ='批量刪除';
+$_LANG['button_hide'] ='批量隱藏';
+$_LANG['button_show'] ='批量顯示';
+$_LANG['move_to'] = '轉移到分類';
 
 $_LANG['article_edit'] = '編輯文章內容';
 $_LANG['tab_general'] = '通用信息';
@@ -61,12 +65,13 @@ $_LANG['articleedit_succeed'] ='文章 %s 成功編輯';
 $_LANG['articleedit_fail'] ='文章編輯失敗';
 $_LANG['no_title'] ='沒有輸入文章標題';
 $_LANG['drop_confirm'] = '您確認要刪除這篇文章嗎？';
-$_LANG['batch_remove_succeed'] = '您已經成功刪除 %d 篇文章';
+$_LANG['batch_handle_ok'] = '批量操作成功';
 
 /*JS 語言項*/
 $_LANG['js_languages']['no_title'] = '沒有文章標題';
 $_LANG['js_languages']['no_cat'] = '沒有選擇文章分類';
 $_LANG['js_languages']['not_allow_add'] = '系統保留分類，不允許在該分類添加文章';
+$_LANG['js_languages']['drop_confirm'] = '您確定要刪除文章嗎？';
 
 $_LANG['all_cat'] = '全部分類';
 

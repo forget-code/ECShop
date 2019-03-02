@@ -3,14 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: sxc_shop $
- * $Id: flashplay.php 16215 2009-06-11 06:57:39Z sxc_shop $
+ * $Author: liubo $
+ * $Id: flashplay.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
@@ -101,7 +101,8 @@ elseif ($_REQUEST['act'] == 'add')
     {
         $url = isset($_GET['url']) ? $_GET['url'] : 'http://';
         $src = isset($_GET['src']) ? $_GET['src'] : '';
-        $rt = array('act'=>'add','img_url'=>$url,'img_src'=>$src);
+        $sort = 0;
+        $rt = array('act'=>'add','img_url'=>$url,'img_src'=>$src, 'img_sort'=>$sort);
         $width_height = get_width_height();
         assign_query_info();
         if(isset($width_height['width'])|| isset($width_height['height']))
@@ -154,10 +155,28 @@ elseif ($_REQUEST['act'] == 'add')
             $links[] = array('text' => $_LANG['add_new'], 'href' => 'flashplay.php?act=add');
             sys_msg($_LANG['link_empty'], 0, $links);
         }
+
+        // 获取flash播放器数据
         $flashdb = get_flash_xml();
-        array_unshift($flashdb, array('src'=>$src,'url'=>$_POST['img_url'],'text'=>$_POST['img_text']));
-        //print_r($flashdb);exit;
-        put_flash_xml($flashdb);
+
+        // 插入新数据
+        array_unshift($flashdb, array('src'=>$src, 'url'=>$_POST['img_url'], 'text'=>$_POST['img_text'] ,'sort'=>$_POST['img_sort']));
+
+        // 实现排序
+        $flashdb_sort   = array();
+        $_flashdb       = array();
+        foreach ($flashdb as $key => $value)
+        {
+            $flashdb_sort[$key] = $value['sort'];
+        }
+        asort($flashdb_sort, SORT_NUMERIC);
+        foreach ($flashdb_sort as $key => $value)
+        {
+            $_flashdb[] = $flashdb[$key];
+        }
+        unset($flashdb, $flashdb_sort);
+
+        put_flash_xml($_flashdb);
         set_flash_data($_CFG['flash_theme'], $error_msg = '');
         $links[] = array('text' => $_LANG['go_url'], 'href' => 'flashplay.php?act=list');
         sys_msg($_LANG['edit_ok'], 0, $links);
@@ -184,6 +203,7 @@ elseif ($_REQUEST['act'] == 'edit')
         $rt['img_url'] = $rt['url'];
         $rt['img_src'] = $rt['src'];
         $rt['img_txt'] = $rt['text'];
+        $rt['img_sort'] = empty($rt['sort']) ? 0 : $rt['sort'];
 
         $rt['id'] = $id;
         $smarty->assign('action_link', array('text' => $_LANG['go_url'], 'href' => 'flashplay.php?act=list'));
@@ -239,8 +259,23 @@ elseif ($_REQUEST['act'] == 'edit')
         {
             @unlink(ROOT_PATH . $rt['src']);
         }
-        $flashdb[$id] = array('src'=>$src,'url'=>$_POST['img_url'],'text'=>$_POST['img_text']);
-        put_flash_xml($flashdb);
+        $flashdb[$id] = array('src'=>$src,'url'=>$_POST['img_url'],'text'=>$_POST['img_text'],'sort'=>$_POST['img_sort']);
+
+        // 实现排序
+        $flashdb_sort   = array();
+        $_flashdb       = array();
+        foreach ($flashdb as $key => $value)
+        {
+            $flashdb_sort[$key] = $value['sort'];
+        }
+        asort($flashdb_sort, SORT_NUMERIC);
+        foreach ($flashdb_sort as $key => $value)
+        {
+            $_flashdb[] = $flashdb[$key];
+        }
+        unset($flashdb, $flashdb_sort);
+
+        put_flash_xml($_flashdb);
         set_flash_data($_CFG['flash_theme'], $error_msg = '');
         $links[] = array('text' => $_LANG['go_url'], 'href' => 'flashplay.php?act=list');
         sys_msg($_LANG['edit_ok'], 0, $links);
@@ -695,16 +730,22 @@ function get_flash_xml()
     $flashdb = array();
     if (file_exists(ROOT_PATH . DATA_DIR . '/flash_data.xml'))
     {
-        preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"\stext="([^"]*)"/', file_get_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml'), $t, PREG_SET_ORDER);
+
+        // 兼容v2.7.0及以前版本
+        if (!preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"\stext="([^"]*)"\ssort="([^"]*)"/', file_get_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml'), $t, PREG_SET_ORDER))
+        {
+            preg_match_all('/item_url="([^"]+)"\slink="([^"]+)"\stext="([^"]*)"/', file_get_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml'), $t, PREG_SET_ORDER);
+        }
+
         if (!empty($t))
         {
             foreach ($t as $key => $val)
             {
-                $flashdb[] = array('src'=>$val[1],'url'=>$val[2],'text'=>$val[3]);
+                $val[4] = isset($val[4]) ? $val[4] : 0;
+                $flashdb[] = array('src'=>$val[1],'url'=>$val[2],'text'=>$val[3],'sort'=>$val[4]);
             }
         }
     }
-
     return $flashdb;
 }
 
@@ -715,7 +756,7 @@ function put_flash_xml($flashdb)
         $xml = '<?xml version="1.0" encoding="' . EC_CHARSET . '"?><bcaster>';
         foreach ($flashdb as $key => $val)
         {
-            $xml .= '<item item_url="' . $val['src'] . '" link="' . $val['url'] . '" text="' . $val['text'] . '" />';
+            $xml .= '<item item_url="' . $val['src'] . '" link="' . $val['url'] . '" text="' . $val['text'] . '" sort="' . $val['sort'] . '"/>';
         }
         $xml .= '</bcaster>';
         file_put_contents(ROOT_PATH . DATA_DIR . '/flash_data.xml', $xml);

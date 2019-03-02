@@ -9,6 +9,8 @@ function userEdit()
   var email = frm.elements['email'].value;
   var msg = '';
   var reg = null;
+  var passwd_answer = frm.elements['passwd_answer'] ? Utils.trim(frm.elements['passwd_answer'].value) : '';
+  var sel_question =  frm.elements['sel_question'] ? Utils.trim(frm.elements['sel_question'].value) : '';
 
   if (email.length == 0)
   {
@@ -20,6 +22,21 @@ function userEdit()
     {
       msg += email_error + '\n';
     }
+  }
+
+  if (passwd_answer.length > 0 && sel_question == 0 || document.getElementById('passwd_quesetion') && passwd_answer.length == 0)
+  {
+    msg += no_select_question + '\n';
+  }
+
+  for (i = 7; i < frm.elements.length - 2; i++)	// 从第七项开始循环检查是否为必填项
+  {
+	needinput = document.getElementById(frm.elements[i].name + 'i') ? document.getElementById(frm.elements[i].name + 'i') : '';
+
+	if (needinput != '' && frm.elements[i].value.length == 0)
+	{
+	  msg += '- ' + needinput.innerHTML + msg_blank + '\n';
+	}
   }
 
   if (msg.length > 0)
@@ -306,7 +323,7 @@ function check_password( password )
 
 function check_conform_password( conform_password )
 {
-    password = document.getElementById('password').value;
+    password = document.getElementById('password1').value;
     
     if ( conform_password.length < 6 )
     {
@@ -421,11 +438,13 @@ function register()
   var password  = Utils.trim(frm.elements['password'].value);
   var confirm_password = Utils.trim(frm.elements['confirm_password'].value);
   var checked_agreement = frm.elements['agreement'].checked;
-  var msn = frm.elements['other[msn]'] ? Utils.trim(frm.elements['other[msn]'].value) : '';
-  var qq = frm.elements['other[qq]'] ? Utils.trim(frm.elements['other[qq]'].value) : '';
-  var home_phone = frm.elements['other[home_phone]'] ? Utils.trim(frm.elements['other[home_phone]'].value) : '';
-  var office_phone = frm.elements['other[office_phone]'] ? Utils.trim(frm.elements['other[office_phone]'].value) : '';
-  var mobile_phone = frm.elements['other[mobile_phone]'] ? Utils.trim(frm.elements['other[mobile_phone]'].value) : '';
+  var msn = frm.elements['extend_field1'] ? Utils.trim(frm.elements['extend_field1'].value) : '';
+  var qq = frm.elements['extend_field2'] ? Utils.trim(frm.elements['extend_field2'].value) : '';
+  var home_phone = frm.elements['extend_field4'] ? Utils.trim(frm.elements['extend_field4'].value) : '';
+  var office_phone = frm.elements['extend_field3'] ? Utils.trim(frm.elements['extend_field3'].value) : '';
+  var mobile_phone = frm.elements['extend_field5'] ? Utils.trim(frm.elements['extend_field5'].value) : '';
+  var passwd_answer = frm.elements['passwd_answer'] ? Utils.trim(frm.elements['passwd_answer'].value) : '';
+  var sel_question =  frm.elements['sel_question'] ? Utils.trim(frm.elements['sel_question'].value) : '';
 
 
   var msg = "";
@@ -462,6 +481,10 @@ function register()
   else if (password.length < 6)
   {
     msg += password_shorter + '\n';
+  }
+  if (/ /.test(password) == true)
+  {
+	msg += passwd_balnk + '\n';
   }
   if (confirm_password != password )
   {
@@ -507,6 +530,21 @@ function register()
       msg += mobile_phone_invalid + '\n';
     }
   }
+  if (passwd_answer.length > 0 && sel_question == 0 || document.getElementById('passwd_quesetion') && passwd_answer.length == 0)
+  {
+    msg += no_select_question + '\n';
+  }
+
+  for (i = 4; i < frm.elements.length - 4; i++)	// 从第五项开始循环检查是否为必填项
+  {
+	needinput = document.getElementById(frm.elements[i].name + 'i') ? document.getElementById(frm.elements[i].name + 'i') : '';
+
+	if (needinput != '' && frm.elements[i].value.length == 0)
+	{
+	  msg += '- ' + needinput.innerHTML + msg_blank + '\n';
+	}
+  }
+
   if (msg.length > 0)
   {
     alert(msg);

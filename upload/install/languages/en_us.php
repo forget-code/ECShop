@@ -11,14 +11,14 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: en_us.php 16337 2009-06-24 07:26:37Z liuhui $
+ * $Author: liubo $
+ * $Id: en_us.php 16885 2009-12-14 09:38:40Z liubo $
  */
 
 /* Common language item */
 $_LANG['prev_step'] = 'Previous:';
 $_LANG['next_step'] = 'Next:';
-$_LANG['copyright'] = '&copy; 2005-2008 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a> <br> All right reserved.';
+$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a> <br> All right reserved.';
 
 
 /* Welcome page */

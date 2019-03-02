@@ -2,16 +2,17 @@
 /**
  * ECSHOP 管理中心商店設置語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: shop_config.php 16268 2009-06-19 02:28:46Z sxc_shop $
+ * $Author: liubo $
+ * $Id: shop_config.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
+require(ROOT_PATH.ADMIN_PATH.'/sms_url.php');
 $_LANG['cfg_name']['basic'] = '基本設置';
 $_LANG['cfg_name']['display'] = '顯示設置';
 $_LANG['cfg_name']['shop_info'] = '網店信息';
@@ -193,6 +194,7 @@ $_LANG['cfg_desc']['cart_confirm'] = '允許您設置用戶點擊「加入購物
 $_LANG['cfg_desc']['use_how_oos'] = '使用缺貨處理時前台訂單確認頁面允許用戶選擇缺貨時處理方法。';
 $_LANG['cfg_desc']['send_service_email'] = '網店信息中的客服郵件地址不為空時，該選項有效。';
 $_LANG['cfg_desc']['send_mail_on'] = '啟用該選項登錄後台時，會自動發送郵件隊列中尚未發送的郵件';
+$_LANG['cfg_desc']['sms_shop_mobile'] = '請先注冊手機短信服務再填寫手機號';
 
 $_LANG['cfg_range']['cart_confirm'][1] = '提示用戶，點擊「確定」進購物車';
 $_LANG['cfg_range']['cart_confirm'][2] = '提示用戶，點擊「取消」進購物車';
@@ -435,4 +437,6 @@ $_LANG['invoice_rate'] = '稅率（％）';
 $_LANG['back_shop_config'] = '返回商店設置';
 $_LANG['back_mail_settings'] = '返回郵件服務器設置';
 $_LANG['mail_settings'] = '郵件服務器設置';
+
+$_LANG['sms_url'] = '<a href="'.$url.'" target="_blank">點此注冊手機短信服務</a>';
 ?>

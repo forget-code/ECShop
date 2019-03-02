@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户交易相关函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: lib_transaction.php 16422 2009-07-03 01:57:44Z wangleisvn $
+ * $Author: liubo $
+ * $Id: lib_transaction.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -111,7 +111,7 @@ function get_profile($user_id)
     $info  = array();
     $infos = array();
     $sql  = "SELECT user_name, birthday, sex, question, answer, rank_points, pay_points,user_money, user_rank,".
-             " msn, qq, office_phone, home_phone, mobile_phone ".
+             " msn, qq, office_phone, home_phone, mobile_phone, passwd_question, passwd_answer ".
            "FROM " .$GLOBALS['ecs']->table('users') . " WHERE user_id = '$user_id'";
     $infos = $GLOBALS['db']->getRow($sql);
     $infos['user_name'] = addslashes($infos['user_name']);
@@ -176,6 +176,8 @@ function get_profile($user_id)
     $info['office_phone']= $infos['office_phone'];
     $info['home_phone']   = $infos['home_phone'];
     $info['mobile_phone'] = $infos['mobile_phone'];
+    $info['passwd_question'] = $infos['passwd_question'];
+    $info['passwd_answer'] = $infos['passwd_answer'];
 
     return $info;
 }
@@ -296,7 +298,7 @@ function get_user_orders($user_id, $num = 10, $start = 0)
         {
             $row['handler'] = "<a href=\"user.php?act=cancel_order&order_id=" .$row['order_id']. "\" onclick=\"if (!confirm('".$GLOBALS['_LANG']['confirm_cancel']."')) return false;\">".$GLOBALS['_LANG']['cancel']."</a>";
         }
-        else if ($row['order_status'] == OS_CONFIRMED)
+        else if ($row['order_status'] == OS_SPLITED)
         {
             /* 对配送状态的处理 */
             if ($row['shipping_status'] == SS_SHIPPED)
@@ -325,6 +327,7 @@ function get_user_orders($user_id, $num = 10, $start = 0)
             $row['handler'] = '<span style="color:red">'.$GLOBALS['_LANG']['os'][$row['order_status']] .'</span>';
         }
 
+        $row['shipping_status'] = ($row['shipping_status'] == SS_SHIPPED_ING) ? SS_PREPARING : $row['shipping_status'];
         $row['order_status'] = $GLOBALS['_LANG']['os'][$row['order_status']] . ',' . $GLOBALS['_LANG']['ps'][$row['pay_status']] . ',' . $GLOBALS['_LANG']['ss'][$row['shipping_status']];
 
         $arr[] = array('order_id'       => $row['order_id'],
@@ -742,7 +745,7 @@ function get_order_detail($order_id, $user_id = 0)
     }
 
     /* 确认时间 支付时间 发货时间 */
-    if ($order['confirm_time'] > 0 && $order['order_status'] == OS_CONFIRMED)
+    if ($order['confirm_time'] > 0 && ($order['order_status'] == OS_CONFIRMED || $order['order_status'] == OS_SPLITED || $order['order_status'] == OS_SPLITING_PART))
     {
         $order['confirm_time'] = sprintf($GLOBALS['_LANG']['confirm_time'], local_date($GLOBALS['_CFG']['time_format'], $order['confirm_time']));
     }

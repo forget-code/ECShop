@@ -3,20 +3,20 @@
 /**
  * ECSHOP 商品管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: goods.php 16345 2009-06-24 09:36:23Z liubo $
+ * $Id: goods.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . '/admin/includes/lib_goods.php');
+require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_goods.php');
 include_once(ROOT_PATH . '/includes/cls_image.php');
 $image = new cls_image($_CFG['bgcolor']);
 $exc = new exchange($ecs->table('goods'), $db, 'goods_id', 'goods_name');
@@ -31,6 +31,8 @@ if ($_REQUEST['act'] == 'list' || $_REQUEST['act'] == 'trash')
 
     $cat_id = empty($_REQUEST['cat_id']) ? 0 : intval($_REQUEST['cat_id']);
     $code   = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
+    $suppliers_id = isset($_REQUEST['suppliers_id']) ? (empty($_REQUEST['suppliers_id']) ? '' : trim($_REQUEST['suppliers_id'])) : '';
+    $is_on_sale = isset($_REQUEST['is_on_sale']) ? ((empty($_REQUEST['is_on_sale']) && $_REQUEST['is_on_sale'] === 0) ? '' : trim($_REQUEST['is_on_sale'])) : '';
 
     $handler_list = array();
     $handler_list['virtual_card'][] = array('url'=>'virtual_card.php?act=card', 'title'=>$_LANG['card'], 'img'=>'icon_send_bonus.gif');
@@ -41,6 +43,19 @@ if ($_REQUEST['act'] == 'list' || $_REQUEST['act'] == 'trash')
     {
         $smarty->assign('add_handler',      $handler_list[$code]);
     }
+
+    /* 供货商名 */
+    $suppliers_list_name = suppliers_list_name();
+    $suppliers_exists = 1;
+    if (empty($suppliers_list_name))
+    {
+        $suppliers_exists = 0;
+    }
+    $smarty->assign('is_on_sale', $is_on_sale);
+    $smarty->assign('suppliers_id', $suppliers_id);
+    $smarty->assign('suppliers_exists', $suppliers_exists);
+    $smarty->assign('suppliers_list_name', $suppliers_list_name);
+    unset($suppliers_list_name, $suppliers_exists);
 
     /* 模板赋值 */
     $goods_ur = array('' => $_LANG['01_goods_list'], 'virtual_card'=>$_LANG['50_virtual_card_list']);
@@ -56,6 +71,10 @@ if ($_REQUEST['act'] == 'list' || $_REQUEST['act'] == 'trash')
     $smarty->assign('lang',         $_LANG);
     $smarty->assign('list_type',    $_REQUEST['act'] == 'list' ? 'goods' : 'trash');
     $smarty->assign('use_storage',  empty($_CFG['use_storage']) ? 0 : 1);
+
+    $suppliers_list = suppliers_list_info(' is_check = 1 ');
+    $suppliers_list_count = count($suppliers_list);
+    $smarty->assign('suppliers_list', ($suppliers_list_count == 0 ? 0 : $suppliers_list)); // 取供货商列表
 
     $goods_list = goods_list($_REQUEST['act'] == 'list' ? 0 : 1, ($_REQUEST['act'] == 'list') ? (($code == '') ? 1 : 0) : -1);
     $smarty->assign('goods_list',   $goods_list['goods']);
@@ -95,6 +114,17 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
         admin_priv('goods_manage'); // 检查权限
     }
 
+    /* 供货商名 */
+    $suppliers_list_name = suppliers_list_name();
+    $suppliers_exists = 1;
+    if (empty($suppliers_list_name))
+    {
+        $suppliers_exists = 0;
+    }
+    $smarty->assign('suppliers_exists', $suppliers_exists);
+    $smarty->assign('suppliers_list_name', $suppliers_list_name);
+    unset($suppliers_list_name, $suppliers_exists);
+
     /* 如果是安全模式，检查目录是否存在 */
     if (ini_get('safe_mode') == 1 && (!file_exists('../' . IMAGE_DIR . '/'.date('Ym')) || !is_dir('../' . IMAGE_DIR . '/'.date('Ym'))))
     {
@@ -128,6 +158,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
             'brand_id'      => $last_choose[1],
             'is_on_sale'    => '1',
             'is_alone_sale' => '1',
+            'is_shipping' => '0',
             'other_cat'     => array(), // 扩展分类
             'goods_type'    => 0,       // 商品类型
             'shop_price'    => 0,
@@ -195,6 +226,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
                 'cat_id'        => 0,
                 'is_on_sale'    => '1',
                 'is_alone_sale' => '1',
+                'is_shipping' => '0',
                 'other_cat'     => array(), // 扩展分类
                 'goods_type'    => 0,       // 商品类型
                 'shop_price'    => 0,
@@ -411,7 +443,6 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
         $volume_price_list = array('0'=>array('number'=>'','price'=>''));
     }
     $smarty->assign('volume_price_list', $volume_price_list);
-
     /* 显示商品信息页面 */
     assign_query_info();
     $smarty->display('goods_info.htm');
@@ -738,11 +769,13 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $is_hot = isset($_POST['is_hot']) ? 1 : 0;
     $is_on_sale = isset($_POST['is_on_sale']) ? 1 : 0;
     $is_alone_sale = isset($_POST['is_alone_sale']) ? 1 : 0;
+    $is_shipping = isset($_POST['is_shipping']) ? 1 : 0;
     $goods_number = isset($_POST['goods_number']) ? $_POST['goods_number'] : 0;
     $warn_number = isset($_POST['warn_number']) ? $_POST['warn_number'] : 0;
     $goods_type = isset($_POST['goods_type']) ? $_POST['goods_type'] : 0;
     $give_integral = isset($_POST['give_integral']) ? intval($_POST['give_integral']) : '-1';
     $rank_integral = isset($_POST['rank_integral']) ? intval($_POST['rank_integral']) : '-1';
+    $suppliers_id = isset($_POST['suppliers_id']) ? intval($_POST['suppliers_id']) : '0';
 
     $goods_name_style = $_POST['goods_name_color'] . '+' . $_POST['goods_name_style'];
 
@@ -762,13 +795,13 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                     "cat_id, brand_id, shop_price, market_price, is_promote, promote_price, " .
                     "promote_start_date, promote_end_date, goods_img, goods_thumb, original_img, keywords, goods_brief, " .
                     "seller_note, goods_weight, goods_number, warn_number, integral, give_integral, is_best, is_new, is_hot, " .
-                    "is_on_sale, is_alone_sale, goods_desc, add_time, last_update, goods_type, rank_integral)" .
+                    "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, rank_integral, suppliers_id)" .
                 "VALUES ('$_POST[goods_name]', '$goods_name_style', '$goods_sn', '$catgory_id', " .
                     "'$brand_id', '$shop_price', '$market_price', '$is_promote','$promote_price', ".
                     "'$promote_start_date', '$promote_end_date', '$goods_img', '$goods_thumb', '$original_img', ".
                     "'$_POST[keywords]', '$_POST[goods_brief]', '$_POST[seller_note]', '$goods_weight', '$goods_number',".
-                    " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', '$is_on_sale', '$is_alone_sale', ".
-                    " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$rank_integral')";
+                    " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', '$is_on_sale', '$is_alone_sale', $is_shipping, ".
+                    " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$rank_integral', '$suppliers_id')";
         }
         else
         {
@@ -776,12 +809,12 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                     "cat_id, brand_id, shop_price, market_price, is_promote, promote_price, " .
                     "promote_start_date, promote_end_date, goods_img, goods_thumb, original_img, keywords, goods_brief, " .
                     "seller_note, goods_weight, goods_number, warn_number, integral, give_integral, is_best, is_new, is_hot, is_real, " .
-                    "is_on_sale, is_alone_sale, goods_desc, add_time, last_update, goods_type, extension_code, rank_integral)" .
+                    "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, extension_code, rank_integral)" .
                 "VALUES ('$_POST[goods_name]', '$goods_name_style', '$goods_sn', '$catgory_id', " .
                     "'$brand_id', '$shop_price', '$market_price', '$is_promote','$promote_price', ".
                     "'$promote_start_date', '$promote_end_date', '$goods_img', '$goods_thumb', '$original_img', ".
                     "'$_POST[keywords]', '$_POST[goods_brief]', '$_POST[seller_note]', '$goods_weight', '$goods_number',".
-                    " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', 0, '$is_on_sale', '$is_alone_sale', ".
+                    " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', 0, '$is_on_sale', '$is_alone_sale', $is_shipping, ".
                     " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$code', '$rank_integral')";
         }
     }
@@ -814,6 +847,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                 "is_promote = '$is_promote', " .
                 "promote_price = '$promote_price', " .
                 "promote_start_date = '$promote_start_date', " .
+                "suppliers_id = '$suppliers_id', " .
                 "promote_end_date = '$promote_end_date', ";
 
         /* 如果有上传图片，需要更新数据库 */
@@ -843,6 +877,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                 "is_hot = '$is_hot', " .
                 "is_on_sale = '$is_on_sale', " .
                 "is_alone_sale = '$is_alone_sale', " .
+                "is_shipping = '$is_shipping', " .
                 "goods_desc = '$_POST[goods_desc]', " .
                 "last_update = '". gmtime() ."', ".
                 "goods_type = '$goods_type' " .
@@ -1164,6 +1199,15 @@ elseif ($_REQUEST['act'] == 'batch')
             admin_priv('goods_manage');
             update_goods($goods_id, 'cat_id', $_POST['target_cat']);
         }
+
+        /* 转移到供货商 */
+        elseif ($_POST['type'] == 'suppliers_move_to')
+        {
+            /* 检查权限 */
+            admin_priv('goods_manage');
+            update_goods($goods_id, 'suppliers_id', $_POST['suppliers_id']);
+        }
+
         /* 还原 */
         elseif ($_POST['type'] == 'restore')
         {
@@ -1433,7 +1477,7 @@ elseif ($_REQUEST['act'] == 'query')
     {
         $smarty->assign('add_handler',      $handler_list[$code]);
     }
-
+    $smarty->assign('code',         $code);
     $smarty->assign('goods_list',   $goods_list['goods']);
     $smarty->assign('filter',       $goods_list['filter']);
     $smarty->assign('record_count', $goods_list['record_count']);

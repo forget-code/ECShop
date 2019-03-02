@@ -10,6 +10,7 @@
       <th width="400px">{$lang.schp_imgsrc}</th>
     <th>{$lang.schp_imgurl}</th>
       <th>{$lang.schp_imgdesc}</th>
+      <th>{$lang.schp_sort}</th>
     <th width="70px">{$lang.handler}</th>
     </tr>
     {foreach from=$playerdb item=item key=key}
@@ -17,6 +18,7 @@
       <td><a href="{$item.src}" target="_blank">{$item.src}</a></td>
     <td align="left"><a href="{$item.url}" target="_blank">{$item.url}</a></td>
       <td align="left">{$item.text}</td>
+      <td align="left">{$item.sort}</td>
     <td align="center">
         <a href="flashplay.php?act=edit&id={$key}" title="{$lang.edit}"><img src="images/icon_edit.gif" width="16" height="16" border="0" /></a>
         <a href="flashplay.php?act=del&id={$key}" onclick="return check_del();" title="{$lang.trash_img}"><img src="images/icon_drop.gif" width="16" height="16" border="0" /></a>

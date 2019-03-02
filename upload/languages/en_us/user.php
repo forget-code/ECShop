@@ -12,10 +12,8 @@
  * commercial purposes.
  * ============================================================================
  * $Author: sxc_shop $
- * $Id: user.php 16320 2009-06-23 09:42:41Z sxc_shop $
+ * $Id: user.php 16786 2009-11-10 03:04:51Z sxc_shop $
 */
-
-
 
 $_LANG['require_login'] = 'Illegal entry.<br />You can\'t finish the operation until login.';
 
@@ -95,7 +93,7 @@ $_LANG['contact_username'] = 'Contact';
 $_LANG['contact_phone'] = 'Phone';
 $_LANG['submit_booking_goods'] = 'Submit';
 $_LANG['booking_success'] = 'Your product order have submitted successfully!';
-$_LANG['booking_rec_exist'] = 'he product you have already booked!';
+$_LANG['booking_rec_exist'] = 'The product you have already booked!';
 $_LANG['back_booking_list'] = 'Return booking records list';
 $_LANG['not_dispose'] = 'Undisposed';
 $_LANG['no_goods_id'] = 'Please appoint to product ID.';
@@ -147,6 +145,8 @@ $_LANG['profile_js']['old_password_empty'] = 'Please enter your primary password
 $_LANG['profile_js']['new_password_empty'] = 'Please enter the new password!';
 $_LANG['profile_js']['confirm_password_empty'] = 'Re-enter password !';
 $_LANG['profile_js']['both_password_error'] = 'The two passwords you entered did not match. Please type it again!';
+$_LANG['profile_js']['msg_blank'] = 'is blank';
+$_LANG['profile_js']['no_select_question'] = '- You do not complete the operation password prompt problem';
 
 /* 支付方式 */
 $_LANG['pay_name'] = 'Name';
@@ -196,6 +196,11 @@ $_LANG['parm_error'] = 'Error, Please return!';
 $_LANG['edit_password_failure'] = 'The original password inaccuracy of your importation';
 $_LANG['edit_password_success'] = 'Change password successfully!';
 $_LANG['username_not_match_email'] = 'Username or password is wrong, please type it again!';
+$_LANG['get_question_username'] = 'Please enter your registered user name to get your password question.';
+$_LANG['no_passwd_question'] = 'You do not set the password question, can not retrieve your password in this way.';
+$_LANG['input_answer'] = 'Please input the answer setted by the question you choosed in the registering time';
+$_LANG['wrong_passwd_answer'] = 'You entered a wrong answer';
+
 //JS语言项
 $_LANG['password_js']['user_name_empty'] = 'Please enter your username!';
 $_LANG['password_js']['email_address_empty'] = 'Please enter your email address!';
@@ -285,6 +290,8 @@ $_LANG['return_integral_on_cancel'] = 'Cancel order %s,return points payed for o
 /* 订单状态 */
 $_LANG['os'][OS_UNCONFIRMED] = 'Unconfirmed';
 $_LANG['os'][OS_CONFIRMED] = 'Confirmed';
+$_LANG['os'][OS_SPLITED] = 'Confirmed';
+$_LANG['os'][OS_SPLITING_PART] = 'Confirmed';
 $_LANG['os'][OS_CANCELED] = 'Canceled';
 $_LANG['os'][OS_INVALID] = 'Invalid';
 $_LANG['os'][OS_RETURNED] = 'Returned purchase';
@@ -294,6 +301,7 @@ $_LANG['ss'][SS_PREPARING] = 'Preparing';
 $_LANG['ss'][SS_SHIPPED] = 'Shipped';
 $_LANG['ss'][SS_RECEIVED] = 'Received';
 $_LANG['ss'][SS_SHIPPED_PART] = 'Shipped(part of all)';
+$_LANG['ss'][SS_SHIPPED_ING] = 'Preparing'; // 已分单
 
 $_LANG['ps'][PS_UNPAYED] = 'Unpaid';
 $_LANG['ps'][PS_PAYING] = 'Paying';
@@ -366,6 +374,9 @@ $_LANG['virtual_card_info'] = 'Virtual card infomation';
 /* 取回密码 */
 $_LANG['back_home_lnk'] = 'Return to HOME page.';
 $_LANG['get_password_lnk'] = 'Return to get the password page.';
+$_LANG['get_password_by_question'] = 'Fimd back your password by a password question';
+$_LANG['get_password_by_mail'] = 'Fimd back your password by Email';
+$_LANG['back_retry_answer'] = 'back and retry';
 
 /* 登录 注册 */
 $_LANG['label_username'] = 'Username';
@@ -416,6 +427,11 @@ $_LANG['email_exist'] = '%s already exists.';
 $_LANG['email_not_allow'] = 'Email %s not allow';
 $_LANG['register'] = 'Register.';
 $_LANG['register_success'] = '%s register successfully.';
+
+$_LANG['passwd_question'] = 'Password Question';
+$_LANG['sel_question'] = 'Please choose a password prompt problem';
+$_LANG['passwd_answer'] = 'Password question answer';
+$_LANG['passwd_balnk'] = 'Password can`t have blank';
 
 /* 用户中心默认页面 */
 $_LANG['welcome_to'] = 'Welcome back to';
@@ -485,6 +501,9 @@ $_LANG['passport_js']['msg_can_rg'] = '* You can register';
 $_LANG['passport_js']['msg_email_blank'] = '* Email address is blank';
 $_LANG['passport_js']['msg_email_registered'] = '* Mail-box exists, please enter again';
 $_LANG['passport_js']['msg_email_format'] = '* Email address is invalid';
+$_LANG['passport_js']['msg_blank'] = 'is blank';
+$_LANG['passport_js']['no_select_question'] = '- You have not finished the password question operation';
+$_LANG['passport_js']['passwd_balnk'] = '- The password entered can`t have blank';
 
 
 /* user_clips.dwt js 语言文件 */
@@ -640,11 +659,23 @@ $_LANG['pwd_high'] = 'High';
 $_LANG['user_reg_info'][0] = 'If you are not a member, please register';
 $_LANG['user_reg_info'][1] = 'Friendship tips';
 $_LANG['user_reg_info'][2] = 'Registration for non-members can purchase goods at the restaurant';
+$_LANG['user_reg_info'][8] = "Don't register as a member may not purchase goods in the shop";
 $_LANG['user_reg_info'][3] = 'After registration, but you can';
 $_LANG['user_reg_info'][4] = 'Save your personal data';
 $_LANG['user_reg_info'][5] = 'You are concerned about the collection of goods';
 $_LANG['user_reg_info'][6] = 'Members enjoy the points system';
 $_LANG['user_reg_info'][7] = 'We subscribe to information goods';
 $_LANG['add_bonus'] = 'Add Bouns';
+
+/* 密码找回问题 */
+$_LANG['passwd_questions']['friend_birthday'] = 'My Best Friend\'s Birthday';
+$_LANG['passwd_questions']['old_address']     = 'My childhood place of residence address';
+$_LANG['passwd_questions']['motto']           = 'My motto';
+$_LANG['passwd_questions']['favorite_movie']  = 'My favorite movies';
+$_LANG['passwd_questions']['favorite_song']   = 'My favorite song';
+$_LANG['passwd_questions']['favorite_food']   = 'My favorite food';
+$_LANG['passwd_questions']['interest']        = 'My best interest';
+$_LANG['passwd_questions']['favorite_novel']  = 'My favorite novel';
+$_LANG['passwd_questions']['favorite_equipe'] = 'My favorite sports team';
 
 ?>

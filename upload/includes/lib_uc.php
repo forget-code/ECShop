@@ -3,14 +3,14 @@
 /**
  * UCenter 函数库
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_uc.php 16275 2009-06-19 05:58:54Z liubo $
+ * $Id: lib_uc.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 
@@ -50,7 +50,7 @@ function add_feed($id, $feed_type)
             $feed['title_template'] = '<b>{username} ' . $GLOBALS['_LANG']['feed_user_buy'] . ' {goods_name}</b>';
             $feed['title_data'] = array('username'=> $_SESSION['user_name'], 'goods_name'=> $goods_data['goods_name']);
             $feed['body_template'] = '{goods_name}  ' . $GLOBALS['_LANG']['feed_goods_price'] . ':{goods_price}  ' . $GLOBALS['_LANG']['feed_goods_desc'] . ':{goods_desc}';
-            $feed['body_data'] = array('goods_name'=>$goods_data['goods_name'], 'goods_price'=>$goods_data['goods_price'], 'goods_desc'=>sub_str($goods_data['goods_desc'], 150, true));
+            $feed['body_data'] = array('goods_name'=>$goods_data['goods_name'], 'goods_price'=>$goods_data['goods_price'], 'goods_desc'=>sub_str(strip_tags($goods_data['goods_desc']), 150, true));
             $feed['images'][] = array('url'=> $url,
                                       'link'=> $link);
             uc_call("uc_feed_add", array($feed['icon'], $_SESSION['user_id'], $_SESSION['user_name'], $feed['title_template'], $feed['title_data'], $feed ['body_template'], $feed['body_data'], '', '', $feed['images']));

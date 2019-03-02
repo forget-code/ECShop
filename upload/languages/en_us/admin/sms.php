@@ -10,8 +10,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: testyang $
- * $Id: sms.php 14227 2008-03-10 06:37:24Z testyang $
+ * $Author: liuhui $
+ * $Id: sms.php 16697 2009-09-24 03:57:47Z liuhui $
 */
 
 /* Navigation */
@@ -21,6 +21,7 @@ $_LANG['register_sms'] = 'Register Or Enable Sms Account.';
 $_LANG['email'] = 'Email';
 $_LANG['password'] = 'Password';
 $_LANG['domain'] = 'Domain';
+$_LANG['error_tips'] = 'Set in the shop - "SMS settings, first register and properly configure the SMS messaging service!';
 $_LANG['register_new'] = 'Register';
 $_LANG['enable_old'] = 'Enable account';
 
@@ -39,7 +40,7 @@ $_LANG['disable'] = 'Disable sms service';
 $_LANG['phone'] = 'Mobile phone';
 $_LANG['phone_notice'] = 'More than one phone number divided by DBC case comma.';
 $_LANG['msg'] = 'Message';
-$_LANG['msg_notice'] = '250 character at most';
+$_LANG['msg_notice'] = '70 character at most';
 $_LANG['send_date'] = 'Send at certain times';
 $_LANG['send_date_notice'] = 'Format is YYYY-MM-DD HH:II. If it is blank then send immediately.';
 $_LANG['back_send_history'] = 'Return to send history';
@@ -82,6 +83,8 @@ $_LANG['sent_date'] = 'Sent date';
 $_LANG['send_status'] = 'Send status';
 $_LANG['status'][0] = 'Fail';
 $_LANG['status'][1] = 'Succeed';
+$_LANG['user_list'] = 'All user';
+$_LANG['please_select'] = 'Please choose the membership grade';
 
 /* Prompting message */
 $_LANG['test_now'] = '<span style="color:red;"></span>';
@@ -131,6 +134,8 @@ $_LANG['js_languages']['username_empty_error'] = 'Please enter username.';
 $_LANG['js_languages']['username_format_error'] = 'Username format is invalid.';
 $_LANG['js_languages']['domain_empty_error'] = 'Domain can\'t be blank.';
 $_LANG['js_languages']['domain_format_error'] = 'Domain format is invalid.';
+$_LANG['js_languages']['send_empty_error'] = 'Send phone number and send at least fill out a rating！';
+
 //--Send
 $_LANG['js_languages']['phone_empty_error'] = 'Please enter phone number.';
 $_LANG['js_languages']['phone_format_error'] = 'Phone member format is invalid.';

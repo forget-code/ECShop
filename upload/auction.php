@@ -3,24 +3,19 @@
 /**
  * ECSHOP 拍卖前台文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: auction.php 16060 2009-05-21 06:40:57Z sxc_shop $
+ * $Author: liubo $
+ * $Id: auction.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-
-if ((DEBUG_MODE & 2) != 2)
-{
-    $smarty->caching = true;
-}
 
 /*------------------------------------------------------ */
 //-- act 操作项的初始化
@@ -250,7 +245,7 @@ elseif ($_REQUEST['act'] == 'bid')
             }
         }
 
-        if ($bid_price <= $min_price)
+        if ($bid_price < $min_price)
         {
             show_message(sprintf($_LANG['au_your_lowest_price'], price_format($min_price, false)), '', '', 'error');
         }

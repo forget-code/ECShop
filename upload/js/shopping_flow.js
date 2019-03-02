@@ -395,7 +395,7 @@ function validateBonusResponse(obj)
 if (obj.error)
   {
     alert(obj.error);
-
+    orderSelectedResponse(obj.content);
     try
     {
       document.getElementById('ECS_BONUSN').value = '0';

@@ -3,20 +3,35 @@
 /**
  * ECSHOP 管理中心商店设置
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: shop_config.php 15620 2009-02-18 07:34:37Z sunxiaodong $
+ * $Author: liubo $
+ * $Id: shop_config.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
 
 /* 代码 */
 require(dirname(__FILE__) . '/includes/init.php');
+
+if($GLOBALS['_CFG']['certificate_id']  == '')
+{
+    $certi_id='error';
+}
+else
+{
+    $certi_id=$GLOBALS['_CFG']['certificate_id'];
+}
+
+$sess_id = $GLOBALS['sess']->get_session_id();
+
+$auth = mktime();
+$ac = md5($certi_id.'SHOPEX_SMS'.$auth);
+$url = 'http://service.shopex.cn/sms/index.php?certificate_id='.$certi_id.'&sess_id='.$sess_id.'&auth='.$auth.'&ac='.$ac;
 
 /*------------------------------------------------------ */
 //-- 列表编辑 ?act=list_edit
@@ -352,6 +367,10 @@ function get_settings($groups=null, $excludes=null)
         $item['name'] = isset($_LANG['cfg_name'][$item['code']]) ? $_LANG['cfg_name'][$item['code']] : $item['code'];
         $item['desc'] = isset($_LANG['cfg_desc'][$item['code']]) ? $_LANG['cfg_desc'][$item['code']] : '';
 
+        if ($item['code'] == 'sms_shop_mobile') 
+        {
+            $item['url'] = 1;
+        }
         if ($pid == 0)
         {
             /* 分组 */
@@ -376,7 +395,7 @@ function get_settings($groups=null, $excludes=null)
                     }
                 }
                 $group_list[$pid]['vars'][] = $item;
-            }
+            }   
         }
 
     }

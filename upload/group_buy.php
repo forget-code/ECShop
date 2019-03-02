@@ -3,14 +3,14 @@
 /**
  * ECSHOP 团购商品前台文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: group_buy.php 16060 2009-05-21 06:40:57Z sxc_shop $
+ * $Author: liubo $
+ * $Id: group_buy.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 define('IN_ECS', true);
@@ -108,6 +108,7 @@ elseif ($_REQUEST['act'] == 'view')
 
     /* 取得团购活动信息 */
     $group_buy = group_buy_info($group_buy_id);
+
     if (empty($group_buy))
     {
         ecs_header("Location: ./\n");
@@ -219,7 +220,7 @@ elseif ($_REQUEST['act'] == 'buy')
     }
 
     /* 判断数量是否足够 */
-    if ($group_buy['restrict_amount'] > 0 && $number > $group_buy['restrict_amount'] - $group_buy['valid_goods'])
+    if (($group_buy['restrict_amount'] > 0 && $number > ($group_buy['restrict_amount'] - $group_buy['valid_goods'])) || $number > $goods['goods_number'])
     {
         show_message($_LANG['gb_error_goods_lacking'], '', '', 'error');
     }

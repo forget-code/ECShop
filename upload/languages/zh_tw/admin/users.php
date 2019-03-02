@@ -3,14 +3,14 @@
 /**
  * ECSHOP 會員賬號管理語言文件
  * ============================================================================
- * 版權所有 2005-2008 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: users.php 15618 2009-02-18 05:31:02Z sunxiaodong $
+ * $Author: liubo $
+ * $Id: users.php 16881 2009-12-14 09:19:16Z liubo $
 */
 /* 列表頁面 */
 $_LANG['label_user_name'] = '會員名稱';
@@ -97,6 +97,8 @@ $_LANG['sign_building'] = '標誌建築';
 $_LANG['js_languages']['no_username'] = '沒有輸入用戶名。';
 $_LANG['js_languages']['invalid_email'] = '沒有輸入郵件地址或者輸入了一個無效的郵件地址。';
 $_LANG['js_languages']['no_password'] = '沒有輸入密碼。';
+$_LANG['js_languages']['less_password'] = '輸入的密碼不能少於六位。';
+$_LANG['js_languages']['passwd_balnk'] = '密碼中不能包含空格';
 $_LANG['js_languages']['no_confirm_password'] = '沒有輸入確認密碼。';
 $_LANG['js_languages']['password_not_same'] = '輸入的密碼和確認密碼不一致。';
 $_LANG['js_languages']['invalid_pay_points'] = '消費積分數不是一個整數。';

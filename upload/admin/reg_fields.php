@@ -3,7 +3,7 @@
 /**
  * ECSHOP 会员等级管理程序
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -26,7 +26,7 @@ $exc = new exchange($ecs->table("reg_fields"), $db, 'id', 'reg_field_name');
 if ($_REQUEST['act'] == 'list')
 {
     $fields = array();
-    $fields = $db->getAll("SELECT * FROM " . $ecs->table('reg_fields') . "ORDER BY id");
+    $fields = $db->getAll("SELECT * FROM " . $ecs->table('reg_fields') . " ORDER BY dis_order, id");
 
     $smarty->assign('ur_here',      $_LANG['021_reg_fields']);
     $smarty->assign('action_link',  array('text' => $_LANG['add_reg_field'], 'href'=>'reg_fields.php?act=add'));
@@ -59,8 +59,13 @@ elseif ($_REQUEST['act'] == 'add')
 {
     admin_priv('reg_fields');
 
-    $form_action          = 'insert';
+    $form_action = 'insert';
 
+    $reg_field['reg_field_order'] = 100;
+    $reg_field['reg_field_display'] = 1;
+    $reg_field['reg_field_need'] = 1;
+
+    $smarty->assign('reg_field',  $reg_field);
     $smarty->assign('ur_here',     $_LANG['add_reg_field']);
     $smarty->assign('action_link', array('text' => $_LANG['021_reg_fields'], 'href'=>'reg_fields.php?act=list'));
     $smarty->assign('form_action', $form_action);
@@ -84,9 +89,9 @@ elseif ($_REQUEST['act'] == 'insert')
     }
 
     $sql = "INSERT INTO " .$ecs->table('reg_fields') ."( ".
-                "reg_field_name".
+                "reg_field_name, dis_order, display, is_need".
             ") VALUES (".
-                "'$_POST[reg_field_name]')";
+                "'$_POST[reg_field_name]', '$_POST[reg_field_order]', '$_POST[reg_field_display]', '$_POST[reg_field_need]')";
     $db->query($sql);
 
     /* 管理员日志 */
@@ -96,6 +101,54 @@ elseif ($_REQUEST['act'] == 'insert')
     $lnk[] = array('text' => $_LANG['back_list'],    'href'=>'reg_fields.php?act=list');
     $lnk[] = array('text' => $_LANG['add_continue'], 'href'=>'reg_fields.php?act=add');
     sys_msg($_LANG['add_field_success'], 0, $lnk);
+}
+
+/*------------------------------------------------------ */
+//-- 编辑会员注册项
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'edit')
+{
+    admin_priv('reg_fields');
+
+    $form_action = 'update';
+
+    $sql = "SELECT id AS reg_field_id, reg_field_name, dis_order AS reg_field_order, display AS reg_field_display, is_need AS reg_field_need FROM ".
+           $ecs->table('reg_fields'). " WHERE id='$_REQUEST[id]'";
+    $reg_field = $db->GetRow($sql);
+
+    $smarty->assign('reg_field',  $reg_field);
+    $smarty->assign('ur_here',     $_LANG['add_reg_field']);
+    $smarty->assign('action_link', array('text' => $_LANG['021_reg_fields'], 'href'=>'reg_fields.php?act=list'));
+    $smarty->assign('form_action', $form_action);
+
+    assign_query_info();
+    $smarty->display('reg_field_info.htm');
+}
+
+/*------------------------------------------------------ */
+//-- 更新会员注册项
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'update')
+{
+    admin_priv('reg_fields');
+
+    /* 检查是否存在重名的会员注册项 */
+    if ($_POST['reg_field_name'] != $_POST['old_field_name'] && !$exc->is_only('reg_field_name', trim($_POST['reg_field_name'])))
+    {
+        sys_msg(sprintf($_LANG['field_name_exist'], trim($_POST['reg_field_name'])), 1);
+    }
+
+    $sql = "UPDATE " .$ecs->table('reg_fields') . " SET `reg_field_name` = '$_POST[reg_field_name]', `dis_order` = '$_POST[reg_field_order]', `display` = '$_POST[reg_field_display]', `is_need` = '$_POST[reg_field_need]' WHERE `id` = '$_POST[id]'";
+    $db->query($sql);
+
+    /* 管理员日志 */
+    admin_log(trim($_POST['reg_field_name']), 'edit', 'reg_fields');
+    clear_cache_files();
+
+    $lnk[] = array('text' => $_LANG['back_list'],    'href'=>'reg_fields.php?act=list');
+    sys_msg($_LANG['update_field_success'], 0, $lnk);
 }
 
 /*------------------------------------------------------ */
@@ -124,6 +177,7 @@ elseif ($_REQUEST['act'] == 'remove')
     exit;
 
 }
+
 /*
  *  编辑会员注册项名称
  */
@@ -148,8 +202,69 @@ elseif ($_REQUEST['act'] == 'edit_name')
     }
     else
     {
-        make_json_error(sprintf($_LANG['rank_name_exists'], htmlspecialchars($val)));
+        make_json_error(sprintf($_LANG['field_name_exist'], htmlspecialchars($val)));
     }
 }
 
+/*
+ *  编辑会员注册项排序权值
+ */
+elseif ($_REQUEST['act'] == 'edit_order')
+{
+    $id = intval($_REQUEST['id']);
+    $val = isset($_REQUEST['val']) ? json_str_iconv(trim($_REQUEST['val'])) : '' ;
+    check_authz_json('reg_fields');
+    if (is_numeric($val))
+    {
+        if ($exc->edit("dis_order = '$val'", $id))
+        {
+            /* 管理员日志 */
+            admin_log($val, 'edit', 'reg_fields');
+            clear_cache_files();
+            make_json_result(stripcslashes($val));
+        }
+        else
+        {
+            make_json_error($db->error());
+        }
+    }
+    else
+    {
+        make_json_error($_LANG['order_not_num']);
+    }
+}
+
+/*------------------------------------------------------ */
+//-- 修改会员注册项显示状态
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'toggle_dis')
+{
+    check_authz_json('reg_fields');
+
+    $id     = intval($_POST['id']);
+    $is_dis = intval($_POST['val']);
+
+    if ($exc->edit("display = '$is_dis'", $id))
+    {
+        clear_cache_files();
+        make_json_result($is_dis);
+    }
+}
+
+/*------------------------------------------------------ */
+//-- 修改会员注册项必填状态
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'toggle_need')
+{
+    check_authz_json('reg_fields');
+
+    $id     = intval($_POST['id']);
+    $is_need = intval($_POST['val']);
+
+    if ($exc->edit("is_need = '$is_need'", $id))
+    {
+        clear_cache_files();
+        make_json_result($is_need);
+    }
+}
 ?>

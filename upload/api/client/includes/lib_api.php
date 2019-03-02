@@ -261,7 +261,7 @@
             {
                 client_show_message(103);
             }
-            require_once(ROOT_PATH.'admin/includes/lib_main.php');
+            require_once(ROOT_PATH. ADMIN_PATH . '/includes/lib_main.php');
             // 登录成功
             set_admin_session($row['user_id'], $row['user_name'], $row['action_list'], $row['last_login']);
 
@@ -285,7 +285,7 @@
     function API_AddCategory($post)
     {
         /* 加载后台主操作函数 */
-        require_once(ROOT_PATH.'admin/includes/lib_main.php');
+        require_once(ROOT_PATH. ADMIN_PATH . '/includes/lib_main.php');
 
         /* 检查权限 */
         admin_privilege('cat_manage');
@@ -324,7 +324,7 @@
                 //显示在自定义导航栏中
                 $sql = "INSERT INTO " . $GLOBALS['ecs']->table('nav') .
                     " (name, ctype, cid, ifshow, vieworder, opennew, url, type)".
-                    " VALUES('" . $cat['cat_name'] . "', 'c', '".$insert_id."','1','$vieworder','0', '" . build_uri('category', array('cid'=> $insert_id)) . "','middle')";
+                    " VALUES('" . $cat['cat_name'] . "', 'c', '".$insert_id."','1','$vieworder','0', '" . build_uri('category', array('cid'=> $insert_id), $cat['cat_name']) . "','middle')";
                 $GLOBALS['db']->query($sql);
             }
 
@@ -366,8 +366,8 @@
     {
 
         /* 加载后台主操作函数 */
-        require_once(ROOT_PATH . 'admin/includes/lib_main.php');
-        require_once(ROOT_PATH . 'admin/includes/cls_exchange.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/cls_exchange.php');
         require_once(ROOT_PATH . 'includes/cls_image.php');
 
         /* 检查权限 */
@@ -449,8 +449,8 @@
         global $_CFG;
 
         /* 加载后台操作类与函数 */
-        require_once(ROOT_PATH . 'admin/includes/lib_main.php');
-        require_once(ROOT_PATH . 'admin/includes/lib_goods.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_goods.php');
         require_once(ROOT_PATH . 'includes/cls_image.php');
 
         /* 检查权限 */
@@ -1099,7 +1099,7 @@
      */
     function API_DeleteBrand($post)
     {
-        require_once(ROOT_PATH . 'admin/includes/cls_exchange.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/cls_exchange.php');
         admin_privilege('brand_manage');
         $brand_id = intval($_POST['Id']);
         $exc = new exchange($GLOBALS['ecs']->table("brand"), $GLOBALS['db'], 'brand_id', 'brand_name');
@@ -1124,7 +1124,7 @@
     function API_DeleteCategory($post)
     {
         /* 加载后台主操作函数 */
-        require_once(ROOT_PATH . 'admin/includes/lib_main.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
         admin_privilege('cat_manage');
         /* 初始化分类ID并取得分类名称 */
         $cat_id   = intval($_POST['Id']);
@@ -1161,7 +1161,7 @@
      */
     function API_DeleteGoods($post)
     {
-        require_once(ROOT_PATH . 'admin/includes/cls_exchange.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/cls_exchange.php');
         $exc = new exchange($GLOBALS['ecs']->table("goods"), $GLOBALS['db'], 'goods_id', 'goods_name');
         admin_privilege('remove_back');
 
@@ -1180,7 +1180,7 @@
     function API_EditCategory($post)
     {
         /* 加载后台主操作函数 */
-        require_once(ROOT_PATH . 'admin/includes/lib_main.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
 
         /* 初始化变量 */
         $cat_id              = !empty($_POST['cat_id'])       ? intval($_POST['cat_id'])     : 0;
@@ -1237,7 +1237,7 @@
                         //不存在
                         $vieworder = $GLOBALS['db']->getOne("SELECT max(vieworder) FROM ". $GLOBALS['ecs']->table('nav') . " WHERE type = 'middle'");
                         $vieworder += 2;
-                        $uri = build_uri('category', array('cid'=> $cat_id));
+                        $uri = build_uri('category', array('cid'=> $cat_id), $cat['cat_name']);
 
                         $sql = "INSERT INTO " . $GLOBALS['ecs']->table('nav') . " (name,ctype,cid,ifshow,vieworder,opennew,url,type) VALUES('" . $cat['cat_name'] . "', 'c', '$cat_id','1','$vieworder','0', '" . $uri . "','middle')";
                     }
@@ -1264,8 +1264,8 @@
     function API_EditBrand($post)
     {
         /* 加载后台主操作函数 */
-        require_once(ROOT_PATH . 'admin/includes/lib_main.php');
-        require_once(ROOT_PATH . 'admin/includes/cls_exchange.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
+        require_once(ROOT_PATH . ADMIN_PATH . '/includes/cls_exchange.php');
         require_once(ROOT_PATH . 'includes/cls_image.php');
 
         /* 检查权限 */

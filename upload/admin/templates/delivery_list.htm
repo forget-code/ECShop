@@ -31,6 +31,7 @@
     <th><a href="javascript:listTable.sort('add_time', 'DESC'); ">{$lang.label_add_time}</a>{$sort_add_time}</th>
     <th><a href="javascript:listTable.sort('consignee', 'DESC'); ">{$lang.consignee}</a>{$sort_consignee}</th>
     <th><a href="javascript:listTable.sort('update_time', 'DESC'); ">{$lang.label_update_time}</a>{$sort_update_time}</th>
+    <th>{$lang.label_suppliers_name}</th>
     <th>{$lang.label_delivery_status}</th>
     <th>{$lang.operator}</th>
     <th>{$lang.handler}</th>
@@ -42,6 +43,7 @@
     <td align="center" valign="top" nowrap="nowrap">{$delivery.add_time}</td>
     <td align="left" valign="top"><a href="mailto:{$delivery.email}"> {$delivery.consignee|escape}</a></td>
     <td align="center" valign="top" nowrap="nowrap">{$delivery.update_time}</td>
+    <td align="center" valign="top" nowrap="nowrap">{$delivery.suppliers_name}</td>
     <td align="center" valign="top" nowrap="nowrap">{$delivery.status_name}</td>
     <td align="center" valign="top" nowrap="nowrap">{$delivery.action_user}</td>
     <td align="center" valign="top"  nowrap="nowrap">

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 短信模块 之 模型（类库）
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: cls_sms.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: cls_sms.php 16881 2009-12-14 09:19:16Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -19,6 +19,7 @@ if (!defined('IN_ECS'))
 }
 
 require_once(ROOT_PATH . 'includes/cls_transport.php');
+require_once(ROOT_PATH . 'includes/shopex_json.php');
 
 /* 短信模块主类 */
 class sms
@@ -31,7 +32,7 @@ class sms
      */
     var $api_urls   = array('register'          =>      'http://sms.ecshop.com/register.php',
                             'auth'              =>      'http://sms.ecshop.com/user_auth.php',
-                            'send'              =>      'http://sms.ecshop.com/send_sms.php',
+                            'send'              =>      'http://idx.sms.shopex.cn/service.php ',
                             'charge'            =>      'http://sms.ecshop.com/charge.php?act=charge_form',
                             'balance'           =>      'http://sms.ecshop.com/get_balance.php',
                             'send_history'      =>      'http://sms.ecshop.com/send_history.php',
@@ -108,7 +109,8 @@ class sms
     {
         $sql = 'SELECT `value`
                 FROM ' . $this->ecs->table('shop_config') . "
-                WHERE `code` = 'sms_user_name'";
+                WHERE `code` = 'sms_shop_mobile'";
+
         $result = $this->db->getOne($sql);
 
         if (empty($result))
@@ -291,10 +293,10 @@ class sms
                 case 'error' :
                     $this->errors['api_errors']['error_no'] = @$elems[$i]['elements'][0]['text'];
                     break;
-                default :
-                    $this->errors['server_errors']['error_no'] = 9;//无效的节点名字
-
-                    return false;
+//                default :
+//                    $this->errors['server_errors']['error_no'] = 9;//无效的节点名字
+//
+//                    return false;
             }
         }
 
@@ -478,7 +480,7 @@ class sms
      * @param   string  $send_date      定时发送时间
      * @return  boolean                 发送成功返回true，失败返回false。
      */
-    function send($phone, $msg, $send_date)
+    function send($phone, $msg, $send_date = '', $send_num = 1)
     {
         /* 检查发送信息的合法性 */
         if (!$this->check_send_sms($phone, $msg, $send_date))
@@ -499,6 +501,7 @@ class sms
 
         /* 获取API URL */
         $url = $this->get_url('send');
+
         if (!$url)
         {
             $this->errors['server_errors']['error_no'] = 6;//URL不对
@@ -506,43 +509,66 @@ class sms
             return false;
         }
 
-        $params = array('login_info' => $login_info,
-                        'msg' => $msg,
-                        'phone' => $phone,
-                        'send_date' => $send_date);
-
+        $version = $GLOBALS['_CFG']['ecs_version'];
+        $submit_str['certi_id'] = $GLOBALS['_CFG']['certificate_id'];
+        $submit_str['ac'] = md5($GLOBALS['_CFG']['certificate_id'].$GLOBALS['_CFG']['token']);
+        $submit_str['version']=$version;
+        
         /* 发送HTTP请求 */
-        $response = $this->t->request($url, $params);
-        $http_body = $response['body'];
-        if (!$response || !$http_body)
+        $response = $this->t->request($url, $submit_str);
+        $result = explode('|',$response['body']);
+
+        if($result[0] == '0')
         {
-            $this->errors['server_errors']['error_no'] = 7;//HTTP响应体为空
+            $sms_url = $result[1];
+        }
+        if($result[0] == '1')
+        {
+            $sms_url = '';
+        }
+        if($result[0] == '2'){
+            $sms_url = '';
+        }
+        
+        $send_arr =    Array(
+            0 => Array(
+                    0 => $phone,    //发送的手机号码
+                    1 => $msg,      //发送信息
+                    2 => 'Now' //发送的时间
+                )
+        );
+   
+        $send_str['certi_id'] = $GLOBALS['_CFG']['certificate_id'];
+        $send_str['ex_type'] = $send_num;
+        $send_str['content'] = json_encode($send_arr);
+        $send_str['encoding'] = 'utf8';
+        $send_str['version'] = $version;
+        $send_str['ac'] = md5($send_str['certi_id'].$send_str['ex_type'].$send_str['content'].$send_str['encoding'].$GLOBALS['_CFG']['token']);
+        
+        if (!$sms_url)
+        {
+            $this->errors['server_errors']['error_no'] = 6;//URL不对
 
             return false;
         }
+        
+        /* 发送HTTP请求 */
+        $response = $this->t->request($sms_url, $send_str);
 
-        /* 更新最后访问API的时间 */
-        $this->update_sms_last_request();
+        $result = explode('|' ,$response['body']);
 
-        /* 解析XML文本串 */
-        $xmlarr = $this->xml2array($http_body);
-        if (empty($xmlarr))
+        if($result[0] == 'true')
         {
-            $this->errors['server_errors']['error_no'] = 8;//无效的XML文件
-
+            //发送成功
+            return true;
+        }
+        elseif($result[0] == 'false')
+        {
+            //发送失败
             return false;
         }
-
-        $elems = &$xmlarr[0]['elements'][1]['elements'];
-        $this->errors['api_errors']['error_no'] = @$elems[0]['text'];
-
-        /* 如果API出错了 */
-        if (intval($this->errors['api_errors']['error_no']) !== 0)
-        {
-            return false;
-        }
-
-        return true;
+        
+        
     }
 
     /**

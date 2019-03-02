@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心菜单数组
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: likai $
- * $Id: inc_menu.php 16381 2009-06-26 06:50:09Z likai $
+ * $Author: liubo $
+ * $Id: inc_menu.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -93,11 +93,13 @@ $modules['08_members']['10_user_account_manage']    = 'user_account_manage.php?a
 
 $modules['10_priv_admin']['admin_logs']             = 'admin_logs.php?act=list';
 $modules['10_priv_admin']['admin_list']             = 'privilege.php?act=list';
+$modules['10_priv_admin']['admin_role']             = 'role.php?act=list';
 $modules['10_priv_admin']['agency_list']            = 'agency.php?act=list';
-//$modules['10_priv_admin']['suppliers_list']         = 'suppliers.php?act=list';//暂时取消供货商
+$modules['10_priv_admin']['suppliers_list']         = 'suppliers.php?act=list'; // 供货商
 
 $modules['11_system']['01_shop_config']             = 'shop_config.php?act=list_edit';
 $modules['11_system']['shop_authorized']             = 'license.php?act=list_edit';
+$modules['11_system']['shp_webcollect']                  = 'webcollect.php';
 $modules['11_system']['02_payment_list']            = 'payment.php?act=list';
 $modules['11_system']['03_shipping_list']           = 'shipping.php?act=list';
 $modules['11_system']['04_mail_settings']           = 'shop_config.php?act=mail_settings';
@@ -132,7 +134,7 @@ $modules['13_backup']['convert']                    = 'convert.php?act=main';
 
 
 //$modules['14_sms']['02_sms_my_info']                = 'sms.php?act=display_my_info';
-//$modules['14_sms']['03_sms_send']                   = 'sms.php?act=display_send_ui';
+$modules['14_sms']['03_sms_send']                   = 'sms.php?act=display_send_ui';
 //$modules['14_sms']['04_sms_charge']                 = 'sms.php?act=display_charge_ui';
 //$modules['14_sms']['05_sms_send_history']           = 'sms.php?act=display_send_history_ui';
 //$modules['14_sms']['06_sms_charge_history']         = 'sms.php?act=display_charge_history_ui';

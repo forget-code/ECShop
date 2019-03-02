@@ -3,14 +3,14 @@
 /**
  * ECSHOP 权限名称语言文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: priv_action.php 16268 2009-06-19 02:28:46Z sxc_shop $
+ * $Author: liubo $
+ * $Id: priv_action.php 16881 2009-12-14 09:19:16Z liubo $
 */
 /* 权限管理的一级分组 */
 $_LANG['goods'] = '商品管理';
@@ -42,6 +42,7 @@ $_LANG['picture_batch'] = '图片批量处理';
 $_LANG['goods_export'] = '商品批量导出';
 $_LANG['goods_batch'] = '商品批量上传/修改';
 $_LANG['gen_goods_script'] = '生成商品代码';
+$_LANG['suppliers_goods'] = '供货商商品管理';
 
 //文章管理部分的权限
 $_LANG['article_cat'] = '文章分类管理';
@@ -70,10 +71,12 @@ $_LANG['logs_drop'] = '删除管理日志';
 $_LANG['template_manage'] = '模板管理';
 $_LANG['agency_manage'] = '办事处管理';
 $_LANG['suppliers_manage'] = '供货商管理';
+$_LANG['role_manage'] = '角色管理';
 
 //系统设置部分权限
 $_LANG['shop_config'] = '商店设置';
 $_LANG['shop_authorized'] = '授权证书';
+$_LANG['webcollect_manage'] = '网罗天下管理';
 $_LANG['ship_manage'] = '配送方式管理';
 $_LANG['payment'] = '支付方式管理';
 $_LANG['shiparea_manage'] = '配送区域管理';
@@ -90,6 +93,7 @@ $_LANG['sitemap'] = '站点地图管理';
 $_LANG['file_check'] = '文件校验';
 $_LANG['file_priv'] = '文件权限检验';
 $_LANG['reg_fields'] = '会员注册项管理';
+
 
 //订单管理部分权限
 $_LANG['order_os_edit'] = '编辑订单状态';

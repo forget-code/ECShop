@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心公用文件
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: init.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: init.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -26,9 +26,6 @@ if (__FILE__ == '')
 {
     die('Fatal error code: 0');
 }
-
-/* 取得当前ecshop所在的根目录 */
-define('ROOT_PATH', str_replace('admin/includes/init.php', '', str_replace('\\', '/', __FILE__)));
 
 /* 初始化设置 */
 @ini_set('memory_limit',          '64M');
@@ -47,14 +44,21 @@ else
     @ini_set('include_path',      '.:' . ROOT_PATH);
 }
 
-if (file_exists(ROOT_PATH . 'data/config.php'))
+if (file_exists('../data/config.php'))
 {
-    include(ROOT_PATH . 'data/config.php');
+    include('../data/config.php');
 }
 else
 {
-    include(ROOT_PATH . 'includes/config.php');
+    include('../includes/config.php');
 }
+
+/* 取得当前ecshop所在的根目录 */
+if(!defined('ADMIN_PATH'))
+{
+    define('ADMIN_PATH','admin');
+}
+define('ROOT_PATH', str_replace(ADMIN_PATH . '/includes/init.php', '', str_replace('\\', '/', __FILE__)));
 
 if (defined('DEBUG_MODE') == false)
 {
@@ -81,8 +85,8 @@ require(ROOT_PATH . 'includes/cls_error.php');
 require(ROOT_PATH . 'includes/lib_time.php');
 require(ROOT_PATH . 'includes/lib_base.php');
 require(ROOT_PATH . 'includes/lib_common.php');
-require(ROOT_PATH . 'admin/includes/lib_main.php');
-require(ROOT_PATH . 'admin/includes/cls_exchange.php');
+require(ROOT_PATH . ADMIN_PATH . '/includes/lib_main.php');
+require(ROOT_PATH . ADMIN_PATH . '/includes/cls_exchange.php');
 
 /* 对用户传入的变量进行转义操作。*/
 if (!get_magic_quotes_gpc())
@@ -196,7 +200,7 @@ if (preg_replace('/(?:\.|\s+)[a-z]*$/i', '', $_CFG['ecs_version']) != preg_repla
 require(ROOT_PATH . 'includes/cls_template.php');
 $smarty = new cls_template;
 
-$smarty->template_dir  = ROOT_PATH . 'admin/templates';
+$smarty->template_dir  = ROOT_PATH . ADMIN_PATH . '/templates';
 $smarty->compile_dir   = ROOT_PATH . 'temp/compiled/admin';
 if ((DEBUG_MODE & 2) == 2)
 {
@@ -296,7 +300,7 @@ if ((!isset($_SESSION['admin_id']) || intval($_SESSION['admin_id']) <= 0) &&
 if ($_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
     $_REQUEST['act'] != 'forget_pwd' && $_REQUEST['act'] != 'reset_pwd' && $_REQUEST['act'] != 'check_order')
 {
-    $admin_path = preg_replace('/:\d+/', '', $ecs->url()) . 'admin';
+    $admin_path = preg_replace('/:\d+/', '', $ecs->url()) . ADMIN_PATH;
     if (!empty($_SERVER['HTTP_REFERER']) &&
         strpos(preg_replace('/:\d+/', '', $_SERVER['HTTP_REFERER']), $admin_path) === false)
     {

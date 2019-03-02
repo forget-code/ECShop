@@ -3,14 +3,14 @@
 /**
  * ECSHOP 销售概况
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: sale_general.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: sale_general.php 16881 2009-12-14 09:19:16Z liubo $
 */
 
 define('IN_ECS', true);
@@ -71,11 +71,11 @@ $format = ($query_type == 'year') ? '%Y' : '%Y-%m';
 $sql = "SELECT DATE_FORMAT(FROM_UNIXTIME(shipping_time), '$format') AS period, COUNT(*) AS order_count, " .
             "SUM(goods_amount + shipping_fee + insure_fee + pay_fee + pack_fee + card_fee - discount) AS order_amount " .
         "FROM " . $ecs->table('order_info') .
-        " WHERE order_status = '" . OS_CONFIRMED . "' " .
-        "AND (pay_status = '" . PS_PAYED . "' OR pay_status = '" . PS_PAYING . "') " .
-        "AND (shipping_status = '" . SS_SHIPPED . "' OR shipping_status = '" . SS_RECEIVED . "') " .
-        "AND shipping_time >= '$start_time' AND shipping_time <= '$end_time'" .
-        "GROUP BY period ";
+        " WHERE (order_status = '" . OS_CONFIRMED . "' OR order_status >= '" . OS_SPLITED . "')" .
+        " AND (pay_status = '" . PS_PAYED . "' OR pay_status = '" . PS_PAYING . "') " .
+        " AND (shipping_status = '" . SS_SHIPPED . "' OR shipping_status = '" . SS_RECEIVED . "') " .
+        " AND shipping_time >= '$start_time' AND shipping_time <= '$end_time'" .
+        " GROUP BY period ";
 $data_list = $db->getAll($sql);
 
 /*------------------------------------------------------ */
@@ -99,13 +99,12 @@ if ($_REQUEST['act'] == 'list')
         $data_amount .= sprintf($set, $data['period'], $data['order_amount'], chart_color($i));
         $i++;
     }
-    if (EC_CHARSET != 'utf-8')
-    {
-        $_LANG['order_count_trend'] = ecs_iconv(EC_CHARSET, 'utf-8', $_LANG['order_count_trend']);
-        $_LANG['order_amount_trend'] = ecs_iconv(EC_CHARSET, 'utf-8', $_LANG['order_amount_trend']);
-    }
-    $smarty->assign('data_count',  sprintf($xml, $_LANG['order_count_trend'], $data_count)); // 订单数统计数据
-    $smarty->assign('data_amount', sprintf($xml, $_LANG['order_amount_trend'], $data_amount));    // 销售额统计数据
+
+    $smarty->assign('data_count',  sprintf($xml, '', $data_count)); // 订单数统计数据
+    $smarty->assign('data_amount', sprintf($xml, '', $data_amount));    // 销售额统计数据
+    
+    $smarty->assign('data_count_name',  $_LANG['order_count_trend']); 
+    $smarty->assign('data_amount_name',  $_LANG['order_amount_trend']); 
 
     /* 根据查询类型生成文件名 */
     if ($query_type == 'year')
