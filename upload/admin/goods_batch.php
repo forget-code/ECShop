@@ -21,6 +21,20 @@ require('includes/lib_goods.php');
 //-- 批量上传
 /*------------------------------------------------------ */
 
+if($_REQUEST['act'] == 'upload')
+{
+    if($_REQUEST['data_cat'] == 'taobao')
+    {
+        $_SESSION['insert_taobao']='taobao';
+    }
+    else
+    {
+        $_SESSION['insert_taobao']='';
+    }
+}
+
+
+
 if ($_REQUEST['act'] == 'add')
 {
     /* 检查权限 */
@@ -49,8 +63,7 @@ if ($_REQUEST['act'] == 'add')
                                 'ecshop'    => $_LANG['export_ecshop'],
                                 'taobao'    => $_LANG['export_taobao'],
                                 'paipai'    => $_LANG['export_paipai'],
-                                'paipai3'   => $_LANG['export_paipai3'],
-                                'taobao46'  => $_LANG['export_taobao46'],
+                                'paipai3'   => $_LANG['export_paipai3']
                                );
     $smarty->assign('data_format', $data_format_array);
     $smarty->assign('lang_list',     $lang_list);
@@ -80,6 +93,7 @@ elseif ($_REQUEST['act'] == 'upload')
     $goods_list = array();
     $field_list = array_keys($_LANG['upload_goods']); // 字段列表
     $data = file($_FILES['file']['tmp_name']);
+
     if($_POST['data_cat'] == 'ecshop')
     {
         foreach ($data AS $line)
@@ -176,45 +190,90 @@ elseif ($_REQUEST['act'] == 'upload')
     }
     elseif($_POST['data_cat'] == 'taobao')
     {
+       $s = file_get_contents($_FILES['file']['tmp_name']); //读取文件到变量
+       $p = strgetcsv($s, "\t");//读取到数组
+
+        $goods_info = array();
+        $goods_key  = array();
         $id_is = 0;
-        foreach ($data AS $line)
-        {
-            // 跳过第一行
-            if ($line_number == 0)
+
+        if(strpos($p[0][0],'version')===0){
+
+            if(!is_array($p['1']))
             {
-                $line_number++;
-                continue;
+                sys_msg('csv文件不完整。', 1, array(), false);
             }
 
-            // 初始化
-            $arr    = array();
-            $line_list = explode("\t",$line);
-            $arr['goods_name'] = trim($line_list[0],'"');
-
-            $max_id     = $db->getOne("SELECT MAX(goods_id) + $id_is FROM ".$ecs->table('goods'));
-            $id_is++;
-            $goods_sn   = generate_goods_sn($max_id);
-            $arr['goods_sn'] = $goods_sn;
-            $arr['brand_name'] = '';
-            $arr['market_price'] = $line_list[7];
-            $arr['shop_price'] = $line_list[7];
-            $arr['integral'] = 0;
-            $arr['original_img'] = $line_list[25];
-            $arr['keywords'] = '';
-            $arr['goods_brief'] = '';
-            $arr['goods_desc'] = strip_tags($line_list[24]);
-            $arr['goods_desc'] = substr($arr['goods_desc'], 1, -1);
-            $arr['goods_number'] = $line_list[10];
-            $arr['warn_number'] =1;
-            $arr['is_best'] = 0;
-            $arr['is_new'] = 0;
-            $arr['is_hot'] = 0;
-            $arr['is_on_sale'] = 1;
-            $arr['is_alone_sale'] = 0;
-            $arr['is_real'] = 1;
-
-            $goods_list[] = $arr;
+            foreach($p['1'] as $key =>$val){
+                  $goods_key[$val]=$key;
+               }
+            $goods_key['start']=2;
         }
+        else
+        {
+            if(!is_array($p['0']))
+            {
+                sys_msg('csv文件不完整。', 1, array(), false);
+            }
+
+
+            foreach($p['0'] as $key =>$val){
+
+                if($val=='宝贝名称')
+                   $goods_key['title']=$key;
+                elseif($val=='宝贝价格')
+                   $goods_key['price']=$key;
+                elseif($val=='宝贝描述')
+                   $goods_key['description']=$key;
+                elseif($val=='宝贝图片' || $val=='新图片')
+                   $goods_key['picture']=$key;
+                elseif($val=='宝贝数量')
+                   $goods_key['num']=$key;
+            }
+            $goods_key['start']=0;
+
+
+        }
+        foreach($p as $key =>$value)
+        {
+           if ($line_number <= $goods_key['start'])
+           {
+               $line_number++;
+               continue;
+           }
+
+           $arr['goods_name']      =  $value[$goods_key['title']];
+           $arr['goods_sn']        =  '';
+           $arr['brand_name'] = '';
+           $arr['market_price']    =  $value[$goods_key['price']];
+           $arr['shop_price']      =  $value[$goods_key['price']];
+           $arr['goods_brief'] = '';
+           $arr['integral'] = 0;
+           $arr['original_img'] = $value[$goods_key['picture']];
+           $arr['keywords'] = '';
+           //处理双引号，防止html冲突
+
+           $arr['goods_desc'] = htmlspecialchars($value[$goods_key['description']]);
+          // $arr['goods_desc'] = substr($arr['goods_desc'], 1, -1);
+
+           $arr['goods_number'] = $value[$goods_key['num']];
+           $arr['warn_number'] =1;
+           $arr['is_best'] = 0;
+           $arr['is_new'] = 0;
+           $arr['is_hot'] = 0;
+           $arr['is_on_sale'] = 1;
+           $arr['is_alone_sale'] = 1;
+           $arr['is_real'] = 1;
+           $goods_list[] = $arr;
+        }
+
+
+
+
+
+
+
+
     }
     elseif($_POST['data_cat'] == 'paipai')
     {
@@ -441,17 +500,21 @@ elseif ($_REQUEST['act'] == 'insert')
                 // 特殊处理
                 if (!empty($field_value))
                 {
+
                     // 图片路径
                     if (in_array($field, array('original_img', 'goods_img', 'goods_thumb')))
                     {
+
                         if(strpos($field_value,'|;')>0)
                         {
                             $field_value=explode(':',$field_value);
                             $field_value=$field_value['0'];
-                            @copy(ROOT_PATH.'images/'.$field_value.'.tbi',ROOT_PATH.'images/'.$field_value.'.jpg');
-                            if(is_file(ROOT_PATH.'images/'.$field_value.'.jpg'))
+
+                            @copy(ROOT_PATH.'images/taobao/'.$field_value.'.tbi',ROOT_PATH.'images/taobao/'.$field_value.'.jpg');
+
+                            if(is_file(ROOT_PATH.'images/taobao/'.$field_value.'.jpg'))
                             {
-                                $field_arr[$field] =IMAGE_DIR . '/' . $field_value.'.jpg';
+                                $field_arr[$field] =IMAGE_DIR . '/taobao/' . $field_value.'.jpg';
                             }
                         }
                         else
@@ -491,6 +554,7 @@ elseif ($_REQUEST['act'] == 'insert')
                         $field_arr[$field] = intval($field_value) > 0 ? 1 : 0;
                     }
                 }
+
 
                 if ($field == 'is_real')
                 {
@@ -533,10 +597,13 @@ elseif ($_REQUEST['act'] == 'insert')
                         @copy(ROOT_PATH . $field_arr['original_img'], ROOT_PATH . $gallery_img);
                         $goods_gallery['img_original'] = reformat_image_name('gallery', $goods_gallery['goods_id'], $img, 'source');
                     }
+
                     //设置商品原图
                     if ($_CFG['retain_original_img'])
                     {
+
                         $original_img                  = reformat_image_name('goods', $goods_gallery['goods_id'], $field_arr['original_img'], 'source');
+
                     }
                     else
                     {
@@ -927,5 +994,21 @@ elseif ($_REQUEST['act'] == 'get_goods')
 
     make_json_result($arr);
 }
+
+
+function strgetcsv($string, $delimiter=',', $enclosure='"') {
+    $fp = fopen('php://temp/', 'r+');
+    $params1 = array( 'line-break-chars' => "\r\n");
+    fputs($fp, $string);
+    rewind($fp);
+    while($t = fgetcsv($fp, strlen($string), $delimiter, $enclosure)) {
+        $r[] = $t;
+    }
+    fclose($fp);
+    if(count($r) ==1) return current($r);
+    return $r;
+}
+
+
 
 ?>

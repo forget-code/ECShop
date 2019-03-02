@@ -104,4 +104,62 @@ function get_footer()
     return $footer;
 }
 
+
+
+
+
+function mobile_common()
+{
+    $GLOBALS['smarty']->assign('mobile_navigator',        get_mobile_navigator());  //自定义导航栏
+}
+
+
+function get_mobile_navigator()
+{
+    $sql="SELECT * FROM " . $GLOBALS['ecs']->table('mobile_nav') ." WHERE `ifshow`=1 ORDER BY `vieworder`  LIMIT 0,3";
+    $result=$GLOBALS['db']->getAll($sql);
+    return $result;
+}
+
+
+function mobile_json($content,$flag)
+{
+
+    if(EC_CHARSET != 'utf-8')
+    {
+         $content=ecs_iconv(EC_CHARSET,'utf-8',  $content);
+    }
+    $josn=array();
+    $josn['success']=$content;
+    $josn['flag']=$flag;
+    echo json_encode($josn);
+    exit;
+
+}
+
+
+function mobile_error ($act,$url='',$name='')
+{
+    $mobile_error=array();
+    if(empty($url))
+    {
+        if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']))
+        {
+               $url=$_SERVER['HTTP_REFERER'];
+        }
+        else
+        {
+               $url='index.php';
+        }
+    }
+    $mobile_error['act']=$act;
+    $mobile_error['url']=$url;
+    $mobile_error['name']=$name;
+    $GLOBALS['smarty']->assign('mobile_error',        $mobile_error);
+    $GLOBALS['smarty']->display('mobile_error.dwt');
+    exit;
+}
+
+
+
 ?>

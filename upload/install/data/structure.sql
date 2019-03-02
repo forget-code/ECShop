@@ -1482,7 +1482,7 @@ PRIMARY KEY ( `log_id` )
 
 DROP TABLE IF EXISTS `ecs_favourable_activity`;
 CREATE TABLE `ecs_favourable_activity` (
-  `act_id` smallint(5) unsigned NOT NULL auto_increment,
+  `act_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `act_name` varchar(255) NOT NULL,
   `start_time` int(10) unsigned NOT NULL,
   `end_time` int(10) unsigned NOT NULL,
@@ -1495,9 +1495,11 @@ CREATE TABLE `ecs_favourable_activity` (
   `act_type_ext` decimal(10,2) unsigned NOT NULL,
   `gift` text NOT NULL,
   `sort_order` tinyint(3) unsigned NOT NULL DEFAULT '50',
-  PRIMARY KEY  (`act_id`),
+  `image_url` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`act_id`),
   KEY `act_name` (`act_name`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 -- --------------------------------------------------------
 
@@ -1793,3 +1795,60 @@ CREATE TABLE `ecs_products` (
   `product_number` smallint(5) unsigned default '0',
   PRIMARY KEY  (`product_id`)
 ) ENGINE=MyISAM;
+
+DROP TABLE IF EXISTS `ecs_mobile_ad`;
+CREATE TABLE `ecs_mobile_ad` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `http_url` varchar(120) NOT NULL,
+  `state` int(2) NOT NULL,
+  `order_id` varchar(6) NOT NULL,
+  `image_url` varchar(120) NOT NULL,
+  `explain` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+DROP TABLE IF EXISTS `ecs_mobile_nav`;
+CREATE TABLE `ecs_mobile_nav` (
+  `id` mediumint(8) NOT NULL AUTO_INCREMENT,
+  `ctype` varchar(10) DEFAULT NULL,
+  `cid` smallint(5) unsigned DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `ifshow` tinyint(1) NOT NULL,
+  `vieworder` tinyint(1) NOT NULL,
+  `opennew` tinyint(1) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `type` (`type`),
+  KEY `ifshow` (`ifshow`)
+) ENGINE=MyISAM;
+
+DROP TABLE IF EXISTS `ecs_user_send`;
+CREATE TABLE `ecs_user_send` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) NOT NULL,
+  `mobile_phone` varchar(15) NOT NULL,
+  `send_num` varchar(10) NOT NULL,
+  `send_time` int(10) NOT NULL,
+  `check_start` int(2) NOT NULL,
+  `check_time` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+DROP TABLE IF EXISTS `ecs_mobile_payment`;
+CREATE TABLE `ecs_mobile_payment` (
+  `pay_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `pay_code` varchar(20) NOT NULL DEFAULT '',
+  `pay_name` varchar(120) NOT NULL DEFAULT '',
+  `pay_fee` varchar(10) NOT NULL DEFAULT '0',
+  `pay_desc` text NOT NULL,
+  `pay_order` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `pay_config` text NOT NULL,
+  `enabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `is_cod` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `is_online` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`pay_id`),
+  UNIQUE KEY `pay_code` (`pay_code`)
+) ENGINE=MyISAM;
+
+

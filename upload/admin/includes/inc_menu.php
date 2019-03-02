@@ -145,4 +145,15 @@ $modules['16_email_manage']['email_list']           = 'email_list.php?act=list';
 $modules['16_email_manage']['magazine_list']        = 'magazine_list.php?act=list';
 $modules['16_email_manage']['attention_list']       = 'attention_list.php?act=list';
 $modules['16_email_manage']['view_sendlist']        = 'view_sendlist.php?act=list';
+
+
+$modules['17_molibe']['01_ad_list']           = 'mobile_ad.php?act=list';
+$modules['17_molibe']['02_mobile_license']           = 'mobile_license.php?act=list_edit';
+$modules['17_molibe']['03_mobile_navigator']           = 'mobile_navigator.php?act=list';
+$modules['17_molibe']['04_mobile_pay']           = 'mobile_payment.php?act=list';
+
+
+
+
+
 ?>

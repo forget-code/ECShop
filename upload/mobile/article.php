@@ -17,70 +17,63 @@ define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 
-$act = !empty($_GET['act']) ? $_GET['act'] : '';
-if (!function_exists("htmlspecialchars_decode"))
-    {
-        function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
-        {
-            return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
-        }
-    }
-
-/* 文章详细 */
-if ($act == 'detail')
+$a_id = !empty($_GET['id']) ? intval($_GET['id']) : '';
+if ($a_id > 0)
 {
-    $a_id = !empty($_GET['a_id']) ? intval($_GET['a_id']) : '';
-    if ($a_id > 0)
-    {
-        $article_row = $db->getRow('SELECT title, content FROM ' . $ecs->table('article') . ' WHERE article_id = ' . $a_id . ' AND cat_id > 0 AND is_open = 1');
-        if (!empty($article_row))
-        {
-            $article_row['title'] = encode_output($article_row['title']);
-            $replace_tag = array('<br />' , '<br/>' , '<br>' , '</p>');
-            $article_row['content'] = htmlspecialchars_decode(encode_output($article_row['content']));
-            $article_row['content'] = str_replace($replace_tag, '{br}' , $article_row['content']);
-            $article_row['content'] = strip_tags($article_row['content']);
-            $article_row['content'] = str_replace('{br}' , '<br />' , $article_row['content']);
-            $smarty->assign('article_data', $article_row);
-        }
-    }
-    $smarty->display('article.html');
-}
+    $article_row  = get_article_info($a_id);
 
-/* 文章列表 */
+    if (empty($article_row))
+    {
+        mobile_error ('返回首页',$url='index.php','未找到对应的文章');
+    }
+
+    if (!empty($article_row['link']) && $article_row['link'] != 'http://' && $article_row['link'] != 'https://')
+    {
+        mobile_error ('返回首页',$url='index.php','未找到对应的文章');
+    }
+
+    $smarty->assign('common_header_title',    encode_output($article_row['title']));
+    $article_row['title'] = encode_output($article_row['title']);
+    $replace_tag = array('<br />' , '<br/>' , '<br>' , '</p>');
+    $article_row['content'] = htmlspecialchars_decode(encode_output($article_row['content']));
+    $article_row['content'] = str_replace($replace_tag, '{br}' , $article_row['content']);
+    $article_row['content'] = strip_tags($article_row['content']);
+    $article_row['content'] = str_replace('{br}' , '<br />' , $article_row['content']);
+    $smarty->assign('article_data', $article_row);
+
+$smarty->display('article_desc.dwt');
+
+}
 else
 {
-    $article_num = $db->getOne("SELECT count(*) FROM " . $ecs->table('article') . " WHERE cat_id > 0 AND is_open = 1");
-    if ($article_num > 0)
-    {
-        $page_num = '10';
-        $page = !empty($_GET['page']) ? intval($_GET['page']) : 1;
-        $pages = ceil($article_num / $page_num);
-        if ($page <= 0)
-        {
-            $page = 1;
-        }
-        if ($pages == 0)
-        {
-            $pages = 1;
-        }
-        if ($page > $pages)
-        {
-            $page = $pages;
-        }
-        $pagebar = get_wap_pager($article_num, $page_num, $page, 'article.php', 'page');
-        $smarty->assign('pagebar', $pagebar);
-        include_once(ROOT_PATH . '/includes/lib_article.php');
-        $article_array = get_cat_articles(-1, $page, $page_num);
-        $i = 1;
-        foreach ($article_array as $key => $article_data)
-        {
-            $article_array[$key]['i'] = $i;
-            $article_array[$key]['title'] = encode_output($article_data['title']);
-            $i++;
-        }
-        $smarty->assign('article_array', $article_array);
-    }
-    $smarty->display('article_list.html');
+    mobile_error ('返回首页',$url='index.php','未找到对应的文章');
+
 }
+
+
+function get_article_info($article_id)
+{
+    /* 获得文章的信息 */
+    $sql = "SELECT a.*, IFNULL(AVG(r.comment_rank), 0) AS comment_rank ".
+            "FROM " .$GLOBALS['ecs']->table('article'). " AS a ".
+            "LEFT JOIN " .$GLOBALS['ecs']->table('comment'). " AS r ON r.id_value = a.article_id AND comment_type = 1 ".
+            "WHERE a.is_open = 1 AND a.article_id = '$article_id' GROUP BY a.article_id";
+    $row = $GLOBALS['db']->getRow($sql);
+
+    if ($row !== false)
+    {
+        $row['comment_rank'] = ceil($row['comment_rank']);                              // 用户评论级别取整
+        $row['add_time']     = local_date($GLOBALS['_CFG']['date_format'], $row['add_time']); // 修正添加时间显示
+
+        /* 作者信息如果为空，则用网站名称替换 */
+        if (empty($row['author']) || $row['author'] == '_SHOPHELP')
+        {
+            $row['author'] = $GLOBALS['_CFG']['shop_name'];
+        }
+    }
+
+    return $row;
+}
+
+
 ?>

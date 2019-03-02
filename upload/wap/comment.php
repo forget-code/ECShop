@@ -22,6 +22,9 @@ if ($goods_id <= 0)
 {
     exit();
 }
+$_LANG['kilogram'] = '千克';
+$_LANG['gram'] = '克';
+$_LANG['home'] = '首页';
 /* 读取商品信息 */
 $_LANG['kilogram'] = '千克';
 $_LANG['gram'] = '克';

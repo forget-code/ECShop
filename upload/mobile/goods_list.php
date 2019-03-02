@@ -17,30 +17,30 @@ define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 
-$type = !empty($_GET['type']) ? $_GET['type'] : 'best';
-if ($type != 'best' && $type != 'promote' && $type != 'hot' && $type != 'new')
+$type = !empty($_GET['type']) ? $_GET['type'] : '';
+
+$temp_type=array();
+$temp_type=array('best','hot','new');
+
+
+    $smarty->assign('common_header_title',    '商品列表');
+
+
+
+
+if(!in_array($type,$temp_type))
 {
-    $type = 'best';
+    $type='hot';
 }
+
 $smarty->assign('type', $type);
 
-if (empty($_GET['order_price']))
-{
-    $order_rule = 'ORDER BY shop_price ASC, g.last_update DESC';
-}
-else
-{
-    $order_rule = 'ORDER BY shop_price DESC, g.last_update DESC';
-}
 
-if ($type == 'promote')
-{
-    $goods = wap_get_promote_goods($order_rule);
-}
-else
-{
-    $goods = wap_get_recommend_goods($type, $order_rule);
-}
+$order_rule='';
+
+$goods = wap_get_recommend_goods($type, $order_rule);
+
+//var_dump($goods);exit;
 
 $num = count($goods);
 if ($num > 0)
@@ -51,6 +51,7 @@ if ($num > 0)
     }
     $page_num = '10';
     $page = !empty($_GET['page']) ? intval($_GET['page']) : 1;
+    $_GET['page']=$page;
     $pages = ceil($num / $page_num);
     if ($page <= 0)
     {
@@ -70,8 +71,7 @@ if ($num > 0)
         if (($i > ($page_num * ($page - 1 ))) && ($i <= ($page_num * $page)))
         {
             $price = empty($goods[$goods_key]['promote_price_org']) ? $goods[$goods_key]['shop_price'] : $goods[$goods_key]['promote_price'];
-            //$wml_data .= "<a href='goods.php?id={}'>".encode_output($goods[$goods_key]['name'])."</a>[".encode_output($price)."]<br/>";
-            $goods_data[] = array('i' => $i , 'price' => encode_output($price) , 'id' => $goods[$goods_key]['id'] , 'name' => encode_output($goods[$goods_key]['name']));
+            $goods_data[] = array('i' => $i , 'price' => encode_output($price) , 'id' => $goods[$goods_key]['id'] , 'name' => encode_output($goods[$goods_key]['name']),'thumb'=>$goods[$goods_key]['thumb']);
         }
         $i++;
     }
@@ -81,7 +81,7 @@ if ($num > 0)
 }
 
 $smarty->assign('footer', get_footer());
-$smarty->display('goods_list.html');
+$smarty->display('goods_list.dwt');
 
 
 

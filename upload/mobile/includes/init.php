@@ -78,7 +78,7 @@ require(ROOT_PATH . 'includes/lib_base.php');
 require(ROOT_PATH . 'includes/lib_common.php');
 require(ROOT_PATH . 'includes/lib_time.php');
 require(ROOT_PATH . 'includes/lib_main.php');
-require(ROOT_PATH . 'mobile/includes/lib_main.php');
+
 require(ROOT_PATH . 'includes/inc_constant.php');
 require(ROOT_PATH . 'includes/cls_error.php');
 
@@ -144,6 +144,10 @@ if (!defined('INIT_NO_SMARTY'))
     }
 }
 
+require(ROOT_PATH . 'mobile/includes/lib_main.php');
+$position=array();
+
+
 if (!defined('INIT_NO_USERS'))
 {
     /* 会员信息 */
@@ -191,12 +195,18 @@ if (gzip_enabled())
 /* wap头文件 */
 //if (substr($_SERVER['SCRIPT_NAME'], strrpos($_SERVER['SCRIPT_NAME'], '/')) != '/user.php')
 //{}
-header("Content-Type:text/html; charset=utf-8");
-
 if (empty($_CFG['wap_config']))
 {
-    echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' /><title>ECShop_mobile</title></head><body><p align='left'>对不起,{$_CFG['shop_name']}暂时没有开启手机购物功能</p></body></html>";
-    exit();
+       mobile_error ('返回电脑版','../index.php','对不起,该网店暂时没有开启手机购物功能');
 }
+
+if (!empty($_CFG['shop_closed']))
+{
+       mobile_error ('返回首页','index.php',$_CFG['close_comment']);
+}
+
+
+
+
 
 ?>

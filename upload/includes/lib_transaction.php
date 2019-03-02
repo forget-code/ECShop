@@ -329,8 +329,10 @@ function get_user_orders($user_id, $num = 10, $start = 0)
 
         $row['shipping_status'] = ($row['shipping_status'] == SS_SHIPPED_ING) ? SS_PREPARING : $row['shipping_status'];
         $row['order_status'] = $GLOBALS['_LANG']['os'][$row['order_status']] . ',' . $GLOBALS['_LANG']['ps'][$row['pay_status']] . ',' . $GLOBALS['_LANG']['ss'][$row['shipping_status']];
-
+        $sql="SELECT g.goods_thumb as goods_thumb FROM ".$GLOBALS['ecs']->table('order_goods')." as o  LEFT JOIN ".$GLOBALS['ecs']->table('goods')." as g ON o.goods_id=g.goods_id    WHERE  o.order_id=".$row['order_id']." LIMIT 0,1";
+        $goods_thumb=$GLOBALS['db']->getOne($sql);
         $arr[] = array('order_id'       => $row['order_id'],
+                       'goods_thumb'       => $goods_thumb,
                        'order_sn'       => $row['order_sn'],
                        'order_time'     => local_date($GLOBALS['_CFG']['time_format'], $row['add_time']),
                        'order_status'   => $row['order_status'],
@@ -481,7 +483,7 @@ function affirm_received($order_id, $user_id = 0)
     }
     elseif ($order['shipping_status'] != SS_SHIPPED)
     {
-        $GLOBALS['err']->add($GLOBALS['_LANG']['order_invalid']);
+        //$GLOBALS['err']->add($GLOBALS['_LANG']['order_invalid']);
 
         return false;
     }
@@ -518,7 +520,7 @@ function save_consignee($consignee, $default=false)
     if ($consignee['address_id'] > 0)
     {
         /* 修改地址 */
-        $res = $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('user_address'), $consignee, 'UPDATE', 'address_id = ' . $consignee['address_id']);
+        $res = $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('user_address'), $consignee, 'UPDATE', 'address_id = ' . $consignee['address_id']." AND `user_id`= '".$_SESSION['user_id']."'");
     }
     else
     {
@@ -588,7 +590,7 @@ function update_address($address)
         $address_id = $GLOBALS['db']->insert_id();
     }
 
-    if (isset($address['defalut']) && $address['default'] > 0 && isset($address['user_id']))
+    if (isset($address['default']) && $address['default'] > 0 && isset($address['user_id']))
     {
         $sql = "UPDATE ".$GLOBALS['ecs']->table('users') .
                 " SET address_id = '".$address_id."' ".
@@ -929,7 +931,7 @@ function return_to_cart($order_id)
             'goods_price'   => $goods['goods_price'],
             'goods_number'  => $row['goods_number'],
             'goods_attr'    => empty($row['goods_attr']) ? '' : addslashes($row['goods_attr']),
-            'goods_attr_id'    => empty($row['goods_attr_id']) ? '' : $row['goods_attr_id'],
+            'goods_attr_id'    => empty($row['goods_attr_id']) ? '' : addslashes($row['goods_attr_id']),
             'is_real'       => $goods['is_real'],
             'extension_code'=> addslashes($goods['extension_code']),
             'parent_id'     => '0',

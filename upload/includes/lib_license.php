@@ -284,4 +284,5 @@ function license_reg($certi_added = '')
 
     return $return_array;
 }
+
 ?>

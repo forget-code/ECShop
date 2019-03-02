@@ -1011,6 +1011,7 @@ function cart_weight_price($type = CART_GENERAL_GOODS)
  */
 function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
 {
+
     $GLOBALS['err']->clean();
     $_parent_id = $parent;
 
@@ -1030,7 +1031,6 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
     if (empty($goods))
     {
         $GLOBALS['err']->add($GLOBALS['_LANG']['goods_not_exists'], ERR_NOT_EXISTS);
-
         return false;
     }
 
@@ -1042,7 +1042,6 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
         if ($GLOBALS['db']->getOne($sql) == 0)
         {
             $GLOBALS['err']->add($GLOBALS['_LANG']['no_basic_goods'], ERR_NO_BASIC_GOODS);
-
             return false;
         }
     }
@@ -1626,6 +1625,7 @@ function get_cart_goods()
         /* 查询规格 */
         if (trim($row['goods_attr']) != '')
         {
+            $row['goods_attr']=addslashes($row['goods_attr']);
             $sql = "SELECT attr_value FROM " . $GLOBALS['ecs']->table('goods_attr') . " WHERE goods_attr_id " .
             db_create_in($row['goods_attr']);
             $attr_list = $GLOBALS['db']->getCol($sql);
@@ -1685,7 +1685,6 @@ function get_consignee($user_id)
             $sql = "SELECT ua.*".
                     " FROM " . $GLOBALS['ecs']->table('user_address') . "AS ua, ".$GLOBALS['ecs']->table('users').' AS u '.
                     " WHERE u.user_id='$user_id' AND ua.address_id = u.address_id";
-
             $arr = $GLOBALS['db']->getRow($sql);
         }
 

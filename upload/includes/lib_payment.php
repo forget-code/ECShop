@@ -50,6 +50,26 @@ function get_payment($code)
     return $payment;
 }
 
+function get_mobile_payment($code)
+{
+    $sql = 'SELECT * FROM ' . $GLOBALS['ecs']->table('mobile_payment').
+           " WHERE pay_code = '$code' AND enabled = '1'";
+    $payment = $GLOBALS['db']->getRow($sql);
+
+    if ($payment)
+    {
+        $config_list = unserialize($payment['pay_config']);
+
+        foreach ($config_list AS $config)
+        {
+            $payment[$config['name']] = $config['value'];
+        }
+    }
+
+    return $payment;
+}
+
+
 /**
  *  通过订单sn取得订单ID
  *  @param  string  $order_sn   订单sn
@@ -108,10 +128,16 @@ function get_goods_name_by_id($order_id)
  */
 function check_money($log_id, $money)
 {
-    $sql = 'SELECT order_amount FROM ' . $GLOBALS['ecs']->table('pay_log') .
+    if(is_numeric($log_id))
+    {
+        $sql = 'SELECT order_amount FROM ' . $GLOBALS['ecs']->table('pay_log') .
               " WHERE log_id = '$log_id'";
-    $amount = $GLOBALS['db']->getOne($sql);
-
+        $amount = $GLOBALS['db']->getOne($sql);
+    }
+    else
+    {
+        return false;
+    }
     if ($money == $amount)
     {
         return true;

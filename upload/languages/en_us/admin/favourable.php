@@ -83,4 +83,9 @@ $_LANG['amount_error'] = 'The amount of the minimum amount should not exceed the
 $_LANG['act_name_exists'] = 'Activity name of the discount already exists, please for a';
 
 $_LANG['nolimit'] = 'There is no limit';
+
+
+$_LANG['favourable_desc'] = 'favourable_desc';
+$_LANG['favourable_image'] ='favourable_image';
+
 ?>

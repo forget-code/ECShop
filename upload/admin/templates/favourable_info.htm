@@ -75,6 +75,7 @@
       </table>
     </div></td>
   </tr>
+
   <tr id="type_search"{if $favourable.act_type neq 0} style="display:none"{/if}>
     <td align="right">{$lang.label_search_and_add_gift}</td>
     <td><input name="keyword1" type="text" id="keyword1" />
@@ -84,6 +85,20 @@
         <input name="add_gift" type="button" class="button" id="add_gift" onclick="addGift()" value="+" />
       </a></td>
   </tr>
+
+  <tr>
+    <td class="label">{$lang.favourable_desc}:</td>
+    <td><textarea rows="3" cols="40" name="act_desc">{$favourable.description}</textarea></td>
+  </tr>
+	<tr>
+	<td class="label">{$lang.favourable_image}:</td>
+	<td>
+	<input id="some_name" type="file" size="40" value="" name="img_file_src">
+	<br>
+	<span id="width_height" class="notice-span" style="display:block"></span>
+	</td>
+	</tr>
+
   <tr>
     <td colspan="2" align="center">
       <input type="submit" class="button" value="{$lang.button_submit}" />

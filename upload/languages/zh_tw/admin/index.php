@@ -132,6 +132,7 @@ $_LANG['caches_cleared'] = '頁面緩存已經清除成功。';
 /*------------------------------------------------------ */
 $_LANG['team_member'] = 'ECSHOP 團隊成員';
 $_LANG['before_team_member'] = 'ECSHOP 貢獻者';
+
 $_LANG['director'] = '項目策劃';
 $_LANG['programmer'] = '程序開發';
 $_LANG['ui_designer'] = '界面設計';

@@ -21,22 +21,28 @@ if ((DEBUG_MODE & 2) != 2)
 {
     $smarty->caching = true;
 }
-$ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 
-$uachar = "/(nokia|sony|ericsson|mot|samsung|sgh|lg|philips|panasonic|alcatel|lenovo|cldc|midp|mobile)/i";
 
-if(($ua == '' || preg_match($uachar, $ua))&& !strpos(strtolower($_SERVER['REQUEST_URI']),'wap'))
+
+
+if(isset($_GET['access']) && $_GET['access']=='computer')
+{
+    $_SESSION['access']='computer';
+}
+
+if(!empty($_CFG['wap_config']) && mobile_access() && (!isset($_SESSION['access']) || (isset($_SESSION['access']) && $_SESSION['access']!='computer') ))
 {
     $Loaction = 'mobile/';
-
     if (!empty($Loaction))
     {
         ecs_header("Location: $Loaction\n");
-
         exit;
     }
-
 }
+
+
+
+
 /*------------------------------------------------------ */
 //-- Shopex系统地址转换
 /*------------------------------------------------------ */
@@ -356,5 +362,69 @@ function index_get_links()
 
     return $links;
 }
+
+
+function mobile_access() {
+    if(isset($_SERVER['HTTP_X_WAP_PROFILE'])) {
+        return true;
+    }
+    if(isset ($_SERVER['HTTP_VIA'])) {
+        //找不到为flase,否则为true
+        return stristr($_SERVER['HTTP_VIA'], "wap") ? true : false;
+    }
+    if(isset($_SERVER['HTTP_USER_AGENT'])) {
+        //此数组有待完善
+        $clientkeywords = array (
+        'nokia',
+        'sony',
+        'ericsson',
+        'mot',
+        'samsung',
+        'htc',
+        'sgh',
+        'lg',
+        'sharp',
+        'sie-',
+        'philips',
+        'panasonic',
+        'alcatel',
+        'lenovo',
+        'iphone',
+        'ipod',
+        'blackberry',
+        'meizu',
+        'android',
+        'netfront',
+        'symbian',
+        'ucweb',
+        'windowsce',
+        'palm',
+        'operamini',
+        'operamobi',
+        'openwave',
+        'nexusone',
+        'cldc',
+        'midp',
+        'wap',
+        'mobile'
+        );
+        if(preg_match("/(" . implode('|', $clientkeywords) . ")/i", strtolower($_SERVER['HTTP_USER_AGENT']))) {
+            return true;
+        }
+ 
+    }
+ 
+    if (isset ($_SERVER['HTTP_ACCEPT'])) {
+        if ((strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') !== false) && (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') === false || (strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') < strpos($_SERVER['HTTP_ACCEPT'], 'text/html')))) {
+            return true;
+        }
+    }
+     
+return false;
+}
+
+
+
+
 
 ?>
