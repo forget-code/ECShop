@@ -1,0 +1,110 @@
+<div class="app-container with-tabbar" ng-controller="ActivityDetailController">
+
+    <div class="navbar fixed-top">
+        <div class="navbar-left hide-weixin" ng-click="goBack()">
+        <img class="button-icon" src="image/nav-left.png"/>
+        <div class="button-text">返回</div>
+        </div>
+        <div class="navbar-title">
+        优惠活动
+        </div>
+        <div class="navbar-right">
+        </div>
+    </div>
+    <div class="go-home-bottom" ng-click="touchGoHome()">
+        <img src="image/icon_gohome.png">
+    </div>
+    <div class="app-content margin-top" infinite-scroll='loadMore()'>
+        <div ng-src="image/icon_gohome.png"></div>
+        <!-- Banner -->
+        <div class="activity-banner " >
+            <div class="info-name">{{activityInfo.name}}</div>
+            <div class="info-condition">{{activityInfo.promo}}</div>
+            <div class="info-expires" >{{userScope}}</div>                      
+            <div class="info-expires">{{activityInfo.start_at  | localTime}} - {{activityInfo.end_at  | localTime}}</div>
+        </div>
+        <!-- Menu -->
+        <div class="home-menu" ng-if="activityInfo && systemTimestamp >= activityInfo.start_at  ">
+            <div class="menu-time">
+                <img class="button-icon" ng-src="image/icon_time@3x.png" />
+                <div class="button-text">
+                    <div class="text">剩余</div>
+                    <div class="number">{{day_front}}</div>
+                    <div class="number">{{day_last}}</div>
+                    <div class="text">天</div>
+                    <div class="number">{{hour_front}}</div>
+                    <div class="number">{{hour_last}}</div>
+                    <div class="text">时</div>
+                    <div class="number">{{minute_front}}</div>
+                    <div class="number">{{minute_last}}</div>
+                    <div class="text">分</div>
+                    <div class="number">{{second_front}}</div>
+                    <div class="number">{{second_last}}</div>
+                    <div class="text">秒</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-menu" ng-if="activityInfo && systemTimestamp < activityInfo.start_at ">
+            <div class="menu-time">
+                <img class="button-icon" ng-src="image/icon_time@3x.png" />
+                <div class="button-text">
+                    <div class="text">还有</div>
+                    <div class="number">{{day_front}}</div>
+                    <div class="number">{{day_last}}</div>
+                    <div class="text">天</div>
+                    <div class="number">{{hour_front}}</div>
+                    <div class="number">{{hour_last}}</div>
+                    <div class="text">时</div>
+                    <div class="number">{{minute_front}}</div>
+                    <div class="number">{{minute_last}}</div>
+                    <div class="text">分</div>
+                    <div class="number">{{second_front}}</div>
+                    <div class="number">{{second_last}}</div>
+                    <div class="text">秒</div>
+                    <div class="text">开始</div>
+                </div>
+            </div>
+        </div>
+        <!-- product -->
+        <div class="activity-product" ng-if="systemTimestamp > activityInfo.start_at && systemTimestamp < activityInfo.end_at">
+            <div class="product-item" ng-repeat="product in products track by $index">
+                <div ng-click="touchProduct(product)">
+                    <div class="item-photo">
+                        <img ng-src="image/default-photo.png" lazy-img="{{product.default_photo.large}}" />
+                    </div>
+                    <div class="item-name">
+                        <div class="activity-font"><div>促</div></div>
+                        <div class="name">{{product.name}}</div>
+                    </div>
+                    <div class="price-market"><span>{{product.price | currency:"￥"}}</span></div>
+                    <div class="item-price">
+                        <span>优惠价{{product.current_price | currency:"￥"}}</span>
+                        <div class="number">{{product.sales_count}}人付款</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="activity-empty" ng-if="systemTimestamp < activityInfo.start_at">
+            <div class="empty-item">
+                <img class="item-logo" ng-src="image/icon_notstarted.png" />
+                <div class="item-text">来早了
+                    <br />本轮优惠还没有开始</div>
+            </div>
+        </div>
+
+        <div class="activity-empty" ng-if="systemTimestamp > activityInfo.end_at">
+            <div class="empty-item">
+            <img class="item-logo" ng-src="image/icon_nothing@2x.png" />
+            <div class="item-text">来晚了
+                <br />本轮优惠已结束</div>
+            </div>
+        </div>
+        <div class="loading-more" ng-if="isLoaded && isLoading">
+            正在加载...
+        </div>
+        <div class="loading-more" ng-if="isLoaded && isLastPage">
+            全部加载完毕
+        </div>
+    </div>
+</div>
