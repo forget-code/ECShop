@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="Keywords" content="{$keywords}" />
+  <meta name="Description" content="{$description}" />
+  <!-- TemplateBeginEditable name="doctitle" --><!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="animated_favicon.gif" type="image/gif" />
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <title>{$page_title}</title>
+  {* 包含脚本文件 *}{insert_scripts files='common.js,user.js,transport.js'}
+</head>
+
+<body>
+  <div id="container">
+    <!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem -->
+    <div id="urHere" class="globalModule globalFrame" style="margin-top:10px">
+      <h3>{$lang.ur_here} {$ur_here}</h3>
+    </div>
+    <!-- {if $action eq 'login'} 登录界面 -->
+    <div id="globalLogin" class="globalModule globalFrame">
+      <h3>会员登录</h3>
+      <form name="formLogin" action="user.php" method="post" onSubmit="return userLogin()">
+        <div class="globalModuleContent">
+          <table border="0" align="center" class="tableList" style="width:400px;">
+            <tr>
+              <th width="70">{$lang.label_username}：</th>
+              <td><input name="username" type="text" size="30" id="username" class="textInput" /></td>
+            </tr>
+            <tr>
+              <th>{$lang.label_password}：</th>
+              <td><input name="password" type="password" size="30" id="password" class="textInput" /></td>
+            </tr>
+            <!-- {if $enabled_captcha} 判断是否启用验证码 -->
+            <tr>
+              <th>{$lang.comment_captcha}：</th>
+              <td>
+                <input type="text" size="8" name="captcha" class="textInput vAlign" />
+                <img src="captcha.php?is_login=1&{$rand}" onClick="this.src='captcha.php?is_login=1&'+Math.random()" alt="captcha" class="vAlign" style="cursor:pointer;" />
+              </td>
+            </tr>
+            <!-- {/if} -->
+            <tr>
+              <th>&nbsp;</th>
+              <td>
+                  <input type="image" name="login" src="images/btn_signin.gif" class="vAlign" />
+                  <a href="user.php?act=register"><img src="images/btn_register.gif" alt="{$lang.sign_up}" class="vAlign" /></a>
+                  <input type="hidden" name="act" value="act_login" />
+                  <input type="hidden" name="back_act" value="{$back_act}" />
+               </td>
+            </tr>
+            <tr>
+              <th>&nbsp;</th>
+              <td>
+                <a href="user.php?act=get_password">&gt;&gt;{$lang.forgot_password}</a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </form>
+    </div><!-- /globalModule 用户登录注册界面 -->
+    <!-- {/if} 登录界面 -->
+    <!-- {if $action eq 'register'} 会员注册界面 -->
+    <div id="globalLogin" class="globalModule globalFrame">
+      <h3>会员注册</h3>
+      {insert_scripts files='utils.js'}
+      <form action="user.php" method="post" name="formUser" onsubmit="return register();">
+      <div class="globalModuleContent">
+        <table border="0" cellspacing="0" class="tableList" style="width:450px">
+          <tr>
+            <th width="80">{$lang.label_username}：</th>
+            <td><input name="username" type="text" onblur="is_registered(this.value);" id="username" class="textInput" /> <span class="textDesc" id="username_notice">{$lang.require_field}</span></td>
+          </tr>
+          <tr>
+            <th>{$lang.label_email}：</th>
+            <td><input name="email" type="text" onblur="checkEmail(this.value);" id="email" class="textInput" /> <span class="textDesc" id="email_notice">{$lang.require_field}</span></td>
+          </tr>
+          <tr>
+            <th>{$lang.label_password}：</th>
+            <td><input name="password" type="password" onblur="check_password(this.value);" onkeyup="checkIntensity(this.value)" id="password" class="textInput" /> <span class="textDesc" id="password_notice">{$lang.require_field}</span></td>
+          </tr>
+          <tr>
+            <th>{$lang.label_password_intensity}：</th>
+            <td>
+              <table width="130" border="0" cellspacing="0">
+                <tr align="center">
+                  <td width="33%" id="pwd_lower" style="border-bottom:2px solid #dadada;">{$lang.pwd_lower}</td>
+                  <td width="33%" id="pwd_middle" style="border-bottom:2px solid #dadada;">{$lang.pwd_middle}</td>
+                  <td width="33%" id="pwd_high" style="border-bottom:2px solid #dadada;">{$lang.pwd_high}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <th>{$lang.label_confirm_password}：</th>
+            <td><input name="confirm_password" type="password" onblur="check_conform_password(this.value);" id="conform_password" class="textInput" /> <span class="textDesc" id="conform_password_notice">{$lang.require_field}</span></td>
+          </tr>
+          <tr>
+            <th>{$lang.other_msn}:</th>
+            <td><input name="other[msn]" type="text" class="textInput" /></td>
+          </tr>
+          <tr>
+            <th>{$lang.other_qq}:</th>
+            <td><input name="other[qq]" type="text" class="textInput" /></td>
+          </tr>
+          <tr>
+            <th>{$lang.other_office_phone}:</th>
+            <td><input name="other[office_phone]" type="text" class="textInput" /></td>
+          </tr>
+          <tr>
+            <th>{$lang.other_home_phone}:</th>
+            <td><input name="other[home_phone]" type="text" class="textInput" /></td>
+          </tr>
+          <tr>
+            <th>{$lang.other_mobile_phone}:</th>
+            <td><input name="other[mobile_phone]" type="text" class="textInput" /></td>
+          </tr>
+          <!-- 判断是否启用验证码{if $enabled_captcha} -->
+          <tr>
+            <th>{$lang.comment_captcha}:</th>
+            <td>
+              <input type="text" size="8" name="captcha" class="textInput vAlign" />
+              <img src="captcha.php?{$rand}" onClick="this.src='captcha.php?'+Math.random()" alt="captcha" class="vAlign" style="cursor:pointer;" />
+            </td>
+          </tr>
+          <!--{/if}-->
+          <tr>
+            <td>&nbsp;</td>
+            <td>
+              <label>
+                <input name="agreement" type="checkbox" value="1" checked="checked" /> {$lang.agreement}
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <td>
+              <input name="act" type="hidden" value="act_register" />
+              <input name="Submit" type="submit" value="{$lang.confirm_register}" />
+            </td>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <td><a href="user.php?act=login">&gt;&gt;{$lang.want_login}</a><br /><a href="user.php?act=get_password">&gt;&gt;{$lang.forgot_password}</a></td>
+          </tr>
+        </table>
+      </div>
+      </form>
+    </div>
+    <!-- {/if} 会员注册界面 -->
+    <!-- {if $action eq 'get_password'} 找回密码界面 -->
+    {insert_scripts files='utils.js'}
+    <script type="text/javascript">
+    //<![CDATA[
+      {foreach from=$lang.password_js item=item key=key}
+        var {$key} = "{$item}";
+      {/foreach}
+    //]]>
+    </script>
+    <div id="globalLogin" class="globalModule globalFrame">
+      <h3>找回密码</h3>
+      <form action="user.php" method="post" name="getPassword" onsubmit="return submitPwdInfo();">
+        <div class="globalModuleContent">
+          <table border="0" align="center" class="tableList">
+            <tr>
+              <td colspan="2" align="center" class="textStrong">{$lang.username_and_email}</td>
+            </tr>
+            <tr>
+              <td width="39%" align="right">{$lang.username}：</td>
+              <td width="61%"><input name="user_name" type="text" size="30" class="textInput" /></td>
+            </tr>
+            <tr>
+              <td align="right">{$lang.email}：</td>
+              <td><input name="email" type="text" size="30" class="textInput" /></td>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td>
+                <input type="hidden" name="act" value="send_pwd_email" />
+                <input type="submit" name="submit" value="{$lang.confirm_submit}" />
+                <input name="button" type="button" onclick="history.back()" value="{$lang.back_page_up}" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </form>
+    </div>
+    <!-- {/if} 找回密码界面 -->
+    <!-- {if $action eq 'reset_password'} -->
+    <script type="text/javascript">
+    //<![CDATA[
+      {foreach from=$lang.password_js item=item key=key}
+        var {$key} = "{$item}";
+      {/foreach}
+    //]]>
+    </script>
+    <div id="globalLogin" class="globalModule globalFrame">
+      <h3>找回密码</h3>
+      <form action="user.php" method="post" name="getPassword2" onSubmit="return submitPwd()">
+        <div class="globalModuleContent">
+          <table border="0" align="center" class="tableList">
+            <tr>
+              <td width="39%" align="right">{$lang.new_password}：</td>
+              <td width="61%"><input name="new_password" type="password" size="25" class="textInput" /></td>
+            </tr>
+            <tr>
+              <td align="right">{$lang.confirm_password}：</td>
+              <td><input name="confirm_password" type="password" size="25" class="textInput" /></td>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td>
+                <input type="hidden" name="act" value="act_edit_password" />
+                <input type="hidden" name="uid" value="{$uid}" />
+                <input type="hidden" name="code" value="{$code}" />
+                <input type="submit" name="submit" value="{$lang.confirm_submit}" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </form>
+    </div>
+    <!-- {/if} -->
+    <!-- #BeginLibraryItem "/library/help.lbi" --><!-- #EndLibraryItem -->
+    <!-- #BeginLibraryItem "/library/page_footer.lbi" --><!-- #EndLibraryItem -->
+  </div><!-- /container -->
+  <script type="text/javascript">
+  //<![CDATA[
+    var process_request = "{$lang.process_request}";
+    {foreach from=$lang.passport_js item=item key=key}
+    var {$key} = "{$item}";
+    {/foreach}
+    var username_exist = "{$lang.username_exist}";
+  //]]>
+  </script>
+</body>
+</html>

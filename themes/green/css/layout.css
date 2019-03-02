@@ -1,0 +1,281 @@
+#container {
+  background: #fff;
+  width: 928px;
+  overflow: hidden;
+  margin: 20px auto 20px auto;
+}
+#globalLeft {
+  width: 190px;
+  float: left;
+  padding: 0 7px 0 32px;
+}
+#globalMiddle {
+  width: 470px;
+  float: left;
+}
+#globalRight {
+  width: 190px;
+  display: inline;
+  float: right;
+  margin-right: 32px;
+}
+#globalBigRight {
+  width: 670px;
+  float: left;
+}
+#globalBigRight #globalRight {
+  margin: 0;
+}
+.globalFrame {
+  width: 867px;
+  margin: auto;
+}
+
+
+.moduleBg {
+  border: 1px solid #d4d4d4;
+  margin-bottom: 4px;
+}
+
+.globalModule {
+  clear: both;
+  margin-bottom: 7px;
+  overflow: hidden;
+  zoom: 1;
+  border: 1px solid #d4d4d4;
+  position: relative;
+}
+.globalModule h3 {
+  line-height: 25px;
+  color: #333;
+  background: #ededed url(../images/title_bg.gif) repeat-x;
+  height: 25px;
+  padding: 0 8px;
+}
+.globalModuleContent {
+  line-height: 1.6em;
+  color: #333;
+  padding: 10px;
+}
+.globalModule .more {
+  position: absolute;
+  top: 5px;   right: 10px;
+}
+.globalModule .more a,
+.globalModule .more a:visited {
+  color:#99b226;
+}
+
+
+/*  ==================== 网格方式显示 ====================  */
+.itemGrid {
+  width: 100%;
+  overflow: hidden;
+}
+#globalMiddle .itemGrid .item {
+  text-align: center;
+  width: 120px;   height: 200px;
+  float: left;
+  padding: 18px 18px 10px;
+}
+#globalMiddle .itemGrid .item .pic {
+  margin-bottom: 14px;
+}
+#globalMiddle .itemGrid .item .name,
+#globalMiddle .itemGrid .item .price {
+  margin-bottom: 8px;
+}
+#globalLeft .itemGrid .item {
+  text-align: center;
+  width: 160px;
+  float: left;
+  padding: 18px 18px 10px;
+}
+#globalLeft .itemGrid .item .pic {
+  margin-bottom: 14px;
+}
+#globalLeft .itemGrid .item .name,
+#globalLeft .itemGrid .item .price,
+#globalLeft .itemGrid .item .btnList {
+  margin-bottom: 8px;
+}
+#globalRight .itemGrid .item {
+  text-align: center;
+  width: 120px;   height: 200px;
+  margin: 0 auto;   padding: 18px 18px 10px;
+}
+#globalRight .itemGrid .item .pic {
+  margin-bottom: 14px;
+}
+#globalRight .itemGrid .item .name,
+#globalRight .itemGrid .item .price {
+  margin-bottom: 8px;
+}
+.itemGrid .item .name a {
+  font-weight: bold;
+  color: #337fe6;
+}
+.itemGrid .item .price {
+  color: #666;
+}
+.itemGrid .item .price .goodsPrice {
+  color: #F60;
+}
+.itemGrid .item .price .marketPrice {
+  color: #337fe6;
+  background: url(../images/line_through.gif) repeat-x center 7px;
+}
+.itemGrid .item .btnList {
+  color: #337fe6;
+}
+.itemGrid .item .btnList a {
+  text-decoration: none;
+  color: #fff;
+  background: #999;
+  padding: 1px 3px;
+  border: 1px solid #999;
+}
+.itemGrid .item .btnList a:hover {
+  color: #000;
+  background: #fff;
+}
+.itemGrid .item .pic img {
+  padding: 4px;
+  border: 1px solid #99b226;
+}
+
+
+/*  ==================== 列表方式显示 ====================  */
+.itemList .item {
+  overflow: hidden;
+  padding: 10px;    margin: 10px;
+  border: 1px solid #e0e1e2;
+  zoom: 1;
+}
+.itemList .item .pic {
+  float: left;
+  position: relative;
+}
+.itemList .item .pic img {
+  padding: 4px;
+  border: 1px solid #99b226;
+}
+.itemList .item .itemListInfo {
+  float: left;
+  padding-left: 30px;
+}
+.itemList .item .itemListInfo .name img {
+  vertical-align: middle;
+}
+.itemList .item .itemListInfo .name a {
+  font-weight: bold;
+  color: #337fe6;
+}
+.itemList .item .price {
+  color: #333;
+}
+.itemList .item .price .goodsPrice {
+  color: #F60;
+}
+.itemList .item .price .marketPrice {
+  color: #337fe6;
+  background: url(../images/line_through.gif) repeat-x center 7px;
+}
+.itemList .item .brief {
+  color: #999;
+  width: 480px;    height: 30px;
+}
+.itemList .item .btnList {
+  color: #337fe6;
+  text-align: right;
+}
+.itemList .item .btnList a {
+  text-decoration: underline;
+  color: #337fe6;
+}
+.itemList .item .btnList a:hover {
+  color: #666;
+}
+.itemList .item .sort {
+  color: #337fe6;
+}
+.itemList .item .name,
+.itemList .item .price,
+.itemList .item .brief,
+.itemList .item .sort,
+.itemList .item .btnList {
+  margin-bottom: 5px;
+}
+
+/*  ==================== 文字方式显示 ====================  */
+.itemText .item {
+  padding: 10px 20px;
+  border-bottom: 1px solid #e0e1e2;
+}
+.itemText .item .name a {
+  font-weight: bold;
+  color: #337fe6;
+}
+.itemText .item .price {
+  color: #333;
+}
+.itemText .item .price .goodsPrice {
+  color: #F60;
+  margin-right: 25px;
+}
+.itemText .item .price .marketPrice {
+  color: #337fe6;
+  background: url(../images/line_through.gif) repeat-x center 7px;
+  margin-right: 25px;
+}
+.itemText .item .brief {
+  color: #999;
+  height: 30px;
+}
+.itemText .item .btnList {
+  color: #337fe6;
+  text-align: right;
+}
+.itemText .item .btnList a {
+  text-decoration: underline;
+  color: #337fe6;
+}
+.itemText .item .btnList a:hover {
+  color: #666;
+}
+.itemText .item .name,
+.itemText .item .price,
+.itemText .item .brief,
+.itemText .item .btnList {
+  margin-bottom: 5px;
+}
+.tableList {
+  width: 100%;
+  margin: 5px auto 20px auto;
+}
+.tableList a,
+.tableList a:visited,
+.globalModuleContent a,
+.globalModule h3 a {
+  color: #337fe6;
+}
+.tableList th {
+  text-align: left;
+  vertical-align: top;
+  color: #c3d183;
+  padding: 3px 3px 3px 10px;
+  border-bottom: 2px solid #d4d4d4;
+}
+.tableList td {
+  vertical-align: top;
+  padding: 3px 3px 3px 10px;
+  border-bottom: 1px solid #e1e1e1;
+}
+.tableList tr.last td {
+  border: 0;
+}
+.tableList .textInput {
+  height: 15px;
+  padding: 3px;   margin-right: 5px;
+  border: 1px solid #d4d4d4;
+}

@@ -1,0 +1,22 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--{if $invoice_list}-->
+<div class="title-01">
+  <div class="title-01-arrow">发货查询</div>
+</div>
+<div class="sort-box01" style="padding:3px;">
+  <table width="100%" border="1" cellspacing="0" cellpadding="2" style="border:1px solid #D2C8A3;border-collapse:collapse;">
+    <!-- 发货单查询{foreach from=$invoice_list item=invoice} -->
+    <tr>
+      <th><span style="color:#EEEEEE;">{$lang.order_number}</span></th>
+      <td><span style="color:#EEEEEE;">{$invoice.order_sn}</span></td>
+    </tr>
+    <tr>
+      <th><span style="color:#EEEEEE;">{$lang.consignment}</span></th>
+      <td><span>{$invoice.invoice_no}</span></td>
+    </tr>
+    
+    <!-- 结束发货单查询{/foreach}-->
+  </table>
+</div>
+<!--End sort-box01-->
+<!-- {/if} -->

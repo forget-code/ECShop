@@ -1,0 +1,11 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--{if $pictures}-->
+<div class="title-02">
+  <div class="title-02-arrow">商品相册</div>
+</div>
+<div class="sort-box02" id="goods-gallery">
+  <!-- {foreach from=$pictures item=picture}-->
+  <div class="goods-gallery-outside"><span class="goods-gallery-inside"><a href="gallery.php?id={$id}&amp;img={$picture.img_id}" target="_blank"><img src="{$picture.thumb_url}" alt="{$goods.goods_name}" border="0" /></a></span></div>
+  <!--{/foreach}-->
+</div>
+<!--{/if} -->

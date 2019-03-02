@@ -1,0 +1,11 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div class="title-01">
+  <div class="title-01-arrow">最新文章</div>
+</div>
+<div class="sort-box01" style="padding:6px;">
+  <ul style="list-style-type: circle;">
+    <!--{foreach from=$new_articles item=article}-->
+    <li class="new-article"><a href="{$article.url}" title="{$article.title|escape:html}">{$article.short_title}</a></li>
+    <!--{/foreach}-->
+  </ul>
+</div>

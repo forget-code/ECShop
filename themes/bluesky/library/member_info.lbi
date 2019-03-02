@@ -1,0 +1,75 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $user_info} -->
+<span class="welcome">{$lang.hello}，{$user_info.username}, {$lang.welcome_return}！</span>
+<span class="memberInfo">{$lang.now_account} {$user_info.user_money} {$lang.balance}，{$user_info.user_points}{$lang.along_with} {$user_info.user_bonus} {$lang.preferential}</span>
+<span class="btnList"><a href="user.php">{$lang.edit_user_info}</a><a href="user.php?act=logout">{$lang.logout}</a></span>
+
+<!-- {else} -->
+<form id="ECS_LOGINFORM" name="ECS_LOGINFORM" method="post" action="javascript:signIn()">
+  {$lang.member_name}：<input name="username" type="text" size="8" tabindex="1" value="{$ecs_username|escape}" class="textInput textInputSign" /> {$lang.password}：<input name="password" type="password" size="10" tabindex="2" class="textInput textInputSign" /><!-- 判断是否启用验证码{if $enabled_captcha} --> {$lang.comment_captcha}：<input type="text" size="5" name="captcha" class="textInput textCaptcha" /><img src="captcha.php?is_login=1&amp;{$rand}" alt="captcha" onClick="this.src='captcha.php?is_login=1&amp;'+Math.random()" style="cursor:pointer;" /><!--{/if}--> <input type="image" src="../images/btn_signin.gif" /> <a href="../user.php?act=register"><img src="../images/btn_register.gif" alt="" /></a> <a href="user.php?act=get_password" id="textForget">&gt;&gt;{$lang.forgot_password}</a>
+</form>
+<script type="text/javascript">
+//<![CDATA[
+{literal}
+// 会员登录
+function signIn()
+{
+  var frm = document.forms['ECS_LOGINFORM'];
+
+  if (frm)
+  {
+    var username = frm.elements['username'].value;
+    var password = frm.elements['password'].value;
+    var captcha = '';
+    if (frm.elements['captcha'])
+    {
+      captcha = frm.elements['captcha'].value;
+    }
+    if (username.length == 0 || password.length == 0)
+    {
+       alert("{$lang.empty_username_password}");
+        return;
+    }
+    else
+    {
+       Ajax.call('user.php?act=signin', 'username=' + username + '&password=' + encodeURIComponent(password) + '&captcha=' + captcha, signinResponse, "POST", "TEXT");
+    }
+  }
+  else
+  {
+    alert('Template error!');
+  }
+}
+
+function signinResponse(result)
+{
+  var userName = document.forms['ECS_LOGINFORM'].elements['username'].value;
+  var mzone = document.getElementById("ECS_MEMBERZONE");
+  var res   = result.parseJSON();
+
+  if (res.error > 0)
+  {
+    // 登录失败
+    alert(res.content);
+    if(res.html)
+	{
+      mzone.innerHTML = res.html;
+	  document.forms['ECS_LOGINFORM'].elements['username'].value = userName;
+	}
+  }
+  else
+  {
+    if (mzone)
+    {
+      mzone.innerHTML = res.content;
+    }
+    else
+    {
+      alert("Template Error!");
+    }
+  }
+}
+{/literal}
+//]]>
+</script>
+<!-- {/if} -->

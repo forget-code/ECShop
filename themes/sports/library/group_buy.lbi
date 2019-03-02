@@ -1,0 +1,22 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $group_buy_goods} -->
+<div class="title-01">
+  <div class="title-01-arrow"><span><a href="group_buy.php">more></a></span>团购商品</div>
+</div>
+<div class="sort-box01">
+  <ul id="group-buy">
+    <!--{foreach from=$group_buy_goods item=goods}-->
+    <li>
+      <span class="photo"><a href="group_buy.php?act=view&id={$goods.group_buy_id}"><img src="{$goods.thumb}" alt="{$goods.goods_name|escape:html}" class="thumb" /></a></span>
+      <div class="info">
+        <span class="name"><a href="group_buy.php?act=view&id={$goods.group_buy_id}">{$goods.goods_name|escape:html}</a></span>
+        <div class="price">
+        <span class="goods-price">{$goods.last_price}</span><br />
+        </div>
+      </div>
+    </li>
+    <!--{/foreach}-->
+  </ul>
+</div>
+<!--End sort-box01-->
+<!--{/if}-->

@@ -1,0 +1,28 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $hot_goods} -->
+<div class="title-01" >
+  <div class="title-01-arrow"><span><a href="../search.php?intro=hot">more&gt;</a></span>热卖商品</div>
+</div>
+<div class="sort-box01" style="background-color:#FFFFFF;">
+  <ul class="product-list">
+    <!--{foreach from=$hot_goods item=goods}-->
+    <li>
+      <div class="photo"><a href="{$goods.url}"><img src="{$goods.thumb}" alt="{$goods.name|escape:html}" class="thumb" /></a></div>
+      <div class="info">
+        <span class="name"><a href="{$goods.url}">{$goods.short_name|escape:html}</a></span>
+        <div class="price">
+        <!-- {if $goods.promote_price neq ""} -->
+        {$lang.market_price}<span class="market-price">{$goods.market_price}</span><br />
+        {$lang.promote_price}<span class="goods-price">{$goods.promote_price}</span><br />
+        <!--{else}-->
+        {$lang.market_price}<span class="market-price">{$goods.market_price}</span><br />
+        {$lang.shop_price}<span class="goods-price">{$goods.shop_price}</span><br />
+        <!--{/if}-->
+        </div>
+        <span class="buy-btn"><a href="javascript:addToCart({$goods.id})"><img src="../images/buy-btn.gif" alt="buy" /></a> <a href="javascript:collect({$goods.id})"></a></span>      </div>
+    </li>
+    <!--{/foreach}-->
+  </ul>
+</div>
+<!--End sort-box01-->
+<!--{/if}-->

@@ -1,0 +1,12 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $articles} -->
+<div id="relativeArticle" class="globalModule">
+  <h3>{$articles_cat.name|escape:html}</h3>
+  <ul class="listStyle">
+    <!-- {foreach from=$articles item=article} -->
+    <li><a href="{$article.url}" title="{$article.title|escape:html}">{$article.short_title}</a></li>
+    <!-- {/foreach} -->
+  </ul>
+  <p class="more"><a href="{$articles_cat.url}"><img src="../images/btn_more.gif" alt="more" /></a></p>
+</div>
+<!-- {/if} -->

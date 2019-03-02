@@ -1,0 +1,43 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $action neq "form"} -->
+<div id="globalSearch">
+  <form id="searchForm" name="searchForm" method="get" action="search.php" onSubmit="return checkSearchForm()">
+    <!-- {if $searchkeywords} -->
+    <p id="globalSearchKeywords" class="linkSkyblue">
+      {$lang.hot_search}：
+      <!-- {foreach from=$searchkeywords item=val} -->
+      <a href="search.php?keywords={$val|escape:url}">{$val}</a>
+      <!-- {/foreach} -->
+    </p>
+    <!-- {/if} -->
+    <select name="category" id="category" class="vAlign">
+      <option value="0">{$lang.all_category}</option>
+      {$category_list}
+    </select>
+    <input name="keywords" type="text" id="keyword" value="{$search_keywords|escape}" class="vAlign textInput" />
+    <input type="image" src="../images/btn_search.gif" class="vAlign"  />
+    <a href="search.php?act=advanced_search" id="adSearch" class="vAlign linkSkyblue">{$lang.advanced_search}</a> 
+  </form>
+</div><!-- /globalSearch -->
+<script type="text/javascript">
+//<![CDATA[
+{literal}
+window.onload = function()
+{
+  fixpng();
+}
+function checkSearchForm()
+{
+    if(document.getElementById('keyword').value)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+{/literal}
+//]]>
+</script>
+<!-- {/if} -->

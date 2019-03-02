@@ -1,0 +1,14 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $promotion_goods} -->
+<div class="title-02">
+  <div class="title-02-arrow"><span><a href="../search.php?intro=promotion">more&gt;</a></span>特价促销</div>
+</div>
+<div class="sort-box02" id="pomotion">
+  <ul>
+    <!--{foreach from=$promotion_goods item=goods}-->
+    <li><span class="goods-price" style="float:right;" style="background-color:#eee">{$goods.promote_price}</span><a href="{$goods.url}" title="{$goods.name|escape:html}">{$goods.short_name|escape:html}</a></li>
+    <!--{/foreach}-->
+  </ul>
+</div>
+<!--End sort-box02-->
+<!--{/if}-->

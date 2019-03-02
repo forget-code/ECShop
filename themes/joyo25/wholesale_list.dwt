@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="Keywords" content="{$keywords}" />
+  <meta name="Description" content="{$description}" />
+  <!-- TemplateBeginEditable name="doctitle" --><!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="animated_favicon.gif" type="image/gif" />
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <title>{$page_title}</title>
+  {* 包含脚本文件 *}{insert_scripts files='common.js'}
+	
+	<style type="text/css">
+	/*升级到2.5.1是新加的*/
+	#info{background:#eef3ee; height:28px; line-height:28px; padding-left:190px; text-align:left; clear:both;}
+	#info h3{margin:0px; padding:0px; float:right;  position:relative; bottom:28px; font-weight:100; font-size:12px; text-align:right; padding-right:150px;}
+	#container2{ margin:5px auto; padding:0px; text-align:center;}
+	#container2 table{ margin:0px auto;}
+	</style>
+</head>
+
+<body>
+  <div id="container">
+    <!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem -->
+    <div id="info">
+		<!-- TemplateBeginEditable name="会员区" -->
+		{$lang.ur_here} {$ur_here}
+    <h3><!-- #BeginLibraryItem "/library/member.lbi" --><!-- #EndLibraryItem --></h3>
+		<!-- TemplateEndEditable -->
+		</div>
+    <div id="container2">
+      <!-- {if $cart_goods} 如果有批发商品 -->
+      <!-- 批发商品购物车 -->
+       <table width="90%" border="0" align="center" cellpadding="5" cellspacing="1" bgcolor="#CCCCCC" style="margin:0px 5%;">
+          <tr>
+            <th bgcolor="#FFFFFF">{$lang.goods_name}</th>
+            <th bgcolor="#FFFFFF">{$lang.goods_attr}</th>
+            <th bgcolor="#FFFFFF">{$lang.number}</th>
+            <th bgcolor="#FFFFFF">{$lang.ws_price}</th>
+            <th bgcolor="#FFFFFF">{$lang.ws_subtotal}</th>
+            <th bgcolor="#FFFFFF">{$lang.handle}</th>
+          </tr>
+          <!-- {foreach from=$cart_goods key=key item=goods} 循环批发商品开始 -->
+          <tr>
+            <td bgcolor="#FFFFFF"><a href="{$goods.goods_url}" target="_blank">{$goods.goods_name}</a></td>
+            <td bgcolor="#FFFFFF">{$goods.goods_attr}</td>
+            <td bgcolor="#FFFFFF" align="right">{$goods.goods_number}</td>
+            <td bgcolor="#FFFFFF" align="right">{$goods.formated_goods_price}</td>
+            <td bgcolor="#FFFFFF" align="right">{$goods.formated_subtotal}</td>
+            <td bgcolor="#FFFFFF"><a href="wholesale.php?act=drop_goods&key={$key}">{$lang.drop}</a></td>
+          </tr>
+          <!--{/foreach}-->
+        </table>
+        <form method="post" action="wholesale.php?act=submit_order">
+          <table border="0" cellpadding="5" cellspacing="1" class="goods-list">
+            <tr>
+              <td>{$lang.ws_remark}</td>
+            </tr>
+            <tr>
+              <td><textarea name="remark" rows="4" style="width:99%"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td align="center"><input type="image" src="images/order_submit.gif" /></td>
+            </tr>
+          </table>
+        </form>
+
+      <!-- {/if} -->
+      <div class="title-div"><span class="modify"></span></div>
+			<table border="0" align="center" cellpadding="0" cellspacing="0"  width="90%" style="margin:0 5%;">
+				<tr>
+					<td align="left" style="font-size:14px; font-weight:bold;">批发商品列表</td>
+					<td align="right"><a href="wholesale.php?act=price_list">{$lang.ws_price_list}</a></td>
+				</tr>
+			</table>
+        <!-- {if $wholesale_list} 如果有批发商品 -->
+        <!-- 批发商品列表 -->
+        <form name="wholesale_goods" action="wholesale.php?act=add_to_cart" method="post">
+          <table border="0" cellpadding="5" cellspacing="1" bgcolor="#CCCCCC" width="90%">
+            <tr>
+              <th bgcolor="#FFFFFF">{$lang.goods_name}</th>
+              <th bgcolor="#FFFFFF">{$lang.goods_attr}</th>
+              <th bgcolor="#FFFFFF">{$lang.goods_price_ladder}</th>
+              <th bgcolor="#FFFFFF">{$lang.number}</th>
+              <th bgcolor="#FFFFFF">&nbsp;</th>
+            </tr>
+            <!-- {foreach from=$wholesale_list item=wholesale} 循环批发商品开始 -->
+            <tr>
+              <td bgcolor="#FFFFFF"><a href="{$wholesale.goods_url}" target="_blank">{$wholesale.goods_name}</a></td>
+              <td bgcolor="#FFFFFF">
+               <div>
+
+                <table width="90%" border="0" align="center">
+                  <!-- {foreach from=$wholesale.goods_attr item=property_group key=key} -->
+                  <!-- {foreach from=$property_group item=property} -->
+                  <tr>
+                    <td nowrap="true">{$property.name|escape:html}</td>
+                    <td>{$property.value|escape:html}</td>
+                  </tr>
+                  <!-- {/foreach}-->
+                  <!-- {/foreach}-->
+                </table>
+                </div>
+              </td>
+              
+              <td bgcolor="#FFFFFF">
+               <div>
+                <table width="90%" border="0" align="center">
+                <!-- {foreach from=$wholesale.price_ladder key=key item=attr_price} -->
+                  <tr>
+                    <td nowrap="true">{$lang.number}:{$key}</td>
+                    <td>{$lang.ladder_price}:{$attr_price}</td>
+                  </tr>
+                  <!-- {/foreach} --> 
+                </table>
+                </div>
+              </td>
+              <td align="center" bgcolor="#FFFFFF"><input name="goods_number[{$wholesale.act_id}]" type="text" value="" size="10" /></td>
+              <td bgcolor="#FFFFFF"><input name="image" type="image" onClick="this.form.elements['act_id'].value = {$wholesale.act_id}" src="images/add_cart.gif" /></td>
+            </tr>
+            <!--{/foreach}-->
+          </table>
+          <input type="hidden" name="act_id" value="" />
+        </form>
+				<div style="text-align:right; float:right; padding-right:50px;">
+        <!-- #BeginLibraryItem "/library/pages.lbi" -->
+        <form action="{$smarty.server.PHP_SELF}" method="get" name="selectPageForm" id="selectPageForm">
+          <div id="pager"> {$lang.pager_1}{$pager.record_count}{$lang.pager_2}{$lang.pager_3}{$pager.page_count}{$lang.pager_4} <span> <a href="{$pager.page_first}">{$lang.page_first}</a> <a href="{$pager.page_prev}">{$lang.page_prev}</a> <a href="{$pager.page_next}">{$lang.page_next}</a> <a href="{$pager.page_last}">{$lang.page_last}</a> </span>
+            <!--{foreach from=$pager.search key=key item=item}-->
+            <input type="hidden" name="{$key}" value="{$item}" />
+            <!--{/foreach}-->
+            <select name="page" id="page" onchange="selectPage(this)">
+              
+    {html_options options=$pager.array selected=$pager.page}
+    
+            </select>
+          </div>
+        </form>
+        <script type="text/javascript" language="JavaScript">
+<!--
+{literal}
+function selectPage(sel)
+{
+  sel.form.submit();
+}
+{/literal}
+//-->
+</script>
+        <!-- #EndLibraryItem -->
+	</div>			
+      <!-- {else} -->
+      <span style="margin:2px 10px; font-size:14px; line-height:36px;">{$lang.no_wholesale}</span>
+      <!-- {/if} -->
+      <div class="clear"></div>
+    </div>
+    
+    
+
+
+    <!-- #BeginLibraryItem "/library/help.lbi" --><!-- #EndLibraryItem -->
+    <!-- #BeginLibraryItem "/library/page_footer.lbi" --><!-- #EndLibraryItem -->
+  </div><!-- /container -->
+</body>
+</html>

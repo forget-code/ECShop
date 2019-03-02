@@ -1,0 +1,25 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $new_goods} -->
+<div id="globalNew" class="globalModule">
+  <h3>新品上市</h3>
+  <div class="itemGrid">
+    <!-- {foreach from=$new_goods item=goods} -->
+    <div class="item">
+      <p class="pic"><a href="{$goods.url}"><img src="{$goods.thumb}" alt="{$goods.name|escape:html}" /></a></p>
+      <p class="name"><a href="{$goods.url}" title="{$goods.name|escape:html}">{$goods.short_style_name}</a></p>
+      <p class="price">
+        <!-- {if $goods.promote_price neq ""} -->
+        {$lang.promote_price}<span class="goodsPrice">{$goods.promote_price}</span>
+        <!-- {else}-->
+        {$lang.shop_price}<span class="goodsPrice">{$goods.shop_price}</span>
+        <!--{/if}-->
+      </p>
+      <p class="btnList">
+        <a href="javascript:collect({$goods.id})">{$lang.btn_collect}</a> | <a href="javascript:addToCart({$goods.id})">{$lang.btn_buy}</a>
+      </p>
+    </div>
+    <!-- {/foreach} -->
+  </div>
+  <p class="more"><a href="../search.php?intro=new"><img src="../images/btn_more.gif" alt="" /></a></p>
+</div><!-- /globalNew -->
+<!-- {/if} -->

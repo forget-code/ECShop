@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Keywords" content="{$keywords}" />
+<meta name="Description" content="{$description}" />
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>{$page_title}</title>
+<!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
+				<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" href="animated_favicon.gif" type="image/gif" />
+<link href="style.css" rel="stylesheet" type="text/css" />
+{* 包含脚本文件 *}
+{insert_scripts files='common.js,myship.js'}
+</head>
+<body><!-- #BeginLibraryItem "/library/page_header.lbi" -->
+<div id="page-top">
+  <div id="logo-topnav">
+    <div id="logo"> <img src="images/logo.gif" alt="Gif Shop" style="float:left;" />
+      <div id="topnav"> <!-- {foreach name=nav_top_list from=$navigator_list.top item=nav} -->
+            <a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a> 
+            <!-- {if !$smarty.foreach.nav_top_list.last} -->
+            |
+            <!-- {/if} -->
+          <!-- {/foreach} -->
+    </div>
+      </div>
+  </div>
+  <!--End #logo-nav-->
+<!--End #globalSearch-->
+  <div id="global-nav">
+    <div id="main-nav">
+      <ul>
+       <li class="first">&nbsp;</li>
+    <li{if $navigator_list.config.index eq 1} id="currentPage"{/if}><a href="index.php">{$lang.home}</a></li>
+    <!-- {foreach name=nav_middle_list from=$navigator_list.middle item=nav} -->
+    <li{if $nav.active eq 1} id="currentPage"{/if}><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} -->target="_blank"<!-- {/if} -->>{$nav.name}</a></li>
+    <!-- {/foreach} -->
+      </ul>
+    </div>
+    <!-- End #main-nav -->
+  </div>
+  <!-- global-nav -->
+</div>
+<!--End #page-top-->
+<!-- #EndLibraryItem --><div id="globalWrapper"><!-- #BeginLibraryItem "/library/search_form.lbi" -->
+<div id="globalSearch">
+  <div class="ur-here">{$lang.ur_here}{$ur_here}</div>
+      <form id="searchForm" name="searchForm" method="post" action="library/search.php">
+        <input name="keywords" type="text" id="keyword" />
+        <select name="category" id="category">
+          <option value="0">{$lang.all_category}</option>
+          {$category_list} 
+        </select>
+        <input type="image" src="images/search-submit.gif" class="btn" />
+      </form>
+        <span><a href="library/search.php?act=advanced_search">{$lang.advanced_search}</a></span>
+         </div>
+{if $searchkeywords}
+<div style="background:url(library/images/title-03.gif) repeat-x; color:#eee;padding:5px 30px;text-align: right;">
+{$lang.hot_search} : 
+{foreach from=$searchkeywords item=val}
+ <a href="library/search.php?keywords={$val|escape}">{$val}</a>
+{/foreach}
+</div>
+{/if}
+<script type="text/javascript">
+{literal}
+<!--
+function checkSearchForm()
+{
+    if(document.getElementById('keyword').value)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+-->
+{/literal}
+</script>
+<!--End #globalSearch-->
+<!-- #EndLibraryItem --><!-- 开始收货人信息填写界面 -->
+       <div class="title-01" >
+      <div class="title-01-arrow">配送方式</div>
+    </div>
+      {insert_scripts files='region.js,utils.js'}
+      <script type="text/javascript">
+        region.isAdmin = false;
+        {foreach from=$lang.flow_js item=item key=key}
+        var {$key} = "{$item}";
+        {/foreach}
+        
+        {literal}
+        onload = function() {
+          if (!document.all)
+          {
+            document.forms['theForm'].reset();
+          }
+        }
+
+        /* $Id : myship.js 4865 2007-01-31 14:04:10Z Hackfan $ */
+
+/* *
+ * 检查收货地址信息表单中填写的内容
+ */
+function checkForm(frm)
+{
+  var msg = new Array();
+  var err = false;
+
+  if (frm.elements['country'].value == 0)
+  {
+    msg.push(country_not_null);
+    err = true;
+  }
+
+  if (frm.elements['province'].value == 0 && frm.elements['province'].length > 1)
+  {
+    err = true;
+    msg.push(province_not_null);
+  }
+
+  if (frm.elements['city'].value == 0 && frm.elements['city'].length > 1)
+  {
+    err = true;
+    msg.push(city_not_null);
+  }
+
+  if (frm.elements['district'].length > 1)
+  {
+    if (frm.elements['district'].value == 0)
+    {
+      err = true;
+      msg.push(district_not_null);
+    }
+  }
+
+  if (err)
+  {
+    message = msg.join("\n");
+    alert(message);
+  }
+  return ! err;
+}
+
+        {/literal}
+      </script>
+<form action="myship.php" method="post" name="theForm" id="theForm" onsubmit="return checkForm(this)"><!-- #BeginLibraryItem "/Library/myship.lbi" -->
+{insert_scripts files='utils.js,transport.js'}
+<table width="750" border="0" align="center" cellpadding="4" cellspacing="1" id="myship-list">
+  <tr>
+    <td>
+      <a>{$lang.country_province}:</a>
+      <select name="country" id="selCountries_{$sn}" onchange="region.changed(this, 1, 'selProvinces_{$sn}')">
+        <option value="0">{$lang.please_select}</option>
+        <!-- {foreach from=$country_list item=country} -->
+        <option value="{$country.region_id}" {if $choose.country eq $country.region_id}selected{/if}>{$country.region_name}</option>
+        <!-- {/foreach} -->
+      </select>
+      <select name="province" id="selProvinces_{$sn}" onchange="region.changed(this, 2, 'selCities_{$sn}')">
+        <option value="0">{$lang.please_select}</option>
+        <!-- {foreach from=$province_list.$sn item=province} -->
+        <option value="{$province.region_id}" {if $choose.province eq $province.region_id}selected{/if}>{$province.region_name}</option>
+        <!-- {/foreach} -->
+      </select>
+      <select name="city" id="selCities_{$sn}" onchange="region.changed(this, 3, 'selDistricts_{$sn}')">
+        <option value="0">{$lang.please_select}</option>
+        <!-- {foreach from=$city_list.$sn item=city} -->
+        <option value="{$city.region_id}" {if $choose.city eq $city.region_id}selected{/if}>{$city.region_name}</option>
+        <!-- {/foreach} -->
+      </select>
+      <select name="district" id="selDistricts_{$sn}" {if !$district_list.$sn}style="display:none"{/if}>
+        <option value="0">{$lang.please_select}</option>
+        <!-- {foreach from=$district_list.$sn item=district} -->
+        <option value="{$district.region_id}" {if $choose.district eq $district.region_id}selected{/if}>{$district.region_name}</option>
+        <!-- {/foreach} -->
+      </select> <input type="submit" name="Submit" value="{$lang.search_ship}" />
+      <input type="hidden" name="act" value="viewship" />
+    </td>
+  </tr>
+</table>
+
+<table width="752" border="0" align="center" cellpadding="4" cellspacing="1" id="myship">
+  <tr class="myship-title">
+    <th width="20%">{$lang.name}</th>
+    <th>{$lang.describe}</th>
+    <th width="40%">{$lang.fee}</th>
+    <th width="15%">{$lang.insure_fee}</th>
+  </tr>
+  <!-- {foreach from=$shipping_list item=shipping} 循环配送方式 -->
+  <tr>
+    <td valign="top" class="colum1"><strong>{$shipping.shipping_name}</strong></td>
+    <td valign="top" class="colum2">{$shipping.shipping_desc}</td>
+    <td valign="top" class="colum1">{$shipping.fee}</td>
+    <td align="center" valign="top" bgcolor="#F1F1F1" class="colum2">
+      <!-- {if $shipping.insure neq 0} -->
+      {$shipping.insure_formated}
+      <!-- {else} -->
+      {$lang.not_support_insure}
+      <!-- {/if} -->    </td>
+  </tr>
+  <!-- {/foreach} 循环配送方式 -->
+</table>
+<!-- #EndLibraryItem --></form>
+</div>
+<!--End #globalWrapper-->
+<div id="footer"><!-- #BeginLibraryItem "/library/help.lbi" -->
+<table width="970" border="0" cellpadding="0" cellspacing="0" id="help">
+  <tr>
+    <!-- {foreach from=$helps item=help_cat} -->
+    <td class="help-title"><div><span>{$help_cat.cat_name}</span></div></td>
+    <!-- {/foreach} -->
+    <td class="help-title" style="border:0px;"><div><span>联系我们</span></div></td>
+  </tr>
+  <tr>
+    <!-- {foreach from=$helps item=help_cat} -->
+    <td class="help-list"><ul>
+        <!-- {foreach from=$help_cat.article item=item}-->
+        <li><a href="{$item.url}" title="{$item.title|escape:html}">{$item.short_title}</a></li>
+        <!--{/foreach}-->
+      </ul></td>
+    <!--{/foreach}-->
+    <td class="help-list" style="border:0px;"> {$shop_address} {$shop_postcode} <br />
+      <!-- 客服电话{if $service_phone} -->
+      Tel: {$service_phone} <br />
+      <!-- 结束客服电话{/if} -->
+      <!-- QQ 号码 {foreach from=$qq item=im}  -->
+      <!-- {if $im}  -->
+      <a href="http://wpa.qq.com/msgrd?V=1&amp;Uin={$im}&amp;Site={$shop_name}&amp;Menu=yes" target="_blank"><img src="http://wpa.qq.com/pa?p=1:{$im}:4" border="0" alt="QQ" /> {$im}</a><br />
+      <!-- {/if} -->
+      <!-- {/foreach}    结束QQ号码 -->
+      <!-- 淘宝旺旺    {foreach from=$ww item=im} -->
+      <!-- {if $im}  -->
+      <a href="http://amos1.taobao.com/msg.ww?v=2&uid={$im|escape:url}&s=2" target="_blank"><img src="http://amos1.taobao.com/online.ww?v=2&uid={$im|escape:url}&s=2" border="0" alt="淘宝旺旺" /> {$im}</a><br />
+      <!--  {/if} -->
+      <!--{/foreach}  结束淘宝旺旺 -->
+      <!-- Yahoo Messenger    {foreach from=$ym item=im} -->
+      <!-- {if $im} -->
+      <a href="http://edit.yahoo.com/config/send_webmesg?.target={$im}n&.src=pg" target="_blank"><img src="images/yahoo.gif" border="0" alt="Yahoo Messenger" /> {$im}</a><br />
+      <!-- {/if} -->
+      <!-- {/foreach}   结束Yahoo Messenger -->
+      <!-- MSN Messenger   {foreach from=$msn item=im} -->
+      <!-- {if $im}  -->
+      <img src="images/msn.gif" border="0" alt="MSN" /> {$im}<br />
+      <!-- {/if} -->
+      <!-- {/foreach}  结束MSN Messenger -->
+      <!-- Skype {foreach from=$skype item=im} -->
+      <!-- {if $im} -->
+      <img src="http://mystatus.skype.com/smallclassic/{$im|escape:url}" alt="Skype" /><a href="skype:{$im|escape:url}?call">{$im}</a><br />
+      <!-- {/if} -->
+      <!-- {/foreach} --></td>
+  </tr>
+</table>
+<!-- #EndLibraryItem --><!-- #BeginLibraryItem "/library/page_footer.lbi" -->
+<div id="article"><img src="images/nav-line.gif" alt="" />
+<!-- {foreach name=nav_bottom_list from=$navigator_list.bottom item=nav} -->
+        <a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a> <img src="images/nav-line.gif" alt="" />
+      <!-- {/foreach} -->
+</div>
+<!--End #article-->
+<img src="images/footer-logo.gif" alt="" id="footer-logo" />
+<div>{$copyright}</div>
+<div>
+  <!-- ICP 证书{if $icp_number} -->
+  {$lang.icp_number}:<a href="http://www.miibeian.gov.cn/" target="_blank">{$icp_number}</a><br />
+  <!-- 结束ICP 证书{/if} -->
+  {insert name="query_info"}<br />
+  <A href="http://www.ecshop.com" target="_blank" style="font-size:10px">Powered by <strong><span style="color: #3366FF">ECSHOP</span> <span style="color: #FF9966">{$ecs_version}</span></strong></A> </div>
+<script type="text/javascript">
+var process_request = "{$lang.process_request}";
+</script>
+{if $stats_code}
+{$stats_code}
+{/if}<!-- #EndLibraryItem --></div>
+<!--End #footer-->
+</body>
+</html>

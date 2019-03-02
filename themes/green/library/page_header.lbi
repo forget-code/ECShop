@@ -1,0 +1,23 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div id="globalHeader">
+  <div id="globalTopNav">
+    <p id="logo"><a href="../index.php"><img src="../images/logo.gif" alt="logo" /></a></p>
+    <ul>
+    <!-- {foreach name=nav_top_list from=$navigator_list.top item=nav} -->
+      <li><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} -->target="_blank"<!-- {/if} -->>{$nav.name}</a></li>
+    <!-- {/foreach} -->
+    <!-- {if $feed_url} -->
+      <li><a href="{$feed_url}"><img src="images/xml_rss2.gif" alt="rss" /></a></li>
+    <!-- {/if} -->
+    </ul>
+  </div>
+</div><!-- /globalHeader -->
+<div id="globalNav">
+  <ul>
+    <li class="first">&nbsp;</li>
+    <li{if $navigator_list.config.index eq 1} id="currentPage"{/if}><a href="../index.php">{$lang.home}</a></li>
+    <!-- {foreach name=nav_middle_list from=$navigator_list.middle item=nav} -->
+    <li{if $nav.active eq 1} id="currentPage"{/if}><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} -->target="_blank"<!-- {/if} -->>{$nav.name}</a></li>
+    <!-- {/foreach} -->
+  </ul>
+</div><!-- /globalNav -->

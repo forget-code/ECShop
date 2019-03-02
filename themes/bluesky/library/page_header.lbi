@@ -1,0 +1,18 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div id="globalHeader">
+  <p id="logo"><a href="../index.php"><img src="images/logo.gif" alt="logo" /></a></p>
+  <ul id="globalTopNav">
+  <!-- {foreach name=nav_top_list from=$navigator_list.top item=nav} -->
+    <li{if $smarty.foreach.nav_top_list.last} id="globalTopNavLast"{/if}><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} -->target="_blank"<!-- {/if} -->>{$nav.name}</a></li>
+  <!-- {/foreach} -->
+    <li id="globalTopNavRight">&nbsp;</li>
+  </ul>
+</div><!-- /globalHeader -->
+<div id="globalNav">
+  <ul>
+    <li{if $navigator_list.config.index eq 1} id="currentPage"{/if}><a href="../index.php">{$lang.home}</a></li>
+    <!-- {foreach name=nav_middle_list from=$navigator_list.middle item=nav} -->
+    <li{if $nav.active eq 1} id="currentPage"{/if}><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} -->target="_blank"<!-- {/if} -->>{$nav.name}</a></li>
+    <!-- {/foreach} -->
+  </ul>
+</div>

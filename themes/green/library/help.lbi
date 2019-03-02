@@ -1,0 +1,22 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $helps} -->
+<div id="globalHelp" class="globalModule">
+  <h3>帮助中心</h3>
+  <table border="0" cellspacing="0">
+    <tr>
+      <!-- {foreach from=$helps item=help_cat} -->
+      <th>{$help_cat.cat_name}</th>
+      <!-- {/foreach} -->
+    </tr>
+    <tr>
+      <!-- {foreach from=$helps item=help_cat} -->
+      <td>
+        <!-- {foreach from=$help_cat.article item=item} -->
+        <a href="{$item.url}" title="{$item.title|escape:html}">{$item.short_title}</a><br />
+        <!-- {/foreach} -->
+        </td>
+      <!-- {/foreach} -->
+    </tr>
+  </table>
+</div>
+<!-- {/if} -->

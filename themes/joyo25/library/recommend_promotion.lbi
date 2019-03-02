@@ -1,0 +1,27 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $promotion_goods} -->
+<div class="title-02">
+    <div class="title">促销商品</div>
+  <div>
+      <!--{foreach from=$promotion_goods item=goods}-->
+      <table width="100%" border="0" cellpadding="3" cellspacing="1" class="float-left" style="margin-bottom:3px;">
+        <tr>
+          <td width="100" align="center"><a href="{$goods.url}"><img src="{$goods.thumb}" alt="{$goods.name|escape:html}" width="80" height="80" border="0" style="border:1px #999 solid; padding:2px;" /></a></td>
+          <td valign="top" style="padding-top:10px;"><a href="{$goods.url}" title="{$goods.name|escape:html}"><strong>{$goods.short_name|escape:html}</strong></a><br />
+            {$lang.promote_price}<br />
+            <span class="goods-price" style="margin-left:10px;">{$goods.promote_price}</span>
+            <div>
+              <table width="80" border="0" cellpadding="2" cellspacing="0">
+                <tr>
+                  <td height="28" align="center"><a href="javascript:collect({$goods.id})"><img src="images/sort-collect.gif" alt="收藏" border="0" /></a></td>
+                  <td align="center"><a href="javascript:addToCart({$goods.id})"><img src="images/sort-addcart.gif" alt="购买" border="0" /></a></td>
+                </tr>
+              </table>
+            </div></td>
+        </tr>
+    </table>
+      <!--{/foreach}-->
+      <div class="more"><a href="../search.php?intro=promotion">more...</a></div>
+  </div>
+</div>
+<!-- {/if} -->

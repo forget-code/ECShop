@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Keywords" content="{$keywords}" />
+<meta name="Description" content="{$description}" />
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>{$page_title}</title>
+<!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="icon" href="animated_favicon.gif" type="image/gif" />
+<link href="style.css" rel="stylesheet" type="text/css" />
+{* 包含脚本文件 *}
+{insert_scripts files="common.js,user.js"}
+</head>
+<body><!-- #BeginLibraryItem "/library/page_header.lbi" -->
+<div id="page-top">
+  <div id="logo-topnav">
+    <div id="logo"> <img src="images/logo.gif" alt="Gif Shop" style="float:left;" />
+      <div id="topnav"> <a href="flow.php">{$lang.view_cart}</a> - <a href="pick_out.php">{$lang.pick_out}</a> - <a href="group_buy.php">{$lang.group_buy_goods}</a> - <a href="snatch.php">{$lang.snatch}</a> - <a href="catalog.php" onmouseover="showCatalog(this)" onmouseout="hideCatalog()">{$lang.catalog}</a> - <a href="tag_cloud.php">{$lang.tag_cloud}</a> - <a href="user.php">{$lang.user_center}</a> </div>
+    </div>
+  </div>
+  <!--End #logo-nav-->
+	<div id="globalSearch">
+  <div>
+    <div style="height:44px;">
+      <form id="searchForm" name="searchForm" method="post" action="library/search.php" style="padding:10px 0 0 30px;">
+        <img src="images/search-icon.gif" alt="" style="float:left;" />
+        <input name="keywords" type="text" id="keyword" />
+        <input type="image" src="images/search-submit.gif" style="float:left;margin-left:10px !important;margin-left:8px;" />
+        <span style="float:right;padding:5px 20px;"><a href="library/search.php?act=advanced_search">{$lang.advanced_search}</a> | <a href="library/index.php">使用帮助</a></span>
+      </form>
+    </div>
+  </div>
+</div>
+<!--End #globalSearch-->
+  <div id="global-nav">
+    <div id="main-nav">
+      <ul>
+        <li><a href="index.php" name="top" id="top">{$lang.home}</a></li>
+        <!-- {foreach from=$nav_list item=nav} -->
+        <li><a href="{$nav.url}">{$nav.label}</a></li>
+        <!-- {/foreach} -->
+      </ul>
+    </div>
+    <!-- End #main-nav -->
+  </div>
+  <!-- global-nav -->
+</div>
+<!--End #page-top-->
+<div id="ECS_CATALOG" class="catalog-div" style="display:none"
+onmouseover="if (this.style.display != 'block') this.style.display='block';"
+onmouseout="if (this.style.display != 'none') this.style.display = 'none';">
+  <ul>
+    <!--{assign var="level" value=0}-->
+    <!-- {foreach from=$catalog_list item=cat} -->
+    <!-- {if $level > $cat.level} -->
+  </ul>
+  <!-- {/if}-->
+  <!-- {if $level < $cat.level} -->
+  <ul>
+    <!-- {/if} -->
+    <li class="{if" $cat.level eq="eq" "0"}"top-cate"{else}"snd-cate"{/if}><a href="{$cat.url}"{if $cat.cat_desc neq="neq" ''} title="{$cat.cat_desc}"{/if}>{$cat.cat_name}</a></li>
+    <!--{assign var="level" value=$cat.level}-->
+    <!-- {/foreach} -->
+  </ul>
+</div>
+<!-- #EndLibraryItem --><div id="globalWrapper"><!-- #BeginLibraryItem "/library/ur_here.lbi" -->
+<div class="title-03"><div class="title-05-arrow">{$lang.ur_here}</div><span>{$ur_here}</span></div><!-- #EndLibraryItem -->
+  <div style="clear:both;">
+    <!--#登录界面-->
+    <!-- {if $action eq 'login'} -->
+    <div class="title-01">
+      <div class="title-01-arrow">会员登录</div>
+    </div>
+    <div class="content-div">
+      <form name="formLogin" action="user.php" method="post" onSubmit="return userLogin()">
+        <br />
+        <table width="70%" border="0" align="center">
+          <tr>
+            <td width="41%" align="right"><strong>{$lang.label_username}　</strong></td>
+            <td width="59%"><input name="username" type="text" size="25" /></td>
+          </tr>
+          <tr>
+            <td align="right"><strong>{$lang.label_password}　</strong></td>
+            <td><input name="password" type="password" size="25" /></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><input type="hidden" name="act" value="act_login" />
+              <input type="hidden" name="back_act" value="{$back_act}" />
+              <input type="submit" name="submit" value="{$lang.confirm_login}" />
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><ul>
+                <li><a href="user.php?act=register" style="color:#333333">{$lang.sign_up}</a></li>
+                <li><a href="user.php?act=get_password" style="color:#333333">{$lang.forgot_password}</a></li>
+              </ul></td>
+          </tr>
+        </table>
+        <br />
+      </form>
+    </div>
+    <!--{/if}-->
+    <!--#登录界面-->
+    <!--*会员注册界面-->
+    <!--{if $action eq 'register'}-->
+    {insert_scripts files="utils.js"}
+    <div class="title-01">
+      <div class="title-01-arrow">会员注册</div>
+    </div>
+    <div class="content-div">
+      <form action="user.php" method="post" name="formUser" onsubmit="return register();">
+        <br />
+        <table width="70%"  border="0" align="center">
+          <tr>
+            <td width="43%" align="right"><strong>{$lang.label_username}:</strong></td>
+            <td width="57%"><input name="username" type="text" id="username" />
+              <span style="color:#F00;"> *</span></td>
+          </tr>
+          <tr>
+            <td align="right"><strong>{$lang.label_email}:</strong></td>
+            <td><input name="email" type="text" id="email" />
+              <span style="color:#F00;"> *</span></td>
+          </tr>
+          <tr>
+            <td align="right"><strong>{$lang.label_password}:</strong></td>
+            <td><input name="password" type="password" id="password" />
+              <span style="color:#F00;"> *</span></td>
+          </tr>
+          <tr>
+            <td align="right"><strong>{$lang.label_confirm_password}:</strong></td>
+            <td><input name="confirm_password" type="password" id="conform_password" />
+              <span style="color:#F00;"> *</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><input name="act" type="hidden" value="act_register" />
+              <input name="Submit" type="submit" value="{$lang.confirm_register}" /></td>
+          </tr>
+          <tr>
+            <td colspan="2">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><ul>
+                <li style="border-bottom: 1px dashed #CECECE;width:150px;"> <a href="user.php?act=login" style="color:#333333">{$lang.want_login}</a></li>
+                <li style="border-bottom: 1px dashed #CECECE;width:150px;"> <a href="user.php?act=get_password" style="color:#333333">{$lang.forgot_password}</a></li>
+              </ul></td>
+          </tr>
+        </table>
+        <br />
+      </form>
+    </div>
+    <!--{/if}-->
+    <!--#会员注册界面-->
+    <!--*找回密码界面 -->
+    <!--{if $action eq 'get_password'} -->
+    {insert_scripts files="utils.js"}
+    <script type="text/javascript">
+    {foreach from=$lang.password_js item=item key=key}
+      var {$key} = "{$item}";
+    {/foreach}
+    </script>
+    <div class="title-01">
+      <div class="title-01-arrow">找回密码</div>
+    </div>
+    <div class="content-div">
+      <form action="user.php" method="post" name="getPassword" onsubmit="return submitPwdInfo();">
+        <br />
+        <table width="70%" border="0" align="center">
+          <tr>
+            <td colspan="2" align="center"><strong>{$lang.username_and_email}</strong></td>
+          </tr>
+          <tr>
+            <td width="39%" align="right">{$lang.username}：</td>
+            <td width="61%"><input name="user_name" type="text" size="30" /></td>
+          </tr>
+          <tr>
+            <td align="right">{$lang.email}：</td>
+            <td><input name="email" type="text" size="30" /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><input type="hidden" name="act" value="send_pwd_email" />
+              <input type="submit" name="submit" value="{$lang.confirm_submit}" />
+              <input name="button" type="button" onclick="history.back()" value="{$lang.back_page_up}" />
+            </td>
+          </tr>
+        </table>
+        <br />
+      </form>
+    </div>
+    <!--{/if}-->
+    <!-- {if $action eq 'reset_password'} -->
+    <script type="text/javascript">
+    {foreach from=$lang.password_js item=item key=key}
+      var {$key} = "{$item}";
+    {/foreach}
+    </script>
+    <div class="title-01">
+      <div class="title-01-arrow">找回密码</div>
+    </div>
+    <form action="user.php" method="post" name="getPassword2" onSubmit="return submitPwd()">
+      <br />
+      <table width="80%" border="0" align="center">
+        <tr>
+          <td>{$lang.enter_new_password}：</td>
+          <td><input name="new_password" type="password" size="25" /></td>
+        </tr>
+        <tr>
+          <td>{$lang.confirm_password}：</td>
+          <td><input name="confirm_password" type="password" size="25" /></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><input type="hidden" name="act" value="act_edit_password" />
+            <input type="hidden" name="uid" value="{$uid}" />
+            <input type="hidden" name="code" value="{$code}" />
+            <input type="submit" name="submit" value="{$lang.confirm_submit}" />
+          </td>
+        </tr>
+      </table>
+      <br />
+    </form>
+    <!-- {/if} -->
+    <br />
+    <div class="hack"></div>
+  </div>
+  <!-- End #container -->
+</div>
+<!--End #globalWrapper-->
+<div id="footer"><!-- #BeginLibraryItem "/library/help.lbi" -->
+<table width="970" border="0" cellpadding="0" cellspacing="0" id="help">
+  <tr>
+    <!-- {foreach from=$helps item=help_cat} -->
+    <td class="help-title"><div><span>{$help_cat.cat_name}</span></div></td>
+    <!-- {/foreach} -->
+    <td class="help-title" style="border:0px;"><div><span>联系我们</span></div></td>
+  </tr>
+  <tr>
+    <!-- {foreach from=$helps item=help_cat} -->
+    <td class="help-list"><ul>
+        <!-- {foreach from=$help_cat.article item=item}-->
+        <li><a href="{$item.url}" title="{$item.title|escape:html}">{$item.short_title}</a></li>
+        <!--{/foreach}-->
+      </ul></td>
+    <!--{/foreach}-->
+    <td class="help-list" style="border:0px;"> {$shop_address} {$shop_postcode} <br />
+      <!-- 客服电话{if $service_phone} -->
+      Tel: {$service_phone} <br />
+      <!-- 结束客服电话{/if} -->
+      <!-- QQ 号码 {foreach from=$qq item=im}  -->
+      <!-- {if $im}  -->
+      <a href="http://wpa.qq.com/msgrd?V=1&amp;Uin={$im}&amp;Site={$shop_name}&amp;Menu=yes" target="_blank"><img src="http://wpa.qq.com/pa?p=1:{$im}:4" border="0" alt="QQ" /> {$im}</a><br />
+      <!-- {/if} -->
+      <!-- {/foreach}    结束QQ号码 -->
+      <!-- 淘宝旺旺    {foreach from=$ww item=im} -->
+      <!-- {if $im}  -->
+      <a href="http://amos1.taobao.com/msg.ww?v=2&amp;uid={$im|escape:url}&amp;s=2" target="_blank"><img src="http://amos1.taobao.com/online.ww?v=2&amp;uid={$im|escape:url}&amp;s=2" border="0" alt="淘宝旺旺" /> {$im}</a><br />
+      <!--  {/if} -->
+      <!--{/foreach}  结束淘宝旺旺 -->
+      <!-- Yahoo Messenger    {foreach from=$ym item=im} -->
+      <!-- {if $im} -->
+      <a href="http://edit.yahoo.com/config/send_webmesg?.target={$im}n&amp;.src=pg" target="_blank"><img src="images/yahoo.gif" border="0" alt="Yahoo Messenger" /> {$im}</a><br />
+      <!-- {/if} -->
+      <!-- {/foreach}   结束Yahoo Messenger -->
+      <!-- MSN Messenger   {foreach from=$msn item=im} -->
+      <!-- {if $im}  -->
+      <img src="images/msn.gif" border="0" alt="MSN" /> {$im}<br />
+      <!-- {/if} -->
+      <!-- {/foreach}  结束MSN Messenger -->
+      <!-- Skype {foreach from=$skype item=im} -->
+      <!-- {if $im} -->
+      <img src="http://mystatus.skype.com/smallclassic/{$im|escape:url}" alt="Skype" /><a href="skype:{$im|escape:url}?call">{$im}</a><br />
+      <!-- {/if} -->
+      <!-- {/foreach} --></td>
+  </tr>
+</table>
+<!-- #EndLibraryItem --><!-- #BeginLibraryItem "/library/page_footer.lbi" -->
+<div id="article"><img src="images/nav-line.gif" alt="" />
+  <!-- 开始相关声明{foreach from=$declaration item=article} -->
+  <a href="{$article.url}" target="_blank">{$article.title}</a> <img src="images/nav-line.gif" alt="" />
+  <!-- 相关声明{/foreach}-->
+</div>
+<!--End #article-->
+<img src="images/footer-logo.gif" alt="" id="footer-logo" />
+<div>{$copyright}</div>
+<div>
+  <!-- ICP 证书{if $icp_number} -->
+  {$lang.icp_number}:<a href="http://www.miibeian.gov.cn/" target="_blank">{$icp_number}</a><br />
+  <!-- 结束ICP 证书{/if} -->
+  {insert name=&quot;query_info&quot;}<br />
+  <a href="http://www.ecshop.com" target="_blank" style="font-size:10px">Powered by <strong><span style="color: #3366FF">ECSHOP</span> <span style="color: #FF9966">{$ecs_version}</span></strong></a> </div>
+<script type="text/javascript">
+var process_request = "{$lang.process_request}";
+</script>
+{$stats_code}<!-- #EndLibraryItem --></div>
+<!--End #footer-->
+<script type="text/javascript">
+<!--
+var process_request = "{$lang.process_request}";
+{foreach from=$lang.passport_js item=item key=key}
+var {$key} = "{$item}";
+{/foreach}
+-->
+</script>
+</body>
+</html>

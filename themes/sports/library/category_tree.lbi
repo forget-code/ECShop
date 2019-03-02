@@ -1,0 +1,18 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div class="title-01" >
+  <div class="title-01-arrow">商品分类</div>
+</div>
+<div id="navcontainer">
+  <!--{foreach from=$categories item=cat}-->
+<ul id="navlist">
+<li id="active"><a href="{$cat.url}"><strong>{$cat.name|escape:html}</strong></a> 
+<ul id="subnavlist">
+      <!--{foreach from=$cat.children item=child}-->
+<li><a href="{$child.url}">{$child.name|escape:html}</a></li>
+      <!--{/foreach}-->
+</ul>
+</li>
+</ul>
+  <!-- {/foreach}-->
+</div>
+

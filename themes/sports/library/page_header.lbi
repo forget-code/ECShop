@@ -1,0 +1,54 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div id="page-top">
+  <div id="logo-topnav">
+    <div id="logo"> <img src="../images/logo.gif" alt="Gif Shop" style="float:left;" />
+      <div id="topnav"> <a href="../flow.php">{$lang.view_cart}</a> - <a href="../pick_out.php">{$lang.pick_out}</a> - <a href="../group_buy.php">{$lang.group_buy_goods}</a> - <a href="../snatch.php">{$lang.snatch}</a> - <a href="../catalog.php" onMouseOver="showCatalog(this)" onMouseOut="hideCatalog()">{$lang.catalog}</a> - <a href="../tag_cloud.php">{$lang.tag_cloud}</a> - <a href="../user.php">{$lang.user_center}</a> </div>
+      <div id="search" style="float:right; text-align:right; width:450px; padding-top:20px;">
+      <form id="searchForm" name="searchForm" method="post" action="search.php">
+        <img src="../images/search-icon.gif" alt="" style="float:left;" />
+        <input name="keywords" type="text" id="keyword" />
+        <input type="image" src="../images/search-submit.gif" style="float:left;margin-left:10px !important;margin-left:8px;" />
+        <span style="float:right;padding:5px 10px;"><a href="search.php?act=advanced_search">{$lang.advanced_search}</a> | <a href="index.php">使用帮助</a></span>
+      </form>
+    </div>
+    </div>
+  </div>
+  <!--End #logo-nav-->
+<!--End #globalSearch-->
+  <div id="global-nav">
+    <div id="main-nav">
+      <ul>
+        <li><a href="../index.php">{$lang.home}</a><!-- {if $navigator_list.config.index eq 1} --><!-- {/if} --></li>
+        <!-- {foreach name=nav_middle_list from=$navigator_list.middle item=nav} -->
+            <!-- {if $smarty.foreach.nav_middle_list.last}-->
+                <li style="border-right:0px;"><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a></li>
+            <!-- {else} -->
+                <li><a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a></li>
+            <!-- {/if} -->
+            <!-- {if $nav.active eq 1} -->
+            <!-- {/if} -->
+      <!-- {/foreach} -->
+      </ul>
+    </div>
+    <!-- End #main-nav -->
+  </div>
+  <!-- global-nav -->
+</div>
+<!--End #page-top-->
+<div id="ECS_CATALOG" class="catalog-div" style="display:none"
+onMouseOver="if (this.style.display != 'block') this.style.display='block';"
+onMouseOut="if (this.style.display != 'none') this.style.display = 'none';">
+  <ul>
+    <!--{assign var="level" value=0}-->
+    <!-- {foreach from=$catalog_list item=cat} -->
+    <!-- {if $level > $cat.level} -->
+  </ul>
+  <!-- {/if}-->
+  <!-- {if $level < $cat.level} -->
+  <ul>
+    <!-- {/if} -->
+    <li class={if $cat.level eq "0"}"top-cate"{else}"snd-cate"{/if}><a href="{$cat.url}"{if $cat.cat_desc neq ''} title="{$cat.cat_desc}"{/if}>{$cat.cat_name}</a></li>
+    <!--{assign var="level" value=$cat.level}-->
+    <!-- {/foreach} -->
+  </ul>
+</div>
