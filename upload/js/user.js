@@ -756,9 +756,13 @@ function checkIntensity(pwd)
       Hcolor = Mcolor = Lcolor = "";
     break;
   }
-  document.getElementById("pwd_lower").style.borderBottom  = Lcolor;
-  document.getElementById("pwd_middle").style.borderBottom = Mcolor;
-  document.getElementById("pwd_high").style.borderBottom   = Hcolor;
+  if (document.getElementById("pwd_lower"))
+  {
+    document.getElementById("pwd_lower").style.borderBottom  = Lcolor;
+    document.getElementById("pwd_middle").style.borderBottom = Mcolor;
+    document.getElementById("pwd_high").style.borderBottom   = Hcolor;
+  }
+
 
 }
 

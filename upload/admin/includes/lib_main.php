@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_main.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: lib_main.php 16161 2009-06-04 03:52:43Z sxc_shop $
 */
 
 if (!defined('IN_ECS'))
@@ -771,4 +771,26 @@ function brand_exists($brand_name)
     return ($GLOBALS['db']->getOne($sql) > 0) ? true : false;
 }
 
+/**
+ * 获取当前管理员信息
+ *
+ * @access  public
+ * @param
+ *
+ * @return  Array
+ */
+function admin_info()
+{
+    $sql = "SELECT * FROM ". $GLOBALS['ecs']->table('admin_user')."
+            WHERE user_id = '$_SESSION[admin_id]'
+            LIMIT 0, 1";
+    $admin_info = $GLOBALS['db']->getRow($sql);
+
+    if (empty($admin_info))
+    {
+        return $admin_info = array();
+    }
+
+    return $admin_info;
+}
 ?>

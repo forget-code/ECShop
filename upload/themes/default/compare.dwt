@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='transport.js,common.js,utils.js'}
 <script language="javascript">
@@ -24,6 +24,11 @@ function remove(id, url)
     document.setCookie("compareItems", obj.toJSONString());
   }
 }
+
+var compare_no_goods = "{$lang.compare_no_goods}";
+var btn_buy = "{$lang.btn_buy}";
+var is_cancel = "{$lang.is_cancel}";
+var select_spe = "{$lang.select_spe}";
 </script>
 </head>
 <body>
@@ -70,7 +75,7 @@ function remove(id, url)
               <tr>
                 <th align="left" bgcolor="#ffffff">&nbsp;&nbsp;{$lang.shop_price}</th>
                 <!-- {foreach name="goods_list" from=$goods_list item=goods} -->
-                <td bgcolor="#ffffff">&nbsp;&nbsp;{$goods.shop_price}</td>
+                <td bgcolor="#ffffff">&nbsp;&nbsp;{$goods.rank_price}</td>
                 <!-- {/foreach} -->
               </tr>
               <tr>

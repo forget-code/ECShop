@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_base.php 15122 2008-10-29 01:45:43Z testyang $
+ * $Author: sxc_shop $
+ * $Id: lib_base.php 16062 2009-05-21 10:31:48Z sxc_shop $
 */
 
 if (!defined('IN_ECS'))
@@ -905,7 +905,7 @@ function check_file_type($filename, $realname = '', $limit_ext_types = '')
  */
 function mysql_like_quote($str)
 {
-    return strtr($str, array("\\\\" => "\\\\\\\\", '_' => '\_', '%' => '\%'));
+    return strtr($str, array("\\\\" => "\\\\\\\\", '_' => '\_', '%' => '\%', "\'" => "\\\\\'"));
 }
 
 /**

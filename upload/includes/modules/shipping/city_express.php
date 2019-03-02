@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: city_express.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: city_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -49,7 +49,7 @@ if (isset($set_modules) && $set_modules == TRUE)
 
     /* 配送接口需要的参数 */
     $modules[$i]['configure'] = array(
-                                   array('name' => 'basic_fee',     'value'=>10),
+                                   array('name' => 'base_fee',     'value'=>10),
                                 );
 
     return;
@@ -100,7 +100,7 @@ class city_express
         }
         else
         {
-            return $this->configure['basic_fee'];
+            return $this->configure['base_fee'];
         }
     }
 

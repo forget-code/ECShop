@@ -1,4 +1,4 @@
-<!-- $Id: searchengine_stats.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: searchengine_stats.htm 16420 2009-07-02 06:56:57Z liubo $ -->
 {include file="pageheader.htm"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
 <link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
@@ -36,7 +36,8 @@
               <PARAM NAME=movie VALUE="images/charts/ScrollColumn2D.swf?chartWidth=650&chartHeight=400">
               <param NAME="quality" VALUE="high">
               <param NAME="bgcolor" VALUE="#FFFFFF">
-              <embed src="images/charts/ScrollColumn2D.swf?chartWidth=650&chartHeight=400" FlashVars="&dataXML={$general_data}" quality="high" bgcolor="#FFFFFF"  width="650" height="400" name="FCColumn2" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+              <param NAME="wmode" VALUE="opaque">
+              <embed src="images/charts/ScrollColumn2D.swf?chartWidth=650&chartHeight=400" FlashVars="&dataXML={$general_data}" quality="high" bgcolor="#FFFFFF"  width="650" height="400" name="FCColumn2" wmode="opaque" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
             </object>
           </td></tr>
         </table>

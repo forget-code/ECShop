@@ -3,14 +3,14 @@
 /**
  * ECSHOP 整合插件类的基类
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: integrate.php 15345 2008-11-28 02:29:11Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: integrate.php 15470 2008-12-19 07:18:17Z sunxiaodong $
 */
 
 class integrate
@@ -56,7 +56,7 @@ class integrate
     /* 会员密码的字段名 */
     var $field_pass     = '';
 
-    /* 会员密码的字段名 */
+    /* 会员邮箱的字段名 */
     var $field_email    = '';
 
     /* 会员性别 */
@@ -203,14 +203,7 @@ class integrate
             return false;
         }
 
-        if ($this->charset != 'UTF8')
-        {
-            $post_username = ecs_iconv('UTF8', $this->charset, $username);
-        }
-        else
-        {
-            $post_username = $username;
-        }
+        $post_username = $username;
 
         if ($md5password)
         {
@@ -270,14 +263,8 @@ class integrate
         }
         else
         {
-            if ($this->charset != 'UTF8')
-            {
-                $cfg['post_username'] = ecs_iconv('UTF8', $this->charset, $cfg['username']);
-            }
-            else
-            {
-                $cfg['post_username'] = $cfg['username'];
-            }
+            $cfg['post_username'] = $cfg['username'];
+
         }
 
         $values = array();
@@ -360,25 +347,7 @@ class integrate
      */
     function remove_user($id)
     {
-        if ($this->charset != 'UTF8')
-        {
-            if (is_array($id))
-            {
-                $post_id = array();
-                foreach ($id as $val)
-                {
-                    $post_id[] = ecs_iconv('UTF8', $this->charset, $val);
-                }
-            }
-            else
-            {
-                $post_id = ecs_iconv('UTF8', $this->charset, $id);
-            }
-        }
-        else
-        {
-            $post_id = $id;
-        }
+        $post_id = $id;
 
         if ($this->need_sync || (isset($this->is_ecshop) && $this->is_ecshop))
         {
@@ -453,26 +422,15 @@ class integrate
      */
     function get_profile_by_name($username)
     {
-        if ($this->charset != 'UTF8')
-        {
-            $post_username = ecs_iconv('UTF8', $this->charset, $username);
-        }
-        else
-        {
-            $post_username = $username;
-        }
+        $post_username = $username;
 
         $sql = "SELECT " . $this->field_id . " AS user_id," . $this->field_name . " AS user_name," .
                     $this->field_email . " AS email," . $this->field_gender ." AS sex,".
                     $this->field_bday . " AS birthday," . $this->field_reg_date . " AS reg_time, ".
                     $this->field_pass . " AS password ".
                " FROM " . $this->table($this->user_table) .
-               " WHERE " .$this->field_name . "='$post_username'";;
+               " WHERE " .$this->field_name . "='$post_username'";
         $row = $this->db->getRow($sql);
-        if ($this->charset != 'UTF8')
-        {
-            $row['user_name'] = $username;
-        }
 
         return $row;
     }
@@ -494,11 +452,6 @@ class integrate
                " FROM " . $this->table($this->user_table) .
                " WHERE " .$this->field_id . "='$id'";
         $row = $this->db->getRow($sql);
-
-        if ($this->charset != 'UTF8')
-        {
-            $row['user_name'] = ecs_iconv($this->charset, 'UTF8', $row['user_name']);
-        }
 
         return $row;
     }
@@ -540,14 +493,8 @@ class integrate
      */
     function check_user($username, $password = null)
     {
-        if ($this->charset != 'UTF8')
-        {
-            $post_username = ecs_iconv('UTF8', $this->charset, $username);
-        }
-        else
-        {
-            $post_username = $username;
-        }
+
+        $post_username = $username;
 
         /* 如果没有定义密码则只检查用户名 */
         if ($password === null)
@@ -842,10 +789,6 @@ class integrate
         $fileds = array_keys($credits);
         if ($fileds)
         {
-            if ($this->charset != 'UTF8')
-            {
-                $username = ecs_iconv('UTF8', $this->charset,  $username);
-            }
             $sql = "SELECT " . $this->field_id . ', ' . implode(', ',$fileds).
                    " FROM " . $this->table($this->user_table).
                    " WHERE " . $this->field_name . "='$username'";
@@ -859,7 +802,7 @@ class integrate
     }
 
     /**
-     *
+     *设置用户积分
      *
      * @access  public
      * @param
@@ -875,10 +818,6 @@ class integrate
 
         if ($set)
         {
-            if ($this->charset != 'UTF8')
-            {
-                $username = ecs_iconv('UTF8', $this->charset,  $username);
-            }
             $tmp = array();
             foreach ($set as $credit)
             {
@@ -914,25 +853,9 @@ class integrate
             return array();
         }
 
-        if ($this->charset != 'UTF8')
-        {
-            $count = count($user_list);
-            for($i=0; $i<$count; $i++)
-            {
-                $user_list[$i] = ecs_iconv('UTF8', $this->charset, $user_list[$i]);
-            }
-        }
 
         $sql = "SELECT " . $this->field_name . " FROM " . $this->table($this->user_table) . " WHERE " . db_create_in($user_list, $this->field_name);
         $user_list = $this->db->getCol($sql);
-        if ($user_list && ($this->charset != 'UTF8'))
-        {
-            $count = count($user_list);
-            for($i=0; $i<$count; $i++)
-            {
-                $user_list[$i] = ecs_iconv($this->charset, 'UTF8', $user_list[$i]);
-            }
-        }
 
         return $user_list;
     }

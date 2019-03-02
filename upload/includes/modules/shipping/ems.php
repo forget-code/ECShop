@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: ems.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: ems.php 15538 2009-01-08 07:54:54Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -49,6 +49,7 @@ if (isset($set_modules) && $set_modules == TRUE)
 
     /* 配送接口需要的参数 */
     $modules[$i]['configure'] = array(
+                                    array('name' => 'item_fee',     'value'=>20),
                                     array('name' => 'base_fee',     'value'=>20),
                                     array('name' => 'step_fee',     'value'=>15),
                                 );
@@ -100,9 +101,10 @@ class ems
      *
      * @param   float   $goods_weight   商品重量
      * @param   float   $goods_amount   商品金额
+     * @param   float   $goods_number   商品件数
      * @return  decimal
      */
-    function calculate($goods_weight, $goods_amount)
+    function calculate($goods_weight, $goods_amount, $goods_number)
     {
         if ($this->configure['free_money'] > 0 && $goods_amount >= $this->configure['free_money'])
         {
@@ -111,10 +113,18 @@ class ems
         else
         {
             $fee = $this->configure['base_fee'];
+            $this->configure['fee_compute_mode'] = !empty($this->configure['fee_compute_mode']) ? $this->configure['fee_compute_mode'] : 'by_weight';
 
-            if ($goods_weight > 0.5)
+            if ($this->configure['fee_compute_mode'] == 'by_number')
             {
-                $fee += (ceil(($goods_weight - 0.5) / 0.5)) * $this->configure['step_fee'];
+                $fee = $goods_number * $this->configure['item_fee'];
+            }
+            else
+            {
+                if ($goods_weight > 0.5)
+                {
+                    $fee += (ceil(($goods_weight - 0.5) / 0.5)) * $this->configure['step_fee'];
+                }
             }
             return $fee;
         }

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_insert.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: lib_insert.php 15831 2009-04-22 02:19:03Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -74,33 +74,25 @@ function insert_query_info()
 function insert_history()
 {
     $str = '';
-
     if (!empty($_COOKIE['ECS']['history']))
     {
         $where = db_create_in($_COOKIE['ECS']['history'], 'goods_id');
-        $sql   = 'SELECT goods_id, goods_name FROM ' . $GLOBALS['ecs']->table('goods') .
+        $sql   = 'SELECT goods_id, goods_name, goods_thumb, shop_price FROM ' . $GLOBALS['ecs']->table('goods') .
                 " WHERE $where AND is_on_sale = 1 AND is_alone_sale = 1 AND is_delete = 0";
         $query = $GLOBALS['db']->query($sql);
-
         $res = array();
         while ($row = $GLOBALS['db']->fetch_array($query))
         {
-            $res[$row['goods_id']] = $row;
+            $goods['goods_id'] = $row['goods_id'];
+            $goods['goods_name'] = $row['goods_name'];
+            $goods['short_name'] = $GLOBALS['_CFG']['goods_name_length'] > 0 ? sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
+            $goods['goods_thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+            $goods['shop_price'] = price_format($row['shop_price']);
+            $goods['url'] = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
+            $str.='<ul class="clearfix"><li class="goodsimg"><a href="'.$goods['url'].'" target="_blank"><img src="'.$goods['goods_thumb'].'" alt="'.$goods['goods_name'].'" class="B_blue" /></a></li><li><a href="'.$goods['url'].'" target="_blank" title="'.$goods['goods_name'].'">'.$goods['short_name'].'</a><br />'.$GLOBALS['_LANG']['shop_price'].'<font class="f1">'.$goods['shop_price'].'</font><br /></li></ul>';
         }
-
-        $tureorder = explode(',', $_COOKIE['ECS']['history']);
-
-        foreach ($tureorder AS $key => $val)
-        {
-            $goods_name = htmlspecialchars($res[$val]['goods_name']);
-            if ($goods_name)
-            {
-                $short_name = $GLOBALS['_CFG']['goods_name_length'] > 0 ? sub_str($goods_name, $GLOBALS['_CFG']['goods_name_length']) : $goods_name;
-                $str .= '<li><a href="' . build_uri('goods', array('gid' => $val), $goods_name). '" title="' . $goods_name . '">' . $short_name . '</a></li>';
-            }
-        }
+        $str .= '<ul id="clear_history"><a onclick="clear_history()">' . $GLOBALS['_LANG']['clear_history'] . '</a></ul>';
     }
-
     return $str;
 }
 

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: gallery.php 15194 2008-11-18 06:42:48Z testyang $
+ * $Author: zblikai $
+ * $Id: gallery.php 15731 2009-03-10 08:49:46Z zblikai $
 */
 
 define('IN_ECS', true);
@@ -40,7 +40,8 @@ $sql = 'SELECT img_id, img_desc, thumb_url, img_url'.
 $img_list = $db->getAll($sql);
 
 $img_count = count($img_list);
-$gallery = array('goods_name' => $goods_name, 'list' => array());
+
+$gallery = array('goods_name' => htmlspecialchars($goods_name, ENT_QUOTES), 'list' => array());
 if ($img_count == 0)
 {
     /* 如果没有图片，返回商品详情页 */

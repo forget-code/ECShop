@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: lib_clips.php 15374 2008-12-02 08:18:36Z sunxiaodong $
+ * $Author: liuhui $
+ * $Id: lib_clips.php 16388 2009-06-26 07:30:19Z liuhui $
  */
 
 if (!defined('IN_ECS'))
@@ -153,6 +153,7 @@ function get_message_list($user_id, $user_name, $num, $start, $order_id = 0)
 function add_message($message)
 {
     $upload_size_limit = $GLOBALS['_CFG']['upload_size_limit'] == '-1' ? ini_get('upload_max_filesize') : $GLOBALS['_CFG']['upload_size_limit'];
+    $status = 1 - $GLOBALS['_CFG']['message_check'];
 
     $last_char = strtolower($upload_size_limit{strlen($upload_size_limit)-1});
 
@@ -165,13 +166,14 @@ function add_message($message)
             $upload_size_limit *= 1024;
             break;
     }
-    if($_FILES['message_img']['size'] / 1024 > $upload_size_limit)
-    {
-        $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['upload_file_limit'], $upload_size_limit));
-        return false;
-    }
+
     if ($message['upload'])
     {
+        if($_FILES['message_img']['size'] / 1024 > $upload_size_limit)
+        {
+            $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['upload_file_limit'], $upload_size_limit));
+            return false;
+        }
         $img_name = upload_file($_FILES['message_img'], 'feedbackimg');
 
         if ($img_name === false)
@@ -193,9 +195,9 @@ function add_message($message)
 
     $message['msg_area'] = isset($message['msg_area']) ? intval($message['msg_area']) : 0;
     $sql = "INSERT INTO " . $GLOBALS['ecs']->table('feedback') .
-            " (msg_id, parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_content, msg_time, message_img, order_id, msg_area)".
+            " (msg_id, parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_status,  msg_content, msg_time, message_img, order_id, msg_area)".
             " VALUES (NULL, 0, '$message[user_id]', '$message[user_name]', '$message[user_email]', ".
-            " '$message[msg_title]', '$message[msg_type]', '$message[msg_content]', '".gmtime()."', '$img_name', '$message[order_id]', '$message[msg_area]')";
+            " '$message[msg_title]', '$message[msg_type]', '$status', '$message[msg_content]', '".gmtime()."', '$img_name', '$message[order_id]', '$message[msg_area]')";
     $GLOBALS['db']->query($sql);
 
     return true;
@@ -454,7 +456,7 @@ function get_online_payment_list($include_balance = true)
 
     $pay_list = $GLOBALS['db']->getAll($sql);
 
-    /* 将财付通在冲值页面提至第一位显示   */
+    /* 将快钱在冲值页面提至第一位，财付通在冲值页面提至第二位显示   */
     foreach ($pay_list as $key => $val )
     {
         if ($val['pay_code'] == 'tenpayc2c')
@@ -465,8 +467,24 @@ function get_online_payment_list($include_balance = true)
         {
             $tenpay = $val;
             unset($pay_list[$key]);
-            array_unshift($pay_list, $tenpay);
         }
+        if ($val['pay_code'] == 'kuaiqian')
+        {
+            $tenpay2 = $val;
+            unset($pay_list[$key]);
+        }
+    }
+    if(isset($tenpay2) !='' && isset($tenpay) =='')
+    {
+        array_unshift($pay_list, $tenpay2);
+    }
+    if(isset($tenpay) !='' && isset($tenpay2) =='')
+    {
+        array_unshift($pay_list, $tenpay);
+    }
+    if(isset($tenpay2) !='' && isset($tenpay) ==!'')
+    {
+        array_unshift($pay_list, $tenpay2, $tenpay);
     }
     return $pay_list;
 }

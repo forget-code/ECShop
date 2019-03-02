@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: integrate.php 15129 2008-10-29 08:31:39Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: integrate.php 15716 2009-03-06 03:22:25Z sunxiaodong $
 */
 
 $_LANG['integrate_name'] = '名稱';
@@ -29,7 +29,12 @@ $_LANG['view_install_log'] = '查看安裝日誌';
 $_LANG['integrate_setup'] = '設置會員數據整合插件';
 $_LANG['continue_sync'] = '繼續同步會員數據';
 $_LANG['go_userslist'] = '返回會員帳號列表';
-
+$_LANG['user_help'] = '<pre>
+使用方法：
+         1:如果需要整合其他的用戶系統，可以安裝適當的版本號插件進行整合。
+         2:如果需要更換整合的用戶系統，直接安裝目標插件即可完成整合，同時自動卸載上一次整合插件。
+         3:如果不需要整合任何用戶系統，請選擇安裝ecshop插件，即可卸載所有的整合插件。
+                           </pre>';
 /* 查看安裝日誌 */
 $_LANG['lost_install_log'] = '未找到安裝日誌';
 $_LANG['empty_install_log'] = '安裝日誌為空';

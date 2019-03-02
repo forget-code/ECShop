@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: pick_out.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: wangleisvn $
+ * $Id: pick_out.php 16120 2009-05-27 08:50:15Z wangleisvn $
 */
 
 define('IN_ECS', true);
@@ -24,6 +24,11 @@ if (!empty($_GET['attr']))
 {
     foreach($_GET['attr'] as $key => $value)
     {
+        if (!is_numeric($key))
+        {
+            unset($_GET['attr'][$key]);
+            continue;
+        }
         $key = intval($key);
         $_GET['attr'][$key] = htmlspecialchars($value);
     }
@@ -264,7 +269,7 @@ if (!empty($vote))
     $smarty->assign('vote',    $vote['content']);
 }
 
-assign_dynamic('index');
+assign_dynamic('pick_out');
 
 $smarty->assign('url',           $url);
 $smarty->assign('pickout_goods', $goods);

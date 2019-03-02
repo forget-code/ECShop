@@ -1,4 +1,4 @@
-<!-- $Id: goods_info.htm 15167 2008-11-11 02:33:20Z sunxiaodong $ -->
+<!-- $Id: goods_info.htm 16161 2009-06-04 03:52:43Z sxc_shop $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
@@ -105,6 +105,31 @@
             </td>
           </tr>
           {/if}
+
+          <!--商品优惠价格-->
+          <tr>
+            <td class="label"><a href="javascript:showNotice('volumePrice');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.lab_volume_price}</td>
+            <td>
+              <table width="100%" id="tbody-volume" align="center">
+                {foreach from=$volume_price_list item=volume_price name="volume_price_tab"}
+                <tr>
+                  <td>
+                     {if $smarty.foreach.volume_price_tab.iteration eq 1}
+                       <a href="javascript:;" onclick="addVolumePrice(this)">[+]</a>
+                     {else}
+                       <a href="javascript:;" onclick="removeVolumePrice(this)">[-]</a>
+                     {/if}
+                     {$lang.volume_number} <input type="text" name="volume_number[]" size="8" value="{$volume_price.number}"/>
+                     {$lang.volume_price} <input type="text" name="volume_price[]" size="8" value="{$volume_price.price}"/>
+                  </td>
+                </tr>
+                {/foreach}
+              </table>
+              <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="volumePrice">{$lang.notice_volume_price}</span>
+            </td>
+          </tr>
+          <!--商品优惠价格 end -->
+
           <tr>
             <td class="label">{$lang.lab_market_price}</td>
             <td><input type="text" name="market_price" value="{$goods.market_price}" size="20" />
@@ -222,12 +247,13 @@
         {if $goods_type_list}
         <table width="90%" id="properties-table" style="display:none" align="center">
           <tr>
-              <td class="label">{$lang.goods_type}</td>
+              <td class="label"><a href="javascript:showNotice('noticeGoodsType');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.lab_goods_type}</td>
               <td>
                 <select name="goods_type" onchange="getAttrList({$goods.goods_id})">
+                  <option value="0">{$lang.sel_goods_type}</option>
                   {$goods_type_list}
-                </select>
-              </td>
+                </select><br />
+              <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeGoodsType">{$lang.notice_goods_type}</span></td>
           </tr>
           <tr>
             <td id="tbody-goodsAttr" colspan="2" style="padding:0">{$goods_attr_html}</td>
@@ -431,6 +457,9 @@
       {
           validator.addErrorMsg(goods_cat_not_null);
       }
+
+      checkVolumeData("1",validator);
+
       validator.required('shop_price', shop_price_not_null);
       validator.isNumber('shop_price', shop_price_not_number, true);
       validator.isNumber('market_price', market_price_not_number, false);
@@ -446,6 +475,9 @@
           validator.isInt('goods_number', goods_number_not_int, false);
           validator.isInt('warn_number', warn_number_not_int, false);
       }
+
+
+
       return validator.passed();
   }
 
@@ -979,6 +1011,81 @@
       }
     }
     Ajax.call('goods.php?is_ajax=1&act=check_goods_sn', "goods_sn=" + goods_sn + "&goods_id=" + goods_id, callback, "GET", "JSON");
+  }
+
+  /**
+   * 新增一个优惠价格
+   */
+  function addVolumePrice(obj)
+  {
+    var src      = obj.parentNode.parentNode;
+    var tbl      = document.getElementById('tbody-volume');
+
+    var validator  = new Validator('theForm');
+    checkVolumeData("0",validator);
+    if (!validator.passed())
+    {
+      return false;
+    }
+
+    var row  = tbl.insertRow(tbl.rows.length);
+    var cell = row.insertCell(-1);
+    cell.innerHTML = src.cells[0].innerHTML.replace(/(.*)(addVolumePrice)(.*)(\[)(\+)/i, "$1removeVolumePrice$3$4-");
+
+    var number_list = document.getElementsByName("volume_number[]");
+    var price_list  = document.getElementsByName("volume_price[]");
+
+    number_list[number_list.length-1].value = "";
+    price_list[price_list.length-1].value   = "";
+  }
+
+  /**
+   * 删除优惠价格
+   */
+  function removeVolumePrice(obj)
+  {
+    var row = rowindex(obj.parentNode.parentNode);
+    var tbl = document.getElementById('tbody-volume');
+
+    tbl.deleteRow(row);
+  }
+
+  /**
+   * 校验优惠数据是否正确
+   */
+  function checkVolumeData(isSubmit,validator)
+  {
+    var volumeNum = document.getElementsByName("volume_number[]");
+    var volumePri = document.getElementsByName("volume_price[]");
+    var numErrNum = 0;
+    var priErrNum = 0;
+
+    for (i = 0 ; i < volumePri.length ; i ++)
+    {
+      if ((isSubmit != 1 || volumeNum.length > 1) && numErrNum <= 0 && volumeNum.item(i).value == "")
+      {
+        validator.addErrorMsg(volume_num_not_null);
+        numErrNum++;
+      }
+
+      if (numErrNum <= 0 && Utils.trim(volumeNum.item(i).value) != "" && ! Utils.isNumber(Utils.trim(volumeNum.item(i).value)))
+      {
+        validator.addErrorMsg(volume_num_not_number);
+        numErrNum++;
+      }
+
+      if ((isSubmit != 1 || volumePri.length > 1) && priErrNum <= 0 && volumePri.item(i).value == "")
+      {
+        validator.addErrorMsg(volume_price_not_null);
+        priErrNum++;
+      }
+
+      if (priErrNum <= 0 && Utils.trim(volumePri.item(i).value) != "" && ! Utils.isNumber(Utils.trim(volumePri.item(i).value)))
+      {
+        validator.addErrorMsg(volume_price_not_number);
+        priErrNum++;
+      }
+    }
   }
   {/literal}
 </script>

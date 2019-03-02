@@ -8,8 +8,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: goods_batch.php 15208 2008-11-18 09:31:47Z testyang $
+ * $Author: liubo $
+ * $Id: goods_batch.php 15897 2009-05-04 07:24:35Z liubo $
  */
 
 define('IN_ECS', true);
@@ -24,7 +24,7 @@ require('includes/lib_goods.php');
 if ($_REQUEST['act'] == 'add')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     /* 取得分类列表 */
     $smarty->assign('cat_list', cat_list());
@@ -64,7 +64,7 @@ if ($_REQUEST['act'] == 'add')
 elseif ($_REQUEST['act'] == 'upload')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     /* 将文件按行读入数组，逐行进行解析 */
     $line_number = 0;
@@ -187,7 +187,7 @@ elseif ($_REQUEST['act'] == 'upload')
 elseif ($_REQUEST['act'] == 'insert')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     if (isset($_POST['checked']))
     {
@@ -317,31 +317,72 @@ elseif ($_REQUEST['act'] == 'insert')
 
             $max_id = $db->insert_id() + 1;
 
-            /* 插入商品相册：如果图片不为空
+            /* 如果图片不为空,修改商品图片，插入商品相册*/
             if (!empty($field_arr['original_img']) || !empty($field_arr['goods_img']) || !empty($field_arr['goods_thumb']))
             {
+                $goods_img     = '';
+                $goods_thumb   = '';
+                $original_img  = '';
                 $goods_gallery = array();
                 $goods_gallery['goods_id'] = $db->insert_id();
+
                 if (!empty($field_arr['original_img']))
                 {
-                    $ext = substr($field_arr['original_img'], strrpos($field_arr['original_img'], '.'));
-                    $goods_gallery['img_original'] = dirname($field_arr['original_img']) . '/' . $image->random_filename() . $ext;
-                    @copy(ROOT_PATH . $field_arr['original_img'], ROOT_PATH . $goods_gallery['img_original']);
+                    //设置商品相册原图和商品相册图
+                    if ($_CFG['auto_generate_gallery'])
+                    {
+                        $ext         = substr($field_arr['original_img'], strrpos($field_arr['original_img'], '.'));
+                        $img         = dirname($field_arr['original_img']) . '/' . $image->random_filename() . $ext;
+                        $gallery_img = dirname($field_arr['original_img']) . '/' . $image->random_filename() . $ext;
+                        @copy(ROOT_PATH . $field_arr['original_img'], ROOT_PATH . $img);
+                        @copy(ROOT_PATH . $field_arr['original_img'], ROOT_PATH . $gallery_img);
+                        $goods_gallery['img_original'] = reformat_image_name('gallery', $goods_gallery['goods_id'], $img, 'source');
+                    }
+                    //设置商品原图
+                    if ($_CFG['retain_original_img'])
+                    {
+                        $original_img                  = reformat_image_name('goods', $goods_gallery['goods_id'], $field_arr['original_img'], 'source');
+                    }
+                    else
+                    {
+                        @unlink(ROOT_PATH . $field_arr['original_img']);
+                    }
                 }
+
                 if (!empty($field_arr['goods_img']))
                 {
-                    $ext = substr($field_arr['goods_img'], strrpos($field_arr['goods_img'], '.'));
-                    $goods_gallery['img_url'] = dirname($field_arr['goods_img']) . '/' . $image->random_filename() . $ext;
-                    @copy(ROOT_PATH . $field_arr['goods_img'], ROOT_PATH . $goods_gallery['img_url']);
+                    //设置商品相册图
+                    if ($_CFG['auto_generate_gallery'] && !empty($gallery_img))
+                    {
+                        $goods_gallery['img_url'] = reformat_image_name('gallery', $goods_gallery['goods_id'], $gallery_img, 'goods');
+                    }
+                    //设置商品图
+                    $goods_img                = reformat_image_name('goods', $goods_gallery['goods_id'], $field_arr['goods_img'], 'goods');
                 }
+
                 if (!empty($field_arr['goods_thumb']))
                 {
-                    $ext = substr($field_arr['goods_thumb'], strrpos($field_arr['goods_thumb'], '.'));
-                    $goods_gallery['thumb_url'] = dirname($field_arr['goods_thumb']) . '/' . $image->random_filename() . $ext;
-                    @copy(ROOT_PATH . $field_arr['goods_thumb'], ROOT_PATH . $goods_gallery['thumb_url']);
+                    //设置商品相册缩略图
+                    if ($_CFG['auto_generate_gallery'])
+                    {
+                        $ext           = substr($field_arr['goods_thumb'], strrpos($field_arr['goods_thumb'], '.'));
+                        $gallery_thumb = dirname($field_arr['goods_thumb']) . '/' . $image->random_filename() . $ext;
+                        @copy(ROOT_PATH . $field_arr['goods_thumb'], ROOT_PATH . $gallery_thumb);
+                        $goods_gallery['thumb_url'] = reformat_image_name('gallery_thumb', $goods_gallery['goods_id'], $gallery_thumb, 'thumb');
+                    }
+                    //设置商品缩略图
+                    $goods_thumb = reformat_image_name('goods_thumb', $goods_gallery['goods_id'], $field_arr['goods_thumb'], 'thumb');
                 }
-                $db->autoExecute($ecs->table('goods_gallery'), $goods_gallery, 'INSERT');
-            } */
+
+                //修改商品图
+                $db->query("UPDATE " . $ecs->table('goods') . " SET goods_img = '$goods_img', goods_thumb = '$goods_thumb', original_img = '$original_img' WHERE goods_id='" . $goods_gallery['goods_id'] . "'");
+
+                //添加商品相册图
+                if ($_CFG['auto_generate_gallery'])
+                {
+                    $db->autoExecute($ecs->table('goods_gallery'), $goods_gallery, 'INSERT');
+                }
+            }
         }
     }
 
@@ -360,7 +401,7 @@ elseif ($_REQUEST['act'] == 'insert')
 elseif ($_REQUEST['act'] == 'select')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     /* 取得分类列表 */
     $smarty->assign('cat_list', cat_list());
@@ -369,7 +410,7 @@ elseif ($_REQUEST['act'] == 'select')
     $smarty->assign('brand_list', get_brand_list());
 
     /* 参数赋值 */
-    $ur_here = $_LANG['14_batch_edit'];
+    $ur_here = $_LANG['15_batch_edit'];
     $smarty->assign('ur_here', $ur_here);
 
     /* 显示模板 */
@@ -384,7 +425,7 @@ elseif ($_REQUEST['act'] == 'select')
 elseif ($_REQUEST['act'] == 'edit')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     /* 取得商品列表 */
     if ($_POST['select_method'] == 'cat')
@@ -425,7 +466,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $smarty->assign('edit_method', $_POST['edit_method']);
 
     /* 参数赋值 */
-    $ur_here = $_LANG['14_batch_edit'];
+    $ur_here = $_LANG['15_batch_edit'];
     $smarty->assign('ur_here', $ur_here);
 
     /* 显示模板 */
@@ -440,7 +481,7 @@ elseif ($_REQUEST['act'] == 'edit')
 elseif ($_REQUEST['act'] == 'update')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     if ($_POST['edit_method'] == 'each')
     {
@@ -584,7 +625,7 @@ elseif ($_REQUEST['act'] == 'update')
     admin_log('', 'batch_edit', 'goods');
 
     // 提示成功
-    $link[] = array('href' => 'goods_batch.php?act=select', 'text' => $_LANG['14_batch_edit']);
+    $link[] = array('href' => 'goods_batch.php?act=select', 'text' => $_LANG['15_batch_edit']);
     sys_msg($_LANG['batch_edit_ok'], 0, $link);
 }
 
@@ -595,7 +636,7 @@ elseif ($_REQUEST['act'] == 'update')
 elseif ($_REQUEST['act'] == 'download')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_batch');
 
     // 文件标签
     // Header("Content-type: application/octet-stream");

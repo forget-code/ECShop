@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_installer.php 15227 2008-11-19 02:07:35Z testyang $
+ * $Author: liuhui $
+ * $Id: lib_installer.php 16368 2009-06-26 03:39:19Z liuhui $
  */
 
 if (!defined('IN_ECS'))
@@ -401,13 +401,32 @@ function install_data($sql_files)
  */
 function create_admin_passport($admin_name, $admin_password, $admin_password2, $admin_email)
 {
-    global $err, $_LANG;
-
-
+    if(trim($_REQUEST['lang'])!='zh_cn')
+    {
+        global $err;
+        $system_lang = isset($_POST['system_lang'])     ? $_POST['system_lang'] : 'zh_cn';
+        include_once(ROOT_PATH . 'install/languages/' . $system_lang . '.php');
+    }
+    else
+    {
+        global $err,$_LANG;
+    }
+    
+    if ($admin_password === '')
+    {
+        $err->add($_LANG['password_empty_error']);
+        return false;
+    }
 
     if ($admin_password === '')
     {
         $err->add($_LANG['password_empty_error']);
+        return false;
+    }
+
+    if (!(strlen($admin_password) >= 8 && preg_match("/\d+/",$admin_password) && preg_match("/[a-zA-Z]+/",$admin_password)))
+    {
+        $err->add($_LANG['js_languages']['password_invaild']);
         return false;
     }
 
@@ -574,12 +593,17 @@ function do_others($system_lang, $captcha, $goods_types, $install_demo, $integra
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/200810/goods_img/', ROOT_PATH . 'images/200810/goods_img/'))
+        if (!copy_files(ROOT_PATH . 'install/data/demo/200905/goods_img/', ROOT_PATH . 'images/200905/goods_img/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/200810/thumb_img/', ROOT_PATH . 'images/200810/thumb_img/'))
+        if (!copy_files(ROOT_PATH . 'install/data/demo/200905/thumb_img/', ROOT_PATH . 'images/200905/thumb_img/'))
+        {
+            $err->add(implode('', $err->last_message()));
+            return false;
+        }
+        if (!copy_files(ROOT_PATH . 'install/data/demo/200905/source_img/', ROOT_PATH . 'images/200905/source_img/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
@@ -671,6 +695,15 @@ function deal_aftermath()
                 "(link_name, link_url, link_logo, show_order)".
             "VALUES ".
                 "('".$_LANG['default_friend_link']."', 'http://www.ecshop.com/', 'http://www.ecshop.com/images/logo/ecshop_logo.gif','0')";
+    if (!$db->query($sql, 'SILENT'))
+    {
+        $err->add($db->errno() .' '. $db->error());
+    }
+
+    $sql = "INSERT INTO $prefix"."friend_link ".
+                "(link_name, link_url, show_order)".
+            "VALUES ".
+                "('".$_LANG['maifou_friend_link']."', 'http://www.maifou.net/','1')";
     if (!$db->query($sql, 'SILENT'))
     {
         $err->add($db->errno() .' '. $db->error());

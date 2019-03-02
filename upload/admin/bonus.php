@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: bonus.php 15141 2008-10-31 08:52:40Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: bonus.php 15589 2009-02-10 09:24:05Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -378,6 +378,7 @@ if ($_REQUEST['act'] == 'send_by_user')
     $user_list  = array();
     $start      = empty($_REQUEST['start']) ? 0 : intval($_REQUEST['start']);
     $limit      = empty($_REQUEST['limit']) ? 10 : intval($_REQUEST['limit']);
+    $validated_email = empty($_REQUEST['validated_email']) ? 0 : intval($_REQUEST['validated_email']);
     $send_count = 0;
 
     if (isset($_REQUEST['send_rank']))
@@ -394,10 +395,18 @@ if ($_REQUEST['act'] == 'send_by_user')
                 /* 特殊会员组处理 */
                 $sql = 'SELECT COUNT(*) FROM ' . $ecs->table('users'). " WHERE user_rank = '$rank_id'";
                 $send_count = $db->getOne($sql);
-
-                $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
-                        " WHERE user_rank = '$rank_id'";
-                        " LIMIT $start, $limit";
+                if($validated_email)
+                {
+                    $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                            " WHERE user_rank = '$rank_id' AND is_validated = 1".
+                            " LIMIT $start, $limit";
+                }
+                else
+                {
+                     $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                                " WHERE user_rank = '$rank_id'".
+                                " LIMIT $start, $limit";
+                }
             }
             else
             {
@@ -405,9 +414,19 @@ if ($_REQUEST['act'] == 'send_by_user')
                        " WHERE rank_points >= " . intval($row['min_points']) . " AND rank_points < " . intval($row['max_points']);
                 $send_count = $db->getOne($sql);
 
-                $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                if($validated_email)
+                {
+                    $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
+                        " WHERE rank_points >= " . intval($row['min_points']) . " AND rank_points < " . intval($row['max_points']) .
+                        " AND is_validated = 1 LIMIT $start, $limit";
+                }
+                else
+                {
+                     $sql = 'SELECT user_id, email, user_name FROM ' . $ecs->table('users').
                         " WHERE rank_points >= " . intval($row['min_points']) . " AND rank_points < " . intval($row['max_points']) .
                         " LIMIT $start, $limit";
+                }
+
             }
 
             $user_list = $db->getAll($sql);
@@ -541,7 +560,7 @@ if ($_REQUEST['act'] == 'send_mail')
 
 if ($_REQUEST['act'] == 'send_by_print')
 {
-    set_time_limit(0);
+    @set_time_limit(0);
 
     /* 红下红包的类型ID和生成的数量的处理 */
     $bonus_typeid = !empty($_POST['bonus_type_id']) ? $_POST['bonus_type_id'] : 0;

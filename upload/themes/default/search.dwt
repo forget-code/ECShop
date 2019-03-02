@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='utils.js,common.js,global.js,compare.js'}
 </head>
@@ -120,7 +120,7 @@
       <!-- {if $use_storage eq 1} -->
       <tr>
         <td>&nbsp;</td>
-        <td><label for="outstock"><input type="checkbox" name="outstock" value="1" id="outstock" /> {$lang.hidden_outstock}</label>
+        <td><label for="outstock"><input type="checkbox" name="outstock" value="1" id="outstock" <!-- {if $outstock} -->checked="checked"<!--{/if}-->/> {$lang.hidden_outstock}</label>
         </td>
       </tr>
       <!--{/if}-->
@@ -305,6 +305,9 @@
           Compare.init();
           fixpng();
         }
+	var btn_buy = "{$lang.btn_buy}";
+	var is_cancel = "{$lang.is_cancel}";
+	var select_spe = "{$lang.select_spe}";
         </script>
         <!--{else}-->
         <div style="padding:20px 0px; text-align:center" class="f5" >{$lang.no_search_result}</div>

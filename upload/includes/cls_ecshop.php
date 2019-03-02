@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: cls_ecshop.php 15399 2008-12-08 05:38:12Z testyang $
+ * $Author: likai $
+ * $Id: cls_ecshop.php 16457 2009-07-14 02:07:17Z likai $
 */
 
 if (!defined('IN_ECS'))
@@ -19,8 +19,8 @@ if (!defined('IN_ECS'))
 }
 
 define('APPNAME', 'ECSHOP');
-define('VERSION', 'v2.6.1');
-define('RELEASE', '20081208');
+define('VERSION', 'v2.7.0');
+define('RELEASE', '20090714');
 
 class ECS
 {

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_passport.php 15370 2008-12-01 07:21:02Z testyang $
+ * $Author: sxc_shop $
+ * $Id: lib_passport.php 16268 2009-06-19 02:28:46Z sxc_shop $
 */
 
 if (!defined('IN_ECS'))
@@ -170,7 +170,7 @@ function register($username, $password, $email, $other = array())
                 }
                 else
                 {
-                    $other[$key] =  htmlentities($val); //防止用户输入javascript代码
+                    $other[$key] =  htmlspecialchars(trim($val)); //防止用户输入javascript代码
                 }
             }
             $update_data = array_merge($update_data, $other);

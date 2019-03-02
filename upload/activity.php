@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: activity.php 15205 2008-11-18 08:48:00Z sunxiaodong $
+ * $Author: liubo $
+ * $Id: activity.php 16056 2009-05-21 05:44:14Z liubo $
  */
 
 define('IN_ECS', true);
@@ -29,7 +29,7 @@ require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/favourable.php');
 /*------------------------------------------------------ */
 
 assign_template();
-assign_dynamic('myship');
+assign_dynamic('activity');
 $position = assign_ur_here(0, $_LANG['shopping_activity']);
 $smarty->assign('page_title',       $position['title']);    // 页面标题
 $smarty->assign('ur_here',          $position['ur_here']);  // 当前位置
@@ -137,6 +137,6 @@ $smarty->assign('list',             $list);
 $smarty->assign('helps',            get_shop_help());       // 网店帮助
 $smarty->assign('lang',             $_LANG);
 
-
+$smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typeactivity.xml" : 'feed.php?type=activity'); // RSS URL
 $smarty->display('activity.dwt');
 

@@ -10,7 +10,7 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Id: cls_smtp.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Id: cls_smtp.php 15556 2009-01-13 03:15:57Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -90,6 +90,10 @@ class smtp
         }
         else
         {
+            if (!empty($GLOBALS['_CFG']['smtp_ssl']))
+            {
+                $this->host = "ssl://" . $this->host;
+            }
             $this->connection = @fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
 
             if ($this->connection === false)

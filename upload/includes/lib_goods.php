@@ -9,13 +9,25 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_goods.php 15331 2008-11-25 02:31:44Z testyang $
+ * $Author: liuhui $
+ * $Id: lib_goods.php 16147 2009-06-01 09:52:08Z liuhui $
 */
 
 if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
+}
+
+/**
+ * 商品推荐usort用自定义排序行数
+ */
+function goods_sort($goods_a, $goods_b)
+{
+    if ($goods_a['sort_order'] == $goods_b['sort_order']) {
+        return 0;
+    }
+    return ($goods_a['sort_order'] < $goods_b['sort_order']) ? -1 : 1;
+
 }
 
 /**
@@ -42,45 +54,63 @@ function get_categories_tree($cat_id = 0)
      如果是取出底级分类上级分类，
      如果不是取当前分类及其下的子分类
     */
-    $sql = 'SELECT count(*) FROM ' . $GLOBALS['ecs']->table('category') . " WHERE parent_id = '$cat_id' AND is_show = 1 ";
+    $sql = 'SELECT count(*) FROM ' . $GLOBALS['ecs']->table('category') . " WHERE parent_id = '$parent_id' AND is_show = 1 ";
     if ($GLOBALS['db']->getOne($sql) || $parent_id == 0)
     {
         /* 获取当前分类及其子分类 */
-        $sql = 'SELECT a.cat_id, a.cat_name, a.sort_order AS parent_order, a.cat_id, a.is_show,' .
-                    'b.cat_id AS child_id, b.cat_name AS child_name, b.sort_order AS child_order ' .
-                'FROM ' . $GLOBALS['ecs']->table('category') . ' AS a ' .
-                'LEFT JOIN ' . $GLOBALS['ecs']->table('category') . ' AS b ON b.parent_id = a.cat_id AND b.is_show = 1 ' .
-                "WHERE a.parent_id = '$parent_id' ORDER BY parent_order ASC, a.cat_id ASC, child_order ASC";
-    }
-    else
-    {
-        /* 获取当前分类及其父分类 */
-        $sql = 'SELECT a.cat_id, a.cat_name, b.cat_id AS child_id, b.cat_name AS child_name, b.sort_order, b.is_show ' .
-                'FROM ' . $GLOBALS['ecs']->table('category') . ' AS a ' .
-                'LEFT JOIN ' . $GLOBALS['ecs']->table('category') . ' AS b ON b.parent_id = a.cat_id AND b.is_show = 1 ' .
-                "WHERE b.parent_id = '$parent_id' ORDER BY sort_order ASC";
-    }
-    $res = $GLOBALS['db']->getAll($sql);
+        $sql = 'SELECT cat_id,cat_name ,parent_id,is_show ' .
+                'FROM ' . $GLOBALS['ecs']->table('category') .
+                "WHERE parent_id = '$parent_id' AND is_show = 1 ORDER BY sort_order ASC, cat_id ASC";
 
-    $cat_arr = array();
-    foreach ($res AS $row)
-    {
-        if ($row['is_show'])
+        $res = $GLOBALS['db']->getAll($sql);
+
+        foreach ($res AS $row)
         {
-            $cat_arr[$row['cat_id']]['id']   = $row['cat_id'];
-            $cat_arr[$row['cat_id']]['name'] = $row['cat_name'];
-            $cat_arr[$row['cat_id']]['url']  = build_uri('category', array('cid' => $row['cat_id']), $row['cat_name']);
-
-            if ($row['child_id'] != NULL)
+            if ($row['is_show'])
             {
-                $cat_arr[$row['cat_id']]['children'][$row['child_id']]['id']   = $row['child_id'];
-                $cat_arr[$row['cat_id']]['children'][$row['child_id']]['name'] = $row['child_name'];
-                $cat_arr[$row['cat_id']]['children'][$row['child_id']]['url']  = build_uri('category', array('cid' => $row['child_id']), $row['child_name']);
+                $cat_arr[$row['cat_id']]['id']   = $row['cat_id'];
+                $cat_arr[$row['cat_id']]['name'] = $row['cat_name'];
+                $cat_arr[$row['cat_id']]['url']  = build_uri('category', array('cid' => $row['cat_id']), $row['cat_name']);
+
+                if (isset($row['cat_id']) != NULL)
+                {
+                    $cat_arr[$row['cat_id']]['cat_id'] = get_child_tree($row['cat_id']);
+                }
             }
         }
     }
+    if(isset($cat_arr))
+    {
+        return $cat_arr;
+    }
+}
 
-    return $cat_arr;
+function get_child_tree($tree_id = 0)
+{
+    $three_arr = array();
+    $sql = 'SELECT count(*) FROM ' . $GLOBALS['ecs']->table('category') . " WHERE parent_id = '$tree_id' AND is_show = 1 ";
+    if ($GLOBALS['db']->getOne($sql) || $tree_id == 0)
+    {
+        $child_sql = 'SELECT cat_id, cat_name, parent_id, is_show ' .
+                'FROM ' . $GLOBALS['ecs']->table('category') .
+                "WHERE parent_id = '$tree_id' AND is_show = 1 ORDER BY sort_order ASC, cat_id ASC";
+        $res = $GLOBALS['db']->getAll($child_sql);
+        foreach ($res AS $row)
+        {
+            if ($row['is_show'])
+
+               $three_arr[$row['cat_id']]['id']   = $row['cat_id'];
+               $three_arr[$row['cat_id']]['name'] = $row['cat_name'];
+               $three_arr[$row['cat_id']]['url']  = build_uri('category', array('cid' => $row['cat_id']), $row['cat_name']);
+
+               if (isset($row['cat_id']) != NULL)
+                   {
+                       $three_arr[$row['cat_id']]['cat_id'] = get_child_tree($row['cat_id']);
+
+            }
+        }
+    }
+    return $three_arr;
 }
 
 /**
@@ -113,7 +143,7 @@ function get_top10($cats = '')
             $top10_time = '';
     }
 
-    $sql = 'SELECT g.goods_id, g.goods_name, g.goods_img, SUM(og.goods_number) as goods_number ' .
+    $sql = 'SELECT g.goods_id, g.goods_name, g.shop_price, g.goods_thumb, SUM(og.goods_number) as goods_number ' .
            'FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g, ' .
                 $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
                 $GLOBALS['ecs']->table('order_goods') . ' AS og ' .
@@ -135,7 +165,8 @@ function get_top10($cats = '')
         $arr[$i]['short_name'] = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
                                     sub_str($arr[$i]['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $arr[$i]['goods_name'];
         $arr[$i]['url']        = build_uri('goods', array('gid' => $arr[$i]['goods_id']), $arr[$i]['goods_name']);
-        $arr[$i]['goods_img'] = get_image_path($arr[$i]['goods_id'], $arr[$i]['goods_img']);
+        $arr[$i]['thumb'] = get_image_path($arr[$i]['goods_id'], $arr[$i]['goods_thumb'],true);
+        $arr[$i]['price'] = price_format($arr[$i]['shop_price']);
     }
 
     return $arr;
@@ -166,10 +197,11 @@ function get_recommend_goods($type = '', $cats = '')
         $data = read_static_cache('recommend_goods');
         if ($data === false)
         {
-            $sql = 'SELECT g.goods_id, g.is_best, g.is_new, g.is_hot, g.is_promote, b.brand_name ' .
+            $sql = 'SELECT g.goods_id, g.is_best, g.is_new, g.is_hot, g.is_promote, b.brand_name,g.sort_order ' .
                ' FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
                ' LEFT JOIN ' . $GLOBALS['ecs']->table('brand') . ' AS b ON b.brand_id = g.brand_id ' .
-               ' WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND (g.is_best = 1 OR g.is_new =1 OR g.is_hot = 1)';
+               ' WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND (g.is_best = 1 OR g.is_new =1 OR g.is_hot = 1)'.
+               ' ORDER BY g.sort_order, g.last_update DESC';
             $goods_res = $GLOBALS['db']->getAll($sql);
             //定义推荐,最新，热门，促销商品
             $goods_data['best'] = array();
@@ -182,15 +214,15 @@ function get_recommend_goods($type = '', $cats = '')
                 {
                     if ($data['is_best'] == 1)
                     {
-                        $goods_data['best'][] = $data['goods_id'];
+                        $goods_data['best'][] = array('goods_id' => $data['goods_id'], 'sort_order' => $data['sort_order']);
                     }
                     if ($data['is_new'] == 1)
                     {
-                        $goods_data['new'][] = $data['goods_id'];
+                        $goods_data['new'][] = array('goods_id' => $data['goods_id'], 'sort_order' => $data['sort_order']);
                     }
                     if ($data['is_hot'] == 1)
                     {
-                        $goods_data['hot'][] = $data['goods_id'];
+                        $goods_data['hot'][] = array('goods_id' => $data['goods_id'], 'sort_order' => $data['sort_order']);
                     }
                     if ($data['brand_name'] != '')
                     {
@@ -222,21 +254,25 @@ function get_recommend_goods($type = '', $cats = '')
                     $num = $data_count > $num  ? $num : $data_count;
                     if ($order_type == 0)
                     {
-                        rsort($goods_data[$key]);
-                        $type_array[$key] = array_slice($goods_data[$key], 0, $num);
+                        //usort($goods_data[$key], 'goods_sort');
+                        $rand_key = array_slice($goods_data[$key], 0, $num);
+                        foreach($rand_key as $key_data)
+                        {
+                            $type_array[$key][] = $key_data['goods_id'];
+                        }
                     }
                     else
                     {
                         $rand_key = array_rand($goods_data[$key], $num);
                         if ($num == 1)
                         {
-                            $type_array[$key][] = $goods_data[$key][$rand_key];
+                            $type_array[$key][] = $goods_data[$key][$rand_key]['goods_id'];
                         }
                         else
                         {
                             foreach($rand_key as $key_data)
                             {
-                                $type_array[$key][] = $goods_data[$key][$key_data];
+                                $type_array[$key][] = $goods_data[$key][$key_data]['goods_id'];
                             }
                         }
                     }
@@ -258,7 +294,7 @@ function get_recommend_goods($type = '', $cats = '')
         $type_merge = array_merge($type_array['new'], $type_array['best'], $type_array['hot']);
         $type_merge = array_unique($type_merge);
         $sql .= ' WHERE g.goods_id ' . db_create_in($type_merge);
-        $sql .= ' ORDER BY goods_id DESC';
+        $sql .= ' ORDER BY g.sort_order, g.last_update DESC';
 
         $result = $GLOBALS['db']->getAll($sql);
         foreach ($result AS $idx => $row)
@@ -313,7 +349,7 @@ function get_recommend_goods($type = '', $cats = '')
 function get_promote_goods($cats = '')
 {
     $time = gmtime();
-    $order_type = 0;
+    $order_type = $GLOBALS['_CFG']['recommend_order'];
 
     /* 取得促销lbi的数量限制 */
     $num = get_library_number("recommend_promotion");
@@ -327,7 +363,7 @@ function get_promote_goods($cats = '')
                 "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
             'WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 ' .
             " AND g.is_promote = 1 AND promote_start_date <= '$time' AND promote_end_date >= '$time' ";
-    $sql .= $order_type == 0 ? ' ORDER BY g.goods_id desc' : ' ORDER BY rnd';
+    $sql .= $order_type == 0 ? ' ORDER BY g.sort_order, g.last_update DESC' : ' ORDER BY rnd';
     $sql .= " LIMIT $num ";
     $result = $GLOBALS['db']->getAll($sql);
 
@@ -662,7 +698,7 @@ function get_same_attribute_goods($attr)
                 $lnk[$key]['goods'][$row['goods_id']]['goods_name']    = $row['goods_name'];
                 $lnk[$key]['goods'][$row['goods_id']]['short_name']    = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
                     sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
-                $lnk[$key]['goods'][$row['goods_id']]['goods_img']     = (empty($row['goods_img'])) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_img'];
+                $lnk[$key]['goods'][$row['goods_id']]['goods_thumb']     = (empty($row['goods_thumb'])) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
                 $lnk[$key]['goods'][$row['goods_id']]['market_price']  = price_format($row['market_price']);
                 $lnk[$key]['goods'][$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
                 $lnk[$key]['goods'][$row['goods_id']]['promote_price'] = bargain_price($row['promote_price'],
@@ -1368,6 +1404,51 @@ function get_goods_attr($goods_id)
     }
 
     return $attr_list;
+}
+
+/**
+ * 获得购物车中商品的配件
+ *
+ * @access  public
+ * @param   array     $goods_list
+ * @return  array
+ */
+function get_goods_fittings($goods_list = array())
+{
+    $temp_index = 0;
+    $arr        = array();
+
+    $sql = 'SELECT gg.parent_id, ggg.goods_name AS parent_name, gg.goods_id, gg.goods_price, g.goods_name, g.goods_thumb, g.goods_img, g.shop_price AS org_price, ' .
+                "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price ".
+            'FROM ' . $GLOBALS['ecs']->table('group_goods') . ' AS gg ' .
+            'LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . 'AS g ON g.goods_id = gg.goods_id ' .
+            "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
+                    "ON mp.goods_id = gg.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
+            "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS ggg ON ggg.goods_id = gg.parent_id ".
+            "WHERE gg.parent_id " . db_create_in($goods_list) . " AND g.is_delete = 0 AND g.is_on_sale = 1 ".
+            "ORDER BY gg.parent_id, gg.goods_id";
+
+    $res = $GLOBALS['db']->query($sql);
+
+    while ($row = $GLOBALS['db']->fetchRow($res))
+    {
+        $arr[$temp_index]['parent_id']         = $row['parent_id'];//配件的基本件ID
+        $arr[$temp_index]['parent_name']       = $row['parent_name'];//配件的基本件的名称
+        $arr[$temp_index]['parent_short_name'] = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
+            sub_str($row['parent_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['parent_name'];//配件的基本件显示的名称
+        $arr[$temp_index]['goods_id']          = $row['goods_id'];//配件的商品ID
+        $arr[$temp_index]['goods_name']        = $row['goods_name'];//配件的名称
+        $arr[$temp_index]['short_name']        = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
+            sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];//配件显示的名称
+        $arr[$temp_index]['fittings_price']    = price_format($row['goods_price']);//配件价格
+        $arr[$temp_index]['shop_price']        = price_format($row['shop_price']);//配件原价格
+        $arr[$temp_index]['goods_thumb']       = get_image_path($row['goods_id'], $row['goods_thumb'], true);
+        $arr[$temp_index]['goods_img']         = get_image_path($row['goods_id'], $row['goods_img']);
+        $arr[$temp_index]['url']               = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
+        $temp_index ++;
+    }
+
+    return $arr;
 }
 
 ?>

@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='common.js'}
 <script type="text/javascript">
@@ -184,21 +184,31 @@ function reg(str){
      <a href="javascript:;" onclick="window.open('gallery.php?id={$goods.goods_id}'); return false;">
       <img src="{$goods.goods_img}" alt="{$goods.goods_name|escape:html}"/>
      </a>
-		 <!-- {else} -->
-		 <img src="{$goods.goods_img}" alt="{$goods.goods_name|escape:html}"/>
-		 <!-- {/if}-->
+         <!-- {else} -->
+         <img src="{$goods.goods_img}" alt="{$goods.goods_name|escape:html}"/>
+         <!-- {/if}-->
      <div class="blank5"></div>
      <!--相册 START-->
      <!-- #BeginLibraryItem "/library/goods_gallery.lbi" --><!-- #EndLibraryItem -->
      <!--相册 END-->
-		 <div class="blank5"></div>
-		 <!-- TemplateBeginEditable name="商品相册下广告（宽230px）" -->
+         <div class="blank5"></div>
+         <!-- TemplateBeginEditable name="商品相册下广告（宽230px）" -->
      <!-- TemplateEndEditable -->
      </div>
      <!--商品图片和相册 end-->
      <div class="textInfo">
      <form action="javascript:addToCart({$goods.goods_id})" method="post" name="ECS_FORMBUY" id="ECS_FORMBUY" >
-      <p>{$goods.goods_style_name}</p>
+		 <div class="clearfix">
+      <p class="f_l">{$goods.goods_style_name}</p>
+      <p class="f_r">
+      {if $prev_good}
+      <a href="{$prev_good.url}"><img alt="prev" src="./images/up.gif" /></a>
+      {/if}
+      {if $next_good}
+      <a href="{$next_good.url}"><img alt="next" src="./images/down.gif" /></a>
+      {/if}
+      </p>
+			</div>
       <ul>
        <!-- {if $promotion} -->
       <li class="padd">
@@ -274,6 +284,25 @@ function reg(str){
       <img src="images/stars{$goods.comment_rank}.gif" alt="comment rank {$goods.comment_rank}" />
        </dd>
       </li>
+
+      <!--{if $volume_price_list } -->
+      <li class="padd">
+       <font class="f1">{$lang.volume_price}：</font><br />
+			 <table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#aad6ff">
+				<tr>
+					<td align="center" bgcolor="#FFFFFF"><strong>{$lang.number_to}</strong></td>
+					<td align="center" bgcolor="#FFFFFF"><strong>优惠价格</strong></td>
+				</tr>
+				<!-- {foreach from=$volume_price_list item=price_list key=price_key} -->
+				<tr>
+					<td align="center" bgcolor="#FFFFFF" class="shop">{$price_list.number}</td>
+					<td align="center" bgcolor="#FFFFFF" class="shop">{$price_list.format_price}</td>
+				</tr>
+				<!-- {/foreach} -->
+	     </table>
+      </li>
+      <!--{/if}-->
+
       <!--{if $goods.is_promote and $goods.gmt_end_time } 促销-->
       {insert_scripts files='lefttime.js'}
       <li class="padd loop" style="margin-bottom:5px; border-bottom:1px dashed #ccc;">
@@ -360,15 +389,16 @@ function reg(str){
         <div id="com_b" class="history clearfix">
         <h2>{$lang.goods_brief}</h2>
         <h2 class="h2bg">{$lang.goods_attr}</h2>
+        <!-- {if $package_goods_list} -->
+        <h2 class="h2bg" style="color:red;">{$lang.remark_package}</h2>
+        <!-- {/if} -->
         </div>
       </h3>
       <div id="com_v" class="boxCenterList RelaArticle"></div>
       <div id="com_h">
-
        <blockquote>
         {$goods.goods_desc}
        </blockquote>
-
 
      <blockquote>
       <table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#dddddd">
@@ -385,6 +415,31 @@ function reg(str){
         <!-- {/foreach}-->
       </table>
      </blockquote>
+
+     <!-- {if $package_goods_list} -->
+     <blockquote>
+       <!-- {foreach from=$package_goods_list item=package_goods} -->
+			  <strong>{$package_goods.act_name}</strong><br />
+        <table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#dddddd">
+				<tr>
+					<td bgcolor="#FFFFFF">
+					<!-- {foreach from=$package_goods.goods_list item=goods_list} -->
+					<a href="goods.php?id={$goods_list.goods_id}" target="_blank"><font class="f1">{$goods_list.goods_name}</font></a> &nbsp;&nbsp;X {$goods_list.goods_number}<br />
+					<!-- {/foreach} -->
+					</td>
+					<td bgcolor="#FFFFFF">
+					<strong>{$lang.old_price}</strong><font class="market">{$package_goods.subtotal}</font><br />
+          <strong>{$lang.package_price}</strong><font class="shop">{$package_goods.package_price}</font><br />
+          <strong>{$lang.then_old_price}</strong><font class="shop">{$package_goods.saving}</font><br />
+					</td>
+					<td bgcolor="#FFFFFF">
+					<a href="javascript:addPackageToCart({$package_goods.act_id})" style="background:transparent"><img src="images/bnt_buy_1.gif" alt="{$lang.add_to_cart}" /></a>
+					</td>
+				</tr>
+	    </table>
+       <!-- {/foreach} -->
+     </blockquote>
+     <!-- {/if} -->
 
       </div>
      </div>

@@ -10,7 +10,7 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Id: ads.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Id: ads.php 15454 2008-12-16 08:25:13Z testyang $
 */
 /* 广告位置字段信息 */
 $_LANG['position_name'] = '广告位名称';
@@ -101,6 +101,7 @@ $_LANG['back_ads_list'] = '返回广告列表';
 $_LANG['back_position_list'] = '返回广告位列表';
 $_LANG['continue_add_ad'] = '继续添加广告';
 $_LANG['continue_add_position'] = '继续添加广告位';
+$_LANG['show_ads_template'] = '设置在模板中显示该广告位';
 
 /* 描述信息 */
 $_LANG['ad_img'] = '图片';

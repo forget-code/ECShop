@@ -10,7 +10,7 @@ var process_request = "{$lang.process_request}";
    {insert_scripts files='transport.js,utils.js'}
    <font id="ECS_MEMBERZONE">{* ECSHOP 提醒您：根据用户id来调用member_info.lbi显示不同的界面  *}{insert name='member_info'} </font>
    </li>
-	 <!--{if $navigator_list.top}-->
+   <!--{if $navigator_list.top}-->
    <li id="topNav" class="clearfix">
     <!-- {foreach name=nav_top_list from=$navigator_list.top item=nav} -->
             <a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a>
@@ -20,7 +20,7 @@ var process_request = "{$lang.process_request}";
     <!-- {/foreach} -->
     <div class="topNavR"></div>
    </li>
-	 <!-- {/if} -->
+   <!-- {/if} -->
    </ul>
  </div>
 </div>
@@ -46,7 +46,7 @@ var process_request = "{$lang.process_request}";
         else
         {
             alert("请输入搜索关键词！");
-						return false;
+            return false;
         }
     }
     -->

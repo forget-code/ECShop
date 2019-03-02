@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_transaction.php 15190 2008-11-18 03:01:36Z testyang $
+ * $Author: wangleisvn $
+ * $Id: lib_transaction.php 16422 2009-07-03 01:57:44Z wangleisvn $
 */
 
 if (!defined('IN_ECS'))
@@ -82,7 +82,7 @@ function edit_profile($profile)
         }
         else
         {
-            $profile['other'][$key] =  htmlentities($val); //防止用户输入javascript代码
+            $profile['other'][$key] =  htmlspecialchars(trim($val)); //防止用户输入javascript代码
         }
     }
     /* 修改在其他资料 */
@@ -110,7 +110,7 @@ function get_profile($user_id)
     /* 会员帐号信息 */
     $info  = array();
     $infos = array();
-    $sql  = "SELECT user_name, birthday, sex, question, answer, rank_points, pay_points,user_money, user_rank,  ".
+    $sql  = "SELECT user_name, birthday, sex, question, answer, rank_points, pay_points,user_money, user_rank,".
              " msn, qq, office_phone, home_phone, mobile_phone ".
            "FROM " .$GLOBALS['ecs']->table('users') . " WHERE user_id = '$user_id'";
     $infos = $GLOBALS['db']->getRow($sql);
@@ -424,7 +424,7 @@ function cancel_order($order_id, $user_id = 0)
         /* 如果使用库存，且下订单时减库存，则增加库存 */
         if ($GLOBALS['_CFG']['use_storage'] == '1' && $GLOBALS['_CFG']['stock_dec_time'] == SDT_PLACE)
         {
-            change_order_goods_storage($order['order_id'], false);
+            change_order_goods_storage($order['order_id'], false, 1);
         }
 
         /* 修改订单 */
@@ -717,10 +717,28 @@ function get_order_detail($order_id, $user_id = 0)
                         $virtual_card[] = array('goods_id'=>$goods['goods_id'], 'goods_name'=>$goods['goods_name'], 'info'=>$info);
                     }
                 }
+            }
+            /* 处理超值礼包里面的虚拟卡 */
+            if ($code == 'package_buy')
+            {
+                foreach ($goods_list as $goods)
+                {
+                    $sql = 'SELECT g.goods_id FROM ' . $GLOBALS['ecs']->table('package_goods') . ' AS pg, ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
+                           "WHERE pg.goods_id = g.goods_id AND pg.package_id = '" . $goods['goods_id'] . "' AND extension_code = 'virtual_card'";
+                    $vcard_arr = $GLOBALS['db']->getAll($sql);
 
-                $GLOBALS['smarty']->assign('virtual_card',      $virtual_card);
+                    foreach ($vcard_arr AS $val)
+                    {
+                        if ($info = virtual_card_result($order['order_sn'], $val))
+                        {
+                            $virtual_card[] = array('goods_id'=>$goods['goods_id'], 'goods_name'=>$goods['goods_name'], 'info'=>$info);
+                        }
+                    }
+                }
             }
         }
+        $var_card = deleteRepeat($virtual_card);
+        $GLOBALS['smarty']->assign('virtual_card', $var_card);
     }
 
     /* 确认时间 支付时间 发货时间 */
@@ -836,9 +854,9 @@ function return_to_cart($order_id)
     $basic_number = array();
 
     /* 查订单商品：不考虑赠品 */
-    $sql = "SELECT goods_id, goods_number, goods_attr, parent_id" .
+    $sql = "SELECT goods_id, goods_number, goods_attr, parent_id, goods_attr_id" .
             " FROM " . $GLOBALS['ecs']->table('order_goods') .
-            " WHERE order_id = '$order_id' AND is_gift = 0" .
+            " WHERE order_id = '$order_id' AND is_gift = 0 AND extension_code <> 'package_buy'" .
             " ORDER BY parent_id ASC";
     $res = $GLOBALS['db']->query($sql);
 
@@ -876,29 +894,16 @@ function return_to_cart($order_id)
             }
         }
 
-        // 如果有属性值，查询有效的属性值
-        if ($row['goods_attr'] != '' && $goods['goods_type'] > 0)
-        {
-            $sql = "SELECT goods_attr_id " .
-                    "FROM " . $GLOBALS['ecs']->table('attribute') . " AS a, " . $GLOBALS['ecs']->table('goods_attr') . " AS ga " .
-                    "WHERE a.cat_id = '$goods[goods_type]' " .
-                    "AND a.attr_id = ga.attr_id " .
-                    "AND ga.goods_id = '$row[goods_id]' " .
-                    "AND ga.goods_attr_id " . db_create_in($row['goods_attr']);
-            $attr_id = $GLOBALS['db']->getCol($sql);
-            $row['goods_attr'] = join(',', $attr_id);
-        }
-
         //检查商品价格是否有会员价格
-        $user_price = $GLOBALS['db']->getOne("SELECT user_price FROM " . $GLOBALS['ecs']->table('member_price') . " WHERE goods_id='" . $row['goods_id'] . "' AND user_rank='" . $_SESSION['user_rank'] . "'");
-        if (!empty($user_price))
-        {
-            $goods['goods_price'] = $user_price;
-        }
-        else
-        {
-            $goods['goods_price'] = $goods['goods_price'] * $_SESSION['discount'];
-        }
+        $sql = "SELECT goods_number FROM" . $GLOBALS['ecs']->table('cart') . " " .
+                "WHERE session_id = '" . SESS_ID . "' " .
+                "AND goods_id = '" . $row['goods_id'] . "' " .
+                "AND rec_type = '" . CART_GENERAL_GOODS . "' LIMIT 1";
+        $temp_number = $GLOBALS['db']->getOne($sql);
+        $row['goods_number'] += $temp_number;
+
+        $attr_array           = empty($row['goods_attr_id']) ? array() : explode(',', $row['goods_attr_id']);
+        $goods['goods_price'] = get_final_price($row['goods_id'], $row['goods_number'], true, $attr_array);
 
         // 要返回购物车的商品
         $return_goods = array(
@@ -908,7 +913,8 @@ function return_to_cart($order_id)
             'market_price'  => $goods['market_price'],
             'goods_price'   => $goods['goods_price'],
             'goods_number'  => $row['goods_number'],
-            'goods_attr'    => addslashes($row['goods_attr']),
+            'goods_attr'    => empty($row['goods_attr']) ? '' : addslashes($row['goods_attr']),
+            'goods_attr_id'    => empty($row['goods_attr_id']) ? '' : $row['goods_attr_id'],
             'is_real'       => $goods['is_real'],
             'extension_code'=> addslashes($goods['extension_code']),
             'parent_id'     => '0',
@@ -969,9 +975,10 @@ function return_to_cart($order_id)
         {
             // 有相同商品，修改数量
             $sql = "UPDATE " . $GLOBALS['ecs']->table('cart') . " SET " .
-                    "goods_number = goods_number + '$return_goods[goods_number]' " .
+                    "goods_number = '" . $return_goods['goods_number'] . "' " .
+                    ",goods_price = '" . $return_goods['goods_price'] . "' " .
                     "WHERE session_id = '" . SESS_ID . "' " .
-                    "AND goods_id = '$return_goods[goods_id]' " .
+                    "AND goods_id = '" . $return_goods['goods_id'] . "' " .
                     "AND rec_type = '" . CART_GENERAL_GOODS . "' LIMIT 1";
             $GLOBALS['db']->query($sql);
         }
@@ -1122,4 +1129,22 @@ function get_user_group_buy($user_id, $num = 10, $start = 0)
      return true;
  }
 
+ /**
+  * 去除虚拟卡中重复数据
+  *
+  *
+  */
+function deleteRepeat($array){
+    $_card_sn_record = array();
+    foreach ($array as $_k => $_v){
+        foreach ($_v['info'] as $__k => $__v){
+            if (in_array($__v['card_sn'],$_card_sn_record)){
+                unset($array[$_k]['info'][$__k]);
+            } else {
+                array_push($_card_sn_record,$__v['card_sn']);
+            }
+        }
+    }
+    return $array;
+}
 ?>

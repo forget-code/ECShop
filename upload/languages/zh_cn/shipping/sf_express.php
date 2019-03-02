@@ -9,14 +9,15 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: sf_express.php 15083 2008-10-27 05:54:55Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: sf_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
 */
 global $_LANG;
 
 $_LANG['sf_express']             = '顺丰速运';
 $_LANG['sf_express_desc']        = '江、浙、沪地区首重15元/KG，续重2元/KG，其余城市首重20元/KG';
-$_LANG['basic_fee']              = '1000克以内费用';
+$_LANG['item_fee']              = '单件商品费用：';
+$_LANG['base_fee']              = '1000克以内费用';
 $_LANG['step_fee']               = '续重每1000克或其零数的费用';
 $_LANG['shipping_print']         = '<table style="width:18.8cm; height:3cm;" border="0" cellspacing="0" cellpadding="0">
   <tr>

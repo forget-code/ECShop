@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: chinabank.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: chinabank.php 16347 2009-06-24 10:06:15Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -45,7 +45,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['is_online']  = '1';
 
     /* 支付费用 */
-    $modules[$i]['pay_fee'] = '2.5%';
+    $modules[$i]['pay_fee'] = '1%';
 
     /* 作者 */
     $modules[$i]['author']  = 'ECSHOP TEAM';

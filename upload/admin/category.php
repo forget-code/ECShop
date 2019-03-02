@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: category.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: category.php 15911 2009-05-05 10:19:34Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -66,6 +66,8 @@ if ($_REQUEST['act'] == 'add')
     /* 权限检查 */
     admin_priv('cat_manage');
 
+
+
     /* 模板赋值 */
     $smarty->assign('ur_here',      $_LANG['04_category_add']);
     $smarty->assign('action_link',  array('href' => 'category.php?act=list', 'text' => $_LANG['03_category_list']));
@@ -76,6 +78,8 @@ if ($_REQUEST['act'] == 'add')
     $smarty->assign('cat_select',   cat_list(0, 0, true));
     $smarty->assign('form_act',     'insert');
     $smarty->assign('cat_info',     array('is_show' => 1));
+
+
 
     /* 显示页面 */
     assign_query_info();
@@ -102,7 +106,7 @@ if ($_REQUEST['act'] == 'insert')
     $cat['style']        = !empty($_POST['style'])        ? trim($_POST['style'])        : '';
     $cat['is_show']      = !empty($_POST['is_show'])      ? intval($_POST['is_show'])    : 0;
     $cat['grade']        = !empty($_POST['grade'])        ? intval($_POST['grade'])      : 0;
-    $cat['filter_attr']  = !empty($_POST['filter_attr'])  ? intval($_POST['filter_attr']) : 0;
+    $cat['filter_attr']  = !empty($_POST['filter_attr'])  ? implode(',', array_unique($_POST['filter_attr'])) : 0;
     $cat['cat_recommend']  = !empty($_POST['cat_recommend'])  ? $_POST['cat_recommend'] : array();
 
     if (cat_exists($cat['cat_name'], $cat['parent_id']))
@@ -158,16 +162,28 @@ if ($_REQUEST['act'] == 'edit')
     $cat_id = intval($_REQUEST['cat_id']);
     $cat_info = get_cat_info($cat_id);  // 查询分类信息数据
     $attr_list = get_attr_list();
+    $filter_attr_list = array();
 
     if ($cat_info['filter_attr'])
     {
-        $attr_cat_id = $db->getOne("SELECT cat_id FROM " . $ecs->table('attribute') . " WHERE attr_id = '$cat_info[filter_attr]'");
-        $attr_option = array();
-        foreach ($attr_list[$attr_cat_id] as $val)
+        $filter_attr = explode(",", $cat_info['filter_attr']);  //把多个筛选属性放到数组中
+
+        foreach ($filter_attr AS $k => $v)
         {
-            $attr_option[key($val)] = current ($val);
+            $attr_cat_id = $db->getOne("SELECT cat_id FROM " . $ecs->table('attribute') . " WHERE attr_id = '" . intval($v) . "'");
+            $filter_attr_list[$k]['goods_type_list'] = goods_type_list($attr_cat_id);  //取得每个属性的商品类型
+            $filter_attr_list[$k]['filter_attr'] = $v;
+            $attr_option = array();
+
+            foreach ($attr_list[$attr_cat_id] as $val)
+            {
+                $attr_option[key($val)] = current ($val);
+            }
+
+            $filter_attr_list[$k]['option'] = $attr_option;
         }
-        $smarty->assign('attr_option',      $attr_option);
+
+        $smarty->assign('filter_attr_list', $filter_attr_list);
     }
     else
     {
@@ -175,7 +191,6 @@ if ($_REQUEST['act'] == 'edit')
     }
 
     /* 模板赋值 */
-    $smarty->assign('goods_type_list',  goods_type_list($attr_cat_id)); // 取得商品类型
     $smarty->assign('attr_list',        $attr_list); // 取得商品属性
     $smarty->assign('attr_cat_id',      $attr_cat_id);
     $smarty->assign('ur_here',     $_LANG['category_edit']);
@@ -196,7 +211,7 @@ if ($_REQUEST['act'] == 'edit')
     $smarty->assign('cat_info',    $cat_info);
     $smarty->assign('form_act',    'update');
     $smarty->assign('cat_select',  cat_list(0, $cat_info['parent_id'], true));
-
+    $smarty->assign('goods_type_list',  goods_type_list(0)); // 取得商品类型
 
     /* 显示页面 */
     assign_query_info();
@@ -249,14 +264,14 @@ if ($_REQUEST['act'] == 'update')
     $cat['show_in_nav']  = !empty($_POST['show_in_nav'])  ? intval($_POST['show_in_nav']): 0;
     $cat['style']        = !empty($_POST['style'])        ? trim($_POST['style'])        : '';
     $cat['grade']        = !empty($_POST['grade'])        ? intval($_POST['grade'])      : 0;
-    $cat['filter_attr']  = !empty($_POST['filter_attr'])  ? intval($_POST['filter_attr']) : 0;
+    $cat['filter_attr']  = !empty($_POST['filter_attr'])  ? implode(',', array_unique($_POST['filter_attr'])) : 0;
     $cat['cat_recommend']  = !empty($_POST['cat_recommend'])  ? $_POST['cat_recommend'] : array();
 
     /* 判断分类名是否重复 */
 
     if ($cat['cat_name'] != $old_cat_name)
     {
-        if (cat_exists($cat['cat_name'],$cat['parent_id']))
+        if (cat_exists($cat['cat_name'],$cat['parent_id'], $cat_id))
         {
            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
            sys_msg($_LANG['catname_exist'], 0, $link);

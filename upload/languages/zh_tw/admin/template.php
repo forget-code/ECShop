@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: template.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sxc_shop $
+ * $Id: template.php 16144 2009-06-01 09:21:21Z sxc_shop $
 */
 
 $_LANG['template_manage'] = '模板管理';
@@ -36,6 +36,7 @@ $_LANG['update_lib_success'] = '庫項目內容已經更新成功。';
 $_LANG['update_lib_failed'] = '編輯庫項目內容失敗。請檢查 %s 目錄是否可以寫入。';
 $_LANG['backup_success'] = "所有模板文件已備份到templates/backup目錄下。\n您現在要下載備份文件嗎？。";
 $_LANG['backup_failed'] = '備份模板文件失敗，請檢查templates/backup 目錄是否可以寫入。';
+$_LANG['not_editable'] = '非可編輯區庫文件無選擇項';
 
 /* 每一個模板文件對應的語言 */
 $_LANG['template_files']['article'] = '文章內容模板';
@@ -57,6 +58,7 @@ $_LANG['template_files']['auction_list'] = '拍賣活動列表';
 $_LANG['template_files']['auction'] = '拍賣活動詳情';
 $_LANG['template_files']['message_board'] = '留言板';
 //$_LANG['template_files']['quotation'] = '報價單';
+$_LANG['template_files']['exchange_list'] = '積分商城列表';
 
 /* 每一個庫項目的描述 */
 $_LANG['template_libs']['ad_position'] = '廣告位';
@@ -115,6 +117,8 @@ $_LANG['template_libs']['myship'] = '配送方式';
 $_LANG['template_libs']['online'] = '統計在線人數';
 $_LANG['template_libs']['relatetag'] = '其他應用關聯標籤數據';
 $_LANG['template_libs']['message_list'] = '留言列表';
+$_LANG['template_libs']['exchange_hot'] = '積分商城熱賣商品';
+$_LANG['template_libs']['exchange_list'] = '積分商城列表商品';
 
 /* 模板佈局備份 */
 $_LANG['backup_setting'] = '備份模板設置';

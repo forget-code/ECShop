@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: testyang $
- * $Id: en_us.php 15163 2008-11-07 10:51:04Z testyang $
+ * $Author: liuhui $
+ * $Id: en_us.php 16337 2009-06-24 07:26:37Z liuhui $
  */
 
 /* Common language item */
@@ -29,6 +29,7 @@ $_LANG['traditional_chinese'] = 'Traditional Chinese';
 $_LANG['americanese'] = 'English';
 $_LANG['agree_license'] = 'I have read carefully，I accept the terms of the License Agreement';
 $_LANG['check_system_environment'] = 'Checking system environment';
+$_LANG['setup_environment'] = 'Configuration installation environment';
 
 
 /* Check environment page */
@@ -76,6 +77,7 @@ $_LANG['db_pass'] = 'Password:';
 $_LANG['go'] = 'Search';
 $_LANG['db_list'] = 'Database list';
 $_LANG['db_prefix'] = 'Prefixion:';
+$_LANG['change_prefix'] = 'Propose to change your Prefixion';
 $_LANG['admin_account'] = 'Administrator accounts';
 $_LANG['admin_name'] = 'Administrator name:';
 $_LANG['admin_password'] = 'password:';
@@ -100,11 +102,16 @@ $_LANG['dv'] = 'Digital vidicon';
 $_LANG['cosmetics'] = 'Cosmetics';
 $_LANG['install_at_once'] = 'Install at once';
 $_LANG['default_friend_link'] = 'ECSHOP e-commerce management system';
+$_LANG['maifou_friend_link'] = 'Shop free';
 $_LANG['monitor_title'] = 'Installer Monitor';
 $_LANG['admin_user'][] = 'Goods list|goods.php?act=list';
 $_LANG['admin_user'][] = 'Order list|order.php?act=list';
 $_LANG['admin_user'][] = 'User comments|comment_manage.php?act=list';
 $_LANG['admin_user'][] = 'User list|users.php?act=list';
+$_LANG['password_intensity'] = 'Password intensity';
+$_LANG['pwd_lower'] = 'Lower';
+$_LANG['pwd_middle'] = 'Middle';
+$_LANG['pwd_high'] = 'High';
 
 /* Prompting message */
 $_LANG['has_locked_installer'] = '<strong>Install program has locked.</strong><br /><br />If you confirm reinstall ECSHOP, please delete install.lock in data directory.';
@@ -145,5 +152,9 @@ $_LANG['js_languages']['do_others'] = 'Deal with others...................';
 $_LANG['js_languages']['display_detail'] = 'Show detail';
 $_LANG['js_languages']['hide_detail'] = 'Hide detail';
 $_LANG['js_languages']['has_been_stopped'] = 'The process has been stopped.';
+$_LANG['js_languages']['setup_ucenter'] = 'Register to UCenter............';
+$_LANG['js_languages']['password_invaild'] = 'Must contain numbers and letters!';
+$_LANG['js_languages']['password_short'] = 'Should not be less than 8!';
+$_LANG['js_languages']['password_not_eq'] = 'The two passwords did not match.';
 
 ?>

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: integrate.php 15125 2008-10-29 02:22:00Z testyang $
+ * $Author: likai $
+ * $Id: integrate.php 16294 2009-06-19 09:35:52Z likai $
 */
 
 define('IN_ECS', true);
@@ -309,7 +309,7 @@ if ($_REQUEST['act'] == 'save_uc_config')
             sys_msg($cls_user->db->error());
         }
     }
-    
+
     /* 合并数组，保存原值 */
     $cfg = array_merge($cfg, $_POST['cfg']);
 
@@ -747,6 +747,10 @@ if ($_REQUEST['act'] == 'sync')
     $task_sync = $total - $task_del - $task_ignore;
 
     $_SESSION['task'] = array('del'=>array('total'=>$task_del, 'start'=>0), 'rename'=>array('total'=>$task_rename, 'start'=>0), 'sync'=>array('total'=>$task_sync, 'start'=>0));
+
+    $del_list    = "";
+    $rename_list = "";
+    $ignore_list = "";
 
     $tasks = array();
     if ($task_del > 0)

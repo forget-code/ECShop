@@ -19,6 +19,7 @@ require(ROOT_PATH . 'data/config.php');
 require(ROOT_PATH . 'includes/cls_ecshop.php');
 require(ROOT_PATH . 'includes/cls_mysql.php');
 require(ROOT_PATH . 'includes/lib_common.php');
+require(ROOT_PATH . 'includes/lib_base.php');
 
 /* 未升级前，该常量不存在 */
 if (defined('EC_CHARSET')) {
@@ -108,7 +109,7 @@ if ($step == 1) {
 <ol>
     <li>只支持ECShop数据库的转换
     <li>根据您上传程序的编码自动转换数据库编码，现在只支持 UTF-8 与 GBK 编码的互换。
-    <li>本工具在执行过程中不会对您的原数据库进行破坏，会将您的原数据表命名为备份文件，转换后的数据存在原来的表明中。例如：原表名为members（编码为UTF-8）需要转为GBK编码，则转换后为members（编码为GBK），members_bak（编码为UTF-8，即为原表的备份）。 
+    <li>本工具在执行过程中不会对您的原数据库进行破坏，会将您的原数据表命名为备份文件，转换后的数据存在原来的表明中。例如：原表名为members（编码为UTF-8）需要转为GBK编码，则转换后为members（编码为GBK），members_bak（编码为UTF-8，即为原表的备份）。
     <li>如果中途失败，请恢复数据库的到原备份数据库，去除错误后重新运行本程序
     <li><span style="color:red">进行该操做前请一定备份您的数据库，该转换只能进行一次，如果转换失败请使用您的数据库备份还原数据库后重新进行转换。</span>
 </ol>
@@ -403,7 +404,7 @@ function convert_table($table) {
             }
         }
     }
-    
+
     if ($convert_tables[$table] == 2) {
         if ($mysql_version >= '4.1') {
             $db->query('SET NAMES '.$s_charset);

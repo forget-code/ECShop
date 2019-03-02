@@ -11,7 +11,7 @@
 <!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 <link rel="alternate" type="application/rss+xml" title="RSS|{$page_title}" href="{$feed_url}" />
 {* 包含脚本文件 *}
 {insert_scripts files='common.js'}
@@ -121,6 +121,8 @@
  <!-- {else} -->
   <div style="margin:2px 10px; font-size:14px; text-align:center; line-height:36px;">{$lang.no_wholesale}</div>
   <!-- {/if} -->
+   <div class="blank5"></div>
+     <!-- #BeginLibraryItem "/library/pages.lbi" --><!-- #EndLibraryItem -->
 </div>
 <div class="blank5"></div>
 <!--帮助-->

@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ==========================================================
- * $Author: testyang $
- * $Id: cron.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sxc_shop $
+ * $Id: cron.php 15822 2009-04-21 07:41:28Z sxc_shop $
  */
 
 $_LANG['cron_name'] = '計劃任務名稱';
@@ -26,8 +26,8 @@ $_LANG['cron_allow_ip'] = '允許執行的服務器ip';
 $_LANG['cron_run_once'] = '執行後關閉';
 $_LANG['cron_alow_files'] = '允許執行頁面';
 $_LANG['notice_alow_files'] = '前台觸發計劃運行的頁面，留空即表示在所有頁面均觸發';
-$_LANG['notice_alow_ip'] = '允許運行計劃任務服務器的IP，請用空格分隔多個IP';
-$_LANG['notice_minute'] = '請用空格分隔多個分鐘';
+$_LANG['notice_alow_ip'] = '允許運行計劃任務服務器的IP，請用半角逗號分隔多個IP';
+$_LANG['notice_minute'] = '請用半角逗號分隔多個分鐘';
 $_LANG['cron_do'] = '執行';
 $_LANG['do_ok'] = '執行成功';
 $_LANG['cron_month'] = '每月';

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: flow_stats.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: flow_stats.php 16050 2009-05-20 03:42:00Z liubo $
 */
 
 define('IN_ECS', true);
@@ -366,18 +366,19 @@ elseif ($act = 'download')
     header("Content-Disposition: attachment; filename=$filename.xls");
     $start_date = $_GET['start_date'];
     $end_date   = $_GET['end_date'];
-    $sql = "SELECT FROM_UNIXTIME(access_time, '%m-%d') AS access_date, COUNT(*) AS access_count".
+    $sql = "SELECT FLOOR((access_time - $start_date) / (24 * 3600)) AS sn, access_time, COUNT(*) AS access_count".
                 " FROM " . $GLOBALS['ecs']->table('stats') .
                 " WHERE access_time >= '$start_date' AND access_time <= " .($end_date + 86400).
-                " GROUP BY access_date";
+                " GROUP BY sn";
     $res = $GLOBALS['db']->query($sql);
 
     $data  = $_LANG['general_stats'] . "\t\n";
-    $data .= $_LANG['area'] . "\t";
+    $data .= $_LANG['date'] . "\t";
     $data .= $_LANG['access_count'] . "\t\n";
 
     while ($val = $GLOBALS['db']->fetchRow($res))
     {
+        $val['access_date'] = gmdate('m-d',$val['access_time'] +  $timezone * 3600);
         $data .= $val['access_date'] . "\t";
         $data .= $val['access_count'] . "\t\n";
     }

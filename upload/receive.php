@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: receive.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: receive.php 16056 2009-05-21 05:44:14Z liubo $
  */
 
 define('IN_ECS', true);
@@ -63,7 +63,7 @@ $smarty->assign('ur_here',    $position['ur_here']);  // 当前位置
 $smarty->assign('categories', get_categories_tree()); // 分类树
 $smarty->assign('helps',      get_shop_help());       // 网店帮助
 
-assign_dynamic('index');
+assign_dynamic('receive');
 
 $smarty->assign('msg', $msg);
 $smarty->display('receive.dwt');

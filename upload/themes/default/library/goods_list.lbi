@@ -158,4 +158,7 @@ var button_compare = '';
 {/if}
 {/foreach}
 var compare_no_goods = "{$lang.compare_no_goods}";
+var btn_buy = "{$lang.btn_buy}";
+var is_cancel = "{$lang.is_cancel}";
+var select_spe = "{$lang.select_spe}";
 </script>

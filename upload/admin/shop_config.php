@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: shop_config.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: shop_config.php 15620 2009-02-18 07:34:37Z sunxiaodong $
  */
 
 define('IN_ECS', true);
@@ -69,6 +69,7 @@ elseif ($_REQUEST['act'] == 'mail_settings')
 
     assign_query_info();
 
+    $smarty->assign('ur_here',      $_LANG['mail_settings']);
     $smarty->assign('cfg', $arr[5]['vars']);
     $smarty->display('shop_config_mail_settings.htm');
 }
@@ -216,13 +217,14 @@ elseif ($_REQUEST['act'] == 'post')
     $spt .= "&charset=".EC_CHARSET;
     $spt .= '"></script>';
 
-    $links[] = array('text' => $_LANG['back_shop_config'], 'href' => 'shop_config.php?act=list_edit');
     if ($type == 'mail_setting')
     {
+        $links[] = array('text' => $_LANG['back_mail_settings'], 'href' => 'shop_config.php?act=mail_settings');
         sys_msg($_LANG['mail_save_success'].$spt, 0, $links);
     }
     else
     {
+        $links[] = array('text' => $_LANG['back_shop_config'], 'href' => 'shop_config.php?act=list_edit');
         sys_msg($_LANG['save_success'].$spt, 0, $links);
     }
 }

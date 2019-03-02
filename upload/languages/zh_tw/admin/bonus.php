@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: bonus.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: bonus.php 15589 2009-02-10 09:24:05Z sunxiaodong $
 */
 /* 紅包類型字段信息 */
 $_LANG['bonus_type'] = '紅包類型';
@@ -69,6 +69,7 @@ $_LANG['continus_add'] = '繼續添加紅包類型';
 $_LANG['back_list'] = '返回紅包類型列表';
 $_LANG['continue_add'] = '繼續添加紅包';
 $_LANG['back_bonus_list'] = '返回紅包列表';
+$_LANG['validated_email'] = '只給通過郵件驗證的用戶發放紅包';
 
 /* 提示信息 */
 $_LANG['attradd_succed'] = '操作成功!';

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: init.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: likai $
+ * $Id: init.php 16132 2009-05-31 08:59:15Z likai $
 */
 
 if (!defined('IN_ECS'))
@@ -133,8 +133,18 @@ if (is_spider())
     if (!defined('INIT_NO_USERS'))
     {
         define('INIT_NO_USERS', true);
+        /* 整合UC后，如果是蜘蛛访问，初始化UC需要的常量 */
+        if($_CFG['integrate_code'] == 'ucenter')
+        {
+             $user = & init_users();
+        }
     }
     $_SESSION = array();
+    $_SESSION['user_id']     = 0;
+    $_SESSION['user_name']   = '';
+    $_SESSION['email']       = '';
+    $_SESSION['user_rank']   = 0;
+    $_SESSION['discount']    = 1.00;
 }
 
 if (!defined('INIT_NO_USERS'))
@@ -174,6 +184,15 @@ if (!defined('INIT_NO_SMARTY'))
 
     $smarty->assign('lang', $_LANG);
     $smarty->assign('ecs_charset', EC_CHARSET);
+    if (!empty($_CFG['stylename']))
+    {
+        $smarty->assign('ecs_css_path', 'themes/' . $_CFG['template'] . '/style_' . $_CFG['stylename'] . '.css');
+    }
+    else
+    {
+        $smarty->assign('ecs_css_path', 'themes/' . $_CFG['template'] . '/style.css');
+    }
+
 }
 
 if (!defined('INIT_NO_USERS'))

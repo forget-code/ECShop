@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: privilege.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: privilege.php 16291 2009-06-19 08:49:39Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -465,6 +465,10 @@ elseif ($_REQUEST['act'] == 'allot')
     include_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/priv_action.php');
 
     admin_priv('allot_priv');
+    if ($_SESSION['admin_id'] == $_GET['id'])
+    {
+        admin_priv('all');
+    }
 
     /* 获得该管理员的权限 */
     $priv_str = $db->getOne("SELECT action_list FROM " .$ecs->table('admin_user'). " WHERE user_id = '$_GET[id]'");

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: sql.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: sql.php 16289 2009-06-19 08:10:15Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -30,8 +30,7 @@ if (!$_POST['sql'])
 
 if ($_REQUEST['act'] == 'main')
 {
-    /* 检查权限：只有超级管理员（安装本系统的人）才可以执行此操作 */
-    admin_priv('all');
+    admin_priv('sql_query');
     assign_query_info();
     $smarty->assign('type',    -1);
     $smarty->assign('ur_here', $_LANG['04_sql_query']);
@@ -41,8 +40,7 @@ if ($_REQUEST['act'] == 'main')
 
 if ($_REQUEST['act'] == 'query')
 {
-    /* 检查权限：只有超级管理员（安装本系统的人）才可以执行此操作 */
-    admin_priv('all');
+    admin_priv('sql_query');
     assign_sql($_POST['sql']);
     assign_query_info();
     $smarty->assign('ur_here', $_LANG['04_sql_query']);

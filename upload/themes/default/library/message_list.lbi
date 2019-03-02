@@ -4,14 +4,14 @@
       <h3><span>{$lang.message_board}</span></h3>
       <div class="boxCenterList">
       <!--{foreach name=message_lists from=$msg_lists key=key item=msg}-->
-      <div class="f_l">
-      [<b>{$msg.msg_type}</b>]&nbsp;{$msg.user_name}：&nbsp;&nbsp;<font class="f4">{$msg.msg_title}</font> ({$msg.msg_time})
+      <div class="f_l" style="width:100%; position:relative;">
+      [<b>{$msg.msg_type}</b>]&nbsp;{$msg.user_name}<!-- {if $msg.user_name eq ''} -->{$lang.anonymous}<!-- {/if} -->：<!-- {if $msg.id_value gt 0} -->{$lang.feed_user_comment}<b><a class="f3" href="./goods.php?id={$msg.id_value}" target="_blank" title="{$msg.goods_name}">{$msg.goods_name}</a></b><!-- {/if} --><font class="f4">{$msg.msg_title}</font> ({$msg.msg_time})<!-- {if $msg.comment_rank gt 0} --><img style="position:absolute; right:0px;" src="../images/stars{$msg.comment_rank}.gif" alt="{$msg.comment_rank}" /><!-- {/if} -->
       </div>
       <div class="msgBottomBorder word">
       {$msg.msg_content}<br>
-      <!-- {if $msg.re_msg_content} -->
+      <!-- {if $msg.re_content} -->
        <font class="f2">{$lang.shopman_reply}</font><br />
-       {$msg.re_msg_content}
+       {$msg.re_content}
       <!-- {/if} -->
       </div>
       <!--{/foreach}-->  
@@ -19,6 +19,7 @@
   </div>
 </div>
 <div class="blank5"></div>
+
 
 
 

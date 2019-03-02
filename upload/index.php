@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: index.php 15095 2008-10-27 08:34:33Z testyang $
+ * $Author: wangleisvn $
+ * $Id: index.php 16075 2009-05-22 02:19:40Z wangleisvn $
 */
 
 define('IN_ECS', true);
@@ -111,6 +111,15 @@ if (!$smarty->is_cached('index.dwt', $cache_id))
     $smarty->assign('group_buy_goods', index_get_group_buy());      // 团购商品
     $smarty->assign('auction_list',    index_get_auction());        // 拍卖活动
     $smarty->assign('shop_notice',     $_CFG['shop_notice']);       // 商店公告
+
+    /* 首页主广告设置 */
+    $smarty->assign('index_ad',     $_CFG['index_ad']);
+    if ($_CFG['index_ad'] == 'cus')
+    {
+        $sql = 'SELECT ad_type, content, url FROM ' . $ecs->table("ad_custom") . ' WHERE ad_status = 1';
+        $ad = $db->getRow($sql, true);
+        $smarty->assign('ad', $ad);
+    }
 
     /* links */
     $links = index_get_links();

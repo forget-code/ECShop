@@ -1,4 +1,4 @@
-<!-- $Id: msg_info.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: msg_info.htm 15626 2009-02-19 07:58:36Z sunxiaodong $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
   <table width="98%">
@@ -13,9 +13,20 @@
           <a href="user_msg.php?act=drop_file&id={$msg.msg_id}&file={$msg.message_img}">{$lang.drop}</a>
         </div>
         {/if}
-        <div align="right"  nowrap="nowrap"><a href="mailto:{$msg.user_email}">{$msg.user_name}</a> @ {$msg.msg_time}</div>
+        <div align="right"  nowrap="nowrap">【 {if $msg.msg_area eq "1"}{$lang.message_board}{else}{$lang.user_center}{/if} 】<a href="mailto:{$msg.user_email}">{$msg.user_name}</a> @ {$msg.msg_time}</div>
       </td>
     </tr>
+{if $msg.msg_area eq "1"}
+    <tr>
+      <td align="center">
+        {if $msg.msg_status eq "0"}
+        <input type="button" onclick="location.href='user_msg.php?act=check&check=allow&id={$msg.msg_id}'" value="{$lang.allow}" class="button" />
+        {else}
+        <input type="button" onclick="location.href='user_msg.php?act=check&check=forbid&id={$msg.msg_id}'" value="{$lang.forbid}" class="button" />
+        {/if}
+    </td>
+    </tr>
+{/if}
   </table>
 </div>
 

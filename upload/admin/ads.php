@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: ads.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: ads.php 15643 2009-02-23 06:07:36Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -254,11 +254,15 @@ elseif ($_REQUEST['act'] == 'insert')
     clear_cache_files(); // 清除缓存文件
 
     /* 提示信息 */
-    $link[0]['text'] = $_LANG['back_ads_list'];
-    $link[0]['href'] = 'ads.php?act=list';
 
-    $link[1]['text'] = $_LANG['continue_add_ad'];
-    $link[1]['href'] = 'ads.php?act=add';
+    $link[0]['text'] = $_LANG['show_ads_template'];
+    $link[0]['href'] = 'template.php?act=setup';
+
+    $link[1]['text'] = $_LANG['back_ads_list'];
+    $link[1]['href'] = 'ads.php?act=list';
+
+    $link[2]['text'] = $_LANG['continue_add_ad'];
+    $link[2]['href'] = 'ads.php?act=add';
     sys_msg($_LANG['add'] . "&nbsp;" .$_POST['ad_name'] . "&nbsp;" . $_LANG['attradd_succed'],0, $link);
 
 }

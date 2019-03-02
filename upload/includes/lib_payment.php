@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_payment.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liuhui $
+ * $Id: lib_payment.php 16442 2009-07-08 05:40:17Z liuhui $
  */
 
 if (!defined('IN_ECS'))
@@ -63,10 +63,20 @@ function get_order_id_by_sn($order_sn, $voucher = 'false')
     }
     else
     {
-        $sql = 'SELECT order_id FROM ' . $GLOBALS['ecs']->table('order_info'). " WHERE order_sn = '$order_sn'";
-        $order_id = $GLOBALS['db']->getOne($sql);
-        $pay_log_id = $GLOBALS['db']->getOne("SELECT log_id FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE order_id=" . $order_id);
-        return $pay_log_id;
+        if(is_numeric($order_sn))
+        {
+            $sql = 'SELECT order_id FROM ' . $GLOBALS['ecs']->table('order_info'). " WHERE order_sn = '$order_sn'";
+            $order_id = $GLOBALS['db']->getOne($sql);
+        }
+        if (!empty($order_id))
+        {
+            $pay_log_id = $GLOBALS['db']->getOne("SELECT log_id FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE order_id='" . $order_id . "'");
+            return $pay_log_id;
+        }
+        else
+        {
+            return "";
+        }
     }
 }
 
@@ -135,7 +145,7 @@ function order_paid($log_id, $pay_status = PS_PAYED, $note = '')
             if ($pay_log['order_type'] == PAY_ORDER)
             {
                 /* 取得订单信息 */
-                $sql = 'SELECT order_id, order_sn, consignee, address, tel, shipping_id ' .
+                $sql = 'SELECT order_id, user_id, order_sn, consignee, address, tel, shipping_id, extension_code, extension_id, goods_amount ' .
                         'FROM ' . $GLOBALS['ecs']->table('order_info') .
                        " WHERE order_id = '$pay_log[order_id]'";
                 $order    = $GLOBALS['db']->getRow($sql);
@@ -186,6 +196,8 @@ function order_paid($log_id, $pay_status = PS_PAYED, $note = '')
 
                          /* 记录订单操作记录 */
                         order_action($order_sn, OS_CONFIRMED, SS_SHIPPED, $pay_status, $note, $GLOBALS['_LANG']['buyer']);
+                        $integral = integral_to_give($order);
+                        log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($GLOBALS['_LANG']['order_gift_integral'], $order['order_sn']));
                     }
                 }
 
@@ -222,7 +234,7 @@ function order_paid($log_id, $pay_status = PS_PAYED, $note = '')
                 $sql = 'SELECT pay_time, order_sn FROM ' . $GLOBALS['ecs']->table('order_info') . " WHERE order_id = '$pay_log[order_id]'";
                 $row = $GLOBALS['db']->getRow($sql);
                 $intval_time = gmtime() - $row['pay_time'];
-                if ($intval_time > 0 && $intval_time < 3600 * 12)
+                if ($intval_time >= 0 && $intval_time < 3600 * 12)
                 {
                     $virtual_card = array();
                     foreach ($post_virtual_goods as $code => $goods_list)

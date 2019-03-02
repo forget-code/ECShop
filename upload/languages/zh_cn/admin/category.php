@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: category.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: category.php 15885 2009-04-30 05:49:32Z sxc_shop $
 */
 
 /* 商品分类字段信息 */
@@ -76,11 +76,14 @@ $_LANG['sel_goods_type'] = '请选择商品类型';
 $_LANG['sel_filter_attr'] = '请选择筛选属性';
 $_LANG['filter_attr'] = '筛选属性';
 $_LANG['filter_attr_notic'] = '筛选属性可在前分类页面筛选商品';
+$_LANG['filter_attr_not_repeated'] = '筛选属性不可重复';
 
 /*JS 语言项*/
 $_LANG['js_languages']['catname_empty'] = '分类名称不能为空!';
 $_LANG['js_languages']['unit_empyt'] = '数量单位不能为空!';
 $_LANG['js_languages']['is_leafcat'] = '您选定的分类是一个末级分类。\r\n新分类的上级分类不能是一个末级分类';
 $_LANG['js_languages']['not_leafcat'] = '您选定的分类不是一个末级分类。\r\n商品的分类转移只能在末级分类之间才可以操作。';
+$_LANG['js_languages']['filter_attr_not_repeated'] = '筛选属性不可重复';
+$_LANG['js_languages']['filter_attr_not_selected'] = '请选择筛选属性';
 
 ?>

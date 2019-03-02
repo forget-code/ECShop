@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: payment.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: payment.php 16453 2009-07-13 07:21:20Z liubo $
 */
 
 define('IN_ECS', true);
@@ -61,13 +61,17 @@ if ($_REQUEST['act'] == 'list')
             $modules[$i]['install'] = '0';
         }
 
-        //将财富通显示到第一个
+        //取得财付通支付方式
         if ($modules[$i]['code'] == 'tenpay')
         {
-            $tenpay = $modules[$i];
-            unset($modules[$i]);
-            array_unshift($modules,$tenpay);
-            //$modules['i']['name'] = '<font color="red">' .  $modules['i']['name'] . '</font>';
+            $arr_pay1 = $modules[$i];
+            $j=$i;
+       }
+        //取得快钱支付方式
+       elseif ($modules[$i]['code'] == 'kuaiqian')
+       {
+            $arr_pay2 = $modules[$i];
+            $k=$i;
        }
        elseif ($modules[$i]['code'] == 'tenpayc2c')
        {
@@ -75,7 +79,10 @@ if ($_REQUEST['act'] == 'list')
             //unset($modules[$i]);
        }
     }
-
+    //将快钱支付方式显示在第一位，财富通显示在第二位
+    unset($modules[$j]);
+    unset($modules[$k]);
+    array_unshift($modules,$arr_pay2,$arr_pay1);
     assign_query_info();
 
     $smarty->assign('ur_here', $_LANG['02_payment_list']);
@@ -154,7 +161,18 @@ elseif ($_REQUEST['act'] == 'get_config')
         $config .= "</span></td>";
         if($data[$key]['type'] == 'text')
         {
+            if($data[$key]['name'] == 'alipay_account')
+            {
+                $config .= "<td><input name='cfg_value[]' type='text' value='" . $data[$key]['value'] . "' /><a href=\"https://www.alipay.com/himalayas/practicality.htm\" target=\"_blank\">".$_LANG['alipay_look']."</a></td>";
+            }
+            elseif($data[$key]['name'] == 'tenpay_account')
+            {
+                $config .= "<td><input name='cfg_value[]' type='text' value='" . $data[$key]['value'] . "' />" . $_LANG['penpay_register'] . "</td>";
+            }
+            else
+            {
             $config .= "<td><input name='cfg_value[]' type='text' value='" . $data[$key]['value'] . "' /></td>";
+            }
         }
         elseif($data[$key]['type'] == 'select')
         {

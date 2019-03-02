@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: testyang $
- * $Id: cron.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: cron.php 15822 2009-04-21 07:41:28Z sxc_shop $
  */
 
 define('IN_ECS', true);
@@ -33,7 +33,7 @@ foreach ($crondb AS $key => $cron_val)
     {
         if (!empty($cron_val['allow_ip'])) // 设置了允许ip
         {
-            $allow_ip = explode(' ', $cron_val['allow_ip']);
+            $allow_ip = explode(',', $cron_val['allow_ip']);
             $server_ip = real_server_ip();
             if (!in_array($server_ip, $allow_ip))
             {
@@ -42,7 +42,7 @@ foreach ($crondb AS $key => $cron_val)
         }
         if (!empty($cron_val['minute'])) // 设置了允许分钟段
         {
-            $m = explode(' ', $cron_val['minute']);
+            $m = explode(',', $cron_val['minute']);
             $m_now = intval(local_date('i',$timestamp));
             if (!in_array($m_now, $m))
             {

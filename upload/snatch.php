@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: snatch.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: snatch.php 16060 2009-05-21 06:40:57Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -53,9 +53,7 @@ if ($_REQUEST['act'] == 'main')
     $goods = get_snatch($id);
     if ($goods)
     {
-        $page_title = $goods['snatch_name'] .'_'. $_LANG['snatch_list'] .'_'. $_CFG['shop_title'];
-        $ur_here    = '<a href=".">' .$_LANG['home']. '</a><code> &gt; </code><a href="snatch.php">' .$_LANG['snatch_list'].
-        '</a><code> &gt; </code>' .$goods['snatch_name'];
+        $position = assign_ur_here(0,$goods['snatch_name']);
         $myprice = get_myprice($id);
         if ($goods['is_end'])
         {
@@ -63,7 +61,7 @@ if ($_REQUEST['act'] == 'main')
             $smarty->assign('result',  get_snatch_result($id));
         }
         $smarty->assign('id',          $id);
-        $smarty->assign('goods',       $goods); // 竞价商品
+        $smarty->assign('snatch_goods',       $goods); // 竞价商品
         $smarty->assign('myprice',     get_myprice($id));
     }
     else
@@ -80,14 +78,15 @@ if ($_REQUEST['act'] == 'main')
     }
 
     assign_template();
-    assign_dynamic('search');
-    $smarty->assign('page_title',  $page_title);
-    $smarty->assign('ur_here',     $ur_here);
+    assign_dynamic('snatch');
+    $smarty->assign('page_title',  $position['title']);
+    $smarty->assign('ur_here',     $position['ur_here']);
     $smarty->assign('categories',  get_categories_tree()); // 分类树
     $smarty->assign('helps',       get_shop_help());       // 网店帮助
     $smarty->assign('snatch_list', get_snatch_list());     //所有有效的夺宝奇兵列表
     $smarty->assign('price_list',  get_price_list($id));
     $smarty->assign('promotion_info', get_promotion_info());
+    $smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typesnatch.xml" : 'feed.php?type=snatch'); // RSS URL
     $smarty->display('snatch.dwt');
 
     exit;

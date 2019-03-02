@@ -9,14 +9,15 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: zto.php 15128 2008-10-29 08:21:00Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: zto.php 15459 2008-12-17 04:16:19Z sunxiaodong $
 */
 
 $_LANG['zto']          = '中通速递';
 $_LANG['zto_desc']     = '中通快递的相关说明。保价费按照申报价值的2％交纳，但是，保价费不低于100元，保价金额不得高于10000元，保价金额超过10000元的，超过的部分无效';
-$_LANG['basic_fee'] = '首重费用';
-$_LANG['step_fee'] = '续重费用';
+$_LANG['item_fee'] = '单件商品费用：';
+$_LANG['base_fee'] = '首重费用';
+$_LANG['step_fee'] = '续重每1000克或其零数的费用';
 $_LANG['shipping_print'] = '<table style="width:18.2cm" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="height:2.2cm;">&nbsp;</td>

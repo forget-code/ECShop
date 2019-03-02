@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ECSHOP 邮政包裹插件
+ * ECSHOP 市内快递插件
  * ============================================================================
  * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: flat.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: flat.php 15459 2008-12-17 04:16:19Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -31,7 +31,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $i = (isset($modules)) ? count($modules) : 0;
 
     /* 配送方式插件的代码必须和文件名保持一致 */
-    $modules[$i]['code']    = 'flat';
+    $modules[$i]['code']    = basename(__FILE__, '.php');
 
     $modules[$i]['version'] = '1.0.0';
 
@@ -49,7 +49,7 @@ if (isset($set_modules) && $set_modules == TRUE)
 
     /* 配送接口需要的参数 */
     $modules[$i]['configure'] = array(
-                                    array('name' => 'base_fee', 'value' => '10'),
+                                    array('name' => 'base_fee', 'value' => 10),
                                 );
 
     return;

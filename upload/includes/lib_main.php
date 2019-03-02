@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_main.php 15177 2008-11-17 02:48:45Z testyang $
+ * $Author: wangleisvn $
+ * $Id: lib_main.php 16443 2009-07-08 06:20:02Z wangleisvn $
 */
 
 if (!defined('IN_ECS'))
@@ -128,8 +128,16 @@ function get_user_info($id=0)
  */
 function assign_ur_here($cat = 0, $str = '')
 {
-    /* 取得文件名 */
-    $filename = substr(basename(PHP_SELF), 0, -4);
+    /* 判断是否重写，取得文件名 */
+    $cur_url = basename(PHP_SELF);
+    if (intval($GLOBALS['_CFG']['rewrite']))
+    {
+        $filename = strpos($cur_url,'-') ? substr($cur_url, 0, strpos($cur_url,'-')) : substr($cur_url, 0, -4);
+    }
+    else
+    {
+        $filename = substr($cur_url, 0, -4);
+    }
 
     /* 初始化“页面标题”和“当前位置” */
     $page_title = $GLOBALS['_CFG']['shop_title'] . ' - ' . 'Powered by ECShop';
@@ -204,6 +212,13 @@ function assign_ur_here($cat = 0, $str = '')
                 $ur_here   .= ' <code>&gt;</code> <a href="auction.php">' .
                                 $GLOBALS['_LANG']['auction'] . '</a>';
             }
+            /* 夺宝 */
+            elseif ('snatch' == $filename)
+            {
+                $page_title = $GLOBALS['_LANG']['snatch'] . '_' . $page_title;
+                $args       = array('id' => '0');
+                $ur_here   .= ' <code> &gt; </code><a href="snatch.php">' .                                 $GLOBALS['_LANG']['snatch_list'] . '</a>';
+            }
             /* 批发 */
             elseif ('wholesale' == $filename)
             {
@@ -211,6 +226,14 @@ function assign_ur_here($cat = 0, $str = '')
                 $args       = array('wsid' => '0');
                 $ur_here   .= ' <code>&gt;</code> <a href="wholesale.php">' .
                                 $GLOBALS['_LANG']['wholesale'] . '</a>';
+            }
+            /* 积分兑换 */
+            elseif ('exchange' == $filename)
+            {
+                $page_title = $GLOBALS['_LANG']['exchange'] . '_' . $page_title;
+                $args       = array('wsid' => '0');
+                $ur_here   .= ' <code>&gt;</code> <a href="exchange.php">' .
+                                $GLOBALS['_LANG']['exchange'] . '</a>';
             }
             /* 其他的在这里补充 */
         }
@@ -400,13 +423,14 @@ function get_shop_help()
     $sql = 'SELECT c.cat_id, c.cat_name, c.sort_order, a.article_id, a.title, a.file_url, a.open_type ' .
             'FROM ' .$GLOBALS['ecs']->table('article'). ' AS a ' .
             'LEFT JOIN ' .$GLOBALS['ecs']->table('article_cat'). ' AS c ' .
-            'ON a.cat_id = c.cat_id WHERE c.cat_type = 5 ' .
+            'ON a.cat_id = c.cat_id WHERE c.cat_type = 5 AND a.is_open = 1 ' .
             'ORDER BY c.sort_order ASC, a.article_id';
     $res = $GLOBALS['db']->getAll($sql);
 
     $arr = array();
     foreach ($res AS $key => $row)
     {
+        $arr[$row['cat_id']]['cat_id']                       = build_uri('article_cat', array('acid'=> $row['cat_id']), $row['cat_name']);
         $arr[$row['cat_id']]['cat_name']                     = $row['cat_name'];
         $arr[$row['cat_id']]['article'][$key]['article_id']  = $row['article_id'];
         $arr[$row['cat_id']]['article'][$key]['title']       = $row['title'];
@@ -479,6 +503,9 @@ function assign_pager($app, $cat, $record_count, $size, $sort, $order, $page = 1
             break;
         case 'search':
             $uri_args = array('cid' => $cat, 'bid' => $brand, 'sort' => $sort, 'order' => $order);
+            break;
+        case 'exchange':
+            $uri_args = array('cid' => $cat, 'integral_min'=>$price_min, 'integral_max'=>$price_max, 'sort' => $sort, 'order' => $order, 'display' => $display_type);
             break;
     }
     /* 分页样式 */
@@ -1406,18 +1433,35 @@ function upload_file($upload, $type)
  * @param   string  $content
  * @param   string  $link
  * @param   string  $href
- * @param   string  $type       信息类型：warning, error, info
+ * @param   string  $type               信息类型：warning, error, info
+ * @param   string  $auto_redirect      是否自动跳转
  * @return  void
  */
-function show_message($content, $link = '', $href = '', $type = 'info', $auto_redirect = false)
+function show_message($content, $links = '', $hrefs = '', $type = 'info', $auto_redirect = true)
 {
     assign_template();
 
     $msg['content'] = $content;
-    $msg['link']    = empty($link) ? $GLOBALS['_LANG']['back_up_page'] : $link;
-    $msg['href']    = empty($href) ? 'javascript:history.back()'       : $href;
-    $msg['type']    = $type;
+    if (is_array($links) && is_array($hrefs))
+    {
+        if (!empty($links) && count($links) == count($hrefs))
+        {
+            foreach($links as $key =>$val)
+            {
+                $msg['url_info'][$val] = $hrefs[$key];
+            }
+            $msg['back_url'] = $hrefs['0'];
+        }
+    }
+    else
+    {
+        $link   = empty($links) ? $GLOBALS['_LANG']['back_up_page'] : $links;
+        $href    = empty($hrefs) ? 'javascript:history.back()'       : $hrefs;
+        $msg['url_info'][$link] = $href;
+        $msg['back_url'] = $href;
+    }
 
+    $msg['type']    = $type;
     $position = assign_ur_here(0, $GLOBALS['_LANG']['sys_msg']);
     $GLOBALS['smarty']->assign('page_title', $position['title']);   // 页面标题
     $GLOBALS['smarty']->assign('ur_here',    $position['ur_here']); // 当前位置
@@ -1482,30 +1526,29 @@ function parse_rate_value($str, &$operate)
 function recalculate_price()
 {
     /* 取得有可能改变价格的商品：除配件和赠品之外的商品 */
-    $sql = 'SELECT c.goods_id, c.goods_attr_id, g.promote_price, g.promote_start_date, '.
+    $sql = 'SELECT c.rec_id, c.goods_id, c.goods_attr_id, g.promote_price, g.promote_start_date, c.goods_number,'.
                 "g.promote_end_date, IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS member_price ".
             'FROM ' . $GLOBALS['ecs']->table('cart') . ' AS c '.
             'LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . ' AS g ON g.goods_id = c.goods_id '.
             "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
-                    "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
+                    "ON mp.goods_id = g.goods_id AND mp.user_rank = '" . $_SESSION['user_rank'] . "' ".
             "WHERE session_id = '" .SESS_ID. "' AND c.parent_id = 0 AND c.is_gift = 0 AND c.goods_id > 0 " .
-            "AND c.rec_type = '" . CART_GENERAL_GOODS . "'";
-    $res = $GLOBALS['db']->getAll($sql);
+            "AND c.rec_type = '" . CART_GENERAL_GOODS . "' AND c.extension_code <> 'package_buy'";
+
+            $res = $GLOBALS['db']->getAll($sql);
+
     foreach ($res AS $row)
     {
-        if ($row['promote_price'] > 0)
-        {
-            $promote_price = bargain_price($row['promote_price'], $row['promote_start_date'], $row['promote_end_date']);
-        }
-        else
-        {
-            $promote_price = 0;
-        }
+        $attr_id    = empty($row['goods_attr_id']) ? array() : explode(',', $row['goods_attr_id']);
 
-        $goods_price = $promote_price > 0 ? $promote_price : $row['member_price'];
-        $goods_price += spec_price($row['goods_attr_id']);
-        $GLOBALS['db']->query('UPDATE ' .$GLOBALS['ecs']->table('cart'). " SET goods_price = '$goods_price' ".
-            "WHERE goods_id = '" . $row['goods_id'] . "' AND session_id = '" .SESS_ID. "'");
+
+        $goods_price = get_final_price($row['goods_id'], $row['goods_number'], true, $attr_id);
+
+
+        $goods_sql = "UPDATE " .$GLOBALS['ecs']->table('cart'). " SET goods_price = '$goods_price' ".
+                     "WHERE goods_id = '" . $row['goods_id'] . "' AND session_id = '" . SESS_ID . "' AND rec_id = '" . $row['rec_id'] . "'";
+
+        $GLOBALS['db']->query($goods_sql);
     }
 
     /* 删除赠品，重新选择 */
@@ -1563,6 +1606,8 @@ function assign_comment($id, $type, $page = 1)
             $arr[$row['parent_id']]['re_username'] = $row['user_name'];
         }
     }
+    /* 分页样式 */
+    //$pager['styleid'] = isset($GLOBALS['_CFG']['page_style'])? intval($GLOBALS['_CFG']['page_style']) : 0;
     $pager['page']         = $page;
     $pager['size']         = $size;
     $pager['record_count'] = $count;
@@ -1605,7 +1650,7 @@ function assign_template($ctype = '', $catlist = array())
 
     if (!empty($GLOBALS['_CFG']['search_keywords']))
     {
-        $searchkeywords = explode(' ', trim($GLOBALS['_CFG']['search_keywords']));
+        $searchkeywords = explode(',', trim($GLOBALS['_CFG']['search_keywords']));
     }
     else
     {
@@ -1838,6 +1883,8 @@ function get_article_parent_cats($cat)
  */
 function get_library_number($library, $template = null)
 {
+    global $page_libs;
+
     if (empty($template))
     {
         $template = basename(PHP_SELF);
@@ -1894,7 +1941,22 @@ function get_navigator($ctype = '', $catlist = array())
     $sql = 'SELECT * FROM '. $GLOBALS['ecs']->table('nav') . '
             WHERE ifshow = \'1\' ORDER BY type, vieworder';
     $res = $GLOBALS['db']->query($sql);
+
     $cur_url = substr(strrchr($_SERVER['REQUEST_URI'],'/'),1);
+
+    if (intval($GLOBALS['_CFG']['rewrite']))
+    {
+        if(strpos($cur_url, '-'))
+        {
+            preg_match('/([a-z]*)-([0-9]*)/',$cur_url,$matches);
+            $cur_url = $matches[1].'.php?id='.$matches[2];
+        }
+    }
+    else
+    {
+        $cur_url = substr(strrchr($_SERVER['REQUEST_URI'],'/'),1);
+    }
+
     $noindex = false;
     $active = 0;
     $navlist = array(
@@ -1916,7 +1978,8 @@ function get_navigator($ctype = '', $catlist = array())
     /*遍历自定义是否存在currentPage*/
     foreach($navlist['middle'] as $k=>$v)
     {
-        if (strpos($cur_url, $v['url']) === 0)
+        $condition = empty($ctype) ? (strpos($cur_url, $v['url']) === 0) : (strpos($cur_url, $v['url']) === 0 && strlen($cur_url) == strlen($v['url']));
+        if ($condition)
         {
             $navlist['middle'][$k]['active'] = 1;
             $noindex = true;
@@ -1930,10 +1993,11 @@ function get_navigator($ctype = '', $catlist = array())
         {
             foreach($navlist['middle'] as $k=>$v)
             {
-                if(!empty($v['ctype']) && $v['ctype'] == $ctype && $v['cid'] == $val)
+                if(!empty($v['ctype']) && $v['ctype'] == $ctype && $v['cid'] == $val && $active < 1)
                 {
                     $navlist['middle'][$k]['active'] = 1;
                     $noindex = true;
+                    $active += 1;
                 }
             }
         }
@@ -1974,4 +2038,5 @@ function license_info()
         return '';
     }
 }
+
 ?>

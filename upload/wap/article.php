@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: article.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: article.php 16455 2009-07-13 09:57:19Z liubo $
 */
 
 define('IN_ECS', true);
@@ -30,7 +30,7 @@ if ($act == 'detail')
         {
             $article_row['title'] = encode_output($article_row['title']);
             $replace_tag = array('<br />' , '<br/>' , '<br>' , '</p>');
-            $article_row['content'] = encode_output($article_row['content']);
+            $article_row['content'] = htmlspecialchars_decode(encode_output($article_row['content']));
             $article_row['content'] = str_replace($replace_tag, '{br}' , $article_row['content']);
             $article_row['content'] = strip_tags($article_row['content']);
             $article_row['content'] = str_replace('{br}' , '<br />' , $article_row['content']);

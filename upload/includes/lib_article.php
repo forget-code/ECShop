@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_article.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: lib_article.php 16336 2009-06-24 07:09:13Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -28,7 +28,7 @@ if (!defined('IN_ECS'))
  *
  * @return  array
  */
-function get_cat_articles($cat_id, $page = 1, $size = 20)
+function get_cat_articles($cat_id, $page = 1, $size = 20 ,$requirement='')
 {
     //取出所有非0的文章
     if ($cat_id == '-1')
@@ -39,10 +39,23 @@ function get_cat_articles($cat_id, $page = 1, $size = 20)
     {
         $cat_str = get_article_children($cat_id);
     }
-    $sql = 'SELECT article_id, title, author, add_time, file_url, open_type' .
-           ' FROM ' .$GLOBALS['ecs']->table('article') .
-           " WHERE is_open = 1 AND " . $cat_str .
-           ' ORDER BY article_type DESC, article_id DESC';
+    //增加搜索条件，如果有搜索内容就进行搜索    
+    if ($requirement != '')
+    {
+        $sql = 'SELECT article_id, title, author, add_time, file_url, open_type' .
+               ' FROM ' .$GLOBALS['ecs']->table('article') .
+               ' WHERE is_open = 1 AND ' . $cat_str . ' AND  title like \'%' . $requirement . '%\' ' .
+               ' ORDER BY article_type DESC, article_id DESC';
+    }
+    else 
+    {
+        
+        $sql = 'SELECT article_id, title, author, add_time, file_url, open_type' .
+               ' FROM ' .$GLOBALS['ecs']->table('article') .
+               ' WHERE is_open = 1 AND ' . $cat_str .
+               ' ORDER BY article_type DESC, article_id DESC';
+    }
+
     $res = $GLOBALS['db']->selectLimit($sql, $size, ($page-1) * $size);
 
     $arr = array();
@@ -71,12 +84,17 @@ function get_cat_articles($cat_id, $page = 1, $size = 20)
  *
  * @return  integer
  */
-function get_article_count($cat_id)
+function get_article_count($cat_id ,$requirement='')
 {
     global $db, $ecs;
-
-    $count = $db->getOne("SELECT COUNT(*) FROM " . $ecs->table('article') . " WHERE " . get_article_children($cat_id) . " AND is_open = 1");
-
+    if ($requirement != '')
+    {
+        $count = $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('article') . ' WHERE ' . get_article_children($cat_id) . ' AND  title like \'%' . $requirement . '%\'  AND is_open = 1');
+    }
+    else
+    {
+        $count = $db->getOne("SELECT COUNT(*) FROM " . $ecs->table('article') . " WHERE " . get_article_children($cat_id) . " AND is_open = 1");
+    }
     return $count;
 }
 

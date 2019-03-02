@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: check_file_priv.php 15160 2008-11-05 08:23:33Z testyang $
+ * $Author: liubo $
+ * $Id: check_file_priv.php 15897 2009-05-04 07:24:35Z liubo $
 */
 
 define('IN_ECS', true);
@@ -19,6 +19,9 @@ require(dirname(__FILE__) . '/includes/init.php');
 
 if ($_REQUEST['act']== 'check')
 {
+    /* 检查权限 */
+    admin_priv('file_priv');
+
     /* 要检查目录文件列表 */
     $goods_img_dir = array();
     $folder = opendir(ROOT_PATH . 'images');
@@ -135,7 +138,7 @@ if ($_REQUEST['act']== 'check')
         }
     }
     $tpl_msg = implode(', ', $tpl_list);
-
+    $smarty->assign('ur_here',      $_LANG['check_file_priv']);
     $smarty->assign('list',    $list);
     $smarty->assign('tpl_msg', $tpl_msg);
     $smarty->display('file_priv.html');

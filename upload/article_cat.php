@@ -9,9 +9,10 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: article_cat.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: article_cat.php 16362 2009-06-25 08:04:09Z liubo $
 */
+
 
 define('IN_ECS', true);
 
@@ -21,6 +22,9 @@ if ((DEBUG_MODE & 2) != 2)
 {
     $smarty->caching = true;
 }
+
+/* 清除缓存 */
+clear_cache_files();
 
 /*------------------------------------------------------ */
 //-- INPUT
@@ -94,14 +98,34 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     {
         $page = $pages;
     }
-
+    $pager['search']['id'] = $cat_id;
+    $keywords = '';
     /* 获得文章列表 */
-    $smarty->assign('artciles_list',    get_cat_articles($cat_id, $page, $size));
+    if (isset($_GET['keywords']))
+    {
+        $keywords = addslashes(urldecode(trim($_GET['keywords'])));
+        $pager['search']['keywords'] = $keywords;
+        $search_url = $_SERVER['REQUEST_URI'];
 
+        $smarty->assign('search_value',     $keywords);
+        $smarty->assign('search_url',       $search_url);
+        $count  = get_article_count($cat_id, $keywords);
+        $pages  = ($count > 0) ? ceil($count / $size) : 1;
+        if ($page > $pages)
+        {
+            $page = $pages;
+        }
+    }
+    $smarty->assign('artciles_list',    get_cat_articles($cat_id, $page, $size ,$keywords));
+    $smarty->assign('cat_id',    $cat_id);
     /* 分页 */
-    assign_pager('article_cat',         $cat_id, $count, $size, '', '', $page);
+    $pager = get_pager('article_cat.php', $pager['search'], $count, $page, $size);
+
+    $smarty->assign('pager', $pager);
     assign_dynamic('article_cat');
 }
+
+$smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typearticle_cat" . $cat_id . ".xml" : 'feed.php?type=article_cat' . $cat_id); // RSS URL
 
 $smarty->display('article_cat.dwt', $cache_id);
 

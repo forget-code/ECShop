@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: users.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: users.php 15618 2009-02-18 05:31:02Z sunxiaodong $
 */
 /* 列表頁面 */
 $_LANG['label_user_name'] = '會員名稱';
@@ -23,6 +23,7 @@ $_LANG['view_order'] = '查看訂單';
 $_LANG['view_deposit'] = '查看賬目明細';
 $_LANG['username'] = '會員名稱';
 $_LANG['email'] = '郵件地址';
+$_LANG['is_validated'] = '是否已驗證';
 $_LANG['reg_date'] = '註冊日期';
 $_LANG['button_remove'] = '刪除會員';
 $_LANG['users_edit'] = '編輯會員賬號';
@@ -31,6 +32,7 @@ $_LANG['username_empty'] = '會員名稱不能為空！';
 
 /* 表單相關語言項 */
 $_LANG['password'] = '登錄密碼';
+$_LANG['newpass'] = '新密碼';
 $_LANG['confirm_password'] = '確認密碼';
 $_LANG['question'] = '密碼提示問題';
 $_LANG['answer'] = '密碼提示問題答案';
@@ -94,9 +96,10 @@ $_LANG['sign_building'] = '標誌建築';
 /* JS 語言項 */
 $_LANG['js_languages']['no_username'] = '沒有輸入用戶名。';
 $_LANG['js_languages']['invalid_email'] = '沒有輸入郵件地址或者輸入了一個無效的郵件地址。';
-$_LANG['js_languages']['no_password'] = '沒有輸入登錄密碼。';
+$_LANG['js_languages']['no_password'] = '沒有輸入密碼。';
 $_LANG['js_languages']['no_confirm_password'] = '沒有輸入確認密碼。';
 $_LANG['js_languages']['password_not_same'] = '輸入的密碼和確認密碼不一致。';
 $_LANG['js_languages']['invalid_pay_points'] = '消費積分數不是一個整數。';
 $_LANG['js_languages']['invalid_rank_points'] = '等級積分數不是一個整數。';
+$_LANG['js_languages']['password_len_err'] = '新密碼和確認密碼的長度不能小於6';
 ?>

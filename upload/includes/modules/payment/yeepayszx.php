@@ -92,7 +92,7 @@ class yeepayszx
     function get_code($order, $payment)
     {
         $data_merchant_id = $payment['yp_account'];
-        $data_order_id    = $order['log_id'];
+        $data_order_id    = $order['order_sn'];
         $data_amount      = $order['order_amount'];
         $message_type     = 'Buy';
         $data_cur         = 'CNY';
@@ -105,7 +105,7 @@ class yeepayszx
 
         $data_pay_key     = $payment['yp_key'];
         $data_pay_account = $payment['yp_account'];
-        $mct_properties   = '';
+        $mct_properties   = $order['log_id'];
         $frp_id = 'SZX';
         $need_response = '';
         $def_url = $message_type . $data_merchant_id . $data_order_id . $data_amount . $data_cur . $product_id . $data_return_url . $address_flag . $mct_properties . $frp_id . $need_response;
@@ -170,7 +170,8 @@ class yeepayszx
                 ///支付成功
                 $v_result = true;
 
-                order_paid($orderid);
+                $order_id = str_replace($orderid, '', $product_id);
+                order_paid($merchant_param);
             }
         }
 

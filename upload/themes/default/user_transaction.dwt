@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='common.js,user.js'}
 </head>
@@ -94,6 +94,14 @@
                   <td width="72%" align="left" bgcolor="#FFFFFF"><input name="other[mobile_phone]" type="text" value="{$profile.mobile_phone}" class="inputBg" />
                   </td>
                 </tr>
+		{foreach from=$extend_info_list item=field}
+		<tr>
+			<td width="28%" align="right" bgcolor="#FFFFFF">{$field.reg_field_name}：</td>
+			<td width="72%" align="left" bgcolor="#FFFFFF">
+			<input name="extend_field{$field.id}" type="text" class="inputBg" value="{$field.content}"/>
+			</td>
+		</tr>
+		{/foreach}
                 <tr>
                   <td colspan="2" align="center" bgcolor="#FFFFFF"><input name="act" type="hidden" value="act_edit_profile" />
                     <input name="submit" type="submit" value="{$lang.confirm_edit}" class="bnt_blue_1" style="border:none;" />
@@ -271,7 +279,13 @@
         <tr>
           <td width="15%" align="right" bgcolor="#ffffff">{$lang.detail_order_sn}：</td>
           <td align="left" bgcolor="#ffffff">{$order.order_sn}
-          <!-- {if $order.extension_code eq "group_buy"} --><a href="./group_buy.php?act=view&id={$order.extension_id}"><strong>{$lang.order_is_group_buy}</strong></a><!--{/if}-->  <a href="user.php?act=message_list&order_id={$order.order_id}" class="f6">[{$lang.business_message}]</a></td>
+          <!-- {if $order.extension_code eq "group_buy"} -->
+					<a href="./group_buy.php?act=view&id={$order.extension_id}" class="f6"><strong>{$lang.order_is_group_buy}</strong></a>
+					<!-- {elseif $order.extension_code eq "exchange_goods"} -->
+					<a href="./exchange.php?act=view&id={$order.extension_id}" class="f6"><strong>{$lang.order_is_exchange}</strong></a>
+					<!--{/if}-->  
+					<a href="user.php?act=message_list&order_id={$order.order_id}" class="f6">[{$lang.business_message}]</a>
+					</td>
         </tr>
         <tr>
           <td align="right" bgcolor="#ffffff">{$lang.detail_order_status}：</td>
@@ -331,12 +345,23 @@
           </tr>
           <!-- {foreach from=$goods_list item=goods} -->
           <tr>
-            <td bgcolor="#ffffff"><a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
-              <!-- {if $goods.parent_id > 0} -->
-              <span style="color:#FF0000">（{$lang.accessories}）</span>
-              <!-- {elseif $goods.is_gift} -->
-              <span style="color:#FF0000">（{$lang.largess}）</span>
-              <!-- {/if} --></td>
+            <td bgcolor="#ffffff">
+              <!-- {if $goods.goods_id gt 0 && $goods.extension_code neq 'package_buy'} 商品 -->
+                <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
+                <!-- {if $goods.parent_id > 0} -->
+                <span style="color:#FF0000">（{$lang.accessories}）</span>
+                <!-- {elseif $goods.is_gift} -->
+                <span style="color:#FF0000">（{$lang.largess}）</span>
+                <!-- {/if} -->
+              <!-- {elseif $goods.goods_id gt 0 && $goods.extension_code eq 'package_buy'} -->
+                <a href="javascript:void(0)" onclick="setSuitShow({$goods.goods_id})" class="f6">{$goods.goods_name}<span style="color:#FF0000;">（礼包）</span></a>
+                <div id="suit_{$goods.goods_id}" style="display:none">
+                    <!-- {foreach from=$goods.package_goods_list item=package_goods_list} -->
+                      <a href="goods.php?id={$package_goods_list.goods_id}" target="_blank" class="f6">{$package_goods_list.goods_name}</a><br />
+                    <!-- {/foreach} -->
+                </div>
+              <!-- {/if} -->
+              </td>
             <td align="left" bgcolor="#ffffff">{$goods.goods_attr|nl2br}</td>
             <!--<td align="right">{$goods.market_price}</td>-->
             <td align="right" bgcolor="#ffffff">{$goods.goods_price}</td>
@@ -735,7 +760,7 @@
               <!-- {if ($item.is_paid eq 0 && $item.process_type eq 1) || $item.handle} -->
               <a href="user.php?act=cancel&id={$item.id}" onclick="if (!confirm('{$lang.confirm_remove_account}')) return false;">{$lang.is_cancel}</a>
               <!-- {/if} -->
-							</td>
+                            </td>
           </tr>
           <!--{/foreach}-->
           <tr>
@@ -844,18 +869,18 @@
       <!--* 积分兑换-->
        <!--{if $action eq 'transform_points'} -->
        <h5><span>{$lang.transform_points}</span></h5>
-			 <div class="blank"></div>
+             <div class="blank"></div>
        <!--{if $exchange_type eq 'ucenter'}-->
         <form action="user.php" method="post" name="transForm" onsubmit="return calcredit();">
        <table width="100%" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
-			    <tr>
-					<th width="120" bgcolor="#FFFFFF" align="right" valign="top">{$lang.cur_points}:</th>
-					<td bgcolor="#FFFFFF">
-					<label for="pay_points">{$lang.exchange_points.1}:</label><input type="text" size="15" id="pay_points" name="pay_points" value="{$shop_points.pay_points}" style="border:0;border-bottom:1px solid #DADADA;" readonly="readonly" /><br />
-					<div class="blank"></div>
-					<label for="rank_points">{$lang.exchange_points.0}:</label><input type="text" size="15" id="rank_points" name="rank_points" value="{$shop_points.rank_points}" style="border:0;border-bottom:1px solid #DADADA;" readonly="readonly" />
-					</td>
-					</tr>
+                <tr>
+                    <th width="120" bgcolor="#FFFFFF" align="right" valign="top">{$lang.cur_points}:</th>
+                    <td bgcolor="#FFFFFF">
+                    <label for="pay_points">{$lang.exchange_points.1}:</label><input type="text" size="15" id="pay_points" name="pay_points" value="{$shop_points.pay_points}" style="border:0;border-bottom:1px solid #DADADA;" readonly="readonly" /><br />
+                    <div class="blank"></div>
+                    <label for="rank_points">{$lang.exchange_points.0}:</label><input type="text" size="15" id="rank_points" name="rank_points" value="{$shop_points.rank_points}" style="border:0;border-bottom:1px solid #DADADA;" readonly="readonly" />
+                    </td>
+                    </tr>
           <tr><td bgcolor="#FFFFFF">&nbsp;</td>
           <td bgcolor="#FFFFFF">&nbsp;</td>
           </tr>
@@ -963,11 +988,12 @@
         </table>
         <br />
         <b>{$lang.rule_list}:</b>
-        <ul>
+        <ul class="point clearfix">
           <!-- {foreach from=$rule_list item=rule} -->
-          <li>"{$rule.from}" {$lang.transform} "{$rule.to}" {$lang.rate_is} {$rule.rate}
+          <li><font class="f1">·</font>"{$rule.from}" {$lang.transform} "{$rule.to}" {$lang.rate_is} {$rule.rate}
           <!-- {/foreach} -->
         </ul>
+
         <form action="user.php" method="post" name="theForm">
         <table width="100%" border="1" align="center" cellpadding="5" cellspacing="0" style="border-collapse:collapse;border:1px solid #DADADA;">
           <tr style="background:#F1F1F1;">

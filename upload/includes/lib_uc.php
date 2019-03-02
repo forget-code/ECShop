@@ -3,14 +3,14 @@
 /**
  * UCenter 函数库
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com
+ * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
- * 进行修改、使用和再发布。
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: lib_uc.php 15172 2008-11-12 08:39:16Z sunxiaodong $
+ * $Author: liubo $
+ * $Id: lib_uc.php 16275 2009-06-19 05:58:54Z liubo $
  */
 
 
@@ -36,7 +36,14 @@ function add_feed($id, $feed_type)
         $order_res = $GLOBALS['db']->getAll("SELECT g.goods_id, g.goods_name, g.goods_sn, g.goods_desc, g.goods_thumb, o.goods_price FROM " . $GLOBALS['ecs']->table('order_goods') . " AS o, " . $GLOBALS['ecs']->table('goods') . " AS g WHERE o.order_id='{$id}' AND o.goods_id=g.goods_id");
         foreach($order_res as $goods_data)
         {
-            $url = $GLOBALS['ecs']->url() . $goods_data['goods_thumb'];
+            if(!empty($goods_data['goods_thumb']))
+            {
+                $url = $GLOBALS['ecs']->url() . $goods_data['goods_thumb'];
+            }
+            else
+            {
+                $url = $GLOBALS['ecs']->url() . $GLOBALS['_CFG']['no_picture'];
+            }
             $link = $GLOBALS['ecs']->url() . "goods.php?id=" . $goods_data["goods_id"];
 
             $feed['icon'] = "goods";

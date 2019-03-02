@@ -46,6 +46,10 @@
       </select></td>
     </tr>
     <tr>
+      <td class="label">{$lang.label_rows_num}</td>
+      <td><input name="rows_num" type="text" id="rows_num" value="1" /></td>
+    </tr>
+    <tr>
       <td class="label">{$lang.label_charset}</td>
       <td><select name="charset" id="charset">
         {html_options options=$lang_list}
@@ -89,6 +93,16 @@
             alert(goods_num_must_over_0);
             return;
         }
+        if (isNaN(parseInt(elements['rows_num'].value)))
+        {
+            alert(rows_num_must_be_int);
+            return;
+        }
+        if (elements['rows_num'].value < 1)
+        {
+            alert(rows_num_must_over_0);
+            return;
+        }
 
         // 生成代码
         var code = '\<script src=\"' + url + 'goods_script.php?';
@@ -107,6 +121,7 @@
         code += 'need_image=' + elements['need_image'].value + '&';
         code += 'goods_num=' + elements['goods_num'].value + '&';
         code += 'arrange=' + elements['arrange'].value + '&';
+        code += 'rows_num=' + elements['rows_num'].value + '&';
         code += 'charset=' + elements['charset'].value + '&';
         code += 'sitename=' + encodeURI(elements['sitename'].value);
         code += '\"\>\</script\>';

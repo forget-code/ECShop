@@ -9,13 +9,13 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: common.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: liuhui $
+ * $Id: common.php 16378 2009-06-26 06:34:14Z liuhui $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
 $_LANG['cp_home'] = 'ECSHOP 管理中心';
-$_LANG['copyright'] = '版權所有 &copy; 2005-2008 上海商派網絡科技有限公司，並保留所有權利。';
+$_LANG['copyright'] = '版權所有 &copy; 2005-2009 上海商派網絡科技有限公司，並保留所有權利。';
 $_LANG['query_info'] = '共執行 %d 個查詢，用時 %s 秒';
 $_LANG['memory_info'] = '，內存佔用 %0.3f MB';
 $_LANG['gzip_enabled'] = '，Gzip 已啟用';
@@ -47,6 +47,7 @@ $_LANG['edit'] = '編輯';
 $_LANG['view'] = '查看';
 $_LANG['remove'] = '移除';
 $_LANG['drop'] = '刪除';
+$_LANG['confirm_delete'] = '您確定要刪除嗎?';
 $_LANG['disabled'] = '禁用';
 $_LANG['enabled'] = '啟用';
 $_LANG['setup'] = '設置';
@@ -56,6 +57,8 @@ $_LANG['trash'] = '回收站';
 $_LANG['restore'] = '還原';
 $_LANG['close_window'] = '關閉窗口';
 $_LANG['btn_select'] = '選擇';
+$_LANG['operator'] = '操作人';
+$_LANG['cancel'] = '取消';
 
 $_LANG['empty'] = '不能為空';
 $_LANG['repeat'] = '已存在';
@@ -182,6 +185,8 @@ $_LANG['10_auction'] = '拍賣活動';
 $_LANG['12_favourable'] = '優惠活動';
 $_LANG['13_wholesale'] = '批發管理';
 $_LANG['ebao_commend'] = '易寶推薦';
+$_LANG['14_package_list'] = '超值禮包';
+$_LANG['package_add'] = '添加超值禮包';
 
 /* 訂單管理 */
 $_LANG['02_order_list'] = '訂單列表';
@@ -190,6 +195,8 @@ $_LANG['04_merge_order'] = '合併訂單';
 $_LANG['05_edit_order_print'] = '訂單打印';
 $_LANG['06_undispose_booking'] = '缺貨登記';
 $_LANG['08_add_order'] = '添加訂單';
+$_LANG['09_delivery_order'] = '發貨單列表';
+$_LANG['10_back_order'] = '退貨單列表';
 
 /* 廣告管理 */
 $_LANG['ad_position'] = '廣告位置';
@@ -224,15 +231,18 @@ $_LANG['04_users_add'] = '添加會員';
 $_LANG['05_user_rank_list'] = '會員等級';
 $_LANG['06_list_integrate'] = '會員整合';
 $_LANG['09_user_account'] = '充值和提現申請';
+$_LANG['10_user_account_manage'] = '資金管理';
 
 /* 權限管理 */
 $_LANG['admin_list'] = '管理員列表';
 $_LANG['admin_add'] = '添加管理員';
 $_LANG['admin_logs'] = '管理員日誌';
 $_LANG['agency_list'] = '辦事處列表';
+$_LANG['suppliers_list'] = '供貨商列表';
 
 /* 系統設置 */
 $_LANG['01_shop_config'] = '商店設置';
+$_LANG['shop_authorized'] = '授權證書';
 $_LANG['02_payment_list'] = '支付方式';
 $_LANG['03_shipping_list'] = '配送方式';
 $_LANG['04_mail_settings'] = '郵件服務器設置';
@@ -245,6 +255,8 @@ $_LANG['check_file_priv'] = '文件權限檢測';
 $_LANG['captcha_manage'] = '驗證碼管理';
 $_LANG['fckfile_manage'] = 'Fck上傳文件管理';
 $_LANG['ucenter_setup'] = 'UCenter設置';
+$_LANG['file_check'] = '文件校驗';
+$_LANG['021_reg_fields'] = '會員註冊項設置';
 
 /* 模板管理 */
 $_LANG['02_template_select'] = '模板選擇';
@@ -269,12 +281,17 @@ $_LANG['06_sms_charge_history'] = '充值記錄';
 
 $_LANG['affiliate'] = '推薦設置';
 $_LANG['affiliate_ck'] = '分成管理';
-$_LANG['flashplay'] = 'Flash 播放器管理';
+$_LANG['flashplay'] = '首页主广告管理';
 $_LANG['search_log'] = '搜索關鍵字';
 $_LANG['email_list'] = '郵件訂閱管理';
 $_LANG['magazine_list'] = '雜誌管理';
 $_LANG['attention_list'] = '關注管理';
 $_LANG['view_sendlist'] = '郵件隊列管理';
+
+/* 积分兑换管理 */
+$_LANG['15_exchange_goods'] = '積分商城商品';
+$_LANG['15_exchange_goods_list'] = '積分商城商品列表';
+$_LANG['exchange_goods_add'] = '添加新商品';
 
 /* cls_image類的語言項 */
 $_LANG['directory_readonly'] = '目錄 % 不存在或不可寫';
@@ -309,4 +326,6 @@ $_LANG['href_sort_help'] = '點擊對列表排序';
 $_LANG['catname_exist'] = '已存在相同的分類名稱!';
 $_LANG['brand_name_exist'] = '已存在相同的品牌名稱!';
 
+$_LANG['alipay_login'] = '<a href="https://www.alipay.com/user/login.htm?goto=https%3A%2F%2Fwww.alipay.com%2Fhimalayas%2Fpracticality_profile_edit.htm%3Fmarket_type%3Dfrom_agent_contract%26customer_external_id%3D%2BC4335319945672464113" target="_blank">立即免費申請支付接口權限</a>';
+$_LANG['alipay_look'] = '<a href=\"https://www.alipay.com/himalayas/practicality.htm\" target=\"_blank\">請申請成功後登錄支付寶賬戶查看</a>';
 ?>

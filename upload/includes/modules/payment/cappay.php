@@ -9,15 +9,14 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: cappay.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liuhui $
+ * $Id: cappay.php 16416 2009-07-01 05:39:27Z liuhui $
  */
 
 if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
-
 $payment_lang = ROOT_PATH . 'languages/' .$GLOBALS['_CFG']['lang']. '/payment/cappay.php';
 
 if (file_exists($payment_lang))
@@ -189,18 +188,17 @@ class cappay
     function respond()
     {
         $payment    = get_payment(basename(__FILE__, '.php'));
-        $v_tempdate = explode('-', $_GET['v_oid']);
+        $v_tempdate = explode('-', $_REQUEST['v_oid']);
 
         //接受返回数据验证开始
         //v_md5info验证
-        $md5info_paramet = $_GET['v_oid'].$_GET['v_pstatus'].$_GET['v_pstring'].$_GET['v_pmode'];
+        $md5info_paramet = $_REQUEST['v_oid'].$_REQUEST['v_pstatus'].$_REQUEST['v_pstring'].$_REQUEST['v_pmode'];
         $md5info_tem     = $this->hmac_md5($payment['cappay_key'],$md5info_paramet);
 
         //v_md5money验证
-        $md5money_paramet = $_GET['v_amount'].$_GET['v_moneytype'];
+        $md5money_paramet = $_REQUEST['v_amount'].$_REQUEST['v_moneytype'];
         $md5money_tem     = $this->hmac_md5($payment['cappay_key'],$md5money_paramet);
-
-        if ($md5info_tem == $_GET['v_md5info'] && $md5money_tem == $_GET['v_md5money'])
+        if ($md5info_tem == $_REQUEST['v_md5info'] && $md5money_tem == $_REQUEST['v_md5money'])
         {
             //改变订单状态
             order_paid($v_tempdate[2]);
@@ -235,6 +233,7 @@ class cappay
 
         return md5($k_opad . pack('H*', md5($k_ipad . $data)));
     }
+
 }
 
 ?>

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: quotation.php 15153 2008-11-04 01:34:03Z testyang $
+ * $Author: liubo $
+ * $Id: quotation.php 16193 2009-06-10 06:42:30Z liubo $
 */
 define('IN_ECS', true);
 
@@ -21,20 +21,21 @@ if ($action == 'print_quotation')
 {
     $smarty->template_dir = DATA_DIR;
     $smarty->assign('shop_name', $_CFG['shop_title']);
-
+    $smarty->assign('cfg',       $_CFG);
     $where = get_quotation_where($_POST);
     $sql = "SELECT g.goods_id, g.goods_name, g.shop_price, g.goods_number, c.cat_name AS goods_category".
-    " FROM " . $ecs->table('goods') . " AS g LEFT JOIN " . $ecs->table('category') . " AS c ON g.cat_id = c.cat_id ". $where;
+    " FROM " . $ecs->table('goods') . " AS g LEFT JOIN " . $ecs->table('category') . " AS c ON g.cat_id = c.cat_id " . $where . " AND is_on_sale = 1 AND is_alone_sale = 1";
     $goods_list = $db->getAll($sql);
-    $user_rank = $db->getAll("SELECT * FROM " .$ecs->table('user_rank'));
+    $user_rank = $db->getAll("SELECT * FROM " .$ecs->table('user_rank') . "WHERE show_price = 1 OR rank_id = '$_SESSION[user_rank]'");
     $rank_point = 0;
-    if (!empty($_SESSION[user_id]))
+    if (!empty($_SESSION['user_id']))
     {
         $rank_point = $db->getOne("SELECT rank_points FROM " . $ecs->table('users') . " WHERE user_id = '$_SESSION[user_id]'");
     }
     $user_rank = calc_user_rank($user_rank, $rank_point);
+    $user_men = serve_user($goods_list);
     $smarty->assign('extend_price', $user_rank['ext_price']);
-    $smarty->assign('extend_rank', $user_rank['ext_rank']);
+    $smarty->assign('extend_rank', $user_men);
     $smarty->assign('goods_list', $goods_list);
 
     $html = $smarty->fetch('quotation_print.html');
@@ -59,7 +60,7 @@ $smarty->display('quotation.dwt');
 
 function get_quotation_where($filter)
 {
-    include_once ROOT_PATH . 'admin/includes/lib_main.php';
+    include_once(ROOT_PATH . 'admin/includes/lib_main.php');
     $_filter = new StdClass();
     $_filter->cat_id = $filter['cat_id'];
     $_filter->brand_id = $filter['brand_id'];
@@ -88,5 +89,30 @@ function calc_user_rank($rank, $rank_point)
         }
     }
     return $_tmprank;
+}
+
+function serve_user($goods_list)
+{
+    foreach ( $goods_list as $all_list )
+    {
+        $goods_id = $all_list['goods_id'];
+        $price = $all_list['shop_price'];
+        $sql = "SELECT rank_id, IFNULL(mp.user_price, r.discount * $price / 100) AS price, r.rank_name, r.discount " .
+                'FROM ' . $GLOBALS['ecs']->table('user_rank') . ' AS r ' .
+                'LEFT JOIN ' . $GLOBALS['ecs']->table('member_price') . " AS mp ".
+                "ON mp.goods_id = '$goods_id' AND mp.user_rank = r.rank_id " .
+                "WHERE r.show_price = 1 OR r.rank_id = '$_SESSION[user_rank]'";
+        $res = $GLOBALS['db']->getAll($sql);
+
+        foreach ( $res as $row )
+        {
+            $arr[$row['rank_id']] = array(
+                      'rank_name' => htmlspecialchars($row['rank_name']),
+                      'price'     => price_format($row['price']));
+
+        }
+        $arr_list[$goods_id] = $arr;
+    }
+    return $arr_list;
 }
 ?>

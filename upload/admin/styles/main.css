@@ -110,6 +110,10 @@ h1 .action-span1 {
   border: 1px solid #BBDDE5;
 }
 
+.list-div-ad {
+  border: 0px solid #BBDDE5;
+}
+
 .list-div table {
   width: 100%;
 }
@@ -221,6 +225,10 @@ h1 .action-span1 {
   vertical-align: middle;
 }
 
+.tab-body {
+  border: 0px solid #BBDDE5;
+  padding: 10px;
+}
 /*
 表单部分
 */
@@ -310,6 +318,19 @@ li.warning {
   margin-bottom: 5px;
 }
 
+#Marquee{ 
+  height:20px; 
+  overflow:hidden;  
+  border: 1px solid #CC0000;
+  background: #FFFFCC;
+  margin-bottom: 5px;
+}
+  
+#Marquee div{ 
+  background: #FFFFCC;
+  padding: 10px;
+  margin-bottom: 5px;
+  }
 /*
 MSN Messenger
 */
@@ -601,4 +622,192 @@ a.special:active{
 .order-goods td {
   background: #FFF;
   line-height: 22px;
+}
+/* 文件校验 */
+.infobox {
+  background:#F2F9FD  none repeat scroll 0 0;
+  border:4px solid #BBDDE5;
+  clear:both;
+  margin:60px 30px;
+  padding:20px;
+  text-align:center;
+}
+.normal {
+  font-weight:400;font-size:12px;
+}
+.marginbot {
+  margin-bottom:10px;
+}
+.nobdb {
+  border-bottom:medium none;
+}
+.btn {
+  background:#DDDDDD none repeat scroll 0 0;
+  border-color:#DDDDDD #666666 #666666 #DDDDDD;
+  color:#000000;
+  cursor:pointer;
+  margin:3px 0;
+  padding:2px 5px;
+  vertical-align:middle;
+}
+.infotitle1{
+  margin-bottom:10px;
+  color:#09C;
+  font-size:14px;
+  font-weight:700;
+}
+em, cite, th {
+  font-style:normal;
+  font-weight:normal;
+}
+.left {
+  float:left;
+}
+.lightfont {
+  color:#CCCCCC;
+}
+.left .cfolder, .left .ofolder{
+  display:block;
+  padding-left:50px;
+  line-height:30px;
+  background:url(../images/filecheck.gif) no-repeat -260px -50px;
+  font-weight:700;
+  font-size:14px;
+  color:#2366A8;
+}
+.left .ofolder{
+  background:url(../images/filecheck.gif) no-repeat -260px -100px;
+  color:#2366A8;
+  font-size:14px;
+}
+.filenum{
+  margin:8px 0 0 20px;
+}
+.files{
+  padding:1px 0 1px 50px;
+  background:url(../images/filecheck.gif) no-repeat -260px -150px;
+}
+.del{
+  padding-left:18px;
+  background:url(../images/filecheck.gif) no-repeat 0 -285px;
+  *background:url(../images/filecheck.gif) no-repeat 0 -286px;
+  color:#E8594D;
+}
+.edited{
+  padding-left:18px;
+  background:url(../images/filecheck.gif) no-repeat -100px -385px;
+  *background:url(../images/filecheck.gif) no-repeat -100px -386px;
+  color:#E8594D;
+}
+.unknown{
+  padding-left:18px;
+  background:url(../images/filecheck.gif) no-repeat -50px -435px;
+  *background:url(../images/filecheck.gif) no-repeat -50px -436px;
+  color:#6189B8;
+}
+.correct{
+  padding-left:18px;
+  background:url(../images/filecheck.gif) no-repeat 0 -485px;
+  *background:url(../images/filecheck.gif) no-repeat 0 -486px;
+  color:#70B759;
+}
+.tb2 th, .tb2 td {
+  background:transparent url(../images/bg_repx.gif) repeat-x scroll 0 bottom;
+  padding:5px 5px 5px 0;
+  text-align:left;
+}
+.tb2 th {
+  line-height:21px;
+  font-weight:bold;
+}
+.bold {
+  font-weight:700;
+}
+/* 模板管理 */
+#messageATX {
+  position:absolute;
+  z-index:100;
+  display:none;
+}
+#messageATX .bgtable{
+  width:40px;
+  height:120px;
+  border:solid 1px #000000;
+  background:#FFFFE1;
+}
+#messageATX .colortable{
+  height:20px;
+  border:solid 1px #FFFFFF;
+  cursor:pointer;
+}
+
+#CurrTplStyleList{
+  margin-top:8px;
+}
+
+
+
+/*
+ 标签部分的样式
+ */
+.custab-div {
+  background: #EEF8F9;
+  border: 1px solid #BBDDE5;
+  margin: 0 0 10px 0;
+  padding: 1px;
+}
+#custabbar-div {
+  background: #80BDCB;
+  padding-left: 10px;
+  height: 22px;
+  overflow : hidden;
+}
+
+#custabbar-div p {
+  margin: 2px 0 0 0;
+}
+
+.custab-front {
+  background: #BBDDE5;
+  line-height: 20px;
+  font-weight: bold;
+  padding: 4px 15px 4px 18px;
+  border-right: 2px solid #278296;
+  cursor: hand;
+  cursor: pointer;
+  margin: -5px -5px -5px -3px;
+}
+
+.custab-back {
+  color: #FFF;
+  line-height: 20px;
+  padding: 4px 15px 4px 18px;
+  border-right: 1px solid #FFF;
+  cursor: hand;
+  cursor: pointer;
+}
+
+.custab-hover {
+  color: #FFF;
+  background: #94C9D3;
+  line-height: 20px;
+  padding: 4px 15px 4px 18px;
+  border-right: 1px solid #FFF;
+  cursor: hand;
+  cursor: pointer;
+}
+
+#custabbody-div {
+  border: 2px solid #BBDDE5;
+  padding: 10px;
+  background: #FFF;
+}
+
+#custabbody-div img {
+  vertical-align: middle;
+}
+
+.custab-body {
+  border: 0px solid #BBDDE5;
+  padding: 10px;
 }

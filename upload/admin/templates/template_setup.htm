@@ -1,4 +1,4 @@
-<!-- $Id: template_setup.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: template_setup.htm 16144 2009-06-01 09:21:21Z sxc_shop $ -->
 {include file="pageheader.htm"}
 
 <div class="form-div">
@@ -27,11 +27,11 @@
   {foreach from=$temp_options item=library key=lib_name}
   <tr>
     <td class="first-cell">{$library.desc}</td>
-    <td><select name="regions[{$lib_name}]"><option value="">{$lang.select_plz}</option>{html_options values=$temp_regions output=$temp_regions selected=$library.region}</select></td>
-    <td><input type="text" name="sort_order[{$lib_name}]" value="{$library.sort_order}" size="4" /></td>
+    <td><select name="regions[{$lib_name}]">{if $library.editable eq 1}<option value="">{$lang.not_editable}</option>{else}<option value="">{$lang.select_plz}</option>{html_options values=$temp_regions output=$temp_regions selected=$library.region}{/if}</select></td>
+    <td><input type="text" name="sort_order[{$lib_name}]" value="{$library.sort_order}" size="4" {if $library.editable eq 1} disabled {/if}/></td>
     <td><input type="hidden" name="map[{$lib_name}]" value="{$library.library}" /></td>
     <td>{if $library.number_enabled}<input type="text" name="number[{$lib_name}]" value="{$library.number}" size="4" />{else}&nbsp;{/if}</td>
-    <td align="center"><input type="checkbox" name="display[{$lib_name}]" value="1" {if $library.display eq 1} checked="true" {/if} /></td>
+    <td align="center"><input type="checkbox" name="display[{$lib_name}]" value="1" {if $library.editable eq 1} disabled {/if}{if $library.display eq 1} checked="true" {/if} /></td>
   </tr>
   {/foreach}
 

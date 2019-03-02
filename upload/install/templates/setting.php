@@ -54,7 +54,7 @@ $_LANG["<?php echo $key;?>"] = "<?php echo $item;?>";
 </tr>
 <tr>
     <td width="90" align="left"><?php echo $lang['db_prefix'];?></td>
-    <td align="left"><input type="text" name="js-db-prefix"  value="ecs_" /></td>
+    <td align="left"><input type="text" name="js-db-prefix"  value="ecs_" /><span class="comment">&nbsp; (<?php echo $lang['change_prefix'];?>)</span></td>
 </tr>
 </table>
 <div id="js-monitor" style="display:none;text-align:left;position:absolute;top:45%;left:35%;width:300px;z-index:1000;border:1px solid #000;">
@@ -75,11 +75,21 @@ $_LANG["<?php echo $key;?>"] = "<?php echo $item;?>";
 </tr>
 <tr>
     <td width="90" align="left"><?php echo $lang['admin_password'];?></td>
-    <td align="left"><input type="password" name="js-admin-password"  value="" /></td>
+    <td align="left"><input type="password" name="js-admin-password"  value="" /><span id="js-admin-password-result"></span></td>
+</tr>
+<tr>
+    <td width="90" align="left"><?php echo $lang['password_intensity'];?></td>
+    <td align="left"><table width="132" cellspacing="0" cellpadding="1" border="0">
+              <tbody><tr align="center">
+                <td width="33%" id="pwd_lower" style="border-bottom: 2px solid red;"><?php echo $lang['pwd_lower'];?></td>
+                <td width="33%" id="pwd_middle" style="border-bottom: 2px solid rgb(218, 218, 218);"><?php echo $lang['pwd_middle'];?></td>
+                <td width="33%" id="pwd_high" style="border-bottom: 2px solid rgb(218, 218, 218);"><?php echo $lang['pwd_high'];?></td>
+              </tr>
+            </tbody></table></td>
 </tr>
 <tr>
     <td width="90" align="left"><?php echo $lang['admin_password2'];?></td>
-    <td align="left"><input type="password" name="js-admin-password2"  value="" /></td>
+    <td align="left"><input type="password" name="js-admin-password2"  value="" /><span id="js-admin-confirmpassword-result"></span></td>
 </tr>
 <tr>
     <td width="90" align="left"><?php echo $lang['admin_email'];?></td>
@@ -96,7 +106,9 @@ $_LANG["<?php echo $key;?>"] = "<?php echo $item;?>";
     <?php } elseif (EC_CHARSET == 'utf-8') { ?>
     <td width="90" align="left"><?php echo $lang['select_lang_package'];?></td>
     <td align="left"><input type="radio" class="p" name="js-system-lang" id="js-system-lang-zh_cn" value="zh_cn" /><label for="js-system-lang-zh_cn"><?php echo $lang['simplified_chinese'];?></label>
-    <input type="radio" name="js-system-lang" id="js-system-lang-zh_tw" value="zh_tw" /><label for="js-system-lang-zh_tw"><?php echo $lang['traditional_chinese'];?></label></td>
+    <input type="radio" name="js-system-lang" id="js-system-lang-zh_tw" value="zh_tw" /><label for="js-system-lang-zh_tw"><?php echo $lang['traditional_chinese'];?></label>
+        <input type="radio" name="js-system-lang" id="js-system-lang-en_us" value="en_us" /><label for="js-system-lang-en_us"><?php echo $lang['americanese'];?></label>
+        </td>
     <?php } elseif (EC_CHARSET == 'big5') { ?>
     <td width="90" align="left"><?php echo $lang['select_lang_package'];?></td>
     <td align="left"><input type="radio" name="js-system-lang" id="js-system-lang-zh_tw" value="zh_tw" checked='true'/><label for="js-system-lang-zh_tw"><?php echo $lang['traditional_chinese'];?></label></td>

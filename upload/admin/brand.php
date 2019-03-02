@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: brand.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liuhui $
+ * $Id: brand.php 16419 2009-07-01 14:03:01Z liuhui $
 */
 
 define('IN_ECS', true);
@@ -319,7 +319,6 @@ elseif ($_REQUEST['act'] == 'drop_logo')
 elseif ($_REQUEST['act'] == 'query')
 {
     $brand_list = get_brandlist();
-
     $smarty->assign('brand_list',   $brand_list['brand']);
     $smarty->assign('filter',       $brand_list['filter']);
     $smarty->assign('record_count', $brand_list['record_count']);
@@ -344,13 +343,36 @@ function get_brandlist()
         $filter = array();
 
         /* 记录总数以及页数 */
-        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('brand');
+        if (isset($_POST['brand_name']))
+        {
+            $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('brand') .' WHERE brand_name = \''.$_POST['brand_name'].'\'';
+        }
+        else
+        {
+            $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ecs']->table('brand');
+        }
+
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
 
         $filter = page_and_size($filter);
 
         /* 查询记录 */
-        $sql = "SELECT * FROM ".$GLOBALS['ecs']->table('brand')." ORDER BY sort_order ASC";
+        if (isset($_POST['brand_name']))
+        {
+            if(strtoupper(EC_CHARSET) == 'GBK')
+            {
+                $keyword = iconv("UTF-8", "gb2312", $_POST['brand_name']);
+            }
+            else
+            {
+                $keyword = $_POST['brand_name'];
+            }
+            $sql = "SELECT * FROM ".$GLOBALS['ecs']->table('brand')." WHERE brand_name like '%{$keyword}%' ORDER BY sort_order ASC";
+        }
+        else
+        {
+            $sql = "SELECT * FROM ".$GLOBALS['ecs']->table('brand')." ORDER BY sort_order ASC";
+        }
 
         set_filter($filter, $sql);
     }

@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: category.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sxc_shop $
+ * $Id: category.php 15885 2009-04-30 05:49:32Z sxc_shop $
 */
 
 /* 商品分類字段信息 */
@@ -82,5 +82,7 @@ $_LANG['js_languages']['catname_empty'] = '分類名稱不能為空!';
 $_LANG['js_languages']['unit_empyt'] = '數量單位不能為空!';
 $_LANG['js_languages']['is_leafcat'] = '您選定的分類是一個末級分類。\r\n新分類的上級分類不能是一個末級分類';
 $_LANG['js_languages']['not_leafcat'] = '您選定的分類不是一個末級分類。\r\n商品的分類轉移只能在末級分類之間才可以操作。';
+$_LANG['js_languages']['filter_attr_not_repeated'] = '篩選屬性不可重複';
+$_LANG['js_languages']['filter_attr_not_selected'] = '請選擇篩選屬性';
 
 ?>

@@ -12,9 +12,9 @@
  * @author:     ECSHOP R&D TEAM  http://www.ecshop.com
  * @version:    v2.x
  * ---------------------------------------------
- * $Author: testyang $
- * $Date: 2008-11-12 15:38:08 +0800 (星期三, 12 十一月 2008) $
- * $Id: v2.6.1.php 15171 2008-11-12 07:38:08Z testyang $
+ * $Author: liubo $
+ * $Date: 2009-07-07 17:29:46 +0800 (星期二, 2009-07-07) $
+ * $Id: v2.6.1.php 16436 2009-07-07 09:29:46Z liubo $
  */
 
 class up_v2_6_1
@@ -60,6 +60,15 @@ class up_v2_6_1
             if (empty($max_id))
             {
                 $max_id = 1;
+            }
+            for (;;)
+            {
+                $result = $db->getOne("SELECT code FROM " . $ecs->table('shop_config') . " WHERE id = '{$max_id}'");
+                if (empty($result))
+                {
+                    break;
+                }
+                $max_id++;
             }
             foreach ($value as $code => $sql)
             {

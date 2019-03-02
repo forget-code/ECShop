@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='transport.js,common.js,user.js'}
 </head>
@@ -51,7 +51,7 @@
            <!--{if $info.is_validate eq 0} -->
           {$lang.not_validated} <a href="javascript:sendHashMail()" style="color:#006bd0;">{$lang.resend_hash_mail}</a><br />
            <!--{/if} -->
-           <div style="margin:5px 0; border:1px solid #d5f1ff;padding:10px 20px; background-color:#f7fcff;">
+           <div style="margin:5px 0; border:1px solid #a1675a;padding:10px 20px; background-color:#e8d1c9;">
            <img src="images/note.gif" alt="note" />&nbsp;{$user_notice}
            </div>
            <br /><br />
@@ -264,13 +264,18 @@
       </select></td>
     </tr>
     <tr>
+      <td align="right" bgcolor="#ffffff">{$lang.label_rows_num}</td>
+      <td bgcolor="#ffffff"><input name="rows_num" type="text" id="rows_num" value="1" class="inputBg" /></td>
+    </tr>
+    <tr>
       <td align="right" bgcolor="#ffffff">{$lang.label_charset}</td>
       <td bgcolor="#ffffff"><select name="charset" id="charset">
         {html_options options=$lang_list}
       </select></td>
     </tr>
     <tr>
-      <td colspan="2" align="center" bgcolor="#ffffff"><input type="button" name="gen_code" value="{$lang.generate}" onclick="genCode()" class="submit" />        </td>
+      <td colspan="2" align="center" bgcolor="#ffffff"><input type="button" name="gen_code" value="{$lang.generate}" onclick="genCode()" class="bnt_blue_1" />
+			</td>
   </tr>
     <tr>
       <td colspan="2" align="center" bgcolor="#ffffff"><textarea name="code" cols="80" rows="5" id="code" class="B_blue"></textarea></td>
@@ -297,12 +302,23 @@
               alert('{$lang.goods_num_must_over_0}');
               return;
           }
+          if (isNaN(parseInt(elements['rows_num'].value)))
+          {
+              alert('{$lang.rows_num_must_be_int}');
+              return;
+          }
+          if (elements['rows_num'].value < 1)
+          {
+              alert('{$lang.rows_num_must_over_0}');
+              return;
+          }
 
           // 生成代码
           var code = '\<script src=\"' + url + 'goods_script.php?';
           code += 'need_image=' + elements['need_image'].value + '&';
           code += 'goods_num=' + elements['goods_num'].value + '&';
           code += 'arrange=' + elements['arrange'].value + '&';
+          code += 'rows_num=' + elements['rows_num'].value + '&';
           code += 'charset=' + elements['charset'].value + '&u=' + u;
           code += '\"\>\</script\>';
           elements['code'].value = code;
@@ -312,6 +328,10 @@
               window.clipboardData.setData("Text",code);
           }
       }
+	var compare_no_goods = "{$lang.compare_no_goods}";
+  var btn_buy = "{$lang.btn_buy}";
+  var is_cancel = "{$lang.is_cancel}";
+  var select_spe = "{$lang.select_spe}";
   </script>
   <!--{/if} -->
     <!--#收藏商品列表页面 end-->

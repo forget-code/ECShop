@@ -10,8 +10,8 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  *
- * $Author: testyang $
- * $Id: goods_export.php 15333 2008-11-25 05:54:26Z testyang $
+ * $Author: sxc_shop $
+ * $Id: goods_export.php 16412 2009-07-01 03:12:48Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -20,16 +20,20 @@ require(dirname(__FILE__) . '/includes/init.php');
 
 if ($_REQUEST['act'] == 'goods_export')
 {
-    $smarty->assign('ur_here',             $_LANG['export_taobao']);
+    /* 检查权限 */
+    admin_priv('goods_export');
+
+    $smarty->assign('ur_here',             $_LANG['14_goods_export']);
     $smarty->assign('cat_list', cat_list());
     $smarty->assign('brand_list',   get_brand_list());
     $smarty->assign('goods_type_list',  goods_type_list(0));
     $goods_fields = my_array_merge($_LANG['custom'], get_attributes());
     $data_format_array = array(
-                                'ecshop' => $_LANG['export_ecshop'],
-                                'taobao' => $_LANG['export_taobao'],
-                                'paipai' => $_LANG['export_paipai'],
-                                'custom' => $_LANG['export_custom'],
+                                'ecshop'    => $_LANG['export_ecshop'],
+                                'taobao'    => $_LANG['export_taobao'],
+                                'paipai'    => $_LANG['export_paipai'],
+                                'paipai4'   => $_LANG['export_paipai4'],
+                                'custom'    => $_LANG['export_custom'],
                                );
     $smarty->assign('data_format', $data_format_array);
     $smarty->assign('goods_fields', $goods_fields);
@@ -40,7 +44,7 @@ if ($_REQUEST['act'] == 'goods_export')
 elseif ($_REQUEST['act'] == 'act_export_taobao')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_export');
     include_once('includes/cls_phpzip.php');
     $zip = new PHPZip;
 
@@ -132,7 +136,8 @@ elseif ($_REQUEST['act'] == 'import_taobao')
 elseif($_REQUEST['act'] == 'act_export_ecshop')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_export');
+
     include_once('includes/cls_phpzip.php');
     $zip = new PHPZip;
 
@@ -173,14 +178,16 @@ elseif($_REQUEST['act'] == 'act_export_ecshop')
     {
         $goods_value['goods_name'] = '"' . $row['goods_name'] . '"';
         $goods_value['goods_sn'] = '"' . $row['goods_sn'] . '"';
-        $goods_value['brand_name'] = $row['brandname'];
+        $goods_value['brand_name'] = '"' . $row['brandname'] . '"';
         $goods_value['market_price'] = $row['market_price'];
         $goods_value['shop_price'] = $row['shop_price'];
         $goods_value['integral'] = $row['integral'];
-        $goods_value['original_img'] = $row['original_img'];
+        $goods_value['original_img'] = '"' . $row['original_img'] . '"';
+        $goods_value['goods_img'] = '"' . $row['goods_img'] . '"';
+        $goods_value['goods_thumb'] = '"' . $row['goods_thumb'] . '"';
         $goods_value['keywords'] = '"' . $row['keywords'] . '"';
-        $goods_value['goods_brief'] = replace_special_char($row['goods_brief'], false);
-        $goods_value['goods_desc'] = replace_special_char($row['goods_desc'], false);
+        $goods_value['goods_brief'] = '"' . replace_special_char($row['goods_brief'], false) . '"';
+        $goods_value['goods_desc'] = '"' . replace_special_char($row['goods_desc'], false) . '"';
         $goods_value['goods_weight'] = $row['goods_weight'];
         $goods_value['goods_number'] = $row['goods_number'];
         $goods_value['warn_number'] = $row['warn_number'];
@@ -192,11 +199,19 @@ elseif($_REQUEST['act'] == 'act_export_ecshop')
         $goods_value['is_real'] = $row['is_real'];
 
         $content .= implode(",", $goods_value) . "\n";
-//echo $content;exit;
+
         /* 压缩图片 */
         if (!empty($row['goods_img']) && is_file(ROOT_PATH . $row['goods_img']))
         {
             $zip->add_file(file_get_contents(ROOT_PATH . $row['goods_img']), $row['goods_img']);
+        }
+        if (!empty($row['original_img']) && is_file(ROOT_PATH . $row['original_img']))
+        {
+            $zip->add_file(file_get_contents(ROOT_PATH . $row['original_img']), $row['original_img']);
+        }
+        if (!empty($row['goods_thumb']) && is_file(ROOT_PATH . $row['goods_thumb']))
+        {
+            $zip->add_file(file_get_contents(ROOT_PATH . $row['goods_thumb']), $row['goods_thumb']);
         }
     }
     $charset = empty($_POST['charset']) ? 'UTF8' : trim($_POST['charset']);
@@ -211,7 +226,8 @@ elseif($_REQUEST['act'] == 'act_export_ecshop')
 elseif ($_REQUEST['act'] == 'act_export_paipai')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_export');
+
     include_once('includes/cls_phpzip.php');
     $zip = new PHPZip;
 
@@ -342,6 +358,134 @@ elseif ($_REQUEST['act'] == 'act_export_paipai')
     header("Content-Type: application/unknown");
     die($zip->file());
 }
+
+elseif ($_REQUEST['act'] == 'act_export_paipai4')
+{
+    /* 检查权限 */
+    admin_priv('goods_export');
+
+    include_once('includes/cls_phpzip.php');
+    $zip = new PHPZip;
+
+    $where = get_export_where_sql($_POST);
+
+    $post_express = floatval($_POST['post_express']);
+    $express = floatval($_POST['express']);
+    if ($post_express < 0)
+    {
+        $post_express = 10;
+    }
+    if ($express < 0)
+    {
+        $express = 20;
+    }
+
+    $shop_province = '""';
+    $shop_city = '""';
+    if ($_CFG['shop_province'] || $_CFG['shop_city'])
+    {
+        $sql = "SELECT region_id,  region_name FROM " . $ecs->table('region') . " WHERE region_id IN ('$_CFG[shop_province]',  '$_CFG[shop_city]')";
+        $arr = $db->getAll($sql);
+
+        if ($arr)
+        {
+            if (count($arr) == 1)
+            {
+                if ($arr[0]['region_id'] == $_CFG['shop_province'])
+                {
+                    $shop_province = '"' . $arr[0]['region_name'] . '"' ;
+                }
+                else
+                {
+                    $shop_city = '"' . $arr[0]['region_name'] . '"' ;
+                }
+            }
+            else
+            {
+                if ($arr[0]['region_id'] == $_CFG['shop_province'])
+                {
+                    $shop_province = '"' . $arr[0]['region_name'] . '"' ;
+                    $shop_city = '"' . $arr[1]['region_name'] . '"';
+                }
+                else
+                {
+                    $shop_province = '"' . $arr[1]['region_name'] . '"' ;
+                    $shop_city = '"' . $arr[0]['region_name'] . '"';
+                }
+            }
+        }
+    }
+
+    $sql = "SELECT g.goods_id, g.goods_name, g.shop_price, g.goods_number, g.goods_desc, g.goods_img ".
+    " FROM " . $ecs->table('goods') . " AS g ". $where;
+
+    $res = $db->query($sql);
+
+
+    $goods_value = array();
+    $goods_value['id'] = -1;
+    $goods_value['goods_name'] = '""';
+    $goods_value['auctionType'] = '"b"';
+    $goods_value['category'] = 0;
+    $goods_value['shopCategoryId'] = '""';
+    $goods_value['quantity'] = 0;
+    $goods_value['duration'] = 14;
+    $goods_value['startDate'] = '""';
+    $goods_value['stuffStatus'] = 5;
+    $goods_value['price'] = 0;
+    $goods_value['increment'] = 0;
+    $goods_value['prov'] = $shop_province;
+    $goods_value['city'] = $shop_city;
+    $goods_value['shippingOption'] = 1;
+    $goods_value['ordinaryPostFee'] = $post_express;
+    $goods_value['fastPostFee'] = $express;
+    $goods_value['buyLimit'] = 0;
+    $goods_value['paymentOption'] = 5;
+    $goods_value['haveInvoice'] = 0;
+    $goods_value['haveGuarantee'] = 0;
+    $goods_value['secureTradeAgree'] = 1;
+    $goods_value['autoRepost'] = 1;
+    $goods_value['failed_reason'] = '""';
+    $goods_value['pic_filename'] = '""';
+    $goods_value['description'] = '""';
+    $goods_value['shelfOption'] = 0;
+    $goods_value['skin'] = 0;
+    $goods_value['attr'] = '""';
+    $goods_value['chengBao'] = '""';
+    $goods_value['shopWindow'] = 0;
+
+    $content = '"' . implode('","', $_LANG['paipai4']) . "\"\n";
+
+    while ($row = $db->fetchRow($res))
+    {
+        $goods_value['goods_name'] = '"' . $row['goods_name'] . '"';
+        $goods_value['price'] = $row['shop_price'];
+        $goods_value['quantity'] = $row['goods_number'];
+        $goods_value['description'] = replace_special_char($row['goods_desc']);
+        $goods_value['pic_filename'] = '"' . $row['goods_img'] . '"';
+
+        $content .= implode(",", $goods_value) . "\n";
+
+        /* 压缩图片 */
+        if (!empty($row['goods_img']) && is_file(ROOT_PATH . $row['goods_img']))
+        {
+            $zip->add_file(file_get_contents(ROOT_PATH . $row['goods_img']), $row['goods_img']);
+        }
+    }
+
+    if (EC_CHARSET == 'utf-8')
+    {
+        $zip->add_file(ecs_iconv('UTF8', 'GB2312', $content), 'goods_list.csv');
+    }
+    else
+    {
+        $zip->add_file($content, 'goods_list.csv');
+    }
+
+    header("Content-Disposition: attachment; filename=goods_list.zip");
+    header("Content-Type: application/unknown");
+    die($zip->file());
+}
 /* 从拍拍网导入数据 */
 elseif ($_REQUEST['act'] == 'import_paipai')
 {
@@ -361,8 +505,9 @@ elseif ($_REQUEST['act'] == 'act_export_custom')
     {
         sys_msg($_LANG['custom_goods_field_not_null'], 1, array(), false);
     }
+
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('goods_export');
 
     include_once('includes/cls_phpzip.php');
     $zip = new PHPZip;
@@ -406,10 +551,10 @@ elseif ($_REQUEST['act'] == 'act_export_custom')
         isset($goods_value['market_price']) && ($goods_value['market_price'] = $row['market_price']);
         isset($goods_value['shop_price']) && ($goods_value['shop_price'] = $row['shop_price']);
         isset($goods_value['integral']) && ($goods_value['integral'] = $row['integral']);
-        isset($goods_value['original_img']) && ($goods_value['original_img'] = $row['original_img']);
+        isset($goods_value['original_img']) && ($goods_value['original_img'] = '"' . $row['original_img'] . '"');
         isset($goods_value['keywords']) && ($goods_value['keywords'] = '"' . $row['keywords'] . '"');
-        isset($goods_value['goods_brief']) && ($goods_value['goods_brief'] = replace_special_char($row['goods_brief']));
-        isset($goods_value['goods_desc']) && ($goods_value['goods_desc'] = replace_special_char($row['goods_desc']));
+        isset($goods_value['goods_brief']) && ($goods_value['goods_brief'] = '"' . replace_special_char($row['goods_brief']) . '"');
+        isset($goods_value['goods_desc']) && ($goods_value['goods_desc'] = '"' . replace_special_char($row['goods_desc']) . '"');
         isset($goods_value['goods_weight']) && ($goods_value['goods_weight'] = $row['goods_weight']);
         isset($goods_value['goods_number']) && ($goods_value['goods_number'] = $row['goods_number']);
         isset($goods_value['warn_number']) && ($goods_value['warn_number'] = $row['warn_number']);
@@ -438,8 +583,8 @@ elseif ($_REQUEST['act'] == 'act_export_custom')
             $zip->add_file(file_get_contents(ROOT_PATH . $row['goods_img']), $row['goods_img']);
         }
     }
-
-    $zip->add_file($content, 'goods_list.csv');
+    $charset = empty($_POST['charset_custom']) ? 'UTF8' : trim($_POST['charset_custom']);
+    $zip->add_file(ecs_iconv(EC_CHARSET, $charset, $content), 'goods_list.csv');
 
     header("Content-Disposition: attachment; filename=goods_list.zip");
     header("Content-Type: application/unknown");

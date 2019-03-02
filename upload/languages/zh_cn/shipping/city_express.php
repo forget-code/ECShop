@@ -9,11 +9,11 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: city_express.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: city_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
 */
 
 $_LANG['city_express']        = '城际快递';
 $_LANG['city_express_desc']   = '配送的运费是固定的';
-$_LANG['basic_fee']      = '基本费用：';
+$_LANG['base_fee']      = '基本费用：';
 ?>

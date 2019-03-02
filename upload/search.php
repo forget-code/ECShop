@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: search.php 15183 2008-11-17 09:01:24Z testyang $
+ * $Author: liubo $
+ * $Id: search.php 16269 2009-06-19 03:00:21Z liubo $
 */
 
 define('IN_ECS', true);
@@ -90,13 +90,11 @@ if ($_REQUEST['act'] == 'advanced_search')
     $smarty->assign('categories', get_categories_tree()); // 分类树
     $smarty->assign('helps',      get_shop_help());       // 网店帮助
     $smarty->assign('top_goods',  get_top10());           // 销售排行
-
+    $smarty->assign('promotion_info', get_promotion_info());
     $smarty->assign('cat_list',   cat_list(0, 0, true, 2, false));
     $smarty->assign('brand_list', get_brand_list());
     $smarty->assign('action',     'form');
     $smarty->assign('use_storage', $_CFG['use_storage']);
-
-    assign_dynamic('search_result');
 
     $smarty->display('search.dwt');
 
@@ -114,6 +112,7 @@ else
     $_REQUEST['max_price']  = !empty($_REQUEST['max_price'])  ? intval($_REQUEST['max_price'])  : 0;
     $_REQUEST['goods_type'] = !empty($_REQUEST['goods_type']) ? intval($_REQUEST['goods_type']) : 0;
     $_REQUEST['sc_ds']      = !empty($_REQUEST['sc_ds']) ? intval($_REQUEST['sc_ds']) : 0;
+    $_REQUEST['outstock']   = !empty($_REQUEST['outstock']) ? 1 : 0;
 
     $action = '';
     if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'form')
@@ -179,15 +178,15 @@ else
         }
         elseif (stristr($_REQUEST['keywords'], ' + ') !== false)
         {
-            /* 检查关键字中是否有加号，如果存在就是并 */
+            /* 检查关键字中是否有加号，如果存在就是或 */
             $arr        = explode('+', $_REQUEST['keywords']);
-            $operator   = " AND ";
+            $operator   = " OR ";
         }
         else
         {
-            /* 检查关键字中是否有空格，如果存在就是或 */
+            /* 检查关键字中是否有空格，如果存在就是并 */
             $arr        = explode(' ', $_REQUEST['keywords']);
-            $operator   = " OR ";
+            $operator   = " AND ";
         }
 
         $keywords = 'AND (';
@@ -198,7 +197,6 @@ else
             {
                 $keywords .= $operator;
             }
-
             $val        = mysql_like_quote(trim($val));
             $sc_dsad    = $_REQUEST['sc_ds'] ? " OR goods_desc LIKE '%$val%'" : '';
             $keywords  .= "(goods_name LIKE '%$val%' OR goods_sn LIKE '%$val%' OR keywords LIKE '%$val%' $sc_dsad)";
@@ -457,6 +455,7 @@ else
     $smarty->assign('brand',      $_REQUEST['brand']);
     $smarty->assign('min_price',  $min_price);
     $smarty->assign('max_price',  $max_price);
+    $smarty->assign('outstock',  $_REQUEST['outstock']);
 
     /* 分页 */
     $url_format = "search.php?category=$category&amp;keywords=" . urlencode(stripslashes($_REQUEST['keywords'])) . "&amp;brand=" . $_REQUEST['brand']."&amp;action=".$action."&amp;goods_type=" . $_REQUEST['goods_type'] . "&amp;sc_ds=" . $_REQUEST['sc_ds'];
@@ -483,7 +482,8 @@ else
         'action'     => $action,
         'intro'      => empty($_REQUEST['intro']) ? '' : trim($_REQUEST['intro']),
         'goods_type' => $_REQUEST['goods_type'],
-        'sc_ds'      => $_REQUEST['sc_ds']
+        'sc_ds'      => $_REQUEST['sc_ds'],
+        'outstock'   => $_REQUEST['outstock']
     );
     $pager['search'] = array_merge($pager['search'], $attr_arg);
 
@@ -502,8 +502,8 @@ else
     $smarty->assign('categories', get_categories_tree()); // 分类树
     $smarty->assign('helps',       get_shop_help());      // 网店帮助
     $smarty->assign('top_goods',  get_top10());           // 销售排行
+    $smarty->assign('promotion_info', get_promotion_info());
 
-    assign_dynamic('search_result');
     $smarty->display('search.dwt');
 }
 

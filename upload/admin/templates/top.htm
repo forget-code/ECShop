@@ -4,6 +4,7 @@
 <title>{$app_name}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
+
 {literal}
 <style type="text/css">
 #header-div {
@@ -14,6 +15,23 @@
 #logo-div {
   height: 50px;
   float: left;
+}
+
+#license-div {
+  height: 50px;
+  float: left;
+  text-align:center;
+  vertical-align:middle;
+  line-height:50px;
+}
+
+#license-div a:visited, #license-div a:link {
+  color: #EB8A3D;
+}
+
+#license-div a:hover {
+  text-decoration: none;
+  color: #EB8A3D;
 }
 
 #submenu-div {
@@ -85,8 +103,48 @@
 #menu-div li.fix-spacel{ width:30px; border-left:none; }
 #menu-div li.fix-spacer{ border-right:none; }
 </style>
-
+{insert_scripts files="../js/transport.js"}
 <script type="text/javascript">
+onload = function()
+{
+  Ajax.call('index.php?is_ajax=1&act=license','', start_sendmail_Response, 'GET', 'JSON');
+}
+/**
+ * 帮助系统调用
+ */
+function web_address()
+{
+  var ne_add = parent.document.getElementById('main-frame');
+  var ne_list = ne_add.contentWindow.document.getElementById('search_id').innerHTML;
+  ne_list.replace('-', '');
+  var arr = ne_list.split('-');
+  window.open('help.php?al='+arr[arr.length - 1],'_blank');
+}
+
+
+/**
+ * 授权检测回调处理
+ */
+function start_sendmail_Response(result)
+{
+  // 运行正常
+  if (result.error == 0)
+  {
+    var str = '';
+		if (result['content']['auth_str'])
+		{
+			str = '<a href="javascript:void(0);" target="_blank">' + result['content']['auth_str'];
+			if (result['content']['auth_type'])
+			{
+				str += '[' + result['content']['auth_type'] + ']';
+			}
+			str += '</a> ';
+		}
+
+    document.getElementById('license-div').innerHTML = str;
+  }
+}
+
 function modalDialog(url, name, width, height)
 {
   if (width == undefined)
@@ -129,10 +187,12 @@ var adminId = "{$admin_id}";
 </head>
 <body>
 <div id="header-div">
-  <div id="logo-div"><img src="images/ecshop_logo.gif" alt="ECSHOP - power for e-commerce" /></div>
+  <div id="logo-div" style="bgcolor:#000000;"><img src="images/ecshop_logo.gif" alt="ECSHOP - power for e-commerce" /></div>
+  <div id="license-div" style="bgcolor:#000000;"></div>
   <div id="submenu-div">
     <ul>
       <li><a href="index.php?act=about_us" target="main-frame">{$lang.about}</a></li>
+      <li><a href="javascript:web_address();">{$lang.help}</a></li>
       <li><a href="javascript:modalDialog('index.php?act=calculator', 'calculator', 340, 250)">{$lang.toggle_calculator}</a></li>
       <li><a href="../" target="_blank">{$lang.preview}</a></li>
       <li><a href="message.php?act=list" target="main-frame">{$lang.view_message}</a></li>
@@ -150,7 +210,6 @@ var adminId = "{$admin_id}";
       <a href="privilege.php?act=logout" target="_top" class="fix-submenu">{$lang.signout}</a>
     </div>
     {if $send_mail_on eq 'on'}
-    {insert_scripts files="../js/transport.js"}
     <script type="text/javascript" charset="gb2312">
     var sm = window.setInterval("start_sendmail()", 5000);
     var finished = 0;

@@ -8,8 +8,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: shop_config.php 15152 2008-11-03 11:06:34Z testyang $
+ * $Author: sxc_shop $
+ * $Id: shop_config.php 16268 2009-06-19 02:28:46Z sxc_shop $
  */
 
 $_LANG['cfg_name']['basic'] = '基本设置';
@@ -75,6 +75,7 @@ $_LANG['cfg_name']['auto_generate_gallery'] = '上传商品是否自动生成相
 $_LANG['cfg_name']['retain_original_img'] = '上传商品时是否保留原图';
 $_LANG['cfg_name']['member_email_validate'] = '是否开启会员邮件验证';
 $_LANG['cfg_name']['message_board'] = '是否启用留言板功能';
+$_LANG['cfg_name']['message_check'] = '用户留言是否需要审核';
 //$_LANG['cfg_name']['use_package'] = '是否使用包装';
 //$_LANG['cfg_name']['use_card'] = '是否使用贺卡';
 $_LANG['cfg_name']['use_integral'] = '是否使用积分';
@@ -185,7 +186,7 @@ $_LANG['cfg_desc']['attr_related_number'] = '在商品详情页面显示多少�
 $_LANG['cfg_desc']['user_notice'] = '该信息将在用户中心欢迎页面显示';
 $_LANG['cfg_desc']['comment_factor'] = '选取较高的评论条件可以有效的减少垃圾评论的产生。只有用户订单完成后才认为该用户有购买行为';
 $_LANG['cfg_desc']['min_goods_amount'] = '达到此购物金额，才能提交订单。';
-$_LANG['cfg_desc']['search_keywords'] = '首页显示的搜索关键字,请用空格分隔多个关键字';
+$_LANG['cfg_desc']['search_keywords'] = '首页显示的搜索关键字,请用半角逗号(,)分隔多个关键字';
 $_LANG['cfg_desc']['shop_notice'] = '以上内容将显示在首页商店公告中,注意控制公告内容长度不要超过公告显示区域大小。';
 $_LANG['cfg_desc']['bgcolor'] = '颜色请以#FFFFFF格式填写';
 $_LANG['cfg_desc']['cart_confirm'] = '允许您设置用户点击“加入购物车”后是否提示以及随后的动作。';
@@ -268,6 +269,8 @@ $_LANG['cfg_range']['mail_charset']['GB2312'] = '简体中文';
 $_LANG['cfg_range']['mail_charset']['BIG5'] = '繁体中文';
 $_LANG['cfg_range']['comment_check']['0'] = '不需要审核';
 $_LANG['cfg_range']['comment_check']['1'] = '需要审核';
+$_LANG['cfg_range']['message_check']['0'] = '不需要审核';
+$_LANG['cfg_range']['message_check']['1'] = '需要审核';
 $_LANG['cfg_range']['comment_factor']['0'] = '所有用户';
 $_LANG['cfg_range']['comment_factor']['1'] = '仅登录用户';
 $_LANG['cfg_range']['comment_factor']['2'] = '有过一次以上购买行为用户';
@@ -384,6 +387,7 @@ $_LANG['gzip_confirm'] = "GZip 功能需要您的服务器支持 zlib 扩展库�
 $_LANG['retain_original_confirm'] = "如果您不保留商品原图，在“图片批量处理”的时候，\\n将不会重新生成不包含原图的商品图片。请慎重使用该功能！";
 $_LANG['msg_invalid_file'] = '您上传了一个非法的文件类型。该文件名为：%s';
 $_LANG['msg_upload_failed'] = '上传文件 %s 失败，请检查 %s 目录是否可写。';
+$_LANG['smtp_ssl_confirm'] = '此功能要求您的php必须支持OpenSSL模块, 如果您要使用此功能，请联系您的空间商确认支持此模块';
 
 /* 邮件设置语言项 */
 $_LANG['cfg_name']['mail_service'] = '邮件服务';
@@ -397,6 +401,9 @@ $_LANG['cfg_name']['smtp_user'] = '邮件发送帐号';
 $_LANG['cfg_name']['smtp_pass'] = '帐号密码';
 $_LANG['cfg_name']['smtp_mail'] = '邮件回复地址';
 $_LANG['cfg_name']['mail_charset'] = '邮件编码';
+$_LANG['cfg_name']['smtp_ssl'] = '邮件服务器是否要求加密连接(SSL)';
+$_LANG['cfg_range']['smtp_ssl'][0] = '否';
+$_LANG['cfg_range']['smtp_ssl'][1] = '是';
 
 $_LANG['mail_settings_note'] = '如果您的服务器支持 Mail 函数（具体信息请咨询您的空间提供商）。我们建议您使用系统的 Mail 函数。<br />当您的服务器不支持 Mail 函数的时候您也可以选用 SMTP 作为邮件服务器。';
 
@@ -420,11 +427,13 @@ $_LANG['cfg_desc']['wap_logo']      = '为了更好地兼容各种手机类型�
 
 $_LANG['cfg_desc']['wap_config'] = '此功能只支持简体中文且只在中国大陆区有效';
 $_LANG['cfg_name']['recommend_order'] = '推荐商品排序';
-$_LANG['cfg_range']['recommend_order'][0] = '按商品ID排序';
+$_LANG['cfg_desc']['recommend_order'] = '推荐排序适合少量推荐，随机显示大量推荐';
+$_LANG['cfg_range']['recommend_order'][0] = '推荐排序';
 $_LANG['cfg_range']['recommend_order'][1] = '随机显示';
 
 $_LANG['invoice_type'] = '类型';
 $_LANG['invoice_rate'] = '税率（％）';
 $_LANG['back_shop_config'] = '返回商店设置';
-
+$_LANG['back_mail_settings'] = '返回邮件服务器设置';
+$_LANG['mail_settings'] = '邮件服务器设置';
 ?>

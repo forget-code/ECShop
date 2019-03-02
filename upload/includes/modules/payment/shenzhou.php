@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: shenzhou.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: shenzhou.php 15797 2009-04-15 10:46:09Z sxc_shop $
  */
 
 if (!defined('IN_ECS'))
@@ -101,7 +101,7 @@ class shenzhou
         $payer_name         = '';
         $payer_contact_type = '';
         $payer_contact      = '';
-        $order_id           = $order['log_id'];                                //商户订单号 不可空
+        $order_id           = $order['order_sn'];                                //商户订单号 不可空
         $order_amount       = $order['order_amount'] * 100;                    //商户订单金额 不可空
         $pay_type           = '00';                                            //支付方式 不可空
         $card_number        = '';
@@ -112,7 +112,7 @@ class shenzhou
         $product_num        = '';
         $product_id         = '';
         $product_desc       = '';
-        $ext1               = 'shenzhou';
+        $ext1               = $order['log_id'];
         $ext2               = 'ecshop';
 
         /* 生成加密签名串 请务必按照如下顺序和规则组成加密串！*/
@@ -234,7 +234,7 @@ class shenzhou
         {
             if ($pay_result == 10)  //有成功支付的结果返回10
             {
-                order_paid($order_id);
+                order_paid($ext1);
 
                 return true;
             }
@@ -244,7 +244,7 @@ class shenzhou
                 $get_order_amount = $GLOBALS['db']->getOne($sql);
                 if ($get_order_amount == $pay_amount && $get_order_amount == $order_amount) //检查订单金额、实际支付金额和订单是否相等
                 {
-                    order_paid($order_id);
+                    order_paid($ext1);
 
                     return true;
                 }

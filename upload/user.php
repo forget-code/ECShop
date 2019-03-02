@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: user.php 15233 2008-11-19 03:26:41Z testyang $
+ * $Author: sxc_shop $
+ * $Id: user.php 16268 2009-06-19 02:28:46Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -28,7 +28,7 @@ $smarty->assign('affiliate', $affiliate);
 
 // 不需要登录的操作或自己验证是否登录（如ajax处理）的act
 $not_login_arr =
-array('login','act_login','register','act_register','act_edit_password','get_password','send_pwd_email','password', 'signin', 'add_tag', 'collect', 'return_to_cart', 'logout', 'email_list', 'validate_email', 'send_hash_mail', 'order_query', 'is_registered', 'check_email');
+array('login','act_login','register','act_register','act_edit_password','get_password','send_pwd_email','password', 'signin', 'add_tag', 'collect', 'return_to_cart', 'logout', 'email_list', 'validate_email', 'send_hash_mail', 'order_query', 'is_registered', 'check_email','clear_history');
 
 /* 显示页面的action列表 */
 $ui_arr = array('register', 'login', 'profile', 'order_list', 'order_detail', 'address_list', 'collection_list',
@@ -106,6 +106,16 @@ if ($action == 'default')
 /* 显示会员注册界面 */
 if ($action == 'register')
 {
+    if (!isset($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
+    {
+        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'user.php') ? './index.php' : $GLOBALS['_SERVER']['HTTP_REFERER'];
+    }
+
+    /* 取出注册扩展字段 */
+    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';
+    $extend_info_list = $db->getAll($sql);
+    $smarty->assign('extend_info_list', $extend_info_list);
+
     /* 验证码相关设置 */
     if ((intval($_CFG['captcha']) & CAPTCHA_REGISTER) && gd_version() > 0)
     {
@@ -114,6 +124,7 @@ if ($action == 'register')
     }
     /* 增加是否关闭注册 */
     $smarty->assign('shop_reg_closed', $_CFG['shop_reg_closed']);
+//    $smarty->assign('back_act', $back_act);
     $smarty->display('user_passport.dwt');
 }
 
@@ -135,6 +146,7 @@ elseif ($action == 'act_register')
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
         $email    = isset($_POST['email']) ? trim($_POST['email']) : '';
         $other = isset($_POST['other']) ? $_POST['other'] : array();
+        $back_act = isset($_POST['back_act']) ? trim($_POST['back_act']) : '';
 
         if(empty($_POST['agreement']))
         {
@@ -170,7 +182,30 @@ elseif ($action == 'act_register')
 
         if (register($username, $password, $email, $other) !== false)
         {
-            show_message(sprintf($_LANG['register_success'], $username . "$user->ucdata"), $_LANG['profile_lnk'], 'user.php', 'info', true);
+            /*把新注册用户的扩展信息插入数据库*/
+            $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';   //读出所有扩展字段的id
+            $fields_arr = $db->getAll($sql);
+
+            $extend_field_str = '';    //生成扩展字段的内容字符串
+            foreach ($fields_arr AS $val)
+            {
+                $extend_field_index = 'extend_field' . $val['id'];
+                if(!empty($_POST[$extend_field_index]))
+                {
+                    $temp_field_content = strlen($_POST[$extend_field_index]) > 100 ? mb_substr($_POST[$extend_field_index], 0, 99) : $_POST[$extend_field_index];
+                    $extend_field_str .= " ('" . $_SESSION['user_id'] . "', '" . $val['id'] . "', '" . $temp_field_content . "'),";
+                }
+            }
+            $extend_field_str = substr($extend_field_str, 0, -1);
+
+            if ($extend_field_str)      //插入注册扩展数据
+            {
+                $sql = 'INSERT INTO '. $ecs->table('reg_extend_info') . ' (`user_id`, `reg_field_id`, `content`) VALUES' . $extend_field_str;
+                $db->query($sql);
+            }
+
+            $ucdata = empty($user->ucdata)? "" : $user->ucdata;
+            show_message(sprintf($_LANG['register_success'], $username . $ucdata), array($_LANG['back_up_page'], $_LANG['profile_lnk']), array($back_act, 'user.php'), 'info');
         }
         else
         {
@@ -233,9 +268,13 @@ elseif($action == 'check_email')
 /* 用户登录界面 */
 elseif ($action == 'login')
 {
-    if (!isset($back_act))
+    if (empty($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
     {
-        $back_act = '';
+        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'user.php') ? './index.php' : $GLOBALS['_SERVER']['HTTP_REFERER'];
+    }
+    else
+    {
+        $back_act = 'user.php';
     }
 
     $captcha = intval($_CFG['captcha']);
@@ -256,21 +295,13 @@ elseif ($action == 'act_login')
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
     $back_act = isset($_POST['back_act']) ? trim($_POST['back_act']) : '';
 
-    if (empty($back_act))
-    {
-        $url = 'user.php';
-    }
-    else
-    {
-        $url = $back_act;
-    }
 
     $captcha = intval($_CFG['captcha']);
     if (($captcha & CAPTCHA_LOGIN) && (!($captcha & CAPTCHA_LOGIN_FAIL) || (($captcha & CAPTCHA_LOGIN_FAIL) && $_SESSION['login_fail'] > 2)) && gd_version() > 0)
     {
         if (empty($_POST['captcha']))
         {
-            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], $url, 'error');
+            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], 'user.php', 'error');
         }
 
         /* 检查验证码 */
@@ -280,7 +311,7 @@ elseif ($action == 'act_login')
         $validator->session_word = 'captcha_login';
         if (!$validator->check_word($_POST['captcha']))
         {
-            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], $url, 'error');
+            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], 'user.php', 'error');
         }
     }
 
@@ -288,23 +319,14 @@ elseif ($action == 'act_login')
     {
         update_user_info();
         recalculate_price();
-        if ($url == 'user.php')
-        {
-            //默认登录提示
-            $ucdata = isset($user->ucdata)?$user->ucdata:'';
-            show_message($_LANG['login_success'] . $ucdata , $_LANG['profile_lnk'], 'user.php');
-        }
-        else
-        {
-            //有链接直接跳转
-            ecs_header('Location: ' .$url. "\n");
-            exit;
-        }
+
+        $ucdata = isset($user->ucdata)? $user->ucdata : '';
+        show_message($_LANG['login_success'] . $ucdata , array($_LANG['back_up_page'], $_LANG['profile_lnk']), array($back_act,'user.php'), 'info');
     }
     else
     {
         $_SESSION['login_fail'] ++ ;
-        show_message($_LANG['login_failure'], $_LANG['relogin_lnk'], $url, 'error');
+        show_message($_LANG['login_failure'], $_LANG['relogin_lnk'], 'user.php', 'error');
     }
 }
 
@@ -348,7 +370,7 @@ elseif ($action == 'signin')
         update_user_info();  //更新用户信息
         recalculate_price(); // 重新计算购物车中的商品价格
         $smarty->assign('user_info', get_user_info());
-        $ucdata = empty($user->ucdata)?"":$user->ucdata;
+        $ucdata = empty($user->ucdata)? "" : $user->ucdata;
         $result['ucdata'] = $ucdata;
         $result['content'] = $smarty->fetch('library/member_info.lbi');
     }
@@ -369,14 +391,42 @@ elseif ($action == 'signin')
 /* 退出会员中心 */
 elseif ($action == 'logout')
 {
+    if (!isset($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
+    {
+        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'user.php') ? './index.php' : $GLOBALS['_SERVER']['HTTP_REFERER'];
+    }
+
     $user->logout();
-    show_message($_LANG['logout'] . "$user->ucdata", $_LANG['back_home_lnk'], 'index.php', 'info', true);
+    $ucdata = empty($user->ucdata)? "" : $user->ucdata;
+    show_message($_LANG['logout'] . $ucdata, array($_LANG['back_up_page'], $_LANG['back_home_lnk']), array($back_act, 'index.php'), 'info');
 }
 
 /* 个人资料页面 */
 elseif ($action == 'profile')
 {
     include_once(ROOT_PATH . 'includes/lib_transaction.php');
+
+    /* 取出注册扩展字段 */
+    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';
+    $extend_info_list = $db->getAll($sql);
+
+    $sql = 'SELECT reg_field_id, content ' .
+           'FROM ' . $ecs->table('reg_extend_info') .
+           " WHERE user_id = $user_id";
+    $extend_info_arr = $db->getAll($sql);
+
+    $temp_arr = array();
+    foreach ($extend_info_arr AS $val)
+    {
+        $temp_arr[$val['reg_field_id']] = $val['content'];
+    }
+
+    foreach ($extend_info_list AS $key => $val)
+    {
+        $extend_info_list[$key]['content'] = empty($temp_arr[$val['id']]) ? '' : $temp_arr[$val['id']] ;
+    }
+
+    $smarty->assign('extend_info_list', $extend_info_list);
 
     $smarty->assign('profile', get_profile($user_id));
     $smarty->display('user_transaction.dwt');
@@ -395,6 +445,30 @@ elseif ($action == 'act_edit_profile')
     $mobile_phone = trim($_POST['other']['mobile_phone']);
     $office_phone = $_POST['other']['office_phone'];
     $home_phone = $_POST['other']['home_phone'];
+
+    /* 更新用户扩展字段的数据 */
+    $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' ORDER BY id';   //读出所有扩展字段的id
+    $fields_arr = $db->getAll($sql);
+
+    foreach ($fields_arr AS $val)       //循环更新扩展用户信息
+    {
+        $extend_field_index = 'extend_field' . $val['id'];
+        if(isset($_POST[$extend_field_index]))
+        {
+            $temp_field_content = strlen($_POST[$extend_field_index]) > 100 ? mb_substr($_POST[$extend_field_index], 0, 99) : $_POST[$extend_field_index];
+
+            $sql = 'SELECT * FROM ' . $ecs->table('reg_extend_info') . "  WHERE reg_field_id = '$val[id]' AND user_id = '$user_id'";
+            if ($db->getOne($sql))      //如果之前没有记录，则插入
+            {
+                $sql = 'UPDATE ' . $ecs->table('reg_extend_info') . " SET content = '$temp_field_content' WHERE reg_field_id = '$val[id]' AND user_id = '$user_id'";
+            }
+            else
+            {
+                $sql = 'INSERT INTO '. $ecs->table('reg_extend_info') . " (`user_id`, `reg_field_id`, `content`) VALUES ('$user_id', '$val[id]', '$temp_field_content')";
+            }
+            $db->query($sql);
+        }
+    }
 
     if (!empty($office_phone) && !preg_match( '/^[\d|\_|\-|\s]+$/', $office_phone ) )
     {
@@ -615,7 +689,7 @@ elseif ($action == 'order_detail')
     }
 
     /* 是否显示添加到购物车 */
-    if ($order['extension_code'] != 'group_buy')
+    if ($order['extension_code'] != 'group_buy' && $order['extension_code'] != 'exchange_goods')
     {
         $smarty->assign('allow_to_cart', 1);
     }
@@ -629,14 +703,17 @@ elseif ($action == 'order_detail')
         $goods_list[$key]['subtotal']     = price_format($value['subtotal'], false);
     }
 
-    /* 设置能否修改使用余额数 */
+     /* 设置能否修改使用余额数 */
     if ($order['order_amount'] > 0)
     {
-        $user = user_info($order['user_id']);
-        if ($user['user_money'] + $user['credit_line'] > 0)
+        if ($order['order_status'] == OS_UNCONFIRMED || $order['order_status'] == OS_CONFIRMED)
         {
-            $smarty->assign('allow_edit_surplus', 1);
-            $smarty->assign('max_surplus', sprintf($_LANG['max_surplus'], $user['user_money']));
+            $user = user_info($order['user_id']);
+            if ($user['user_money'] + $user['credit_line'] > 0)
+            {
+                $smarty->assign('allow_edit_surplus', 1);
+                $smarty->assign('max_surplus', sprintf($_LANG['max_surplus'], $user['user_money']));
+            }
         }
     }
 
@@ -2010,14 +2087,14 @@ elseif ($action =='email_list')
 
     if($job == 'add' || $job == 'del')
     {
-        if(isset($_SESSION['last_order_query']))
+        if(isset($_SESSION['last_email_query']))
         {
-            if(time() - $_SESSION['last_order_query'] <= 30)
+            if(time() - $_SESSION['last_email_query'] <= 30)
             {
                 die($_LANG['order_query_toofast']);
             }
         }
-        $_SESSION['last_order_query'] = time();
+        $_SESSION['last_email_query'] = time();
     }
 
     $email = trim($_GET['email']);
@@ -2495,5 +2572,9 @@ elseif ($action == 'act_transform_ucenter_points')
         show_message($_LANG['exchange_error_1'], $_LANG['transform_points'], 'user.php?act=transform_points');
     }
 }
-
+/* 清除商品浏览历史 */
+elseif ($action == 'clear_history')
+{
+    setcookie('ECS[history]',   '', 1);
+}
 ?>

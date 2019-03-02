@@ -9,14 +9,16 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: ems.php 15128 2008-10-29 08:21:00Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: ems.php 15459 2008-12-17 04:16:19Z sunxiaodong $
 */
 
 $_LANG['ems']                   = 'EMS 国内邮政特快专递';
 $_LANG['ems_express_desc']      = 'EMS 国内邮政特快专递描述内容';
+//$_LANG['fee_compute_mode'] = '费用计算方式';
+$_LANG['item_fee']              = '单件商品费用：';
 $_LANG['base_fee']              = '500克以内费用：';
-$_LANG['step_fee']              = '续重每500克或其零数：';
+$_LANG['step_fee']              = '续重每500克或其零数的费用：';
 $_LANG['shipping_print'] = '<table style="width:18.8cm" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td style="height:3.2cm;">&nbsp;</td>

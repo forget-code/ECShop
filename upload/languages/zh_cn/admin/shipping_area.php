@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: shipping_area.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: shipping_area.php 15458 2008-12-16 11:04:53Z sunxiaodong $
 */
 
 $_LANG['shipping_area_name'] = '配送区域名称';
@@ -19,7 +19,9 @@ $_LANG['shipping_area_regions'] = '所辖地区';
 $_LANG['shipping_area_assign'] = '配送方式';
 $_LANG['area_region'] = '地区';
 $_LANG['area_shipping'] = '配送方式';
-
+$_LANG['fee_compute_mode'] = '费用计算方式';
+$_LANG['fee_by_weight'] = '按重量计算';
+$_LANG['fee_by_number'] = '按商品件数计算';
 $_LANG['new_area'] = '新建配送区域';
 $_LANG['label_country'] = '国家：';
 $_LANG['label_province'] = '省份：';
@@ -48,6 +50,7 @@ $_LANG['disable_shipping_success'] = '指定的配送方式已经从该配送区
 
 /* 需要用到的JS语言项 */
 $_LANG['js_languages']['no_area_name'] = '配送区域名称不能为空。';
+$_LANG['js_languages']['del_shipping_area'] = '请先删除该配送区域，然后重新添加。';
 $_LANG['js_languages']['invalid_free_mondy'] = '免费额度不能为空且必须是一个整数。';
 $_LANG['js_languages']['lang_remove'] = '移除';
 $_LANG['js_languages']['lang_remove_confirm'] = '您确定要移除该地区吗？';

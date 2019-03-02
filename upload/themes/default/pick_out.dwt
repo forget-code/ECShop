@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 
 {* 包含脚本文件 *}
 {insert_scripts files='common.js,lefttime.js'}
@@ -95,13 +95,13 @@
      <!--{foreach from=$pickout_goods item=goods name=goods}-->
      <div class="goodsItem">
            <a href="{$goods.url}"><img src="{$goods.thumb}" alt="{$goods.name|escape:html}" class="goodsimg" /></a><br />
-           <a href="javascript:addToCart({$goods.id})"><img src="images/bnt_buy.gif" /></a> <a href="javascript:collect({$goods.id})"><img src="images/bnt_coll.gif" /></a>
-           <p><a href="{$goods.url}" title="{$goods.name|escape:html}">{$goods.short_style_name}</a></p>
+           <p><a href="{$goods.url}" title="{$goods.name|escape:html}">{$goods.short_name}</a></p>
+					 <a href="javascript:addToCart({$goods.id})"><img src="images/bnt_buy.gif" /></a> <a href="javascript:collect({$goods.id})"><img src="images/bnt_coll.gif" /></a>
            <font class="f1">
            <!-- {if $goods.promote_price neq ""} -->
-          {$goods.promote_price}
+          {$lang.promote_price}{$goods.promote_price}
           <!-- {else}-->
-          {$goods.shop_price}
+          {$lang.shop_price}{$goods.shop_price}
           <!--{/if}-->
            </font>
         </div>
@@ -153,6 +153,10 @@ var gmt_end_time = "{$group_buy.gmt_end_date|default:0}";
 {foreach from=$lang.goods_js item=item key=key}
 var {$key} = "{$item}";
 {/foreach}
+
+var btn_buy = "{$lang.btn_buy}";
+var is_cancel = "{$lang.is_cancel}";
+var select_spe = "{$lang.select_spe}";
 <!-- {literal} -->
 
 onload = function()

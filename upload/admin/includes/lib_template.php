@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: lib_template.php 15181 2008-11-17 06:22:35Z testyang $
+ * $Author: liubo $
+ * $Id: lib_template.php 16252 2009-06-17 07:42:36Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -46,6 +46,7 @@ $template_files = array(
     'auction_list.dwt',
     'auction.dwt',
     'message_board.dwt',
+    'exchange_list.dwt',
 );
 
 /* 每个模板允许设置的库项目 */
@@ -73,7 +74,7 @@ $page_libs = array(
         '/library/recommend_promotion.lbi' => 3,
         '/library/promotion_info.lbi' => 0,
         '/library/cart.lbi' => 0,
-        '/library/vote.lbi' => 0,
+        '/library/vote_list.lbi' => 0,
         '/library/article_category_tree.lbi' => 0,
     ),
     'brand' => array(
@@ -89,7 +90,7 @@ $page_libs = array(
         '/library/recommend_promotion.lbi' => 3,
         '/library/promotion_info.lbi' => 0,
         '/library/cart.lbi' => 0,
-        '/library/vote.lbi' => 0,
+        '/library/vote_list.lbi' => 0,
     ),
     'category' => array(
         '/library/ur_here.lbi' => 0,
@@ -103,12 +104,10 @@ $page_libs = array(
         '/library/goods_list.lbi' => 0,
         '/library/pages.lbi' => 0,
         '/library/recommend_promotion.lbi' => 3,
-        '/library/brands.lbi' => 0,
+        '/library/brands.lbi' => 3,
         '/library/promotion_info.lbi' => 0,
         '/library/cart.lbi' => 0,
-        '/library/vote.lbi' => 0,
-        '/library/price_grade.lbi' => 0,
-        '/library/filter_attr.lbi' => 0,
+        '/library/vote_list.lbi' => 0
     ),
     'compare' => array(
         '/library/ur_here.lbi' => 0,
@@ -132,7 +131,7 @@ $page_libs = array(
         '/library/recommend_promotion.lbi' => 4,
         '/library/group_buy.lbi' => 3,
         '/library/auction.lbi' => 3,
-        '/library/brands.lbi' => 0,
+        '/library/brands.lbi' => 3,
         '/library/promotion_info.lbi' => 0,
         '/library/cart.lbi' => 0,
         '/library/order_query.lbi' => 0,
@@ -251,6 +250,15 @@ $page_libs = array(
         '/library/history.lbi' => 0,
         '/library/message_list.lbi' => 10,
     ),
+    'exchange_list' => array(
+        '/library/ur_here.lbi' => 0,
+        '/library/cart.lbi' => 0,
+        '/library/category_tree.lbi' => 0,
+        '/library/history.lbi' => 0,
+        '/library/pages.lbi' => 0,
+        '/library/exchange_hot.lbi' => 5,
+        '/library/exchange_list.lbi' => 0,
+    ),
 );
 
 /* 动态库项目 */
@@ -277,29 +285,56 @@ $dyna_libs = array(
  *
  * @access  private
  * @param   string      $template_name      模版名
+ * @param   string      $template_style     模版风格名
  * @return  array
  */
-function get_template_info($template_name)
+function get_template_info($template_name, $template_style='')
 {
+    if (empty($template_style) || $template_style == '')
+    {
+        $template_style = '';
+    }
+
     $info = array();
     $ext  = array('png', 'gif', 'jpg', 'jpeg');
 
     $info['code']       = $template_name;
     $info['screenshot'] = '';
+    $info['stylename'] = $template_style;
 
-    foreach ($ext AS $val)
+    if ($template_style == '')
     {
-        if (file_exists('../themes/' . $template_name . "/screenshot.$val"))
+        foreach ($ext AS $val)
         {
-            $info['screenshot'] = '../themes/' . $template_name . "/screenshot.$val";
+            if (file_exists('../themes/' . $template_name . "/images/screenshot.$val"))
+            {
+                $info['screenshot'] = '../themes/' . $template_name . "/images/screenshot.$val";
 
-            break;
+                break;
+            }
+        }
+    }
+    else
+    {
+        foreach ($ext AS $val)
+        {
+            if (file_exists('../themes/' . $template_name . "/images/screenshot_$template_style.$val"))
+            {
+                $info['screenshot'] = '../themes/' . $template_name . "/images/screenshot_$template_style.$val";
+
+                break;
+            }
         }
     }
 
-    if (file_exists('../themes/' . $template_name . '/style.css') && !empty($template_name))
+    $css_path = '../themes/' . $template_name . '/style.css';
+    if ($template_style != '')
     {
-        $arr = array_slice(file('../themes/'. $template_name. '/style.css'), 0, 9);
+        $css_path = '../themes/' . $template_name . "/style_$template_style.css";
+    }
+    if (file_exists($css_path) && !empty($template_name))
+    {
+        $arr = array_slice(file($css_path), 0, 10);
 
         $template_name      = explode(': ', $arr[1]);
         $template_uri       = explode(': ', $arr[2]);
@@ -308,6 +343,8 @@ function get_template_info($template_name)
         $template_author    = explode(': ', $arr[5]);
         $author_uri         = explode(': ', $arr[6]);
         $logo_filename      = explode(': ', $arr[7]);
+        $template_type      = explode(': ', $arr[8]);
+
 
         $info['name']       = isset($template_name[1]) ? trim($template_name[1]) : '';
         $info['uri']        = isset($template_uri[1]) ? trim($template_uri[1]) : '';
@@ -316,6 +353,8 @@ function get_template_info($template_name)
         $info['author']     = isset($template_author[1]) ? trim($template_author[1]) : '';
         $info['author_uri'] = isset($author_uri[1]) ? trim($author_uri[1]) : '';
         $info['logo']       = isset($logo_filename[1]) ? trim($logo_filename[1]) : '';
+        $info['type']       = isset($template_type[1]) ? trim($template_type[1]) : '';
+
     }
     else
     {
@@ -461,4 +500,48 @@ function get_setted($lib, &$arr)
     return $options;
 }
 
+/**
+ * 从相应模板xml文件中获得指定模板文件中的可编辑区信息
+ *
+ * @access  public
+ * @param   string  $curr_template    当前模板文件名
+ * @param   array   $curr_page_libs   缺少xml文件时的默认编辑区信息数组
+ * @return  array   $edit_libs        返回可编辑的库文件数组
+ */
+function get_editable_libs($curr_template, $curr_page_libs)
+{
+    global $_CFG;
+    $vals = array();
+    $edit_libs = array();
+
+    if ($xml_content = @file_get_contents(ROOT_PATH . 'themes/' . $_CFG['template'] . '/libs.xml'))
+    {
+        $p = xml_parser_create();                                                   //把xml解析到数组
+        xml_parse_into_struct($p,$xml_content,$vals,$index);
+        xml_parser_free($p);
+
+        $i = 0;
+        for (; $i < sizeof($vals); $i++)                                      //找到相应模板文件的位置
+        {
+            if ($vals[$i]['tag'] == 'FILE' && isset($vals[$i]['attributes']))
+            {
+                if ($vals[$i]['attributes']['NAME'] == $curr_template . '.dwt')
+                {
+                    break;
+                }
+            }
+
+        }
+
+        while ($vals[++$i]['tag'] != 'FILE' || !isset($vals[$i]['attributes']))     //读出可编辑区库文件名称，放到一个数组中
+        {
+            if ($vals[$i]['tag'] == 'LIB')
+            {
+                $edit_libs[] = $vals[$i]['value'];
+            }
+        }
+    }
+
+    return $edit_libs;
+}
 ?>

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: privilege.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: privilege.php 15587 2009-02-10 07:02:30Z sunxiaodong $
 */
 
 /* 字段信息 */
@@ -54,7 +54,7 @@ $_LANG['back_admin_list'] = '返回管理员列表';
 
 /* 提示信息 */
 $_LANG['js_languages']['user_name_empty'] = '管理员用户名不能为空!';
-$_LANG['js_languages']['password_invaild'] = '密码必须同时包含字母及数字且长度不能小于于6!';
+$_LANG['js_languages']['password_invaild'] = '密码必须同时包含字母及数字且长度不能小于6!';
 $_LANG['js_languages']['email_empty'] = 'Email地址不能为空!';
 $_LANG['js_languages']['email_error'] = 'Email地址格式不正确!';
 $_LANG['js_languages']['password_error'] = '两次输入的密码不一致!';

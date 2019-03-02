@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: kuaiqian.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: kuaiqian.php 15797 2009-04-15 10:46:09Z sxc_shop $
  */
 
 if (!defined('IN_ECS'))
@@ -103,14 +103,14 @@ class kuaiqian
        $payer_name         = '';
        $payer_contact_type = '';
        $payer_contact      = '';
-       $order_id           = $order['log_id'];                                    //商户订单号 不可空
+       $order_id           = $order['order_sn'];                                    //商户订单号 不可空
        $order_amount       = $order['order_amount'] * 100;                        //商户订单金额 不可空
        $order_time         = local_date('YmdHis', $order['add_time']);            //商户订单提交时间 不可空 14位
        $product_name       = '';
        $product_num        = '';
        $product_id         = '';
        $product_desc       = '';
-       $ext1               = '';
+       $ext1               = $order['log_id'];
        $ext2               = '';
        $pay_type           = '00';                                                //支付方式 不可空
        $bank_id            = '';
@@ -239,7 +239,7 @@ class kuaiqian
         {
             if ($pay_result == 10 || $pay_result == 00)
             {
-                order_paid($order_id);
+                order_paid($ext1);
 
                 return true;
             }

@@ -28,25 +28,30 @@
     <tr>
         <th>{$lang.goods_name}</th>
         <th>{$lang.goods_category}</th>
+        <!--{if $cfg.use_storage and $cfg.show_goodsnumber}-->
         <th>{$lang.goods_inventory}</th>
+        <!-- {/if} -->
         <th>{$lang.price}</th>
         <!--{foreach from=$extend_price item=ext_price}-->
         <th>{$ext_price}</th>
         <!--{/foreach}-->
     </tr>
+    
     <!--{foreach from=$goods_list item=goods}-->
     <tr>
         <td>{$goods.goods_name}</td>
         <td>{$goods.goods_category}</td>
+        <!--{if $cfg.use_storage and $cfg.show_goodsnumber}-->
         <td>{$goods.goods_number}</td>
-        <td>{$goods.shop_price}</td>
-        <!--{foreach from=$extend_rank item=ext_rank}-->
-        <td><script>calc_price({$goods.shop_price}, {$ext_rank})</script></td>
+        <!-- {/if} -->
+        <td>{$goods.shop_price}</td>         
+        <!--{foreach from=$extend_rank[$goods.goods_id] item=ext_rank}-->
+        <td>{$ext_rank.price}</td>       
         <!--{/foreach}-->
     </tr>
     <!--{/foreach}-->
 </table>
-<center><input type="button" class="print_btn" value="{$lang.print_quotation}" onclick="window.print()" /></center>
+<center><input type="button" class="print_btn" value="{$lang.print_quotation}" onClick="window.print()" /></center>
 
 </body>
 </html>

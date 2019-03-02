@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: lib_goods.php 15179 2008-11-17 05:43:07Z sunxiaodong $
+ * $Author: liubo $
+ * $Id: lib_goods.php 16345 2009-06-24 09:36:23Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -29,6 +29,7 @@ function get_intro_list()
         'is_new'     => $GLOBALS['_LANG']['is_new'],
         'is_hot'     => $GLOBALS['_LANG']['is_hot'],
         'is_promote' => $GLOBALS['_LANG']['is_promote'],
+        'all_type' => $GLOBALS['_LANG']['all_type'],
     );
 }
 
@@ -347,6 +348,12 @@ function handle_gallery_image($goods_id, $image_files, $image_descs)
             $sql = "INSERT INTO " . $GLOBALS['ecs']->table('goods_gallery') . " (goods_id, img_url, img_desc, thumb_url, img_original) " .
                     "VALUES ('$goods_id', '$img_url', '$img_desc', '$thumb_url', '$img_original')";
             $GLOBALS['db']->query($sql);
+            /* 不保留商品原图的时候删除原图 */
+            if ($proc_thumb && !$GLOBALS['_CFG']['retain_original_img'] && !empty($img_original))
+            {
+                $GLOBALS['db']->query("UPDATE " . $GLOBALS['ecs']->table('goods_gallery') . " SET img_original='' WHERE `goods_id`='{$goods_id}'");
+                @unlink('../' . $img_original);
+            }
         }
     }
 }
@@ -521,8 +528,7 @@ function get_attr_list($cat_id, $goods_id = 0)
 {
     if (empty($cat_id))
     {
-        $sql = "SELECT cat_id FROM " .$GLOBALS['ecs']->table('goods_type'). " LIMIT 1";
-        $cat_id = $GLOBALS['db']->getOne($sql);
+        return array();
     }
 
     // 查询属性值及商品的属性值
@@ -731,6 +737,9 @@ function goods_list($is_delete, $real_goods=1)
                 break;
             case 'is_promote':
                 $where .= " AND is_promote = 1 AND promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today'";
+                break;
+            case 'all_type';
+                $where .= " AND (is_best=1 OR is_hot=1 OR is_new=1 OR (is_promote = 1 AND promote_price > 0 AND promote_start_date <= '" . $today . "' AND promote_end_date >= '" . $today . "'))";
         }
 
         /* 库存警告 */
@@ -769,7 +778,7 @@ function goods_list($is_delete, $real_goods=1)
         /* 分页大小 */
         $filter = page_and_size($filter);
 
-        $sql = "SELECT goods_id, goods_name, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, goods_number, integral, " .
+        $sql = "SELECT goods_id, goods_name, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
                     " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ".
                     " FROM " . $GLOBALS['ecs']->table('goods') . " AS g WHERE is_delete='$is_delete' $where" .
                     " ORDER BY $filter[sort_by] $filter[sort_order] ".

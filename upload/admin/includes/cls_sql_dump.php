@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: cls_sql_dump.php 15327 2008-11-21 09:01:39Z sunxiaodong $
+ * $Author: sxc_shop $
+ * $Id: cls_sql_dump.php 16246 2009-06-16 07:52:40Z sxc_shop $
 */
 
 if (!defined('IN_ECS'))
@@ -29,6 +29,24 @@ if (!defined('IN_ECS'))
 function dump_escape_string($str)
 {
     return cls_mysql::escape_string($str);
+}
+
+/**
+ * 对mysql记录中的null值进行处理
+ *
+ * @access  public
+ * @param   string      $str
+ *
+ * @return string
+ */
+function dump_null_string($str)
+{
+    if (!isset($str) || is_null($str))
+    {
+        $str = 'NULL';
+    }
+
+    return $str;
 }
 
 
@@ -100,7 +118,7 @@ class cls_sql_dump
 
         if ($this->db->version() >= '4.1')
         {
-            $table_df .= $tmp_sql . " ENGINE=MyISAM DEFAULT charset=utf8;\r\n";
+            $table_df .= $tmp_sql . " ENGINE=MyISAM DEFAULT CHARSET=" . str_replace('-', '', EC_CHARSET) . ";\r\n";
         }
         else
         {
@@ -148,7 +166,8 @@ class cls_sql_dump
             /* 循环将数据写入 */
             for($j=0; $j< $data_count; $j++)
             {
-                $record = array_map("dump_escape_string", $data[$j]);//过滤非法字符
+                $record = array_map("dump_escape_string", $data[$j]);   //过滤非法字符
+                $record = array_map("dump_null_string", $record);     //处理null值
 
                 /* 检查是否能写入，能则写入 */
                 if ($this->is_short)
@@ -167,7 +186,6 @@ class cls_sql_dump
                         {
                             $tmp_dump_sql = " ( '" . implode("', '" , $record) . "' ),\r\n";
                         }
-                        //$tmp_dump_sql = " ( '" . implode("', '" , $record) . "' ),\r\n";
                     }
 
                     if ($post_pos == $pos)
@@ -187,6 +205,9 @@ class cls_sql_dump
                 {
                     $tmp_dump_sql = $start_sql . " ('" . implode("', '" , $record) . "');\r\n";
                 }
+
+                $tmp_str_pos = strpos($tmp_dump_sql, 'NULL');         //把记录中null值的引号去掉
+                $tmp_dump_sql = empty($tmp_str_pos) ? $tmp_dump_sql : substr($tmp_dump_sql, 0, $tmp_str_pos - 1) . 'NULL' . substr($tmp_dump_sql, $tmp_str_pos + 5);
 
                 if (strlen($this->dump_sql) + strlen($tmp_dump_sql) > $this->max_size - 32)
                 {
@@ -456,14 +477,12 @@ class cls_sql_dump
      */
     function get_random_name()
     {
-        $str = '';
+        $str = date('Ymd');
 
         for ($i = 0; $i < 6; $i++)
         {
             $str .= chr(mt_rand(97, 122));
         }
-
-        $str .= date('Ymd');
 
         return $str;
     }

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: index.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: wangleisvn $
+ * $Id: index.php 16443 2009-07-08 06:20:02Z wangleisvn $
 */
 
 $_LANG['shop_guide'] = '开店向导';
@@ -27,7 +27,21 @@ $_LANG['toggle_calculator'] = '计算器';
 $_LANG['expand_all'] = '展开';
 $_LANG['collapse_all'] = '闭合';
 $_LANG['no_help'] = '暂时还没有该部分内容';
-
+$_LANG['license_free'] = '非授权用户';
+$_LANG['license_commercial'] = '绿卡用户';
+$_LANG['license_invalid'] = '未授权用户';
+$_LANG['license_failed'] = '非法用户';
+$_LANG['license_oem'] = '授权商业用户';
+$_LANG['license_oemtest'] = '体验用户';
+//
+$_LANG['license_Q'] = '商业';
+$_LANG['license_G'] = '商业';
+$_LANG['license_L'] = '临时';
+$_LANG['license_S'] = '商业';
+$_LANG['license_O'] = '企业';
+$_LANG['license_T'] = '体验';
+$_LANG['license_no'] = '免费';
+$_LANG['license_test'] = '免费';
 $_LANG['js_languages']['expand_all'] = '展开';
 $_LANG['js_languages']['collapse_all'] = '闭合';
 

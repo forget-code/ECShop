@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: agency.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: wangleisvn $
+ * $Id: agency.php 16024 2009-05-15 03:58:20Z wangleisvn $
  */
 
 define('IN_ECS', true);
@@ -102,15 +102,13 @@ elseif ($_REQUEST['act'] == 'remove')
     $name = $exc->get_name($id);
     $exc->drop($id);
 
-    /* 更新管理员、配送地区和订单关联的办事处 */
-    $sql = "UPDATE " . $ecs->table('admin_user') . " SET agency_id = 0 WHERE agency_id = '$id'";
-    $db->query($sql);
-
-    $sql = "UPDATE " . $ecs->table('region') . " SET agency_id = 0 WHERE agency_id = '$id'";
-    $db->query($sql);
-
-    $sql = "UPDATE " . $ecs->table('order_info') . " SET agency_id = 0 WHERE agency_id = '$id'";
-    $db->query($sql);
+    /* 更新管理员、配送地区、发货单、退货单和订单关联的办事处 */
+    $table_array = array('admin_user', 'region', 'order_info', 'delivery_order', 'back_order');
+    foreach ($table_array as $value)
+    {
+        $sql = "UPDATE " . $ecs->table($value) . " SET agency_id = 0 WHERE agency_id = '$id'";
+        $db->query($sql);
+    }
 
     /* 记日志 */
     admin_log($name, 'remove', 'agency');
@@ -148,15 +146,13 @@ elseif ($_REQUEST['act'] == 'batch')
                     " WHERE agency_id " . db_create_in($ids);
             $db->query($sql);
 
-            /* 更新管理员、配送地区和订单关联的办事处 */
-            $sql = "UPDATE " . $ecs->table('admin_user') . " SET agency_id = 0 WHERE agency_id " . db_create_in($ids);
-            $db->query($sql);
-
-            $sql = "UPDATE " . $ecs->table('region') . " SET agency_id = 0 WHERE agency_id " . db_create_in($ids);
-            $db->query($sql);
-
-            $sql = "UPDATE " . $ecs->table('order_info') . " SET agency_id = 0 WHERE agency_id " . db_create_in($ids);
-            $db->query($sql);
+            /* 更新管理员、配送地区、发货单、退货单和订单关联的办事处 */
+            $table_array = array('admin_user', 'region', 'order_info', 'delivery_order', 'back_order');
+            foreach ($table_array as $value)
+            {
+                $sql = "UPDATE " . $ecs->table($value) . " SET agency_id = 0 WHERE agency_id " . db_create_in($ids) . " ";
+                $db->query($sql);
+            }
 
             /* 记日志 */
             admin_log('', 'batch_remove', 'agency');

@@ -13,7 +13,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='common.js'}
 </head>
@@ -53,7 +53,7 @@
      <div class="box_1">
       <h3><span>{$lang.post_message}</span></h3>
       <div class="boxCenterList">
-          <form action="message.php" method="post" name="formMsg" onSubmit="return submitMsgBoard()">
+          <form action="message.php" method="post" name="formMsg" onSubmit="return submitMsgBoard(this)">
             <table width="100%" border="0" cellpadding="3">
               <tr>
                 <td align="right">{$lang.username}</td>
@@ -61,7 +61,7 @@
                 <!--{if $smarty.session.user_name}-->
                 <font class="f4_b">{$username}</font><label for="anonymous" style="margin-left:8px;"><input type="checkbox" name="anonymous" value="1" id="anonymous" />{$lang.message_anonymous}</label>
                 <!--{else}-->
-                <input name="user_name" class="inputBg" type="text" size="15" value="{$lang.anonymous}" />
+               {$lang.anonymous}
                 <!--{/if}-->
                 </td>
               </tr>
@@ -86,7 +86,7 @@
                 <td align="right">{$lang.message_title}</td>
                 <td><input name="msg_title" type="text" class="inputBg" size="30" /></td>
               </tr>
-            <!-- 判断是否启用验证码{if $enabled_captcha} -->
+            <!-- 判断是否启用验证码{if $enabled_mes_captcha} -->
               <tr>
                 <td align="right">{$lang.comment_captcha}</td>
                 <td><input type="text" size="8" name="captcha"  class="inputBg" />
@@ -111,35 +111,50 @@
         {/foreach}
         {literal}
         /**
-         * 提交评论信息
+         * 提交留言信息
         */
         function submitMsgBoard(frm)
         {
-            var frm         = document.forms['formMsg'];
-            var msg_title   = frm.elements['msg_title'].value;
-            var msg_content = frm.elements['msg_content'].value;
-            var msg = '';
+            var msg = new Object;
 
-            if (msg_title.length == 0)
+             msg.user_email  = frm.elements['user_email'].value;
+             msg.msg_title   = frm.elements['msg_title'].value;
+             msg.msg_content = frm.elements['msg_content'].value;
+             msg.captcha     = frm.elements['captcha'] ? frm.elements['captcha'].value : '';
+
+            var msg_err = '';
+
+            if (msg.user_email.length > 0)
             {
-                msg += msg_title_empty + '\n';
+               if (!(Utils.isEmail(msg.user_email)))
+               {
+                  msg_err += msg_error_email + '\n';
+                }
+             }
+             else
+             {
+                  msg_err += msg_empty_email + '\n';
+             }
+            if (msg.msg_title.length == 0)
+            {
+                msg_err += msg_title_empty + '\n';
             }
-            if (frm.elements['captcha'] && frm.elements['captcha'].value.length==0)
+            if (frm.elements['captcha'] && msg.captcha.length==0)
             {
-                msg += msg_captcha_empty + '\n'
+                msg_err += msg_captcha_empty + '\n'
             }
-            if (msg_content.length == 0)
+            if (msg.msg_content.length == 0)
             {
-                msg += msg_content_empty + '\n'
+                msg_err += msg_content_empty + '\n'
             }
-            if (msg_title.length > 200)
+            if (msg.msg_title.length > 200)
             {
-                msg += msg_title_limit + '\n';
+                msg_err += msg_title_limit + '\n';
             }
 
-            if (msg.length > 0)
+            if (msg_err.length > 0)
             {
-                alert(msg);
+                alert(msg_err);
                 return false;
             }
             else
@@ -152,7 +167,7 @@
       </div>
      </div>
     </div>
-  </div>  
+  </div>
   <!--right end-->
 </div>
 <div class="blank5"></div>
@@ -162,7 +177,7 @@
    <div class="helpTitBg clearfix">
     <!-- #BeginLibraryItem "/library/help.lbi" --><!-- #EndLibraryItem -->
    </div>
-  </div>  
+  </div>
 </div>
 <div class="blank"></div>
 <!--帮助-->
@@ -176,7 +191,7 @@
     <!--结束图片类型的友情链接{/foreach}-->
     <!-- {if $txt_links} -->
     <!--开始文字类型的友情链接{foreach from=$txt_links item=link}-->
-    [<a href="{$link.url}" target="_blank" title="{$link.name}">{$link.name}</a>] 
+    [<a href="{$link.url}" target="_blank" title="{$link.name}">{$link.name}</a>]
     <!--结束文字类型的友情链接{/foreach}-->
     <!-- {/if} -->
   </div>

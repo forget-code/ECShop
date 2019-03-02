@@ -142,7 +142,16 @@ var Validator = function(name)
   */
   this.isInt = function(controlId, msg, required)
   {
-    var obj = document.forms[this.formName].elements[controlId];
+
+    if (document.forms[this.formName].elements[controlId])
+    {
+      var obj = document.forms[this.formName].elements[controlId];
+    }
+    else
+    {
+      return;    
+    }
+
     obj.value = Utils.trim(obj.value);
 
     if (obj.value == '' && ! required)

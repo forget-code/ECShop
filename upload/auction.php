@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: auction.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: auction.php 16060 2009-05-21 06:40:57Z sxc_shop $
  */
 
 define('IN_ECS', true);
@@ -84,8 +84,9 @@ if ($_REQUEST['act'] == 'list')
         $smarty->assign('helps',      get_shop_help());       // 网店帮助
         $smarty->assign('top_goods',  get_top10());           // 销售排行
         $smarty->assign('promotion_info', get_promotion_info());
+        $smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typeauction.xml" : 'feed.php?type=auction'); // RSS URL
 
-        assign_dynamic('goods');
+        assign_dynamic('auction_list');
     }
 
     /* 显示模板 */
@@ -146,7 +147,7 @@ elseif ($_REQUEST['act'] == 'view')
             exit;
         }
         $goods['url'] = build_uri('goods', array('gid' => $goods_id), $goods['goods_name']);
-        $smarty->assign('goods', $goods);
+        $smarty->assign('auction_goods', $goods);
 
         /* 出价记录 */
         $smarty->assign('auction_log', auction_log($id));
@@ -164,7 +165,7 @@ elseif ($_REQUEST['act'] == 'view')
         $smarty->assign('top_goods',  get_top10());           // 销售排行
         $smarty->assign('promotion_info', get_promotion_info());
 
-        assign_dynamic('goods');
+        assign_dynamic('auction');
     }
 
     //更新商品点击次数
@@ -402,7 +403,7 @@ function auction_count()
     $sql = "SELECT COUNT(*) " .
             "FROM " . $GLOBALS['ecs']->table('goods_activity') .
             "WHERE act_type = '" . GAT_AUCTION . "' " .
-            "AND start_time <= '$now'";
+            "AND start_time <= '$now' AND end_time >= '$now' AND is_finished < 2";
 
     return $GLOBALS['db']->getOne($sql);
 }
@@ -416,12 +417,14 @@ function auction_count()
 function auction_list($size, $page)
 {
     $auction_list = array();
+    $auction_list['finished'] = $auction_list['finished'] = array();
+
     $now = gmtime();
     $sql = "SELECT a.*, IFNULL(g.goods_thumb, '') AS goods_thumb " .
             "FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS a " .
                 "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS g ON a.goods_id = g.goods_id " .
             "WHERE a.act_type = '" . GAT_AUCTION . "' " .
-            "AND a.start_time <= '$now'";
+            "AND a.start_time <= '$now' AND a.end_time >= '$now' AND a.is_finished < 2 ORDER BY a.act_id DESC";
     $res = $GLOBALS['db']->selectLimit($sql, $size, ($page - 1) * $size);
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
@@ -437,8 +440,17 @@ function auction_list($size, $page)
         $auction['goods_thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'], true);
         $auction['url'] = build_uri('auction', array('auid'=>$auction['act_id']));
 
-        $auction_list[] = $auction;
+        if($auction['status_no'] < 2)
+        {
+            $auction_list['under_way'][] = $auction;
+        }
+        else
+        {
+            $auction_list['finished'][] = $auction;
+        }
     }
+
+    $auction_list = @array_merge($auction_list['under_way'], $auction_list['finished']);
 
     return $auction_list;
 }

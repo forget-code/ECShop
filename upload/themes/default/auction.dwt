@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='common.js,lefttime.js'}
 <script type="text/javascript">
@@ -56,7 +56,7 @@
     <div class="boxCenterList">
       <ul class="group clearfix">
       <li style="margin-right:8px; text-align:center;">
-      <a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name|escape:html}" /></a>
+      <a href="{$auction_goods.url}"><img src="{$auction_goods.goods_thumb}" alt="{$auction_goods.goods_name|escape:html}" /></a>
       </li>
       <li style="width:555px; line-height:23px;">
       <form name="theForm" action="auction.php" method="post">

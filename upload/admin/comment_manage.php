@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: comment_manage.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: comment_manage.php 16255 2009-06-18 02:46:38Z sxc_shop $
 */
 
 define('IN_ECS', true);
@@ -32,6 +32,9 @@ else
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'list')
 {
+    /* 检查权限 */
+    admin_priv('comment_priv');
+
     $smarty->assign('ur_here',      $_LANG['05_comment_manage']);
     $smarty->assign('full_page',    1);
 
@@ -83,7 +86,8 @@ if ($_REQUEST['act']=='reply')
     /* 获取评论详细信息并进行字符处理 */
     $sql = "SELECT * FROM " .$ecs->table('comment'). " WHERE comment_id = '$_REQUEST[id]'";
     $comment_info = $db->getRow($sql);
-    $comment_info['content']  = nl2br(htmlspecialchars($comment_info['content']));
+    $comment_info['content']  = str_replace('\r\n', '<br />', htmlspecialchars($comment_info['content']));
+    $comment_info['content']  = str_replace('\n', '<br />', $comment_info['content']);
     $comment_info['add_time'] = local_date($_CFG['time_format'], $comment_info['add_time']);
 
     /* 获得评论回复内容 */

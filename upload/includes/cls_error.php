@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: cls_error.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liubo $
+ * $Id: cls_error.php 16028 2009-05-15 09:02:09Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -118,8 +118,10 @@ class ecs_error
         {
             $message = array();
 
-            $message['link'] = (empty($link)) ? $GLOBALS['_LANG']['back_up_page'] : $link;
-            $message['href'] = (empty($href)) ? 'javascript:history.back();' : $href;
+            $link = (empty($link)) ? $GLOBALS['_LANG']['back_up_page'] : $link;
+            $href = (empty($href)) ? 'javascript:history.back();' : $href;
+            $message['url_info'][$link] = $href;
+            $message['back_url'] = $href;
 
             foreach ($this->_message AS $msg)
             {
@@ -129,6 +131,7 @@ class ecs_error
             if (isset($GLOBALS['smarty']))
             {
                 assign_template();
+                $GLOBALS['smarty']->assign('auto_redirect', true);
                 $GLOBALS['smarty']->assign('message', $message);
                 $GLOBALS['smarty']->display($this->_template);
             }

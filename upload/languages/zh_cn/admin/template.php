@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: template.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: template.php 16144 2009-06-01 09:21:21Z sxc_shop $
 */
 
 $_LANG['template_manage'] = '模板管理';
@@ -36,6 +36,7 @@ $_LANG['update_lib_success'] = '库项目内容已经更新成功。';
 $_LANG['update_lib_failed'] = '编辑库项目内容失败。请检查 %s 目录是否可以写入。';
 $_LANG['backup_success'] = "所有模板文件已备份到templates/backup目录下。\n您现在要下载备份文件吗？。";
 $_LANG['backup_failed'] = '备份模板文件失败，请检查templates/backup 目录是否可以写入。';
+$_LANG['not_editable'] = '非可编辑区库文件无选择项';
 
 /* 每一个模板文件对应的语言 */
 $_LANG['template_files']['article'] = '文章内容模板';
@@ -57,6 +58,7 @@ $_LANG['template_files']['auction_list'] = '拍卖活动列表';
 $_LANG['template_files']['auction'] = '拍卖活动详情';
 $_LANG['template_files']['message_board'] = '留言板';
 //$_LANG['template_files']['quotation'] = '报价单';
+$_LANG['template_files']['exchange_list'] = '积分商城列表';
 
 /* 每一个库项目的描述 */
 $_LANG['template_libs']['ad_position'] = '广告位';
@@ -115,6 +117,8 @@ $_LANG['template_libs']['myship'] = '配送方式';
 $_LANG['template_libs']['online'] = '统计在线人数';
 $_LANG['template_libs']['relatetag'] = '其他应用关联标签数据';
 $_LANG['template_libs']['message_list'] = '留言列表';
+$_LANG['template_libs']['exchange_hot'] = '积分商城热卖商品';
+$_LANG['template_libs']['exchange_list'] = '积分商城列表商品';
 
 /* 模板布局备份 */
 $_LANG['backup_setting'] = '备份模板设置';

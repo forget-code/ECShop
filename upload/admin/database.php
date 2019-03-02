@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: database.php 15145 2008-11-03 02:28:16Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: database.php 15536 2009-01-08 06:35:53Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -641,10 +641,10 @@ function sql_import($sql_file)
             $ret[$i] = trim($ret[$i], " \r\n;"); //剔除多余信息
             if (!empty($ret[$i]))
             {
-                if ((strpos($ret[$i], 'CREATE TABLE') !== false) && (strpos($ret[$i], 'DEFAULT CHARSET=utf8')=== false))
+                if ((strpos($ret[$i], 'CREATE TABLE') !== false) && (strpos($ret[$i], 'DEFAULT CHARSET='. str_replace('-', '', EC_CHARSET) )=== false))
                 {
                     /* 建表时缺 DEFAULT CHARSET=utf8 */
-                    $ret[$i] = $ret[$i] . ' DEFAULT CHARSET=utf8';
+                    $ret[$i] = $ret[$i] . 'DEFAULT CHARSET='. str_replace('-', '', EC_CHARSET);
                 }
                 $GLOBALS['db']->query($ret[$i]);
             }
@@ -655,9 +655,9 @@ function sql_import($sql_file)
         for($i = 0; $i < $ret_count; $i++)
         {
             $ret[$i] = trim($ret[$i], " \r\n;"); //剔除多余信息
-            if ((strpos($ret[$i], 'CREATE TABLE') !== false) && (strpos($ret[$i], 'DEFAULT CHARSET=utf8')!== false))
+            if ((strpos($ret[$i], 'CREATE TABLE') !== false) && (strpos($ret[$i], 'DEFAULT CHARSET='. str_replace('-', '', EC_CHARSET) )!== false))
             {
-                $ret[$i] = str_replace('DEFAULT CHARSET=utf8', '', $ret[$i]);
+                $ret[$i] = str_replace('DEFAULT CHARSET='. str_replace('-', '', EC_CHARSET), '', $ret[$i]);
             }
             if (!empty($ret[$i]))
             {

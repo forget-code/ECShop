@@ -386,12 +386,26 @@ function changeBonusResponse(obj)
  */
 function validateBonus(bonusSn)
 {
-  Ajax.call('flow.php?step=validate_bonus', 'bonus_sn=' + bonusSn, validateBonusResponse, 'GET');
+  Ajax.call('flow.php?step=validate_bonus', 'bonus_sn=' + bonusSn, validateBonusResponse, 'GET', 'JSON');
 }
 
-function validateBonusResponse(result)
+function validateBonusResponse(obj)
 {
-  alert(result);
+
+if (obj.error)
+  {
+    alert(obj.error);
+
+    try
+    {
+      document.getElementById('ECS_BONUSN').value = '0';
+    }
+    catch (ex) { }
+  }
+  else
+  {
+    orderSelectedResponse(obj.content);
+  }
 }
 
 /* *

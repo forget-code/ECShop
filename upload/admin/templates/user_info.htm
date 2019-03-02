@@ -1,4 +1,4 @@
-<!-- $Id: user_info.htm 15059 2008-10-25 06:01:50Z testyang $ -->
+<!-- $Id: user_info.htm 16268 2009-06-19 02:28:46Z sxc_shop $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form method="post" action="users.php" name="theForm" onsubmit="return validate()">
@@ -38,6 +38,15 @@
   <tr>
     <td class="label">{$lang.confirm_password}:</td>
     <td><input type="password" name="confirm_password" maxlength="20" size="20" />{$lang.require_field}</td>
+  </tr>
+  {elseif  $form_action eq "update"}
+  <tr>
+    <td class="label">{$lang.newpass}:</td>
+    <td><input type="password" name="password" maxlength="20" size="20" /></td>
+  </tr>
+  <tr>
+    <td class="label">{$lang.confirm_password}:</td>
+    <td><input type="password" name="confirm_password" maxlength="20" size="20" /></td>
   </tr>
   {/if}
   <tr>
@@ -89,6 +98,14 @@
     <td class="label">{$lang.mobile_phone}:</td>
     <td><input type="text" name="other[mobile_phone]" maxlength="60" size="40" value="{$user.mobile_phone}" /></td>
   </tr>
+  {foreach from=$extend_info_list item=field}
+  <tr>
+    <td class="label">{$field.reg_field_name}:</td>
+    <td>
+    <input name="extend_field{$field.id}" type="text" size="40" class="inputBg" value="{$field.content}"/>
+    </td>
+  </tr>
+  {/foreach}
   <tr>
     <td colspan="2" align="center">
       <input type="submit" value="{$lang.button_submit}" class="button" />
@@ -134,6 +151,22 @@ function validate()
         validator.required("password", no_password);
         validator.required("confirm_password", no_confirm_password);
         validator.eqaul("password", "confirm_password", password_not_same);
+    }
+    else if (document.forms['theForm'].elements['act'].value == "update")
+    {
+        var newpass = document.forms['theForm'].elements['password'];
+        var confirm_password = document.forms['theForm'].elements['confirm_password'];
+        if(newpass.value.length > 0 || confirm_password.value.length)
+        {
+          if(newpass.value.length >= 6 || confirm_password.value.length >= 6)
+          {
+            validator.eqaul("password", "confirm_password", password_not_same);
+          }
+          else
+          {
+            validator.addErrorMsg(password_len_err);
+          }
+        }
     }
 
     return validator.passed();

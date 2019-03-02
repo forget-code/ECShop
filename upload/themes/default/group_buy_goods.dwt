@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 
 {* 包含脚本文件 *}
 {insert_scripts files='common.js,lefttime.js'}
@@ -57,18 +57,18 @@
     <div class="boxCenterList">
       <ul class="group clearfix">
       <li style="margin-right:8px; text-align:center;">
-      <a href="{$goods.url}"><img src="{$goods.goods_thumb}" alt="{$goods.goods_name|escape:html}" /></a>
+      <a href="{$gb_goods.url}"><img src="{$gb_goods.goods_thumb}" alt="{$gb_goods.goods_name|escape:html}" /></a>
       </li>
       <li style="width:555px; line-height:23px;">
-       {$lang.gb_goods_name} <font class="f5">{$goods.goods_name|escape:html}</font><br>
+       {$lang.gb_goods_name} <font class="f5">{$gb_goods.goods_name|escape:html}</font><br>
       <!-- {if $cfg.show_goodssn && 0} -->
-      {$lang.goods_sn} {$goods.goods_sn}<br>
+      {$lang.goods_sn} {$gb_goods.goods_sn}<br>
       <!-- {/if} -->
       <!-- {if $cfg.goods.brand_name && $show_brand && 0} -->
-      {$lang.goods_brand} {$goods.brand_name}<br>
+      {$lang.goods_brand} {$gb_goods.brand_name}<br>
       <!--{/if}-->
       <!-- {if $cfg.show_goodsweight && 0} -->
-      {$lang.goods_weight} {$goods.goods_weight}<br>
+      {$lang.goods_weight} {$gb_goods.goods_weight}<br>
       <!-- {/if} -->
       {$lang.act_time}：{$group_buy.formated_start_date} -- {$group_buy.formated_end_date}<br>
       {$lang.gb_price_ladder}<br />

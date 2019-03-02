@@ -1,4 +1,4 @@
-<!-- $Id: category_info.htm 14911 2008-09-23 05:18:39Z testyang $ -->
+<!-- $Id: category_info.htm 16161 2009-06-04 03:52:43Z sxc_shop $ -->
 {include file="pageheader.htm"}
 <!-- start add new category form -->
 <div class="main-div">
@@ -61,18 +61,19 @@
           <script type="text/javascript">
           var arr = new Array();
           var sel_filter_attr = "{$lang.sel_filter_attr}";
-          {foreach from=$attr_list item=val key=attr_cat_id}
-            arr[{$attr_cat_id}] = new Array();
+          {foreach from=$attr_list item=val key=att_cat_id}
+            arr[{$att_cat_id}] = new Array();
             {foreach from=$val item=item key=i}
               {foreach from=$item item=attr_val key=attr_id}
-                arr[{$attr_cat_id}][{$i}] = ["{$attr_val}", {$attr_id}];
+                arr[{$att_cat_id}][{$i}] = ["{$attr_val}", {$attr_id}];
               {/foreach}
             {/foreach}
           {/foreach}
 
-          function changeCat(key)
+          function changeCat(obj)
           {
-            var sel = document.forms['theForm'].elements['filter_attr'];
+            var key = obj.value;
+            var sel = window.ActiveXObject ? obj.parentNode.childNodes[4] : obj.parentNode.childNodes[5];
             sel.length = 0;
             sel.options[0] = new Option(sel_filter_attr, 0);
             if (arr[key] == undefined)
@@ -87,8 +88,33 @@
           }
 
           </script>
-          <select onChange="changeCat(this.value)"><option value="0">{$lang.sel_goods_type}</option>{$goods_type_list}</select>&nbsp;&nbsp;
-          <select name="filter_attr"><option value="0">{$lang.sel_filter_attr}</option>{if $attr_cat_id}{html_options options=$attr_option selected=$cat_info.filter_attr}{/if}</select><br />
+
+         
+          <table width="100%" id="tbody-attr" align="center">
+            {if $attr_cat_id eq 0}
+            <tr>
+              <td>   
+                   <a href="javascript:;" onclick="addFilterAttr(this)">[+]</a> 
+                   <select onChange="changeCat(this)"><option value="0">{$lang.sel_goods_type}</option>{$goods_type_list}</select>&nbsp;&nbsp;
+                   <select name="filter_attr[]"><option value="0">{$lang.sel_filter_attr}</option></select><br />                   
+              </td>
+            </tr> 
+            {/if}           
+            {foreach from=$filter_attr_list item=filter_attr name="filter_attr_tab"}
+            <tr>
+              <td>
+                 {if $smarty.foreach.filter_attr_tab.iteration eq 1}
+                   <a href="javascript:;" onclick="addFilterAttr(this)">[+]</a>
+                 {else}
+                   <a href="javascript:;" onclick="removeFilterAttr(this)">[-]&nbsp;</a>
+                 {/if}
+                 <select onChange="changeCat(this)"><option value="0">{$lang.sel_goods_type}</option>{$filter_attr.goods_type_list}</select>&nbsp;&nbsp;
+                 <select name="filter_attr[]"><option value="0">{$lang.sel_filter_attr}</option>{html_options options=$filter_attr.option selected=$filter_attr.filter_attr}</select><br />
+              </td>
+            </tr>
+            {/foreach}
+          </table>
+
           <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeFilterAttr">{$lang.filter_attr_notic}</span>
         </td>
       </tr>
@@ -152,6 +178,54 @@ onload = function()
   startCheckOrder();
 }
 
+/**
+ * 新增一个筛选属性
+ */
+function addFilterAttr(obj)
+{
+  var src = obj.parentNode.parentNode;
+  var tbl = document.getElementById('tbody-attr');
+
+  var validator  = new Validator('theForm');
+  var filterAttr = document.getElementsByName("filter_attr[]");
+
+  if (filterAttr[filterAttr.length-1].selectedIndex == 0)
+  {
+    validator.addErrorMsg(filter_attr_not_selected);
+  }
+  
+  for (i = 0; i < filterAttr.length; i++)
+  {
+    for (j = i + 1; j <filterAttr.length; j++)
+    {
+      if (filterAttr.item(i).value == filterAttr.item(j).value)
+      {
+        validator.addErrorMsg(filter_attr_not_repeated);
+      } 
+    } 
+  }
+
+  if (!validator.passed())
+  {
+    return false;
+  }
+
+  var row  = tbl.insertRow(tbl.rows.length);
+  var cell = row.insertCell(-1);
+  cell.innerHTML = src.cells[0].innerHTML.replace(/(.*)(addFilterAttr)(.*)(\[)(\+)/i, "$1removeFilterAttr$3$4-");
+  filterAttr[filterAttr.length-1].selectedIndex = 0;
+}
+
+/**
+ * 删除一个筛选属性
+ */
+function removeFilterAttr(obj)
+{
+  var row = rowindex(obj.parentNode.parentNode);
+  var tbl = document.getElementById('tbody-attr');
+
+  tbl.deleteRow(row);
+}
 //-->
 </script>
 {/literal}

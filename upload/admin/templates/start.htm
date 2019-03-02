@@ -1,16 +1,13 @@
-<!-- $Id: start.htm 14598 2008-05-21 07:41:15Z testyang $ -->
+<!-- $Id: start.htm 16405 2009-06-30 03:47:07Z liuhui $ -->
 {include file="pageheader.htm"}
 <!-- directory install start -->
-<ul style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
-  {if $need_check_version}
-  <script type="text/javascript" src="http://api.ecshop.com/checkver.php?ver={$ecs_version}&lang={$ecs_lang}&release={$ecs_release}&php_ver={$sys_info.php_ver}&mysql_ver={$sys_info.mysql_ver}&ocount={$order.stats.oCount}&oamount={$order.stats.oAmount}&gcount={$goods.total}&charset={$ecs_charset}"></script>
-  {/if}
+<ul id="lilist" style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
   {foreach from=$warning_arr item=warning}
   <li style="border: 1px solid #CC0000; background: #FFFFCC; padding: 10px; margin-bottom: 5px;" >{$warning}</li>
   {/foreach}
 </ul>
 <ul style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
-  <script type="text/javascript" src="http://bbs.ecshop.com/notice.php?v=1&n=8&f=ul"></script>
+ <!-- <script type="text/javascript" src="http://bbs.ecshop.com/notice.php?v=1&n=8&f=ul"></script>-->
 </ul>
 <!-- directory install end -->
 <!-- start personal message -->
@@ -196,6 +193,7 @@
 </table>
 </div>
 {literal}
+
 <script type="Text/Javascript" language="JavaScript">
 <!--
 onload = function()
@@ -203,6 +201,47 @@ onload = function()
   /* 检查订单 */
   startCheckOrder();
 }
+  Ajax.call('index.php?is_ajax=1&act=main_api','', start_api, 'GET', 'TEXT','FLASE');
+
+   function start_api(result)
+    {
+      apilist = document.getElementById("lilist").innerHTML;
+      document.getElementById("lilist").innerHTML =result+apilist;
+      api_styel();
+    }
+      function api_styel()
+      {
+        if(document.getElementById("Marquee") != null)
+        {
+            var Mar = document.getElementById("Marquee");
+            Mar.style.height = "30px";
+            var child_div=Mar.getElementsByTagName("div");
+        var picH = 20;//移动高度
+        var scrollstep=2;//移动步幅,越大越快
+        var scrolltime=30;//移动频度(毫秒)越大越慢
+        var stoptime=4000;//间断时间(毫秒)
+        var tmpH = 0;
+        
+        function start()
+        {
+          if(tmpH < picH)
+          {
+            tmpH += scrollstep;
+            if(tmpH > picH )tmpH = picH ;
+            Mar.scrollTop = tmpH;
+            setTimeout(start,scrolltime);
+          }
+          else
+          {
+            tmpH = 0;
+            Mar.appendChild(child_div[0]);
+            Mar.scrollTop = 0;
+            setTimeout(start,stoptime);
+          }
+        }
+        setTimeout(start,stoptime);
+        }
+      }
 //-->
 </script>
 {/literal}

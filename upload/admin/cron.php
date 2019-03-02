@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: testyang $
- * $Id: cron.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: cron.php 15822 2009-04-21 07:41:28Z sxc_shop $
  */
 
 define('IN_ECS', true);
@@ -391,7 +391,7 @@ function get_next_time($cron)
 }
 function get_minute($cron_minute)
 {
-    $cron_minute = explode(' ',$cron_minute);
+    $cron_minute = explode(',',$cron_minute);
     $cron_minute = array_unique($cron_minute);
     foreach ($cron_minute as $key => $val)
     {
@@ -403,7 +403,7 @@ function get_minute($cron_minute)
             $cron_minute[$key] = $val;
         }
     }
-    return trim(implode(' ',$cron_minute));
+    return trim(implode(',',$cron_minute));
 }
 function get_dwh()
 {

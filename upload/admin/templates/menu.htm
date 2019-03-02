@@ -118,7 +118,7 @@ body {
 <body>
 <div id="tabbar-div">
 <p><span style="float:right; padding: 3px 5px;" ><a href="javascript:toggleCollapse();"><img id="toggleImg" src="images/menu_minus.gif" width="9" height="9" border="0" alt="{$lang.collapse_all}" /></a></span>
-  <span class="tab-front" id="menu-tab">{$lang.menu}</span><span class="tab-back" id="help-tab">{$lang.help}</span>
+  <span class="tab-front" id="menu-tab">{$lang.menu}</span>
 </p>
 </div>
 <div id="main-div">
@@ -283,42 +283,6 @@ document.getElementById('tabbar-div').onclick=function(e)
     filename = loc.substring(pos1 + 1, pos2 - 4);
     act = pos4 < 0 ? loc.substring(pos3 + 4) : loc.substring(pos3 + 4, pos4);
     loadHelp(filename, act);
-  }
-}
-
-/**
- * 载入帮助内容
- */
-function loadHelp(filename, act)
-{
-  var doc = createDocument();
-  var path = 'help/' + helpLang + '/' + filename + ".xml";
-
-  document.getElementById("help-title").innerHTML = '';
-  document.getElementById("help-content").innerHTML = noHelp;
-  try
-  {
-    doc.load(path);
-
-    var items = doc.getElementsByTagName('section');
-
-    for (i = 0; i < items.length; i++)
-    {
-      if (items[i].getAttribute("id") == act)
-      {
-        var title = items[i].getElementsByTagName("title");
-        document.getElementById("help-title").innerHTML = (Browser.isIE) ? title[0].text : title[0].textContent;
-
-        var content = items[i].getElementsByTagName("content");
-        document.getElementById("help-content").innerHTML = (Browser.isIE) ? content[0].text : content[0].textContent;
-
-        break;
-      };
-    }
-  }
-  catch (e)
-  {
-    alert(e.message);
   }
 }
 

@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: user_msg.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: user_msg.php 15626 2009-02-19 07:58:36Z sunxiaodong $
 */
 
 $_LANG['msg_title'] = '留言標題';
@@ -21,6 +21,13 @@ $_LANG['msg_time'] = '留言時間';
 $_LANG['msg_content'] = '留言內容';
 $_LANG['user_name'] = '用戶名';
 $_LANG['msg_type'] = '類型';
+$_LANG['msg_status'] = '狀態';
+$_LANG['hidden'] = '隱藏';
+$_LANG['display'] = '顯示';
+$_LANG['allow'] = '允許顯示';
+$_LANG['forbid'] = '禁止顯示';
+$_LANG['user_center'] = '用戶中心';
+$_LANG['message_board'] = '留言板';
 
 $_LANG['from'] = '於';
 

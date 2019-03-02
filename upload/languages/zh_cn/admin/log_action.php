@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: log_action.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: log_action.php 16268 2009-06-19 02:28:46Z sxc_shop $
 */
 
 /*------------------------------------------------------ */
@@ -81,4 +81,11 @@ $_LANG['log_action']['fckfile'] = 'FCK文件';
 
 $_LANG['log_action']['db_backup'] = '数据库备份';
 
+$_LANG['log_action']['package'] = '超值礼包';
+
+$_LANG['log_action']['exchange_goods'] = '积分可兑换的商品';
+
+$_LANG['log_action']['suppliers'] = '供货商管理';
+
+$_LANG['log_action']['reg_fields'] = '会员注册项';
 ?>

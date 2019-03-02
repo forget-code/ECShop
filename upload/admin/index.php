@@ -8,8 +8,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: index.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: wangleisvn $
+ * $Id: index.php 16445 2009-07-08 06:50:09Z wangleisvn $
 */
 
 define('IN_ECS', true);
@@ -22,6 +22,7 @@ require_once(ROOT_PATH . '/includes/lib_order.php');
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == '')
 {
+    $smarty->assign('shop_url', urlencode($ecs->url()));
     $smarty->display('index.htm');
 }
 
@@ -45,10 +46,13 @@ elseif ($_REQUEST['act'] == 'top')
         }
     }
 
+    // 获得管理员设置的菜单
+
     // 获得管理员ID
     $smarty->assign('send_mail_on',$_CFG['send_mail_on']);
     $smarty->assign('nav_list', $lst);
     $smarty->assign('admin_id', $_SESSION['admin_id']);
+    $smarty->assign('certi', $_CFG['certi']);
 
     $smarty->display('top.htm');
 }
@@ -67,45 +71,10 @@ elseif ($_REQUEST['act'] == 'calculator')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'menu')
 {
-    // 权限对照表
-    $purview['02_goods_add']         = 'goods_manage';
-    $purview['16_tag_manage']        = 'tag_manage';
-    $purview['13_batch_add']         = 'goods_manage';
-    $purview['14_batch_edit']        = 'goods_manage';
-    $purview['15_goods_script']      = 'goods_manage';
-
-    $purview['02_snatch_list']       = 'snatch_manage';
-    $purview['02_order_list']        = 'order_view';
-    $purview['03_order_query']       = 'order_view';
-    $purview['04_merge_order']       = 'order_os_edit';
-    $purview['05_edit_order_print']  = 'order_os_edit';
-    $purview['08_add_order']         = 'order_edit';
-
-    $purview['flow_stats']           = 'client_flow_stats';
-    $purview['report_guest']         = 'client_flow_stats';
-    $purview['report_order']         = 'sale_order_stats';
-    $purview['report_sell']          = 'sale_order_stats';
-    $purview['report_users']         = 'client_flow_stats';
-    $purview['sale_list']            = 'sale_order_stats';
-    $purview['sell_stats']           = 'sale_order_stats';
-    $purview['visit_buy_per']        = 'client_flow_stats';
-    $purview['z_clicks_stats']       = 'ad_manage';
-
-    $purview['04_users_add']         = 'user_manage';
-    $purview['09_user_account']      = 'surplus_manage';
-
-    $purview['admin_logs']           = 'logs_manage';
-
-    $purview['02_shop_config']       = 'shop_config';
-    $purview['05_area_list']         = 'area_manage';
-
-    $purview['03_template_setup']    = 'template_manage';
-    $purview['04_template_library']  = 'template_manage';
-
-    $purview['04_sql_query']         = 'all';
-    $purview['convert']              = 'all';
-
     include_once('includes/inc_menu.php');
+
+// 权限对照表
+    include_once('includes/inc_priv.php');
 
     foreach ($modules AS $key => $value)
     {
@@ -122,9 +91,25 @@ elseif ($_REQUEST['act'] == 'menu')
             {
                 if ( isset($purview[$k]))
                 {
-                    if (! admin_priv($purview[$k], '', false))
+                    if (is_array($purview[$k]))
                     {
-                        continue;
+                        $boole = false;
+                        foreach ($purview[$k] as $action)
+                        {
+                             $boole = $boole || admin_priv($action, '', false);
+                        }
+                        if (!$boole)
+                        {
+                            continue;
+                        }
+
+                    }
+                    else
+                    {
+                        if (! admin_priv($purview[$k], '', false))
+                        {
+                            continue;
+                        }
                     }
                 }
                 if ($k == 'ucenter_setup' && $_CFG['integrate_code'] != 'ucenter')
@@ -139,11 +124,13 @@ elseif ($_REQUEST['act'] == 'menu')
         {
             $menus[$key]['action'] = $val;
         }
+
         // 如果children的子元素长度为0则删除该组
-        if(!count($menus[$key]['children']))
+        if(empty($menus[$key]['children']))
         {
             unset($menus[$key]);
         }
+
     }
 
     $smarty->assign('menus',     $menus);
@@ -340,6 +327,7 @@ elseif ($_REQUEST['act'] == 'main')
     " WHERE 1 " . order_query_sql('unconfirmed'));
     $status['unconfirmed'] = OS_UNCONFIRMED;
 
+//    $today_start = mktime(0,0,0,date('m'),date('d'),date('Y'));
     $order['stats']        = $db->getRow('SELECT COUNT(*) AS oCount, IFNULL(SUM(order_amount), 0) AS oAmount' .
     ' FROM ' .$ecs->table('order_info'));
 
@@ -477,14 +465,9 @@ elseif ($_REQUEST['act'] == 'main')
     /* 退款申请 */
     $smarty->assign('new_repay', $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('user_account') . ' WHERE process_type = ' . SURPLUS_RETURN . ' AND is_paid = 0 '));
 
-    /* 如果管理员的最后登陆时间大于24小时则检查最新版本 */
-    if (gmtime() - $_SESSION['last_check'] > (3600 * 12))
-    {
-        $smarty->assign('need_check_version', 1);
-    }
+
 
     assign_query_info();
-
     $smarty->assign('ecs_version',  VERSION);
     $smarty->assign('ecs_release',  RELEASE);
     $smarty->assign('ecs_lang',     $_CFG['lang']);
@@ -492,7 +475,44 @@ elseif ($_REQUEST['act'] == 'main')
     $smarty->assign('install_date', local_date($_CFG['date_format'], $_CFG['install_date']));
     $smarty->display('start.htm');
 }
+elseif ($_REQUEST['act'] == 'main_api')
+{
+        /* 如果管理员的最后登陆时间大于24小时则检查最新版本 */
+    if (gmtime() - $_SESSION['last_check'] > (3600 * 12))
+    {
 
+        include_once(ROOT_PATH . 'includes/cls_transport.php');
+        $ecs_version = VERSION;
+        $ecs_lang = $_CFG['lang'];
+        $ecs_release = RELEASE;
+        $php_ver = PHP_VERSION;
+        $mysql_ver = $db->version();
+        $order['stats'] = $db->getRow('SELECT COUNT(*) AS oCount, IFNULL(SUM(order_amount), 0) AS oAmount' .
+    ' FROM ' .$ecs->table('order_info'));
+        $ocount = $order['stats']['oCount'];
+        $oamount = $order['stats']['oAmount'];
+        $goods['total']   = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('goods').
+    ' WHERE is_delete = 0 AND is_alone_sale = 1 AND is_real = 1');
+        $gcount = $goods['total'];
+        $ecs_charset = strtoupper(EC_CHARSET);
+        $ecs_user = $db->getOne('SELECT COUNT(*) FROM ' . $ecs->table('users'));
+        $ecs_template = $db->getOne('SELECT value FROM ' . $ecs->table('shop_config') . ' WHERE code = \'template\'');
+        $style = $db->getOne('SELECT value FROM ' . $ecs->table('shop_config') . ' WHERE code = \'stylename\'');
+        if($style == '')
+        {
+            $style = '0';
+        }
+        $ecs_style = $style;
+        $shop_url = urlencode($ecs->url());
+
+        $apiget = "ver= $ecs_version &lang= $ecs_lang &release= $ecs_release &php_ver= $php_ver &mysql_ver= $mysql_ver &ocount= $ocount &oamount= $oamount &gcount= $gcount &charset= $ecs_charset &usecount= $ecs_user &template= $ecs_template &style= $ecs_style &url= $shop_url ";
+
+        $t = new transport;
+        $api_comment = $t->request('http://api.ecshop.com/checkver.php', $apiget);
+        $api_str = $api_comment["body"];
+        echo $api_str;
+    }
+}
 /*------------------------------------------------------ */
 //-- 开店向导第一步
 /*------------------------------------------------------ */
@@ -1143,5 +1163,100 @@ elseif ($_REQUEST['act'] == 'send_mail')
         $count = $db->getOne("SELECT COUNT(*) FROM " . $ecs->table('email_sendlist'));
         make_json_result('', sprintf($_LANG['mailsend_fail'],$row['email']), array('count' => $count));
     }
+}
+
+/*------------------------------------------------------ */
+//-- license操作
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'license')
+{
+    $is_ajax = $_GET['is_ajax'];
+
+    if (isset($is_ajax) && $is_ajax)
+    {
+        // license 检查
+        include_once(ROOT_PATH . 'includes/cls_transport.php');
+        include_once(ROOT_PATH . 'includes/cls_json.php');
+        include_once(ROOT_PATH . 'includes/lib_main.php');
+        include_once(ROOT_PATH . 'includes/lib_license.php');
+
+        $license = license_check();
+        switch ($license['flag'])
+        {
+            case 'succ':
+                if (isset($license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str']) && $license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str'] != '')
+                {
+                    make_json_result(process_login_license($license['request']['info']['service']['ecshop_b2c']['cert_auth']));
+                }
+                else
+                {
+                    make_json_error(0);
+                }
+            break;
+
+            case 'login_fail':
+            case 'login_ping_fail':
+                make_json_error(0);
+            break;
+
+            case 'reg_succ':
+                $_license = license_check();
+                switch ($_license['flag'])
+                {
+                    case 'login_succ':
+                        if (isset($_license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str']) && $_license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str'] != '')
+                        {
+                            make_json_result(process_login_license($license['request']['info']['service']['ecshop_b2c']['cert_auth']));
+                        }
+                        else
+                        {
+                            make_json_error(0);
+                        }
+                    break;
+
+                    case 'login_fail':
+                    case 'login_ping_fail':
+                        make_json_error(0);
+                    break;
+                }
+            break;
+
+            case 'reg_fail':
+            case 'reg_ping_fail':
+                make_json_error(0);
+            break;
+        }
+    }
+    else
+    {
+        make_json_error(0);
+    }
+}
+
+/**
+ * license check
+ * @return  bool
+ */
+function license_check()
+{
+    // return 返回数组
+    $return_array = array();
+
+    // 取出网店 license
+    $license = get_shop_license();
+
+    // 检测网店 license
+    if (!empty($license['certificate_id']) && !empty($license['token']) && !empty($license['certi']))
+    {
+        // license（登录）
+        $return_array = license_login();
+    }
+    else
+    {
+        // license（注册）
+        $return_array = license_reg();
+    }
+
+    return $return_array;
 }
 ?>

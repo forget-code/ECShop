@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: shopex47.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liuhui $
+ * $Id: shopex47.php 16038 2009-05-19 07:05:29Z liuhui $
  */
 
 if (!defined('IN_ECS'))
@@ -203,7 +203,7 @@ class shopex47
         {
             $cat = array();
             $cat['cat_id']      = $row['catid'];
-            $cat['cat_name']    = ecs_iconv($this->scharset, $this->tcharset, addslashes($row['cat']));
+            $cat['cat_name']    = $row['cat'];
             $cat['parent_id']   = $row['pid'];
             $cat['sort_order']  = $row['catord'];
 
@@ -221,7 +221,7 @@ class shopex47
         {
             $type = array();
             $type['cat_id']     = $row['prop_cat_id'];
-            $type['cat_name']   = ecs_iconv($this->scharset, $this->tcharset, addslashes($row['cat_name']));
+            $type['cat_name']   = $row['cat_name'];
             $type['enabled']    = '1';
             if (!$db->autoExecute($ecs->table('goods_type'), $type, 'INSERT', '', 'SILENT'))
             {
@@ -236,7 +236,7 @@ class shopex47
         {
             $attr = array();
             $attr['attr_id']         = $row['prop_id'];
-            $attr['attr_name']       = ecs_iconv($this->scharset, $this->tcharset, addslashes($row['prop_name']));
+            $attr['attr_name']       = $row['prop_name'];
             $attr['cat_id']          = $row['prop_cat_id'];
             $attr['sort_order']      = $row['ordnum'];
             $attr['attr_input_type'] = '1';
@@ -271,7 +271,7 @@ class shopex47
         while ($row = $this->sdb->fetchRow($res))
         {
             $brand = array(
-                'brand_name' => ecs_iconv($this->scharset, $this->tcharset, addslashes($row['brand_name'])),
+                'brand_name' => $row['brand_name'],
                 'brand_desc' => '',
                 'site_url' => ecs_iconv($this->scharset, $this->tcharset, addslashes($row['brand_site_url'])),
                 'brand_logo' => ecs_iconv($this->scharset, $this->tcharset, addslashes($row['brand_logo']))
@@ -359,7 +359,7 @@ class shopex47
             $goods['goods_id']      = $row['gid'];
             $goods['cat_id']        = $row['catid'];
             $goods['goods_sn']      = ecs_iconv($this->scharset, $this->tcharset, addslashes($row['bn']));
-            $goods['goods_name']    = ecs_iconv($this->scharset, $this->tcharset, addslashes($row['goods']));
+            $goods['goods_name']    = $row['goods'];
             $goods['brand_id']      = trim($row['brand']) == '' ? '0' : $brand_list[ecs_iconv($this->scharset, $this->tcharset, addslashes($row['brand']))];
             $goods['goods_number']  = $row['storage'];
             $goods['goods_weight']  = $row['weight'];
@@ -641,7 +641,7 @@ class shopex47
             {
                 //return $db->error();
             }
-            uc_call('uc_user_register', array($user['user_name'], $user['password'], $user['email']));
+          //  uc_call('uc_user_register', array($user['user_name'], $user['password'], $user['email']));
         }
 
         /* 收货人地址 */

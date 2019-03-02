@@ -8,8 +8,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: gen_goods_script.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: gen_goods_script.php 15561 2009-01-13 10:42:12Z sunxiaodong $
  */
 
 define('IN_ECS', true);
@@ -23,7 +23,7 @@ require(dirname(__FILE__) . '/includes/init.php');
 if ($_REQUEST['act'] == 'setup')
 {
     /* 检查权限 */
-    admin_priv('goods_manage');
+    admin_priv('gen_goods_script');
 
     /* 编码 */
     $lang_list = array(
@@ -33,7 +33,7 @@ if ($_REQUEST['act'] == 'setup')
     );
 
     /* 参数赋值 */
-    $ur_here = $_LANG['15_goods_script'];
+    $ur_here = $_LANG['16_goods_script'];
     $smarty->assign('ur_here',    $ur_here);
     $smarty->assign('cat_list',   cat_list());
     $smarty->assign('brand_list', get_brand_list());

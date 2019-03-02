@@ -9,9 +9,9 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-10-29 16:46:41 +0800 (星期三, 29 十月 2008) $
- * $Id: lib_updater.php 15130 2008-10-29 08:46:41Z testyang $
+ * $Author: liuhui $
+ * $Date: 2009-05-25 16:34:09 +0800 (星期一, 2009-05-25) $
+ * $Id: lib_updater.php 16107 2009-05-25 08:34:09Z liuhui $
  */
 
 /**
@@ -23,6 +23,8 @@
 function get_needup_version_list($old_version, $new_version)
 {
     /* 需要升级的版本号列表 */
+    $old_version = explode(' ',$old_version);
+    $old_version = $old_version[0];
     $need_list = array();
     $need = false;
     $version_history = read_version_history();

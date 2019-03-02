@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: yeepay.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: yeepay.php 15797 2009-04-15 10:46:09Z sxc_shop $
  */
 
 if (!defined('IN_ECS'))
@@ -92,7 +92,7 @@ class yeepay
     function get_code($order, $payment)
     {
         $data_merchant_id = $payment['yp_account'];
-        $data_order_id    = $order['log_id'];
+        $data_order_id    = $order['order_sn'];
         $data_amount      = $order['order_amount'];
         $message_type     = 'Buy';
         $data_cur         = 'CNY';
@@ -105,7 +105,7 @@ class yeepay
 
         $data_pay_key     = $payment['yp_key'];
         $data_pay_account = $payment['yp_account'];
-        $mct_properties   = '';
+        $mct_properties   = $order['log_id'];
         $def_url = $message_type . $data_merchant_id . $data_order_id . $data_amount . $data_cur . $product_id . $product_cat
                              . $product_desc . $data_return_url . $address_flag . $mct_properties;
         $MD5KEY = hmac($def_url, $data_pay_key);
@@ -166,7 +166,7 @@ class yeepay
                 ///支付成功
                 $v_result = true;
 
-                order_paid($orderid);
+                order_paid($merchant_param);
             }
         }
 
@@ -174,29 +174,32 @@ class yeepay
     }
 }
 
-function hmac($data, $key)
+if (!function_exists("hmac"))
 {
-    // RFC 2104 HMAC implementation for php.
-    // Creates an md5 HMAC.
-    // Eliminates the need to install mhash to compute a HMAC
-    // Hacked by Lance Rushing(NOTE: Hacked means written)
-
-    $key  = ecs_iconv('GB2312', 'UTF8', $key);
-    $data = ecs_iconv('GB2312', 'UTF8', $data);
-
-    $b = 64; // byte length for md5
-    if (strlen($key) > $b)
+    function hmac($data, $key)
     {
-        $key = pack('H*', md5($key));
+        // RFC 2104 HMAC implementation for php.
+        // Creates an md5 HMAC.
+        // Eliminates the need to install mhash to compute a HMAC
+        // Hacked by Lance Rushing(NOTE: Hacked means written)
+
+        $key  = ecs_iconv('GB2312', 'UTF8', $key);
+        $data = ecs_iconv('GB2312', 'UTF8', $data);
+
+        $b = 64; // byte length for md5
+        if (strlen($key) > $b)
+        {
+            $key = pack('H*', md5($key));
+        }
+
+        $key    = str_pad($key, $b, chr(0x00));
+        $ipad   = str_pad('', $b, chr(0x36));
+        $opad   = str_pad('', $b, chr(0x5c));
+        $k_ipad = $key ^ $ipad ;
+        $k_opad = $key ^ $opad;
+
+        return md5($k_opad . pack('H*', md5($k_ipad . $data)));
     }
-
-    $key    = str_pad($key, $b, chr(0x00));
-    $ipad   = str_pad('', $b, chr(0x36));
-    $opad   = str_pad('', $b, chr(0x5c));
-    $k_ipad = $key ^ $ipad ;
-    $k_opad = $key ^ $opad;
-
-    return md5($k_opad . pack('H*', md5($k_ipad . $data)));
 }
 
 ?>

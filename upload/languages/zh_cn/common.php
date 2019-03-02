@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: common.php 15374 2008-12-02 08:18:36Z sunxiaodong $
+ * $Author: wangleisvn $
+ * $Id: common.php 16406 2009-06-30 05:21:49Z wangleisvn $
 */
 
 /* 用户登录语言项 */
@@ -37,6 +37,7 @@ $_LANG['back_home'] = '返回首页';
 $_LANG['ur_here'] = '当前位置:';
 $_LANG['all_goods'] = '全部商品';
 $_LANG['all_recommend'] = "全部推荐";
+$_LANG['all_attribute'] = "全部";
 $_LANG['promotion_goods'] = '促销商品';
 $_LANG['best_goods'] = '精品推荐';
 $_LANG['new_goods'] = '新品上市';
@@ -54,6 +55,7 @@ $_LANG['shopping_and_other'] = '购买过此商品的人还购买过';
 $_LANG['shop_price'] = '本店售价：';
 $_LANG['market_price'] = '市场价格：';
 $_LANG['goods_brief'] = '商品描述：';
+$_LANG['goods_album'] = '商品相册';
 $_LANG['promote_price'] = "促销价：";
 $_LANG['fittings_price'] = '配件价格：';
 $_LANG['collect'] = '加入收藏夹';
@@ -83,6 +85,7 @@ $_LANG['edit'] = '编辑';
 $_LANG['drop'] = '删除';
 $_LANG['view'] = '查看';
 $_LANG['modify'] = '修改';
+$_LANG['is_cancel'] = '取消';
 $_LANG['amend_amount'] = '修改数量';
 $_LANG['end'] = '结束';
 $_LANG['require_field'] = '(必填)';
@@ -90,8 +93,12 @@ $_LANG['search_result'] = '搜索结果';
 $_LANG['order_number'] = '订单号';
 $_LANG['consignment'] = '发货单';
 $_LANG['activities'] = '商品正在进行的活动';
+$_LANG['remark_package'] = '超值礼包';
+$_LANG['old_price'] = '原  价：';
+$_LANG['package_price'] = '礼包价：';
+$_LANG['then_old_price'] = '节  省：';
 
-$_LANG['searchkeywords_notice'] = '匹配多个关键字全部，可用 "+" 或 "AND" 连接。如 win32 AND unix<br />匹配多个关键字其中部分，可用空格或 "OR" 连接。如 win32 OR unix';
+$_LANG['searchkeywords_notice'] = '匹配多个关键字全部，可用 "空格" 或 "AND" 连接。如 win32 AND unix<br />匹配多个关键字其中部分，可用"+"或 "OR" 连接。如 win32 OR unix';
 $_LANG['hidden_outstock'] = '隐藏已脱销的商品';
 $_LANG['keywords'] = '关键字';
 $_LANG['sc_ds'] = '搜索简介';
@@ -120,6 +127,9 @@ $_LANG['day'] = '天';
 $_LANG['hour'] = '小时';
 $_LANG['minute'] = '分钟';
 $_LANG['compare'] = '比较';
+$_LANG['volume_price'] = '购买商品达到以下数量区间时可享受的优惠价格';
+$_LANG['number_to'] = '数量';
+$_LANG['article_list'] = '文章列表';
 
 /* 商品比较JS语言项 */
 $_LANG['compare_js']['button_compare'] = '比较选定商品';
@@ -171,9 +181,12 @@ $_LANG['addto_cart_success_1'] = "该商品已添加到购物车，您现在还�
 $_LANG['addto_cart_success_2'] = "该商品已添加到购物车，您现在还需要继续购物吗？\n如果您希望继续购物，请点击“确定”按钮。\n如果您希望马上结算，请点击“取消”按钮。";
 
 /* 分页排序 */
+$_LANG['exchange_sort']['goods_id'] = '按上架时间排序';
+$_LANG['exchange_sort']['exchange_integral'] = '按积分排序';
+$_LANG['exchange_sort']['last_update'] = '按更新时间排序';
 $_LANG['sort']['goods_id'] = '按上架时间排序';
 $_LANG['sort']['shop_price'] = '按价格排序';
-$_LANG['sort']['last_update'] = '更新时间';
+$_LANG['sort']['last_update'] = '按更新时间排序';
 $_LANG['order']['DESC'] = '倒序';
 $_LANG['order']['ASC'] = '正序';
 $_LANG['pager_1'] = '总计 ';
@@ -260,6 +273,9 @@ $_LANG['snatch_log'] = '参加夺宝奇兵%s ';
 $_LANG['not_for_you'] = '你不是获胜者，不能购买';
 $_LANG['order_placed'] = '您已经下过订单了，如果您想重新购买，请先取消原来的订单';
 
+/* 购物流程中的前台部分 */
+$_LANG['select_spe'] = '请选择商品属性';
+
 /* 购物流程中的订单部分 */
 $_LANG['price'] = '价格';
 $_LANG['name'] = '名称';
@@ -282,6 +298,7 @@ $_LANG['cod'] = '配送决定';
 
 $_LANG['curr_stauts'] = '当前状态';
 $_LANG['use_bonus'] = '使用红包';
+$_LANG['use_bonus_kill'] = '使用线下红包';
 $_LANG['invoice'] = '开发票';
 $_LANG['invoice_type'] = '发票类型';
 $_LANG['invoice_title'] = '发票抬头';
@@ -446,6 +463,16 @@ $_LANG['ws_remark'] = '请输入您的联系方式、付款方式和配送方式
 $_LANG['ws_order_submitted'] = '您的订单已提交成功，请记住您的订单号: %s。';
 $_LANG['ws_price_list'] = '价格单';
 
+/* 积分兑换部分语言项 */
+$_LANG['exchange'] = '积分商城';
+$_LANG['exchange_integral'] = '消耗积分：';
+$_LANG['exchange_goods'] = '立刻兑换';
+$_LANG['eg_error_login'] = '对不起，您没有登录，不能参加兑换，请您先登录！';
+$_LANG['eg_error_status'] = '对不起，该商品已经取消，现在不能兑换！';
+$_LANG['eg_error_integral'] = '对不起，您现有的积分值不够兑换本商品！';
+$_LANG['notice_eg_integral'] = '积分商城商品需要消耗积分：';
+$_LANG['eg_error_number'] = '对不起，该商品库存不足，现在不能兑换！';
+
 /* 会员登录注册 */
 $_LANG['member_name'] = '会员';
 $_LANG['password'] = '密码';
@@ -462,11 +489,17 @@ $_LANG['edit_user_info'] = '进入用户中心';
 $_LANG['logout'] = '退出';
 $_LANG['user_logout'] = '退出';
 $_LANG['welcome'] = '欢迎光临本店';
+$_LANG['user_login'] = '会员登陆';
+$_LANG['login_now'] = '立即登陆';
+$_LANG['reg_now'] = '立即注册';
 
 /* 商品品牌页 */
 $_LANG['official_site'] = '官方网站：';
 $_LANG['brand_category'] = '分类浏览：';
 $_LANG['all_category'] = '所有分类';
+
+/* 商品分类页 */
+$_LANG['goods_filter'] = '商品筛选';
 
 /* cls_image类的语言项 */
 $_LANG['directory_readonly'] = '目录 % 不存在或不可写';
@@ -507,6 +540,17 @@ $_LANG['email_checked'] = '邮件已经被确认！';
 $_LANG['hash_wrong'] = '验证串错误！请核对验证串或输入email地址重新发送验证串！';
 $_LANG['email_canceled'] = '邮件已经被退定！';
 $_LANG['goods_click_count'] = '商品点击数';
+$_LANG['p_y']['link_start'] = '<a href="http://www.ecshop.com" target="_blank" style=" font-family:Verdana; font-size:11px;">';
+$_LANG['p_y']['link_p'] = 'Powe';
+$_LANG['p_y']['link_r'] = 'red&nbsp;';
+$_LANG['p_y']['link_b'] = 'by&nbsp;';
+$_LANG['p_y']['main_start'] = '<strong><span style="color: #3366FF">';
+$_LANG['p_y']['main_e'] = 'E';
+$_LANG['p_y']['main_c'] = 'CSho';
+$_LANG['p_y']['main_p'] = 'p</span>&nbsp;';
+$_LANG['p_y']['v_s'] = '<span style="color: #FF9966">';
+$_LANG['p_y']['v'] = VERSION;
+$_LANG['p_y']['link_end'] = '</span></strong></a>&nbsp;';
 
 /* 虚拟卡 */
 $_LANG['card_sn'] = '卡片序号';
@@ -535,7 +579,7 @@ $_LANG['stock_up'] = '缺货';
 
 $_LANG['hot_search'] = '热门搜索';
 
-$_LANG['please_select_attr'] = '你加入购物车的商品有不同型号可选，你是要否立即跳转到商品详情选择型号？';
+$_LANG['please_select_attr'] = '你加入购物车的商品有不同型号可选，你是否要立即跳转到商品详情选择型号？';
 
 /* 促销信息栏 */
 $_LANG['snatch_promotion'] = '[夺宝]';
@@ -551,6 +595,8 @@ $_LANG['feed_goods_price'] = "商品价格";
 $_LANG['feed_goods_desc'] = "商品描述";
 
 /* 留言板 */
+$_LANG['shopman_comment'] = '商品评论';
+$_LANG['message_ping'] = '评';
 $_LANG['message_board'] = "留言板";
 $_LANG['post_message'] = "我要留言";
 $_LANG['message_title'] = '主题';
@@ -566,13 +612,18 @@ $_LANG['message_type'][M_ENQUIRY] = '询问';
 $_LANG['message_type'][M_CUSTOME] = '售后';
 $_LANG['message_type'][M_BUY] = '求购';
 $_LANG['message_type'][M_BUSINESS] = '商家留言';
+$_LANG['message_type'][M_COMMENT] = '评论';
+$_LANG['message_board_js']['msg_empty_email'] = '请输入您的电子邮件地址';
+$_LANG['message_board_js']['msg_error_email'] = '电子邮件地址格式不正确';
 $_LANG['message_board_js']['msg_title_empty'] = '留言标题为空';
 $_LANG['message_board_js']['msg_content_empty'] = '留言内容为空';
 $_LANG['message_board_js']['msg_captcha_empty'] = '验证码为空';
 $_LANG['message_board_js']['msg_title_limit'] = '留言标题不能超过200个字';
-$_LANG['add_message_success'] = '发表留言成功';
+$_LANG['message_submit_wait'] = '您的留言已成功发表, 请等待管理员的审核!';
+$_LANG['message_submit_done'] = '发表留言成功';
 $_LANG['message_board_close'] = "暂停留言板功能";
 $_LANG['upload_file_limit'] = '文件大小超过了限制 %dKB';
+$_LANG['message_list_lnk'] = '返回留言列表';
 
 /* 报价单 */
 $_LANG['quotation'] = "报价单";
@@ -588,6 +639,8 @@ $_LANG['reset'] = '重 置';
 $_LANG['order_query'] = '订单查询';
 $_LANG['shipping_query'] = '发货查询';
 $_LANG['view_history'] = '浏览历史';
+$_LANG['clear_history'] = '[清空]';
+$_LANG['no_history'] = '您已清空最近浏览过的商品';
 $_LANG['goods_tag'] = '商品标签';
 $_LANG['releate_goods'] = '相关商品';
 $_LANG['goods_list'] = '商品列表';
@@ -627,5 +680,6 @@ $_LANG['goods_card'] = '祝福贺卡';
 $_LANG['groupbuy_intro'] = '团购说明';
 $_LANG['groupbuy_goods_info'] = '团购商品详情';
 $_LANG['act_time'] = '起止时间';
+$_LANG['top10'] = '销售排行';
 
 ?>

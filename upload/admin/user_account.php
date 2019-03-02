@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: user_account.php 15311 2008-11-20 06:29:41Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: user_account.php 15548 2009-01-09 12:18:44Z sunxiaodong $
 */
 
 define('IN_ECS', true);
@@ -490,11 +490,14 @@ function account_list()
         {
             $filter['keywords'] = json_str_iconv($filter['keywords']);
         }
+
         $filter['process_type'] = isset($_REQUEST['process_type']) ? intval($_REQUEST['process_type']) : -1;
         $filter['payment'] = empty($_REQUEST['payment']) ? '' : trim($_REQUEST['payment']);
         $filter['is_paid'] = isset($_REQUEST['is_paid']) ? intval($_REQUEST['is_paid']) : -1;
         $filter['sort_by'] = empty($_REQUEST['sort_by']) ? 'add_time' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
+        $filter['start_date'] = empty($_REQUEST['start_date']) ? '' : local_strtotime($_REQUEST['start_date']);
+        $filter['end_date'] = empty($_REQUEST['end_date']) ? '' : (local_strtotime($_REQUEST['end_date']) + 86400);
 
         $where = " WHERE 1 ";
         if ($filter['user_id'] > 0)
@@ -525,6 +528,12 @@ function account_list()
             $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('user_account'). " AS ua, ".
                    $GLOBALS['ecs']->table('users') . " AS u " . $where;
         }
+        /*　时间过滤　*/
+        if (!empty($filter['start_date']) && !empty($filter['end_date']))
+        {
+            $where .= "AND paid_time >= " . $filter['start_date']. " AND paid_time < '" . $filter['end_date'] . "'";
+        }
+
         $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('user_account'). " AS ua, ".
                    $GLOBALS['ecs']->table('users') . " AS u " . $where;
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);

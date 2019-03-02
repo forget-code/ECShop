@@ -9,7 +9,7 @@
 <!-- TemplateEndEditable --><!-- TemplateBeginEditable name="head" --><!-- TemplateEndEditable -->
 <link rel="shortcut icon" href="favicon.ico" />
 <link rel="icon" href="animated_favicon.gif" type="image/gif" />
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="{$ecs_css_path}" rel="stylesheet" type="text/css" />
 {* 包含脚本文件 *}
 {insert_scripts files='common.js,user.js,transport.js'}
 </head>
@@ -150,16 +150,23 @@
         <tr>
           <td align="right">{$lang.other_home_phone}</td>
           <td>
-          <input name="other[home_phone]" type="text" size="25" class="inputBg" id="home_phone" onblur="check_home_phone(this.value);" />
-
+          <input name="other[home_phone]" type="text" size="25" class="inputBg" id="home_phone"/>
           </td>
         </tr>
         <tr>
           <td align="right">{$lang.other_mobile_phone}</td>
           <td>
           <input name="other[mobile_phone]" type="text" size="25" class="inputBg" />
-           </td>
+          </td>
         </tr>
+        <!-- {foreach from=$extend_info_list item=field} -->
+        <tr>
+          <td align="right">{$field.reg_field_name}</td>
+          <td>
+          <input name="extend_field{$field.id}" type="text" size="25" class="inputBg" />
+          </td>
+        </tr>
+        <!-- {/foreach} -->
       <!-- 判断是否启用验证码{if $enabled_captcha} -->
       <tr>
       <td align="right">{$lang.comment_captcha}</td>
@@ -177,6 +184,7 @@
           <td>&nbsp;</td>
           <td align="left">
           <input name="act" type="hidden" value="act_register" >
+          <input type="hidden" name="back_act" value="{$back_act}" />
           <input name="Submit" type="submit" value="" class="us_Submit_reg">
           </td>
         </tr>

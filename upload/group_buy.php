@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: group_buy.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: sxc_shop $
+ * $Id: group_buy.php 16060 2009-05-21 06:40:57Z sxc_shop $
  */
 
 define('IN_ECS', true);
@@ -84,8 +84,9 @@ if ($_REQUEST['act'] == 'list')
         $smarty->assign('helps',      get_shop_help());       // 网店帮助
         $smarty->assign('top_goods',  get_top10());           // 销售排行
         $smarty->assign('promotion_info', get_promotion_info());
+        $smarty->assign('feed_url',         ($_CFG['rewrite'] == 1) ? "feed-typegroup_buy.xml" : 'feed.php?type=group_buy'); // RSS URL
 
-        assign_dynamic('goods');
+        assign_dynamic('group_buy_list');
     }
 
     /* 显示模板 */
@@ -141,7 +142,7 @@ elseif ($_REQUEST['act'] == 'view')
             exit;
         }
         $goods['url'] = build_uri('goods', array('gid' => $goods_id), $goods['goods_name']);
-        $smarty->assign('goods', $goods);
+        $smarty->assign('gb_goods', $goods);
 
         /* 取得商品的规格 */
         $properties = get_goods_properties($goods_id);
@@ -159,7 +160,7 @@ elseif ($_REQUEST['act'] == 'view')
         $smarty->assign('helps',      get_shop_help());       // 网店帮助
         $smarty->assign('top_goods',  get_top10());           // 销售排行
         $smarty->assign('promotion_info', get_promotion_info());
-        assign_dynamic('goods');
+        assign_dynamic('group_buy_goods');
     }
 
     //更新商品点击次数
@@ -289,7 +290,7 @@ function group_buy_count()
     $sql = "SELECT COUNT(*) " .
             "FROM " . $GLOBALS['ecs']->table('goods_activity') .
             "WHERE act_type = '" . GAT_GROUP_BUY . "' " .
-            "AND start_time <= '$now'";
+            "AND start_time <= '$now' AND is_finished < 3";
 
     return $GLOBALS['db']->getOne($sql);
 }
@@ -310,7 +311,7 @@ function group_buy_list($size, $page)
             "FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS b " .
                 "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS g ON b.goods_id = g.goods_id " .
             "WHERE b.act_type = '" . GAT_GROUP_BUY . "' " .
-            "AND b.start_time <= '$now'";
+            "AND b.start_time <= '$now' AND b.is_finished < 3 ORDER BY b.act_id DESC";
     $res = $GLOBALS['db']->selectLimit($sql, $size, ($page - 1) * $size);
     while ($group_buy = $GLOBALS['db']->fetchRow($res))
     {

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: goods_type.php 15013 2008-10-23 09:31:42Z testyang $
+ * $Author: liuhui $
+ * $Id: goods_type.php 16147 2009-06-01 09:52:08Z liuhui $
 */
 
 define('IN_ECS', true);
@@ -30,6 +30,7 @@ if ($_REQUEST['act'] == 'manage')
     $smarty->assign('full_page',        1);
 
     $good_type_list = get_goodstype();
+    $good_in_type = '';
 
     $smarty->assign('goods_type_arr',   $good_type_list['type']);
     $smarty->assign('filter',       $good_type_list['filter']);

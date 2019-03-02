@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: goods.php 15086 2008-10-27 06:21:49Z testyang $
+ * $Author: sxc_shop $
+ * $Id: goods.php 16154 2009-06-03 06:29:03Z sxc_shop $
 */
 
 $_LANG['edit_goods'] = '編輯商品信息';
@@ -38,6 +38,7 @@ $_LANG['batch_not_new_confirm'] = '您確實要把選中的商品取消新品嗎
 $_LANG['batch_hot_confirm'] = '您確實要把選中的商品設為熱銷嗎？';
 $_LANG['batch_not_hot_confirm'] = '您確實要把選中的商品取消熱銷嗎？';
 $_LANG['cannot_found_goods'] = '找不到指定的商品。';
+$_LANG['sel_goods_type'] = '請選擇商品類型';
 
 /*------------------------------------------------------ */
 //-- 圖片處理相關提示信息
@@ -54,12 +55,14 @@ $_LANG['not_writable_warning'] = '目錄 %s 不可寫，您需要把該目錄設
 /*------------------------------------------------------ */
 $_LANG['goods_cat'] = '所有分類';
 $_LANG['goods_brand'] = '所有品牌';
-$_LANG['intro_type'] = '推薦';
+$_LANG['intro_type'] = '全部';
 $_LANG['keyword'] = '關鍵字';
 $_LANG['is_best'] = '精品';
 $_LANG['is_new'] = '新品';
 $_LANG['is_hot'] = '熱銷';
 $_LANG['is_promote'] = '特價';
+$_LANG['all_type'] = '全部推薦';
+$_LANG['sort_order'] = '推薦排序';
 
 $_LANG['goods_name'] = '商品名稱';
 $_LANG['goods_sn'] = '貨號';
@@ -115,6 +118,7 @@ $_LANG['auto_thumb'] = '自動生成商品縮略圖';
 $_LANG['lab_keywords'] = '商品關鍵詞：';
 $_LANG['lab_goods_brief'] = '商品簡單描述：';
 $_LANG['lab_seller_note'] = '商家備註：';
+$_LANG['lab_goods_type'] = '商品類型：';
 $_LANG['lab_picture_url'] = '商品圖片外部URL';
 $_LANG['lab_thumb_url'] = '商品縮略圖外部URL';
 
@@ -139,6 +143,7 @@ $_LANG['notice_rank_integral'] = '購買該商品時贈送等級積分數,-1表�
 $_LANG['notice_seller_note'] = '僅供商家自己看的信息';
 $_LANG['notice_keywords'] = '用空格分隔';
 $_LANG['notice_user_price'] = '會員價格為-1時表示會員價格按會員等級折扣率計算。你也可以為每個等級指定一個固定價格';
+$_LANG['notice_goods_type'] = '請選擇商品的所屬類型，進而完善此商品的屬性';
 
 $_LANG['on_sale_desc'] = '打勾表示允許銷售，否則不允許銷售。';
 $_LANG['alone_sale'] = '打勾表示能作為普通商品銷售，否則只能作為配件或贈品銷售。';
@@ -164,6 +169,12 @@ $_LANG['rapid_add_brand'] = '添加品牌';
 $_LANG['category_manage'] = '分類管理';
 $_LANG['brand_manage'] = '品牌管理';
 $_LANG['hide'] = '隱藏';
+
+$_LANG['lab_volume_price'] = '商品優惠價格：';
+$_LANG['volume_number'] = '優惠數量';
+$_LANG['volume_price'] = '優惠價格';
+$_LANG['notice_volume_price'] = '購買數量達到優惠數量時享受的優惠價格';
+$_LANG['volume_number_continuous'] = '優惠數量重複！';
 
 /*------------------------------------------------------ */
 //-- 關聯商品
@@ -225,10 +236,16 @@ $_LANG['js_languages']['batch_trash_confirm'] = '您確實要把選中的商品�
 $_LANG['js_languages']['go_category_page'] = '本頁數據將丟失，確認要去商品分類頁添加分類嗎？';
 $_LANG['js_languages']['go_brand_page'] = '本頁數據將丟失，確認要去商品品牌頁添加品牌嗎？';
 
+$_LANG['js_languages']['volume_num_not_null'] = '請輸入優惠數量';
+$_LANG['js_languages']['volume_num_not_number'] = '優惠數量不是數字';
+$_LANG['js_languages']['volume_price_not_null'] = '請輸入優惠價格';
+$_LANG['js_languages']['volume_price_not_number'] = '優惠價格不是數字';
+
 /* 虛擬卡 */
 $_LANG['card'] = '查看虛擬卡信息';
 $_LANG['replenish'] = '補貨';
 $_LANG['batch_card_add'] = '批量補貨';
+$_LANG['add_replenish'] = '添加虛擬卡卡密';
 
 $_LANG['goods_number_error'] = '商品庫存數量錯誤';
 

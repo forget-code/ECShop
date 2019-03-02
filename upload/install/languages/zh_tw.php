@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: testyang $
- * $Id: zh_tw.php 15159 2008-11-05 07:56:06Z testyang $
+ * $Author: liubo $
+ * $Id: zh_tw.php 16316 2009-06-23 07:14:38Z liubo $
  */
 
 /* 通用語言項 */
@@ -39,7 +39,7 @@ $_LANG['uc_intro'] = 'UCenter 是 Comsenz 公司產品的核心服務程序，Di
 
 
 /* 環境檢測頁 */
-$_LANG['checking_title'] = 'ECShop安裝程序 第3步/共4步 環境檢測';
+$_LANG['checking_title'] = 'ECShop安裝程序 第2步/共3步 環境檢測';
 $_LANG['system_environment'] = '系統環境';
 $_LANG['dir_priv_checking'] = '目錄權限檢測';
 $_LANG['template_writable_checking'] = '模板可寫性檢查';
@@ -84,6 +84,7 @@ $_LANG['db_pass'] = '密碼：';
 $_LANG['go'] = '搜';
 $_LANG['db_list'] = '已有數據庫';
 $_LANG['db_prefix'] = '表前綴：';
+$_LANG['change_prefix'] = '建議您修改表首綴';
 $_LANG['admin_account'] = '管理員帳號';
 $_LANG['admin_name'] = '管理員姓名：';
 $_LANG['admin_password'] = '登錄密碼：';
@@ -108,12 +109,17 @@ $_LANG['dv'] = '數碼攝像機';
 $_LANG['cosmetics'] = '化妝品';
 $_LANG['install_at_once'] = '立即安裝';
 $_LANG['default_friend_link'] = 'ECSHOP 網上商店管理系統';
+$_LANG['maifou_friend_link'] = '免費申請網店';
 $_LANG['monitor_title'] = '安裝程序監視器';
 $_LANG['admin_user'][] = '商品列表|goods.php?act=list';
 $_LANG['admin_user'][] = '訂單列表|order.php?act=list';
 $_LANG['admin_user'][] = '用戶評論|comment_manage.php?act=list';
 $_LANG['admin_user'][] = '會員列表|users.php?act=list';
 $_LANG['admin_user'][] = '商店設置|shop_config.php?act=list_edit';
+$_LANG['password_intensity'] = '密碼強度：';
+$_LANG['pwd_lower'] = '弱';
+$_LANG['pwd_middle'] = '中';
+$_LANG['pwd_high'] = '強';
 
 /* 提示信息 */
 $_LANG['has_locked_installer'] = '<strong>安裝程序已經被鎖定。</strong><br /><br />如果您確定要重新安裝 ECSHOP，請刪除data目錄下的 install.lock。';
@@ -155,7 +161,9 @@ $_LANG['js_languages']['display_detail'] = '顯示細節';
 $_LANG['js_languages']['hide_detail'] = '隱藏細節';
 $_LANG['js_languages']['has_been_stopped'] = '安裝進程已中止';
 $_LANG['js_languages']['setup_ucenter'] = '註冊到UCenter............';
-
+$_LANG['js_languages']['password_invaild'] = '密碼必須同時包含字母及數字';
+$_LANG['js_languages']['password_short'] = '密碼長度不能小於8';
+$_LANG['js_languages']['password_not_eq'] = '密碼不相同';
 
 /* UCenter 模板用到的語言項*/
 $_LANG['tagtemplates_goodsname'] = '商品名稱';
