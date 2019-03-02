@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ECSHOP 鎼滅储绋嬪簭
+ * ECSHOP 搜索程序
  * ============================================================================
- * 鐗堟潈鎵€鏈 2005-2011 涓婃捣鍟嗘淳缃戠粶绉戞妧鏈夐檺鍏?徃锛屽苟淇濈暀鎵€鏈夋潈鍒┿€
- * 缃戠珯鍦板潃: http://www.ecshop.com锛
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
+ * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
- * 杩欎笉鏄?竴涓?嚜鐢辫蒋浠讹紒鎮ㄥ彧鑳藉湪涓嶇敤浜庡晢涓氱洰鐨勭殑鍓嶆彁涓嬪?绋嬪簭浠ｇ爜杩涜?淇?敼鍜
- * 浣跨敤锛涗笉鍏佽?瀵圭▼搴忎唬鐮佷互浠讳綍褰㈠紡浠讳綍鐩?殑鐨勫啀鍙戝竷銆
+ * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
+ * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
  * $Id: search.php 17217 2011-01-19 06:29:08Z liubo $
@@ -48,7 +48,7 @@ else
         $string = unserialize($string);
         if ($string !== false)
         {
-            /* 鐢ㄦ埛鍦ㄩ噸瀹氬悜鐨勬儏鍐典笅褰撲綔涓€娆¤?闂 */
+            /* 用户在重定向的情况下当作一次访问 */
             if (!empty($string['search_encode_time']))
             {
                 if (time() > $string['search_encode_time'] + 2)
@@ -79,7 +79,7 @@ $_REQUEST = array_merge($_REQUEST, addslashes_deep($string));
 $_REQUEST['act'] = !empty($_REQUEST['act']) ? trim($_REQUEST['act']) : '';
 
 /*------------------------------------------------------ */
-//-- 楂樼骇鎼滅储
+//-- 高级搜索
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'advanced_search')
 {
@@ -92,12 +92,12 @@ if ($_REQUEST['act'] == 'advanced_search')
     assign_template();
     assign_dynamic('search');
     $position = assign_ur_here(0, $_LANG['advanced_search']);
-    $smarty->assign('page_title', $position['title']);    // 椤甸潰鏍囬?
-    $smarty->assign('ur_here',    $position['ur_here']);  // 褰撳墠浣嶇疆
+    $smarty->assign('page_title', $position['title']);    // 页面标题
+    $smarty->assign('ur_here',    $position['ur_here']);  // 当前位置
 
-    $smarty->assign('categories', get_categories_tree()); // 鍒嗙被鏍
-    $smarty->assign('helps',      get_shop_help());       // 缃戝簵甯?姪
-    $smarty->assign('top_goods',  get_top10());           // 閿€鍞?帓琛
+    $smarty->assign('categories', get_categories_tree()); // 分类树
+    $smarty->assign('helps',      get_shop_help());       // 网店帮助
+    $smarty->assign('top_goods',  get_top10());           // 销售排行
     $smarty->assign('promotion_info', get_promotion_info());
     $smarty->assign('cat_list',   cat_list(0, 0, true, 2, false));
     $smarty->assign('brand_list', get_brand_list());
@@ -109,7 +109,7 @@ if ($_REQUEST['act'] == 'advanced_search')
     exit;
 }
 /*------------------------------------------------------ */
-//-- 鎼滅储缁撴灉
+//-- 搜索结果
 /*------------------------------------------------------ */
 else
 {
@@ -125,7 +125,7 @@ else
     $action = '';
     if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'form')
     {
-        /* 瑕佹樉绀洪珮绾ф悳绱㈡爮 */
+        /* 要显示高级搜索栏 */
         $adv_value['keywords']  = htmlspecialchars(stripcslashes($_REQUEST['keywords']));
         $adv_value['brand']     = $_REQUEST['brand'];
         $adv_value['min_price'] = $_REQUEST['min_price'];
@@ -134,19 +134,19 @@ else
 
         $attributes = get_seachable_attributes($_REQUEST['goods_type']);
 
-        /* 灏嗘彁浜ゆ暟鎹?噸鏂拌祴鍊 */
+        /* 将提交数据重新赋值 */
         foreach ($attributes['attr'] AS $key => $val)
         {
             if (!empty($_REQUEST['attr'][$val['id']]))
             {
                 if ($val['type'] == 2)
                 {
-                    $attributes['attr'][$key]['value']['from'] = !empty($_REQUEST['attr'][$val['id']]['from']) ? trim($_REQUEST['attr'][$val['id']]['from']) : '';
-                    $attributes['attr'][$key]['value']['to']   = !empty($_REQUEST['attr'][$val['id']]['to'])   ? trim($_REQUEST['attr'][$val['id']]['to'])   : '';
+                    $attributes['attr'][$key]['value']['from'] = !empty($_REQUEST['attr'][$val['id']]['from']) ? htmlspecialchars(stripcslashes(trim($_REQUEST['attr'][$val['id']]['from']))) : '';
+                    $attributes['attr'][$key]['value']['to']   = !empty($_REQUEST['attr'][$val['id']]['to'])   ? htmlspecialchars(stripcslashes(trim($_REQUEST['attr'][$val['id']]['to'])))   : '';
                 }
                 else
                 {
-                    $attributes['attr'][$key]['value'] = !empty($_REQUEST['attr'][$val['id']]) ? trim($_REQUEST['attr'][$val['id']]) : '';
+                    $attributes['attr'][$key]['value'] = !empty($_REQUEST['attr'][$val['id']]) ? htmlspecialchars(stripcslashes(trim($_REQUEST['attr'][$val['id']]))) : '';
                 }
             }
         }
@@ -166,7 +166,7 @@ else
         $action = 'form';
     }
 
-    /* 鍒濆?鍖栨悳绱㈡潯浠 */
+    /* 初始化搜索条件 */
     $keywords  = '';
     $tag_where = '';
     if (!empty($_REQUEST['keywords']))
@@ -174,25 +174,25 @@ else
         $arr = array();
         if (stristr($_REQUEST['keywords'], ' AND ') !== false)
         {
-            /* 妫€鏌ュ叧閿?瓧涓?槸鍚︽湁AND锛屽?鏋滃瓨鍦ㄥ氨鏄?苟 */
+            /* 检查关键字中是否有AND，如果存在就是并 */
             $arr        = explode('AND', $_REQUEST['keywords']);
             $operator   = " AND ";
         }
         elseif (stristr($_REQUEST['keywords'], ' OR ') !== false)
         {
-            /* 妫€鏌ュ叧閿?瓧涓?槸鍚︽湁OR锛屽?鏋滃瓨鍦ㄥ氨鏄?垨 */
+            /* 检查关键字中是否有OR，如果存在就是或 */
             $arr        = explode('OR', $_REQUEST['keywords']);
             $operator   = " OR ";
         }
         elseif (stristr($_REQUEST['keywords'], ' + ') !== false)
         {
-            /* 妫€鏌ュ叧閿?瓧涓?槸鍚︽湁鍔犲彿锛屽?鏋滃瓨鍦ㄥ氨鏄?垨 */
+            /* 检查关键字中是否有加号，如果存在就是或 */
             $arr        = explode('+', $_REQUEST['keywords']);
             $operator   = " OR ";
         }
         else
         {
-            /* 妫€鏌ュ叧閿?瓧涓?槸鍚︽湁绌烘牸锛屽?鏋滃瓨鍦ㄥ氨鏄?苟 */
+            /* 检查关键字中是否有空格，如果存在就是并 */
             $arr        = explode(' ', $_REQUEST['keywords']);
             $operator   = " AND ";
         }
@@ -217,7 +217,7 @@ else
             }
 
             $db->autoReplace($ecs->table('keywords'), array('date' => local_date('Y-m-d'),
-                'searchengine' => 'ecshop', 'keyword' => htmlspecialchars_decode(str_replace('%', '', $val)), 'count' => 1), array('count' => 1));
+                'searchengine' => 'ecshop', 'keyword' => addslashes(str_replace('%', '', $val)), 'count' => 1), array('count' => 1));
         }
         $keywords .= ')';
 
@@ -237,7 +237,7 @@ else
     $min_price  = $_REQUEST['min_price'] != 0                               ? " AND g.shop_price >= '$_REQUEST[min_price]'" : '';
     $max_price  = $_REQUEST['max_price'] != 0 || $_REQUEST['min_price'] < 0 ? " AND g.shop_price <= '$_REQUEST[max_price]'" : '';
 
-    /* 鎺掑簭銆佹樉绀烘柟寮忎互鍙婄被鍨 */
+    /* 排序、显示方式以及类型 */
     $default_display_type = $_CFG['show_order_type'] == '0' ? 'list' : ($_CFG['show_order_type'] == '1' ? 'grid' : 'text');
     $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
     $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'shop_price' : 'last_update');
@@ -251,7 +251,7 @@ else
     $page       = !empty($_REQUEST['page'])  && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
     $size       = !empty($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
 
-    $intromode = '';    //鏂瑰紡锛岀敤浜庡喅瀹氭悳绱㈢粨鏋滈〉鏍囬?鍥剧墖
+    $intromode = '';    //方式，用于决定搜索结果页标题图片
 
     if (!empty($_REQUEST['intro']))
     {
@@ -293,7 +293,7 @@ else
     }
 
     /*------------------------------------------------------ */
-    //-- 灞炴€ф?绱
+    //-- 属性检索
     /*------------------------------------------------------ */
     $attr_in  = '';
     $attr_num = 0;
@@ -330,7 +330,7 @@ else
                 }
                 else
                 {
-                    /* 澶勭悊閫夎喘涓?績杩囨潵鐨勯摼鎺 */
+                    /* 处理选购中心过来的链接 */
                     $sql .= isset($_REQUEST['pickout']) ? " AND attr_id = '$key' AND attr_value = '" . $val . "' " : " AND attr_id = '$key' AND attr_value LIKE '%" . mysql_like_quote($val) . "%' ";
                     $attr_url .= "&amp;attr[$key]=$val";
                     $attr_arg["attr[$key]"] = $val;
@@ -340,7 +340,7 @@ else
             }
         }
 
-        /* 濡傛灉妫€绱㈡潯浠堕兘鏄?棤鏁堢殑锛屽氨涓嶇敤妫€绱 */
+        /* 如果检索条件都是无效的，就不用检索 */
         if ($attr_num > 0)
         {
             $sql .= " GROUP BY goods_id HAVING num = '$attr_num'";
@@ -358,17 +358,17 @@ else
     }
     elseif (isset($_REQUEST['pickout']))
     {
-        /* 浠庨€夎喘涓?績杩涘叆鐨勯摼鎺 */
+        /* 从选购中心进入的链接 */
         $sql = "SELECT DISTINCT(goods_id) FROM " . $ecs->table('goods_attr');
         $col = $db->getCol($sql);
-        //濡傛灉鍟嗗簵娌℃湁璁剧疆鍟嗗搧灞炴€?閭ｄ箞姝ゆ?绱㈡潯浠舵槸鏃犳晥鐨
+        //如果商店没有设置商品属性,那么此检索条件是无效的
         if (!empty($col))
         {
             $attr_in = " AND " . db_create_in($col, 'g.goods_id');
         }
     }
 
-    /* 鑾峰緱绗﹀悎鏉′欢鐨勫晢鍝佹€绘暟 */
+    /* 获得符合条件的商品总数 */
     $sql   = "SELECT COUNT(*) FROM " .$ecs->table('goods'). " AS g ".
         "WHERE g.is_delete = 0 AND g.is_on_sale = 1 AND g.is_alone_sale = 1 $attr_in ".
         "AND (( 1 " . $categories . $keywords . $brand . $min_price . $max_price . $intro . $outstock ." ) ".$tag_where." )";
@@ -380,7 +380,7 @@ else
         $page = $max_page;
     }
 
-    /* 鏌ヨ?鍟嗗搧 */
+    /* 查询商品 */
     $sql = "SELECT g.goods_id, g.goods_name, g.market_price, g.is_new, g.is_best, g.is_hot, g.shop_price AS org_price, ".
                 "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, ".
                 "g.promote_price, g.promote_start_date, g.promote_end_date, g.goods_thumb, g.goods_img, g.goods_brief, g.goods_type ".
@@ -404,8 +404,8 @@ else
             $promote_price = 0;
         }
 
-        /* 澶勭悊鍟嗗搧姘村嵃鍥剧墖 */
-        /* 澶勭悊鍟嗗搧姘村嵃鍥剧墖 */
+        /* 处理商品水印图片 */
+        /* 处理商品水印图片 */
         $watermark_img = '';
 
         if ($promote_price != 0)
@@ -465,7 +465,7 @@ else
     $smarty->assign('max_price',  $max_price);
     $smarty->assign('outstock',  $_REQUEST['outstock']);
 
-    /* 鍒嗛〉 */
+    /* 分页 */
     $url_format = "search.php?category=$category&amp;keywords=" . urlencode(stripslashes($_REQUEST['keywords'])) . "&amp;brand=" . $_REQUEST['brand']."&amp;action=".$action."&amp;goods_type=" . $_REQUEST['goods_type'] . "&amp;sc_ds=" . $_REQUEST['sc_ds'];
     if (!empty($intromode))
     {
@@ -504,12 +504,12 @@ else
     assign_template();
     assign_dynamic('search');
     $position = assign_ur_here(0, $ur_here . ($_REQUEST['keywords'] ? '_' . $_REQUEST['keywords'] : ''));
-    $smarty->assign('page_title', $position['title']);    // 椤甸潰鏍囬?
-    $smarty->assign('ur_here',    $position['ur_here']);  // 褰撳墠浣嶇疆
+    $smarty->assign('page_title', $position['title']);    // 页面标题
+    $smarty->assign('ur_here',    $position['ur_here']);  // 当前位置
     $smarty->assign('intromode',      $intromode);
-    $smarty->assign('categories', get_categories_tree()); // 鍒嗙被鏍
-    $smarty->assign('helps',       get_shop_help());      // 缃戝簵甯?姪
-    $smarty->assign('top_goods',  get_top10());           // 閿€鍞?帓琛
+    $smarty->assign('categories', get_categories_tree()); // 分类树
+    $smarty->assign('helps',       get_shop_help());      // 网店帮助
+    $smarty->assign('top_goods',  get_top10());           // 销售排行
     $smarty->assign('promotion_info', get_promotion_info());
 
     $smarty->display('search.dwt');
@@ -539,7 +539,7 @@ function is_not_null($value)
 }
 
 /**
- * 鑾峰緱鍙?互妫€绱㈢殑灞炴€
+ * 获得可以检索的属性
  *
  * @access  public
  * @params  integer $cat_id
@@ -552,13 +552,13 @@ function get_seachable_attributes($cat_id = 0)
         'attr' => array()
     );
 
-    /* 鑾峰緱鍙?敤鐨勫晢鍝佺被鍨 */
+    /* 获得可用的商品类型 */
     $sql = "SELECT t.cat_id, cat_name FROM " .$GLOBALS['ecs']->table('goods_type'). " AS t, ".
            $GLOBALS['ecs']->table('attribute') ." AS a".
            " WHERE t.cat_id = a.cat_id AND t.enabled = 1 AND a.attr_index > 0 ";
     $cat = $GLOBALS['db']->getAll($sql);
 
-    /* 鑾峰彇鍙?互妫€绱㈢殑灞炴€ */
+    /* 获取可以检索的属性 */
     if (!empty($cat))
     {
         foreach ($cat AS $val)

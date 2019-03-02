@@ -3,7 +3,7 @@
 /**
  * ECSHOP 管理中心菜单数组
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -99,7 +99,6 @@ $modules['10_priv_admin']['suppliers_list']         = 'suppliers.php?act=list'; 
 
 $modules['11_system']['01_shop_config']             = 'shop_config.php?act=list_edit';
 $modules['11_system']['shop_authorized']             = 'license.php?act=list_edit';
-$modules['11_system']['shp_webcollect']                  = 'webcollect.php';
 $modules['11_system']['02_payment_list']            = 'payment.php?act=list';
 $modules['11_system']['03_shipping_list']           = 'shipping.php?act=list';
 $modules['11_system']['04_mail_settings']           = 'shop_config.php?act=mail_settings';

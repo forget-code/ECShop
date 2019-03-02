@@ -38,6 +38,7 @@ $_LANG['disable'] = 'Disable sms service';
 
 /* Send sms */
 $_LANG['phone'] = 'Mobile phone';
+$_LANG['user_rand'] = 'Send short message by the user level';
 $_LANG['phone_notice'] = 'More than one phone number divided by DBC case comma.';
 $_LANG['msg'] = 'Message';
 $_LANG['msg_notice'] = '70 character at most';
@@ -126,6 +127,7 @@ $_LANG['server_errors'][7] = 'error empty response.';//ERROR_EMPTY_RESPONSE
 $_LANG['server_errors'][8] = 'error invalid xml file.';//ERROR_INVALID_XML_FILE
 $_LANG['server_errors'][9] = 'error invalid node name.';//ERROR_INVALID_NODE_NAME
 $_LANG['server_errors'][10] = 'error cant store.';//ERROR_CANT_STORE
+$_LANG['server_errors'][11] = 'SMS feature is not yet activated.';//ERROR_INVALID_PASSPORT
 
 /* Client JS language item */
 //--Register or  invocation

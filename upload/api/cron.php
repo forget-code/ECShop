@@ -3,7 +3,7 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -199,7 +199,7 @@ function check_method()
         {
             die('Hacking attempt');
         }
-        elseif (!isset($_GET['t']) || $GLOBALS['timestamp'] - $_GET['t'] > 60 || empty($_SERVER['HTTP_REFERER']))
+        elseif (!isset($_GET['t']) || $GLOBALS['timestamp'] - intval($_GET['t']) > 60 || empty($_SERVER['HTTP_REFERER']))
         {
             exit;
         }

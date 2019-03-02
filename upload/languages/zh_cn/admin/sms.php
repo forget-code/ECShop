@@ -2,7 +2,7 @@
 /**
  * ECSHOP 短信模块语言文件
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -125,6 +125,7 @@ $_LANG['server_errors'][7] = 'HTTP响应体为空。';//ERROR_EMPTY_RESPONSE
 $_LANG['server_errors'][8] = '无效的XML文件。';//ERROR_INVALID_XML_FILE
 $_LANG['server_errors'][9] = '无效的节点名字。';//ERROR_INVALID_NODE_NAME
 $_LANG['server_errors'][10] = '存储失败。';//ERROR_CANT_STORE
+$_LANG['server_errors'][11] = '短信功能尚未激活。';//ERROR_INVALID_PASSPORT
 
 /* 客户端JS语言项 */
 //--注册或启用

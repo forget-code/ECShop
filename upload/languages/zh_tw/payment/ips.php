@@ -17,7 +17,7 @@
 global $_LANG;
 
 $_LANG['ips']            = '環迅IPS';
-$_LANG['ips_desc']       = 'IPS賬戶是上海環迅於2005年推出的新一代基於電子郵件的互聯網多幣種收付款工具。截止到目前，IPS賬戶具備在線充值、在線收付款、在線轉賬、網上退款和網上提款等多種功能，並支持多種賬戶充值方式。';
+$_LANG['ips_desc']       = 'IPS(www.ips.com)賬戶是上海環迅於2005年推出的新一代基於電子郵件的互聯網多幣種收付款工具。截止到目前，IPS賬戶具備在線充值、在線收付款、在線轉賬、網上退款和網上提款等多種功能，並支持多種賬戶充值方式。<br/><a href="http://cloud.ecshop.com/payment_apply.php?mod=ips" target="_blank">立即在線申請</a>';
 $_LANG['ips_account']    = 'IPS商戶號';
 $_LANG['ips_key']        = 'IPS證書';
 $_LANG['ips_currency']   = '支付方式';

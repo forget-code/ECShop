@@ -18,7 +18,7 @@
 global $_LANG;
 
 $_LANG['cappay']      = 'PayEase';
-$_LANG['cappay_desc'] = 'PayEase currently focuses on Payment Service Platform that covers mobile, online, call center (CRM), retail / POS and data mining of customers\’ profile.The comprehensive payment platform is connected to over 92% of the most banks in China, supports over 64 domestic credit cards and debit cards including 4 worldwide accepted international credit cards: MasterCard, VISA, American Express and JCB cards. PayEase’s major customers cover Media, Travel, TV Shopping, Internet Shopping, Insurance, Mobile Carrier Industries and Online Game Operators throughout the country. <a href="http://www1.beijing.com.cn/payease/b2c/flow.jsp?agent_id=44" target="_blank"><strong>Click here to sign up.</strong></a>';
+$_LANG['cappay_desc'] = 'PayEase currently focuses on Payment Service Platform that covers mobile, online, call center (CRM), retail / POS and data mining of customers\’ profile.The comprehensive payment platform is connected to over 92% of the most banks in China, supports over 64 domestic credit cards and debit cards including 4 worldwide accepted international credit cards: MasterCard, VISA, American Express and JCB cards. PayEase’s major customers cover Media, Travel, TV Shopping, Internet Shopping, Insurance, Mobile Carrier Industries and Online Game Operators throughout the country. <a href="http://cloud.ecshop.com/payment_apply.php?mod=cappay" target="_blank"><strong>Click here to sign up.</strong></a>';
 $_LANG['cappay_account'] = 'PayEase account';
 $_LANG['cappay_key']     = 'MD5 key';
 

@@ -16,7 +16,7 @@
 global $_LANG;
 
 $_LANG['alipay'] = '支付寶';
-$_LANG['alipay_desc'] = '支付寶網站(www.alipay.com) 是國內先進的網上支付平台。<br/>支付寶收款接口：在線即可開通，<font color="red"><b>零預付，免年費</b></font>，單筆階梯費率，無流量限制。<br/><a href="http://act.life.alipay.com/systembiz/shopex/" target="_blank"><font color="red">立即在線申請</font></a>';
+$_LANG['alipay_desc'] = '支付寶網站(www.alipay.com) 是國內先進的網上支付平台。<br/>支付寶收款接口：在線即可開通，<font color="red"><b>零預付，免年費</b></font>，單筆階梯費率，無流量限制。<br/><a href="http://cloud.ecshop.com/payment_apply.php?mod=alipay" target="_blank"><font color="red">立即在線申請</font></a>';
 $_LANG['alipay_account'] = '支付寶帳戶';
 $_LANG['alipay_key'] = '交易安全校驗碼';
 $_LANG['alipay_partner'] = '合作者身份ID';

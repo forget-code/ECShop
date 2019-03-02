@@ -3,7 +3,7 @@
 /**
  * ECSHOP 商品页
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -26,6 +26,12 @@ $_LANG['home'] = '首页';
 $_LANG['goods_attr'] = '';
 $smarty->assign('goods_id', $goods_id);
 $goods_info = get_goods_info($goods_id);
+if ($goods_info === false)
+{
+   /* 如果没有找到任何记录则跳回到首页 */
+   ecs_header("Location: ./\n");
+   exit;
+}
 $goods_info['goods_name'] = encode_output($goods_info['goods_name']);
 $goods_info['goods_brief'] = encode_output($goods_info['goods_brief']);
 $goods_info['promote_price'] = encode_output($goods_info['promote_price']);

@@ -16,7 +16,7 @@
 /* 通用語言項 */
 $_LANG['prev_step'] = '上一步：';
 $_LANG['next_step'] = '下一步：';
-$_LANG['copyright'] = '&copy; 2005-2011 <a href="http://www.ecshop.com" target="_blank">上海商派网络科技有限公司</a>。保留所有權利。';
+$_LANG['copyright'] = '&copy; 2005-2012 <a href="http://www.ecshop.com" target="_blank">上海商派网络科技有限公司</a>。保留所有權利。';
 
 
 /* 歡迎頁 */
@@ -110,7 +110,7 @@ $_LANG['dv'] = '數碼攝像機';
 $_LANG['cosmetics'] = '化妝品';
 $_LANG['install_at_once'] = '立即安裝';
 $_LANG['default_friend_link'] = 'ECSHOP 網上商店管理系統';
-$_LANG['maifou_friend_link'] = '免費申請網店';
+$_LANG['maifou_friend_link'] = '買否網';
 $_LANG['wdwd_friend_link']='免費開獨立網店';
 $_LANG['monitor_title'] = '安裝程序監視器';
 $_LANG['admin_user'][] = '商品列表|goods.php?act=list';

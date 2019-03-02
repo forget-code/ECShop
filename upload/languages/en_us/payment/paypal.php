@@ -18,7 +18,7 @@
 global $_LANG;
 
 $_LANG['paypal']                       = 'Paypal';
-$_LANG['paypal_desc']                  = 'PayPal is a leading e-payment service provider in the world, its accounts has more than 71600 thousands.Udpay can be used in 56 markets by 7 types currency (Canadian dollar,EURO,Pound,U.S. dollar,Japanese yen,Austalian dollar, HongKong dollar).(Web site:http://www.paypal.com)';
+$_LANG['paypal_desc']                  = 'PayPal(www.paypal.com) is a leading e-payment service provider in the world, its accounts has more than 71600 thousands.Udpay can be used in 56 markets by 7 types currency (Canadian dollar,EURO,Pound,U.S. dollar,Japanese yen,Austalian dollar, HongKong dollar).<br/><a href="http://cloud.ecshop.com/payment_apply.php?mod=paypal" target="_blank">Immediately online application</a>';
 $_LANG['paypal_account']               = 'Paypal accounts';
 $_LANG['paypal_currency']              = 'Currency payment';
 $_LANG['paypal_currency_range']['AUD'] = 'Austalian dollar';

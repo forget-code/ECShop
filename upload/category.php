@@ -3,7 +3,7 @@
 /**
  * ECSHOP 商品分类
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -307,7 +307,6 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
         }
 
         $smarty->assign('filter_attr_list',  $all_attr_list);
-
         /* 扩展商品查询条件 */
         if (!empty($filter_attr))
         {
@@ -316,7 +315,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
 
             foreach ($filter_attr AS $k => $v)                      // 查出符合所有筛选属性条件的商品id */
             {
-                if (is_numeric($v) && $v !=0 )
+                if (is_numeric($v) && $v !=0 &&isset($cat_filter_attr[$k]))
                 {
                     $sql = $ext_sql . "b.attr_value = a.attr_value AND b.attr_id = " . $cat_filter_attr[$k] ." AND a.goods_attr_id = " . $v;
                     $ext_group_goods = $db->getColCached($sql);

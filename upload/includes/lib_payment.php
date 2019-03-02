@@ -211,21 +211,26 @@ function order_paid($log_id, $pay_status = PS_PAYED, $note = '')
             }
             elseif ($pay_log['order_type'] == PAY_SURPLUS)
             {
-                /* 更新会员预付款的到款状态 */
-                $sql = 'UPDATE ' . $GLOBALS['ecs']->table('user_account') .
-                       " SET paid_time = '" .gmtime(). "', is_paid = 1" .
-                       " WHERE id = '$pay_log[order_id]' LIMIT 1";
-                $GLOBALS['db']->query($sql);
+                $sql = 'SELECT `id` FROM ' . $GLOBALS['ecs']->table('user_account') .  " WHERE `id` = '$pay_log[order_id]' AND `is_paid` = 1  LIMIT 1";
+                $res_id=$GLOBALS['db']->getOne($sql);
+                if(empty($res_id))
+                {
+                    /* 更新会员预付款的到款状态 */
+                    $sql = 'UPDATE ' . $GLOBALS['ecs']->table('user_account') .
+                           " SET paid_time = '" .gmtime(). "', is_paid = 1" .
+                           " WHERE id = '$pay_log[order_id]' LIMIT 1";
+                    $GLOBALS['db']->query($sql);
 
-                /* 取得添加预付款的用户以及金额 */
-                $sql = "SELECT user_id, amount FROM " . $GLOBALS['ecs']->table('user_account') .
-                        " WHERE id = '$pay_log[order_id]'";
-                $arr = $GLOBALS['db']->getRow($sql);
+                    /* 取得添加预付款的用户以及金额 */
+                    $sql = "SELECT user_id, amount FROM " . $GLOBALS['ecs']->table('user_account') .
+                            " WHERE id = '$pay_log[order_id]'";
+                    $arr = $GLOBALS['db']->getRow($sql);
 
-                /* 修改会员帐户金额 */
-                $_LANG = array();
-                include_once(ROOT_PATH . 'languages/' . $GLOBALS['_CFG']['lang'] . '/user.php');
-                log_account_change($arr['user_id'], $arr['amount'], 0, 0, 0, $_LANG['surplus_type_0'], ACT_SAVING);
+                    /* 修改会员帐户金额 */
+                    $_LANG = array();
+                    include_once(ROOT_PATH . 'languages/' . $GLOBALS['_CFG']['lang'] . '/user.php');
+                    log_account_change($arr['user_id'], $arr['amount'], 0, 0, 0, $_LANG['surplus_type_0'], ACT_SAVING);
+                }
             }
         }
         else

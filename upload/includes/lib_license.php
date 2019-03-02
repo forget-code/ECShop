@@ -3,7 +3,7 @@
 /**
  * ECSHOP LICENSE 相关函数库
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -269,6 +269,7 @@ function license_reg($certi_added = '')
 
         $return_array['flag'] = 'reg_succ';
         $return_array['request'] = $request_arr;
+        clear_cache_files();
     }
     elseif (is_array($request_arr) && $request_arr['res'] == $certi_back['fail'])
     {

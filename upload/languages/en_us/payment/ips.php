@@ -19,7 +19,7 @@
 global $_LANG;
 
 $_LANG['ips']            = 'HuanXun IPS';
-$_LANG['ips_desc']       = 'IPS is a new generation of multi-currency payments to the Internet-based e-mail tool of ShangHai HuanXun. Up to now, the IPS with prepaid account online, online payment, online transfer account, online refund online draw and so on, and supports multimodal prepaid accounts.';
+$_LANG['ips_desc']       = 'IPS(www.ips.com) is a new generation of multi-currency payments to the Internet-based e-mail tool of ShangHai HuanXun. Up to now, the IPS with prepaid account online, online payment, online transfer account, online refund online draw and so on, and supports multimodal prepaid accounts.<br/><a href="http://cloud.ecshop.com/payment_apply.php?mod=ips" target="_blank">Immediately online application</a>';
 $_LANG['ips_account']    = 'IPS account';
 $_LANG['ips_key']        = 'IPS license';
 $_LANG['ips_currency']   = 'Payment method';

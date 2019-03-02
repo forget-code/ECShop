@@ -3,7 +3,7 @@
 /**
  * ECSHOP 管理员信息以及权限管理程序
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -83,23 +83,22 @@ elseif ($_REQUEST['act'] == 'signin')
     $_POST['password'] = isset($_POST['password']) ? trim($_POST['password']) : '';
 
     $sql="SELECT `ec_salt` FROM ". $ecs->table('admin_user') ."WHERE user_name = '" . $_POST['username']."'";
-	$ec_salt =$db->getOne($sql);
+    $ec_salt =$db->getOne($sql);
     if(!empty($ec_salt))
     {
          /* 检查密码是否正确 */
-         $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login".
+         $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login,suppliers_id,ec_salt".
             " FROM " . $ecs->table('admin_user') .
             " WHERE user_name = '" . $_POST['username']. "' AND password = '" . md5(md5($_POST['password']).$ec_salt) . "'";
-	}
-	else
-	{
+    }
+    else
+    {
          /* 检查密码是否正确 */
-         $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login".
+         $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login,suppliers_id,ec_salt".
             " FROM " . $ecs->table('admin_user') .
             " WHERE user_name = '" . $_POST['username']. "' AND password = '" . md5($_POST['password']) . "'";
-	}
+    }
     $row = $db->getRow($sql);
-
     if ($row)
     {
         // 检查是否为供货商的管理员 所属供货商是否有效
@@ -415,15 +414,28 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
         $role_id = ', role_id = '.$_POST['select_role'].' ';
     }
     //更新管理员信息
-    $sql = "UPDATE " .$ecs->table('admin_user'). " SET ".
-           "user_name = '$admin_name', ".
-           "email = '$admin_email' ,".
-           "ec_salt = '$ec_salt' ".
-           $action_list.
-           $role_id.
-           $password.
-           $nav_list.
-           "WHERE user_id = '$admin_id'";
+    if($pwd_modified)
+    {
+        $sql = "UPDATE " .$ecs->table('admin_user'). " SET ".
+               "user_name = '$admin_name', ".
+               "email = '$admin_email', ".
+               "ec_salt = '$ec_salt' ".
+               $action_list.
+               $role_id.
+               $password.
+               $nav_list.
+               "WHERE user_id = '$admin_id'";
+    }
+    else
+    {
+        $sql = "UPDATE " .$ecs->table('admin_user'). " SET ".
+               "user_name = '$admin_name', ".
+               "email = '$admin_email' ".
+               $action_list.
+               $role_id.
+               $nav_list.
+               "WHERE user_id = '$admin_id'";
+    }
 
    $db->query($sql);
    /* 记录管理员操作 */

@@ -3,7 +3,7 @@
 /**
  * ECSHOP 管理中心公用文件
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -227,13 +227,16 @@ if(isset($_GET['ent_id']) && isset($_GET['ent_ac']) &&  isset($_GET['ent_sign'])
     $ent_ac = trim($_GET['ent_ac']);
     $ent_sign = trim($_GET['ent_sign']);
     $ent_email = trim($_GET['ent_email']);
-    require(ROOT_PATH . 'includes/cls_transport.php');
-    $t = new transport('-1',5);
-    $apiget = "act=ent_sign&ent_id= $ent_id &ent_ac= $ent_ac &ent_sign= $ent_sign &ent_email= $ent_email";
-    $api_comment = $t->request('http://cloud.ecshop.com/api.php', $apiget);
-    $api_str = $api_comment["body"];
-    if($api_str == $ent_sign)
+    $certificate_id = trim($_CFG['certificate_id']);
+    $domain_url = $ecs->url();
+    $token=$_GET['token'];
+    if($token==md5(md5($_CFG['token']).$domain_url.ADMIN_PATH))
     {
+        require(ROOT_PATH . 'includes/cls_transport.php');
+        $t = new transport('-1',5);
+        $apiget = "act=ent_sign&ent_id= $ent_id & certificate_id=$certificate_id";
+
+        $t->request('http://cloud.ecshop.com/api.php', $apiget);
         $db->query('UPDATE '.$ecs->table('shop_config') . ' SET value = "'. $ent_id .'" WHERE code = "ent_id"');
         $db->query('UPDATE '.$ecs->table('shop_config') . ' SET value = "'. $ent_ac .'" WHERE code = "ent_ac"');
         $db->query('UPDATE '.$ecs->table('shop_config') . ' SET value = "'. $ent_sign .'" WHERE code = "ent_sign"');

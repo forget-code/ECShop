@@ -2,7 +2,7 @@
 /**
  * ECSHOP 控制台首页
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -297,6 +297,7 @@ elseif ($_REQUEST['act'] == 'main')
     clearstatcache();
 
     $smarty->assign('warning_arr', $warning);
+    
 
     /* 管理员留言信息 */
     $sql = 'SELECT message_id, sender_id, receiver_id, sent_time, readed, deleted, title, message, user_name ' .
@@ -536,57 +537,7 @@ elseif ($_REQUEST['act'] == 'main_api')
     }
 
 }
-elseif ($_REQUEST['act'] == 'menu_api')
-{
-    if (!admin_priv('all','',false))
-    {
-        exit();
-    }
-    require_once(ROOT_PATH . '/includes/lib_base.php');
-    $data = read_static_cache('menu_api');
 
-    if($data === false || (isset($data['api_time']) && $data['api_time']<date('Ymd')))
-    {
-        include_once(ROOT_PATH . 'includes/cls_transport.php');
-        $ecs_lang = $_CFG['lang'];
-        $ecs_charset = strtoupper(EC_CHARSET);
-        $ecs_version = VERSION;
-        $apiget = "ver= $ecs_version &ecs_lang= $ecs_lang &charset= $ecs_charset ";
-        $t = new transport;
-        $api_comment = $t->request('http://cloud.ecshop.com/menu_api.php', $apiget);
-        $api_str = $api_comment["body"];
-        if (!empty($api_str))
-        {
-            include_once(ROOT_PATH . 'includes/cls_json.php');
-            $json = new JSON;
-            $api_arr = @$json->decode($api_str,1);
-            if (!empty($api_arr) && $api_arr['error'] == 0 && md5($api_arr['content']) == $api_arr['hash'])
-            {
-                $api_arr['content'] = urldecode($api_arr['content']);
-                if ($ecs_charset != 'UTF-8')
-                {
-                    $api_arr['content'] = ecs_iconv('UTF-8',$ecs_charset,$api_arr['content']);
-                }
-                echo $api_arr['content'];
-                $api_arr['api_time'] = date('Ymd');
-                write_static_cache('menu_api', $api_arr);
-                exit();
-            }
-            else
-            {
-                exit();
-            }
-        }
-        else
-        {
-            exit();
-        }
-    }
-    else 
-    {
-        die($data['content']);
-    }
-}
 
 /*------------------------------------------------------ */
 //-- 开店向导第一步

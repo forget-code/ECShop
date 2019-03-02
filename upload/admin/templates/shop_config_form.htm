@@ -7,7 +7,7 @@
         </td>
         <td>
           {if $var.type eq "text"}
-          <input name="value[{$var.id}]" type="text" value="{$var.value}" size="40" />{if $var.url eq 1}{$lang.sms_url}{/if}
+          <input name="value[{$var.id}]" type="text" value="{$var.value}" size="40" />
 
           {elseif $var.type eq "password"}
           <input name="value[{$var.id}]" type="password" value="{$var.value}" size="40" />

@@ -3,7 +3,7 @@
 /**
  * ECSHOP 前台公用函数库
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -2041,15 +2041,31 @@ function license_info()
         {
             $host = $_SERVER['HTTP_HOST'];
         }
-        //$license = '<a href="http://license.comsenz.com/?pid=4&host='. $host .'">Licensed</a>';
-        $host = 'http://' . $host . '/';
-        $license = '<a href="http://service.shopex.cn/auth.php?product=ecshop&url=' . urlencode($host) . '">Licensed</a>';
+        $url_domain=url_domain();
+        $host = 'http://' . $host .$url_domain ;
+        $license = '<a href="http://www.ecshop.com/license.php?product=ecshop_b2c&url=' . urlencode($host) . '" target="_blank"
+>&nbsp;&nbsp;Licensed</a>';
         return $license;
     }
     else
     {
         return '';
     }
+}
+function url_domain()
+{
+    $curr = strpos(PHP_SELF, ADMIN_PATH . '/') !== false ?
+            preg_replace('/(.*)(' . ADMIN_PATH . ')(\/?)(.)*/i', '\1', dirname(PHP_SELF)) :
+            dirname(PHP_SELF);
+
+    $root = str_replace('\\', '/', $curr);
+
+    if (substr($root, -1) != '/')
+    {
+        $root .= '/';
+    }
+
+    return $root;
 }
 
 ?>

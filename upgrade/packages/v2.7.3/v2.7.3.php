@@ -41,10 +41,15 @@ class up_v2_7_3
         include_once(ROOT_PATH . 'includes/inc_constant.php');
         /* 增加商店配置信息 */
         $sql_shop_config[2]['send_verify_email'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'send_verify_email', 'select', '1,0', '', '0', '1')";
-        $sql_shop_config[2]['ent_id'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_id', 'hidden', '', '', '', '1')";
-        $sql_shop_config[2]['ent_ac'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_ac', 'hidden', '', '', '', '1')";
-        $sql_shop_config[2]['ent_sign'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_sign', 'hidden', '', '', '', '1')";
-        $sql_shop_config[2]['ent_email'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_email', 'hidden', '', '', '', '1')";
+
+        if(!$db->getOne("SELECT id FROM ". $ecs->table('shop_config') ." WHERE `code`='ent_id'"))
+        {
+            $sql_shop_config[2]['ent_id'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_id', 'hidden', '', '', '', '1')";
+            $sql_shop_config[2]['ent_ac'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_ac', 'hidden', '', '', '', '1')";
+            $sql_shop_config[2]['ent_sign'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_sign', 'hidden', '', '', '', '1')";
+            $sql_shop_config[2]['ent_email'] = "INSERT INTO " . $ecs->table('shop_config') . " (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (NULL, 2, 'ent_email', 'hidden', '', '', '', '1')";
+        }
+
         foreach ($sql_shop_config as $key => $value)
         {
             /* 找出对应的父分类下的最大的id */

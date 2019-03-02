@@ -841,3 +841,9 @@ em, cite, th {
   border: 0px solid #BBDDE5;
   padding: 10px;
 }
+
+.cloud_close{  position:relative;border-bottom: 1px solid #302828; background: #ffffff; padding: 10px; margin-bottom: 5px;position:relative; margin-bottom: 5px; font-size:14px; font-family:"微软雅黑"
+}
+.cloud_close a{}
+.cloud_close img{ position:absolute; right:10px; top:8px; border:none}
+.Start315{border: 1px solid #CC0000; background: #ffffcc; padding: 10px; margin-bottom: 5px;}

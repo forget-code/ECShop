@@ -3,7 +3,7 @@
 /**
  * ECSHOP 商品管理程序
  * ============================================================================
- * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
+ * * 版权所有 2005-2012 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -1151,16 +1151,15 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     }
     $link[3] = list_link($is_insert, $code);
 
-    if (empty($is_insert))
+
+    //$key_array = array_keys($link);
+    for($i=0;$i<count($link);$i++)
     {
-        //$key_array = array_keys($link);
-       for($i=0;$i<count($link);$i++)
-        {
-           $key_array[]=$i;
-        }
-        krsort($link);
-        $link = array_combine($key_array, $link);
+       $key_array[]=$i;
     }
+    krsort($link);
+    $link = array_combine($key_array, $link);
+
 
     sys_msg($is_insert ? $_LANG['add_goods_ok'] : $_LANG['edit_goods_ok'], 0, $link);
 }
@@ -1382,19 +1381,21 @@ elseif ($_REQUEST['act'] == 'check_goods_sn')
     check_authz_json('goods_manage');
 
     $goods_id = intval($_REQUEST['goods_id']);
-    $goods_sn = json_str_iconv(trim($_REQUEST['goods_sn']));
+    $goods_sn = htmlspecialchars(json_str_iconv(trim($_REQUEST['goods_sn'])));
 
     /* 检查是否重复 */
     if (!$exc->is_only('goods_sn', $goods_sn, $goods_id))
     {
         make_json_error($_LANG['goods_sn_exists']);
     }
-    $sql="SELECT goods_id FROM ". $ecs->table('products')."WHERE product_sn='$goods_sn'";
-    if($db->getOne($sql))
+    if(!empty($goods_sn))
     {
-        make_json_error($_LANG['goods_sn_exists']);
+        $sql="SELECT goods_id FROM ". $ecs->table('products')."WHERE product_sn='$goods_sn'";
+        if($db->getOne($sql))
+        {
+            make_json_error($_LANG['goods_sn_exists']);
+        }
     }
-
     make_json_result('');
 }
 elseif ($_REQUEST['act'] == 'check_products_goods_sn')

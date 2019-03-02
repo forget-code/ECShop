@@ -36,6 +36,7 @@ $_LANG['disable'] = '註銷短信服務';
 
 /* 發送短信 */
 $_LANG['phone'] = '手機號碼';
+$_LANG['user_rand'] = '按用戶等級發送短消息';
 $_LANG['phone_notice'] = '多個手機號碼用半角逗號分開';
 $_LANG['msg'] = '消息內容';
 $_LANG['msg_notice'] = '最長70字符';
@@ -124,6 +125,7 @@ $_LANG['server_errors'][7] = 'HTTP響應體為空。';//ERROR_EMPTY_RESPONSE
 $_LANG['server_errors'][8] = '無效的XML文件。';//ERROR_INVALID_XML_FILE
 $_LANG['server_errors'][9] = '無效的節點名字。';//ERROR_INVALID_NODE_NAME
 $_LANG['server_errors'][10] = '存儲失敗。';//ERROR_CANT_STORE
+$_LANG['server_errors'][11] = '短信功能尚未激活。';//ERROR_INVALID_PASSPORT
 
 /* 客戶端JS語言項 */
 //--註冊或啟用
