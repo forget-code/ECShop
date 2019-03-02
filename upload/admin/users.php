@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: users.php 15715 2009-03-05 09:37:33Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: users.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -23,8 +23,6 @@ require(dirname(__FILE__) . '/includes/init.php');
 
 if ($_REQUEST['act'] == 'list')
 {
-    /* 检查权限 */
-    admin_priv('users_manage');
     $sql = "SELECT rank_id, rank_name, min_points FROM ".$ecs->table('user_rank')." ORDER BY min_points ASC ";
     $rs = $db->query($sql);
 
@@ -154,10 +152,7 @@ elseif ($_REQUEST['act'] == 'insert')
     /* 更新会员的其它信息 */
     $other =  array();
     $other['credit_line'] = $credit_line;
-    $other['user_rank']  = $rank;
-    $other['sex']        = $sex;
-    $other['birthday']   = $birthday;
-    
+    $other['user_rank'] = $rank;
     foreach ($_POST['other'] as $key=>$val)
     {
         if (!empty($val))
@@ -251,7 +246,7 @@ elseif ($_REQUEST['act'] == 'update')
     /* 检查权限 */
     admin_priv('users_manage');
     $username = empty($_POST['username']) ? '' : trim($_POST['username']);
-    $password = empty($_POST['password']) ? '' : trim($_POST['password']);
+    //$password = empty($_POST['password']) ? '' : trim($_POST['password']);
     $email = empty($_POST['email']) ? '' : trim($_POST['email']);
     $sex = empty($_POST['sex']) ? 0 : intval($_POST['sex']);
     $sex = in_array($sex, array(0, 1, 2)) ? $sex : 0;
@@ -261,7 +256,7 @@ elseif ($_REQUEST['act'] == 'update')
 
     $users  =& init_users();
 
-    if (!$users->edit_user(array('username'=>$username, 'password'=>$password, 'email'=>$email, 'gender'=>$sex, 'bday'=>$birthday ), 1))
+    if (!$users->edit_user(array('username'=>$username, 'email'=>$email, 'gender'=>$sex, 'bday'=>$birthday )))
     {
         if ($users->error == ERR_EMAIL_EXISTS)
         {
@@ -313,13 +308,12 @@ elseif ($_REQUEST['act'] == 'batch_remove')
     {
         $sql = "SELECT user_name FROM " . $ecs->table('users') . " WHERE user_id " . db_create_in($_POST['checkboxes']);
         $col = $db->getCol($sql);
-        $usernames = implode(',',addslashes_deep($col));
         $count = count($col);
         /* 通过插件来删除用户 */
         $users =& init_users();
         $users->remove_user($col);
 
-        admin_log($usernames, 'batch_remove', 'users');
+        admin_log('', 'batch_remove', 'users');
 
         $lnk[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
         sys_msg(sprintf($_LANG['batch_remove_success'], $count), 0, $lnk);
@@ -534,7 +528,7 @@ function user_list()
 
         /* 分页大小 */
         $filter = page_and_size($filter);
-        $sql = "SELECT user_id, user_name, email, is_validated, user_money, frozen_money, rank_points, pay_points, reg_time ".
+        $sql = "SELECT user_id, user_name, email, user_money, frozen_money, rank_points, pay_points, reg_time ".
                 " FROM " . $GLOBALS['ecs']->table('users') . $ex_where .
                 " ORDER by " . $filter['sort_by'] . ' ' . $filter['sort_order'] .
                 " LIMIT " . $filter['start'] . ',' . $filter['page_size'];

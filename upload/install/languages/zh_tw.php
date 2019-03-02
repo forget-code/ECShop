@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: zh_tw.php 15655 2009-02-24 06:22:39Z zblikai $
+ * $Author: testyang $
+ * $Id: zh_tw.php 15159 2008-11-05 07:56:06Z testyang $
  */
 
 /* 通用語言項 */
@@ -108,7 +108,6 @@ $_LANG['dv'] = '數碼攝像機';
 $_LANG['cosmetics'] = '化妝品';
 $_LANG['install_at_once'] = '立即安裝';
 $_LANG['default_friend_link'] = 'ECSHOP 網上商店管理系統';
-$_LANG['maifou_friend_link'] = '免費申請網店';
 $_LANG['monitor_title'] = '安裝程序監視器';
 $_LANG['admin_user'][] = '商品列表|goods.php?act=list';
 $_LANG['admin_user'][] = '訂單列表|order.php?act=list';

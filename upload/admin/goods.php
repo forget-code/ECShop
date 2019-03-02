@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: goods.php 15613 2009-02-18 02:39:28Z zblikai $
+ * $Author: testyang $
+ * $Id: goods.php 15039 2008-10-24 05:43:38Z testyang $
 */
 
 define('IN_ECS', true);
@@ -27,8 +27,6 @@ $exc = new exchange($ecs->table('goods'), $db, 'goods_id', 'goods_name');
 
 if ($_REQUEST['act'] == 'list' || $_REQUEST['act'] == 'trash')
 {
-    admin_priv('goods_manage');
-
     $cat_id = empty($_REQUEST['cat_id']) ? 0 : intval($_REQUEST['cat_id']);
     $code   = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
 
@@ -44,10 +42,13 @@ if ($_REQUEST['act'] == 'list' || $_REQUEST['act'] == 'trash')
 
     /* 模板赋值 */
     $goods_ur = array('' => $_LANG['01_goods_list'], 'virtual_card'=>$_LANG['50_virtual_card_list']);
-    $ur_here = ($_REQUEST['act'] == 'list') ? $goods_ur[$code] : $_LANG['11_goods_trash'];
+    $ur_here = ($_REQUEST['act'] == 'list') ?
+        $goods_ur[$code] : $_LANG['11_goods_trash'];
     $smarty->assign('ur_here', $ur_here);
 
-    $action_link = ($_REQUEST['act'] == 'list') ? add_link($code) : array('href' => 'goods.php?act=list', 'text' => $_LANG['01_goods_list']);
+    $action_link = ($_REQUEST['act'] == 'list') ?
+        add_link($code) :
+        array('href' => 'goods.php?act=list', 'text' => $_LANG['01_goods_list']);
     $smarty->assign('action_link',  $action_link);
     $smarty->assign('code',     $code);
     $smarty->assign('cat_list',     cat_list(0, $cat_id));
@@ -402,13 +403,6 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
     $smarty->assign('thumb_height', $_CFG['thumb_height']);
     $smarty->assign('goods_attr_html', build_attr_html($goods['goods_type'], $goods['goods_id']));
 
-    $volume_price_list = get_volume_price_list($_REQUEST['goods_id']);
-    if (empty($volume_price_list))
-    {
-        $volume_price_list = array('0'=>array('number'=>'','price'=>''));
-    }
-    $smarty->assign('volume_price_list', $volume_price_list);
-
     /* 显示商品信息页面 */
     assign_query_info();
     $smarty->display('goods_info.htm');
@@ -424,7 +418,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 
     /* 是否处理缩略图 */
     $proc_thumb = (isset($GLOBALS['shop_id']) && $GLOBALS['shop_id'] > 0)? false : true;
-    if ($code == 'virtual_card')
+    if ($code == 'virual_card')
     {
         admin_priv('virualcard'); // 检查权限
     }
@@ -964,21 +958,6 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
         handle_member_price($goods_id, $_POST['user_rank'], $_POST['user_price']);
     }
 
-    /* 处理优惠价格 */
-    if (isset($_POST['volume_number']) && isset($_POST['volume_price']))
-    {
-        $temp_num = array_count_values($_POST['volume_number']);
-        foreach($temp_num as $v)
-        {
-            if ($v > 1)
-            {
-                sys_msg($_LANG['volume_number_continuous'], 1, array(), false);
-                break;
-            }
-        }
-        handle_volume_price($goods_id, $_POST['volume_number'], $_POST['volume_price']);
-    }
-
     /* 处理扩展分类 */
     if (isset($_POST['other_cat']))
     {
@@ -1003,17 +982,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $goods_thumb = reformat_image_name('goods_thumb', $goods_id, $goods_thumb, 'thumb');
     if ($goods_img !== false)
     {
-        $db->query("UPDATE " . $ecs->table('goods') . " SET goods_img = '$goods_img' WHERE goods_id='$goods_id'");
-    }
-
-    if ($original_img !== false)
-    {
-        $db->query("UPDATE " . $ecs->table('goods') . " SET original_img = '$original_img' WHERE goods_id='$goods_id'");
-    }
-
-    if ($goods_thumb !== false)
-    {
-        $db->query("UPDATE " . $ecs->table('goods') . " SET goods_thumb = '$goods_thumb' WHERE goods_id='$goods_id'");
+        $db->query("UPDATE " . $ecs->table('goods') . " SET goods_img = '$goods_img', goods_thumb = '$goods_thumb', original_img = '$original_img' WHERE goods_id='$goods_id'");
     }
 
     /* 如果有图片，把商品图片加入图片相册 */
@@ -1055,10 +1024,6 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 
     /* 提示页面 */
     $link = array();
-    if ($code == 'virtual_card')
-    {
-        $link[] = array('href' => 'virtual_card.php?act=replenish&goods_id=' . $goods_id, 'text' => $_LANG['add_replenish']);
-    }
     if ($is_insert)
     {
         $link[] = add_link($code);
@@ -1393,23 +1358,6 @@ elseif ($_REQUEST['act'] == 'toggle_hot')
     {
         clear_cache_files();
         make_json_result($is_hot);
-    }
-}
-
-/*------------------------------------------------------ */
-//-- 修改商品排序
-/*------------------------------------------------------ */
-elseif ($_REQUEST['act'] == 'edit_sort_order')
-{
-    check_authz_json('goods_manage');
-
-    $goods_id       = intval($_POST['id']);
-    $sort_order     = intval($_POST['val']);
-
-    if ($exc->edit("sort_order = '$sort_order', last_update=" .gmtime(), $goods_id))
-    {
-        clear_cache_files();
-        make_json_result($sort_order);
     }
 }
 
@@ -2030,35 +1978,5 @@ function goods_parse_url($url)
 {
     $parse_url = @parse_url($url);
     return (!empty($parse_url['scheme']) && !empty($parse_url['host']));
-}
-
-/**
- * 保存某商品的优惠价格
- * @param   int     $goods_id    商品编号
- * @param   array   $number_list 优惠数量列表
- * @param   array   $price_list  价格列表
- * @return  void
- */
-function handle_volume_price($goods_id, $number_list, $price_list)
-{
-    $sql = "DELETE FROM " . $GLOBALS['ecs']->table('volume_price') .
-           " WHERE price_type = '1' AND goods_id = '$goods_id'";
-    $GLOBALS['db']->query($sql);
-
-
-    /* 循环处理每个优惠价格 */
-    foreach ($price_list AS $key => $price)
-    {
-        /* 价格对应的数量上下限 */
-        $volume_number = $number_list[$key];
-
-        if (!empty($price))
-        {
-            $sql = "INSERT INTO " . $GLOBALS['ecs']->table('volume_price') .
-                   " (price_type, goods_id, volume_number, volume_price) " .
-                   "VALUES ('1', '$goods_id', '$volume_number', '$price')";
-            $GLOBALS['db']->query($sql);
-        }
-    }
 }
 ?>

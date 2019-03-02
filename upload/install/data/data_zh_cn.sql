@@ -23,9 +23,6 @@ INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES 
 (6, 0, 'order_manage'),
 (7, 0, 'promotion'),
 (8, 0, 'email'),
-(9, 0, 'templates_manage'),
-(10, 0, 'db_manage'),
-(11, 0, 'sms_manage'),
 (21, 1, 'goods_manage'),
 (22, 1, 'remove_back'),
 (23, 1, 'cat_manage'),
@@ -95,32 +92,7 @@ INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES 
 (100 ,8, 'email_list'),
 (101 ,8, 'magazine_list'),
 (102 ,8, 'view_sendlist'),
-(103, 1, 'virualcard'),
-(104, 7, 'package_manage'),
-(105, 1, 'picture_batch'),
-(106, 1, 'goods_export'),
-(107, 1, 'goods_batch'),
-(108, 1, 'gen_goods_script'),
-(109, 5, 'sitemap'),
-(110, 5, 'file_priv'),
-(111, 5, 'file_check'),
-(112, 9, 'template_select'),
-(113, 9, 'template_setup'),
-(114, 9, 'library_manage'),
-(115, 9, 'lang_edit'),
-(116, 9, 'backup_setting'),
-(117, 9, 'mail_template'),
-(118, 10, 'db_backup'),
-(119, 10, 'db_renew'),
-(120, 10, 'db_optimize'),
-(121, 10, 'sql_query'),
-(122, 10, 'convert'),
-(123, 11, 'my_info'),
-(124, 11, 'sms_send'),
-(125, 11, 'sms_charge'),
-(126, 11, 'send_history'),
-(127, 11, 'charge_history'),
-(128, 7, 'exchange_goods');
+(103, 1, 'virualcard');
 
 --
 --  `ecs_mail_templates`
@@ -3685,7 +3657,6 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (505, 5, 'smtp_mail', 'text', '', '', '', '1'),
 (506, 5, 'mail_charset', 'select', 'UTF8,GB2312,BIG5', '', 'UTF8', '1'),
 (507, 5, 'mail_service', 'select', '0,1', '', '0', '0'),
-(508, 5, 'smtp_ssl', 'select', '0,1', '', '0', '0'),
 (601, 6, 'integrate_code', 'hidden', '', '', 'ecshop', '1'),
 (602, 6, 'integrate_config', 'hidden', '', '', '', '1'),
 (603, 6, 'hash_code', 'hidden', '', '', '31693422540744c0a6b6da635b7a5a93', '1'),
@@ -3719,8 +3690,8 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (803, 8, 'sms_order_payed', 'select', '1,0', '', '0', '1'),
 (804, 8, 'sms_order_shipped', 'select', '1,0', '', '0', '1'),
 (901, 9, 'wap_config', 'select', '1,0', '', '0', '1'),
-(902, 9, 'wap_logo', 'file', '', '../images/', '', '1'),
-(903, 2, 'message_check', 'select', '1,0', '', '1', '1');
+(902, 9, 'wap_logo', 'file', '', '../images/', '', '1');
+
 --
 -- user_rank
 --
@@ -3747,14 +3718,14 @@ INSERT INTO `ecs_nav` (`id`, `ctype`, `cid`, `name`, `ifshow`, `vieworder`, `ope
 (14, NULL, NULL, '配送方式', 1, 7, 0, 'myship.php', 'bottom'),
 (15, NULL, NULL, '留言板', 1, 99, 0, 'message.php', 'middle'),
 (16, 'c', 2, 'GSM手机', 1, 11, 0, 'category.php?id=2', 'middle'),
+(17, 'c', 3, 'CDMA手机', 1, 13, 0, 'category.php?id=3', 'middle'),
 (18, 'c', 4, '双模手机', 0, 14, 0, 'category.php?id=4', 'middle'),
 (19, 'c', 5, '3G手机', 1, 15, 0, 'category.php?id=5', 'middle'),
 (20, '', 0, 'EC论坛', 1, 100, 1, 'http://bbs.ecshop.com/', 'middle'),
 (21, NULL, NULL, '优惠活动', 1, 21, 0, 'activity.php', 'middle'),
 (22, 'a', 10, '手机资讯', 1, 102, 0, 'article_cat.php?id=10', 'middle'),
 (23, NULL, NULL, '报价单', 1, 6, 0, 'quotation.php', 'top'),
-(24, NULL, NULL, '拍卖活动', 1, 23, 0, 'auction.php', 'middle'),
-(25, NULL, NULL, '积分商城', 1, 24, 0, 'exchange.php', 'middle');
+(24, NULL, NULL, '拍卖活动', 1, 23, 0, 'auction.php', 'middle');
 
 -- 文章默认分类
 INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (1, '系统分类', 2, '', '系统保留分类', 0, 0);
@@ -3766,12 +3737,12 @@ INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `ca
 --
 
 INSERT INTO `ecs_article` (`article_id`, `cat_id`, `title`, `content`, `author`, `author_email`, `keywords`, `article_type`, `is_open`, `add_time`, `file_url`, `open_type`) VALUES
-(1, 2, '免责条款', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(2, 2, '隐私保护', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(3, 2, '咨询热点', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(4, 2, '联系我们', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(5, 2, '公司简介', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(6, -1, '用户协议', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0);
+(1, 2, '免责条款', '', '', '', '', 0, 1, 0, '', 0),
+(2, 2, '隐私保护', '', '', '', '', 0, 1, 0, '', 0),
+(3, 2, '咨询热点', '', '', '', '', 0, 1, 0, '', 0),
+(4, 2, '联系我们', '', '', '', '', 0, 1, 0, '', 0),
+(5, 2, '公司简介', '', '', '', '', 0, 1, 0, '', 0),
+(6, -1, '用户协议', '', '', '', '', 0, 1, 0, '', 0);
 
 --
 -- `ecs_template`

@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: shopping_flow.php 15487 2008-12-22 09:32:06Z zblikai $
+ * $Author: testyang $
+ * $Id: shopping_flow.php 15086 2008-10-27 06:21:49Z testyang $
 */
 
 $_LANG['flow_login_register']['username_not_null'] = '請您輸入用戶名。';
@@ -61,11 +61,6 @@ $_LANG['not_support_virtual_goods'] = '購物車中存在非實體商品,不支�
 $_LANG['not_support_insure'] = '不支持保價';
 $_LANG['clear_cart'] = '清空購物車';
 $_LANG['drop_to_collect'] = '放入收藏夾';
-$_LANG['password_js']['show_div_text'] = '請點擊更新購物車按鈕';
-$_LANG['password_js']['show_div_exit'] = '關閉';
-$_LANG['goods_fittings'] = '商品相關配件';
-$_LANG['parent_name'] = '相關商品：';
-$_LANG['remark_package'] = '禮包';
 
 /* 優惠活動 */
 $_LANG['favourable_name'] = '活動名稱：';
@@ -87,9 +82,6 @@ $_LANG['favourable_used'] = '該優惠活動已加入購物車了';
 $_LANG['pls_select_gift'] = '請選擇贈品（特惠品）';
 $_LANG['gift_count_exceed'] = '您選擇的贈品（特惠品）數量超過上限了';
 $_LANG['gift_in_cart'] = '您選擇的贈品（特惠品）已經在購物車中了：%s';
-$_LANG['label_favourable'] = '优惠活动';
-$_LANG['label_collection'] = '我的收藏';
-$_LANG['collect_to_flow'] = '立即购买';
 
 /* 登錄註冊 */
 $_LANG['forthwith_login'] = '登錄';

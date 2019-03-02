@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: check_file_priv.php 15532 2009-01-07 10:48:14Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: check_file_priv.php 15160 2008-11-05 08:23:33Z testyang $
 */
 
 define('IN_ECS', true);
@@ -19,9 +19,6 @@ require(dirname(__FILE__) . '/includes/init.php');
 
 if ($_REQUEST['act']== 'check')
 {
-    /* 检查权限 */
-    admin_priv('file_priv');
-
     /* 要检查目录文件列表 */
     $goods_img_dir = array();
     $folder = opendir(ROOT_PATH . 'images');

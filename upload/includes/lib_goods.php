@@ -9,25 +9,13 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: lib_goods.php 15763 2009-03-24 10:33:11Z zblikai $
+ * $Author: testyang $
+ * $Id: lib_goods.php 15331 2008-11-25 02:31:44Z testyang $
 */
 
 if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
-}
-
-/**
- * 商品推荐usort用自定义排序行数
- */
-function goods_sort($goods_a, $goods_b)
-{
-    if ($goods_a['sort_order'] == $goods_b['sort_order']) {
-        return 0;
-    }
-    return ($goods_a['sort_order'] < $goods_b['sort_order']) ? -1 : 1;
-
 }
 
 /**
@@ -178,11 +166,10 @@ function get_recommend_goods($type = '', $cats = '')
         $data = read_static_cache('recommend_goods');
         if ($data === false)
         {
-            $sql = 'SELECT g.goods_id, g.is_best, g.is_new, g.is_hot, g.is_promote, b.brand_name,g.sort_order ' .
+            $sql = 'SELECT g.goods_id, g.is_best, g.is_new, g.is_hot, g.is_promote, b.brand_name ' .
                ' FROM ' . $GLOBALS['ecs']->table('goods') . ' AS g ' .
                ' LEFT JOIN ' . $GLOBALS['ecs']->table('brand') . ' AS b ON b.brand_id = g.brand_id ' .
-               ' WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND (g.is_best = 1 OR g.is_new =1 OR g.is_hot = 1)'.
-               ' ORDER BY g.sort_order, g.last_update DESC';
+               ' WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 AND (g.is_best = 1 OR g.is_new =1 OR g.is_hot = 1)';
             $goods_res = $GLOBALS['db']->getAll($sql);
             //定义推荐,最新，热门，促销商品
             $goods_data['best'] = array();
@@ -195,15 +182,15 @@ function get_recommend_goods($type = '', $cats = '')
                 {
                     if ($data['is_best'] == 1)
                     {
-                        $goods_data['best'][] = array('goods_id' => $data['goods_id'], 'sort_order' => $data['sort_order']);
+                        $goods_data['best'][] = $data['goods_id'];
                     }
                     if ($data['is_new'] == 1)
                     {
-                        $goods_data['new'][] = array('goods_id' => $data['goods_id'], 'sort_order' => $data['sort_order']);
+                        $goods_data['new'][] = $data['goods_id'];
                     }
                     if ($data['is_hot'] == 1)
                     {
-                        $goods_data['hot'][] = array('goods_id' => $data['goods_id'], 'sort_order' => $data['sort_order']);
+                        $goods_data['hot'][] = $data['goods_id'];
                     }
                     if ($data['brand_name'] != '')
                     {
@@ -235,25 +222,21 @@ function get_recommend_goods($type = '', $cats = '')
                     $num = $data_count > $num  ? $num : $data_count;
                     if ($order_type == 0)
                     {
-                        //usort($goods_data[$key], 'goods_sort');
-                        $rand_key = array_slice($goods_data[$key], 0, $num);
-                        foreach($rand_key as $key_data)
-                        {
-                            $type_array[$key][] = $key_data['goods_id'];
-                        }
+                        rsort($goods_data[$key]);
+                        $type_array[$key] = array_slice($goods_data[$key], 0, $num);
                     }
                     else
                     {
                         $rand_key = array_rand($goods_data[$key], $num);
                         if ($num == 1)
                         {
-                            $type_array[$key][] = $goods_data[$key][$rand_key]['goods_id'];
+                            $type_array[$key][] = $goods_data[$key][$rand_key];
                         }
                         else
                         {
                             foreach($rand_key as $key_data)
                             {
-                                $type_array[$key][] = $goods_data[$key][$key_data]['goods_id'];
+                                $type_array[$key][] = $goods_data[$key][$key_data];
                             }
                         }
                     }
@@ -275,7 +258,7 @@ function get_recommend_goods($type = '', $cats = '')
         $type_merge = array_merge($type_array['new'], $type_array['best'], $type_array['hot']);
         $type_merge = array_unique($type_merge);
         $sql .= ' WHERE g.goods_id ' . db_create_in($type_merge);
-        $sql .= ' ORDER BY g.sort_order, g.last_update DESC';
+        $sql .= ' ORDER BY goods_id DESC';
 
         $result = $GLOBALS['db']->getAll($sql);
         foreach ($result AS $idx => $row)
@@ -344,7 +327,7 @@ function get_promote_goods($cats = '')
                 "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
             'WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND g.is_delete = 0 ' .
             " AND g.is_promote = 1 AND promote_start_date <= '$time' AND promote_end_date >= '$time' ";
-    $sql .= $order_type == 0 ? ' ORDER BY g.sort_order' : ' ORDER BY rnd';
+    $sql .= $order_type == 0 ? ' ORDER BY g.goods_id desc' : ' ORDER BY rnd';
     $sql .= " LIMIT $num ";
     $result = $GLOBALS['db']->getAll($sql);
 
@@ -1386,51 +1369,5 @@ function get_goods_attr($goods_id)
 
     return $attr_list;
 }
-
-/**
- * 获得购物车中商品的配件
- *
- * @access  public
- * @param   array     $goods_list
- * @return  array
- */
-function get_goods_fittings($goods_list = array())
-{
-    $temp_index = 0;
-    $arr        = array();
-
-    $sql = 'SELECT gg.parent_id, ggg.goods_name AS parent_name, gg.goods_id, gg.goods_price, g.goods_name, g.goods_thumb, g.goods_img, g.shop_price AS org_price, ' .
-                "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price ".
-            'FROM ' . $GLOBALS['ecs']->table('group_goods') . ' AS gg ' .
-            'LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . 'AS g ON g.goods_id = gg.goods_id ' .
-            "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
-                    "ON mp.goods_id = gg.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
-            "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS ggg ON ggg.goods_id = gg.parent_id ".
-            "WHERE gg.parent_id " . db_create_in($goods_list) . " AND g.is_delete = 0 AND g.is_on_sale = 1 ".
-            "ORDER BY gg.parent_id, gg.goods_id";
-
-    $res = $GLOBALS['db']->query($sql);
-
-    while ($row = $GLOBALS['db']->fetchRow($res))
-    {
-        $arr[$temp_index]['parent_id']         = $row['parent_id'];//配件的基本件ID
-        $arr[$temp_index]['parent_name']       = $row['parent_name'];//配件的基本件的名称
-        $arr[$temp_index]['parent_short_name'] = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
-            sub_str($row['parent_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['parent_name'];//配件的基本件显示的名称
-        $arr[$temp_index]['goods_id']          = $row['goods_id'];//配件的商品ID
-        $arr[$temp_index]['goods_name']        = $row['goods_name'];//配件的名称
-        $arr[$temp_index]['short_name']        = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
-            sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];//配件显示的名称
-        $arr[$temp_index]['fittings_price']    = price_format($row['goods_price']);//配件价格
-        $arr[$temp_index]['shop_price']        = price_format($row['shop_price']);//配件原价格
-        $arr[$temp_index]['goods_thumb']       = get_image_path($row['goods_id'], $row['goods_thumb'], true);
-        $arr[$temp_index]['goods_img']         = get_image_path($row['goods_id'], $row['goods_img']);
-        $arr[$temp_index]['url']               = build_uri('goods', array('gid'=>$row['goods_id']), $row['goods_name']);
-        $temp_index ++;
-    }
-
-    return $arr;
-}
-
 
 ?>

@@ -10,7 +10,7 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: testyang $
- * $Id: yeepay.php 15540 2009-01-08 09:06:01Z testyang $
+ * $Id: yeepay.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -174,32 +174,29 @@ class yeepay
     }
 }
 
-if (!function_exists("hmac"))
+function hmac($data, $key)
 {
-    function hmac($data, $key)
+    // RFC 2104 HMAC implementation for php.
+    // Creates an md5 HMAC.
+    // Eliminates the need to install mhash to compute a HMAC
+    // Hacked by Lance Rushing(NOTE: Hacked means written)
+
+    $key  = ecs_iconv('GB2312', 'UTF8', $key);
+    $data = ecs_iconv('GB2312', 'UTF8', $data);
+
+    $b = 64; // byte length for md5
+    if (strlen($key) > $b)
     {
-        // RFC 2104 HMAC implementation for php.
-        // Creates an md5 HMAC.
-        // Eliminates the need to install mhash to compute a HMAC
-        // Hacked by Lance Rushing(NOTE: Hacked means written)
-
-        $key  = ecs_iconv('GB2312', 'UTF8', $key);
-        $data = ecs_iconv('GB2312', 'UTF8', $data);
-
-        $b = 64; // byte length for md5
-        if (strlen($key) > $b)
-        {
-            $key = pack('H*', md5($key));
-        }
-
-        $key    = str_pad($key, $b, chr(0x00));
-        $ipad   = str_pad('', $b, chr(0x36));
-        $opad   = str_pad('', $b, chr(0x5c));
-        $k_ipad = $key ^ $ipad ;
-        $k_opad = $key ^ $opad;
-
-        return md5($k_opad . pack('H*', md5($k_ipad . $data)));
+        $key = pack('H*', md5($key));
     }
+
+    $key    = str_pad($key, $b, chr(0x00));
+    $ipad   = str_pad('', $b, chr(0x36));
+    $opad   = str_pad('', $b, chr(0x5c));
+    $k_ipad = $key ^ $ipad ;
+    $k_opad = $key ^ $opad;
+
+    return md5($k_opad . pack('H*', md5($k_ipad . $data)));
 }
 
 ?>

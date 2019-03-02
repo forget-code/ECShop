@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: user.php 15544 2009-01-09 01:54:28Z zblikai $
+ * $Author: testyang $
+ * $Id: user.php 15086 2008-10-27 06:21:49Z testyang $
 */
 
 
@@ -273,7 +273,6 @@ $_LANG['merge_order_notice'] = '訂單合併是在發貨前將相同狀態的訂
 $_LANG['order_exist'] = '該訂單不存在！';
 $_LANG['order_is_group_buy'] = '[團購]';
 $_LANG['gb_deposit'] = '（保證金）';
-$_LANG['order_is_exchange'] = '[積分商城]';
 $_LANG['notice_gb_order_amount'] = '（備註：團購如果有保證金，第一次只需支付保證金和相應的支付費用）';
 $_LANG['business_message'] = '發送/查看商家留言';
 $_LANG['pay_order_by_surplus'] = '追加使用餘額支付訂單：%s';
@@ -439,15 +438,12 @@ $_LANG['verticle'] = '豎排';
 $_LANG['generate'] = '生成代碼';
 $_LANG['label_goods_num'] = '顯示商品數量：';
 $_LANG['label_arrange'] = '選擇商品排列方式：';
-$_LANG['label_rows_num'] = '排列顯示條目數：';
 $_LANG['label_charset'] = '選擇編碼：';
 $_LANG['charset']['utf8'] = '國際化編碼（utf8）';
 $_LANG['charset']['zh_cn'] = '簡體中文';
 $_LANG['charset']['zh_tw'] = '繁體中文';
 $_LANG['goods_num_must_be_int'] = '商品數量應該是整數';
 $_LANG['goods_num_must_over_0'] = '商品數量應該大於0';
-$_LANG['rows_num_must_be_int'] = '排列顯示條目數應該是整數';
-$_LANG['rows_num_must_over_0'] = '排列顯示條目數應該大於0';
 
 $_LANG['last_month_order'] = '您最近30天內提交了';
 $_LANG['order_unit'] = '個訂單';
@@ -627,8 +623,6 @@ $_LANG['exchange_js']['balance'] = '您的{%s}餘額不足，請重新輸入';
 $_LANG['exchange_deny'] = '該積分不允許兌換';
 $_LANG['exchange_success'] = '恭喜您， 你用%s個%s兌換了%s個%s';
 $_LANG['exchange_error_1'] = 'UCenter提交積分兌換時發生錯誤';
-$_LANG['rank_points'] = '商城等級積分';
-$_LANG['pay_points'] = '商城消費積分';
 
 /* 密碼強度 */
 $_LANG['pwd_lower'] = '弱';

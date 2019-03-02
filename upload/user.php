@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: user.php 15722 2009-03-09 08:33:12Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: user.php 15233 2008-11-19 03:26:41Z testyang $
 */
 
 define('IN_ECS', true);
@@ -106,11 +106,6 @@ if ($action == 'default')
 /* 显示会员注册界面 */
 if ($action == 'register')
 {
-    if (!isset($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
-    {
-        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'user.php') ? './index.php' : $GLOBALS['_SERVER']['HTTP_REFERER'];
-    }
-
     /* 验证码相关设置 */
     if ((intval($_CFG['captcha']) & CAPTCHA_REGISTER) && gd_version() > 0)
     {
@@ -119,7 +114,6 @@ if ($action == 'register')
     }
     /* 增加是否关闭注册 */
     $smarty->assign('shop_reg_closed', $_CFG['shop_reg_closed']);
-    $smarty->assign('back_act', $back_act);
     $smarty->display('user_passport.dwt');
 }
 
@@ -141,7 +135,6 @@ elseif ($action == 'act_register')
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
         $email    = isset($_POST['email']) ? trim($_POST['email']) : '';
         $other = isset($_POST['other']) ? $_POST['other'] : array();
-        $back_act = isset($_POST['back_act']) ? trim($_POST['back_act']) : '';
 
         if(empty($_POST['agreement']))
         {
@@ -177,8 +170,7 @@ elseif ($action == 'act_register')
 
         if (register($username, $password, $email, $other) !== false)
         {
-            $ucdata = empty($user->ucdata)? "" : $user->ucdata;
-            show_message(sprintf($_LANG['register_success'], $username . $ucdata), array($_LANG['back_up_page'], $_LANG['profile_lnk']), array($back_act, 'user.php'), 'info');
+            show_message(sprintf($_LANG['register_success'], $username . "$user->ucdata"), $_LANG['profile_lnk'], 'user.php', 'info', true);
         }
         else
         {
@@ -241,13 +233,9 @@ elseif($action == 'check_email')
 /* 用户登录界面 */
 elseif ($action == 'login')
 {
-    if (empty($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
+    if (!isset($back_act))
     {
-        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'user.php') ? './index.php' : $GLOBALS['_SERVER']['HTTP_REFERER'];
-    }
-    else
-    {
-        $back_act = 'user.php';
+        $back_act = '';
     }
 
     $captcha = intval($_CFG['captcha']);
@@ -268,13 +256,21 @@ elseif ($action == 'act_login')
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
     $back_act = isset($_POST['back_act']) ? trim($_POST['back_act']) : '';
 
+    if (empty($back_act))
+    {
+        $url = 'user.php';
+    }
+    else
+    {
+        $url = $back_act;
+    }
 
     $captcha = intval($_CFG['captcha']);
     if (($captcha & CAPTCHA_LOGIN) && (!($captcha & CAPTCHA_LOGIN_FAIL) || (($captcha & CAPTCHA_LOGIN_FAIL) && $_SESSION['login_fail'] > 2)) && gd_version() > 0)
     {
         if (empty($_POST['captcha']))
         {
-            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], 'user.php', 'error');
+            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], $url, 'error');
         }
 
         /* 检查验证码 */
@@ -284,7 +280,7 @@ elseif ($action == 'act_login')
         $validator->session_word = 'captcha_login';
         if (!$validator->check_word($_POST['captcha']))
         {
-            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], 'user.php', 'error');
+            show_message($_LANG['invalid_captcha'], $_LANG['relogin_lnk'], $url, 'error');
         }
     }
 
@@ -292,14 +288,23 @@ elseif ($action == 'act_login')
     {
         update_user_info();
         recalculate_price();
-
-        $ucdata = isset($user->ucdata)? $user->ucdata : '';
-        show_message($_LANG['login_success'] . $ucdata , array($_LANG['back_up_page'], $_LANG['profile_lnk']), array($back_act,'user.php'), 'info');
+        if ($url == 'user.php')
+        {
+            //默认登录提示
+            $ucdata = isset($user->ucdata)?$user->ucdata:'';
+            show_message($_LANG['login_success'] . $ucdata , $_LANG['profile_lnk'], 'user.php');
+        }
+        else
+        {
+            //有链接直接跳转
+            ecs_header('Location: ' .$url. "\n");
+            exit;
+        }
     }
     else
     {
         $_SESSION['login_fail'] ++ ;
-        show_message($_LANG['login_failure'], $_LANG['relogin_lnk'], 'user.php', 'error');
+        show_message($_LANG['login_failure'], $_LANG['relogin_lnk'], $url, 'error');
     }
 }
 
@@ -343,7 +348,7 @@ elseif ($action == 'signin')
         update_user_info();  //更新用户信息
         recalculate_price(); // 重新计算购物车中的商品价格
         $smarty->assign('user_info', get_user_info());
-        $ucdata = empty($user->ucdata)? "" : $user->ucdata;
+        $ucdata = empty($user->ucdata)?"":$user->ucdata;
         $result['ucdata'] = $ucdata;
         $result['content'] = $smarty->fetch('library/member_info.lbi');
     }
@@ -364,14 +369,8 @@ elseif ($action == 'signin')
 /* 退出会员中心 */
 elseif ($action == 'logout')
 {
-    if (!isset($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
-    {
-        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'user.php') ? './index.php' : $GLOBALS['_SERVER']['HTTP_REFERER'];
-    }
-
     $user->logout();
-    $ucdata = empty($user->ucdata)? "" : $user->ucdata;
-    show_message($_LANG['logout'] . $ucdata, array($_LANG['back_up_page'], $_LANG['back_home_lnk']), array($back_act, 'index.php'), 'info');
+    show_message($_LANG['logout'] . "$user->ucdata", $_LANG['back_home_lnk'], 'index.php', 'info', true);
 }
 
 /* 个人资料页面 */
@@ -616,7 +615,7 @@ elseif ($action == 'order_detail')
     }
 
     /* 是否显示添加到购物车 */
-    if ($order['extension_code'] != 'group_buy' && $order['extension_code'] != 'exchange_goods')
+    if ($order['extension_code'] != 'group_buy')
     {
         $smarty->assign('allow_to_cart', 1);
     }
@@ -630,17 +629,14 @@ elseif ($action == 'order_detail')
         $goods_list[$key]['subtotal']     = price_format($value['subtotal'], false);
     }
 
-     /* 设置能否修改使用余额数 */
+    /* 设置能否修改使用余额数 */
     if ($order['order_amount'] > 0)
     {
-        if ($order['order_status'] == OS_UNCONFIRMED || $order['order_status'] == OS_CONFIRMED)
+        $user = user_info($order['user_id']);
+        if ($user['user_money'] + $user['credit_line'] > 0)
         {
-            $user = user_info($order['user_id']);
-            if ($user['user_money'] + $user['credit_line'] > 0)
-            {
-                $smarty->assign('allow_edit_surplus', 1);
-                $smarty->assign('max_surplus', sprintf($_LANG['max_surplus'], $user['user_money']));
-            }
+            $smarty->assign('allow_edit_surplus', 1);
+            $smarty->assign('max_surplus', sprintf($_LANG['max_surplus'], $user['user_money']));
         }
     }
 
@@ -2014,14 +2010,14 @@ elseif ($action =='email_list')
 
     if($job == 'add' || $job == 'del')
     {
-        if(isset($_SESSION['last_email_query']))
+        if(isset($_SESSION['last_order_query']))
         {
-            if(time() - $_SESSION['last_email_query'] <= 30)
+            if(time() - $_SESSION['last_order_query'] <= 30)
             {
                 die($_LANG['order_query_toofast']);
             }
         }
-        $_SESSION['last_email_query'] = time();
+        $_SESSION['last_order_query'] = time();
     }
 
     $email = trim($_GET['email']);

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: message.php 15545 2009-01-09 05:30:40Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: message.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -68,7 +68,6 @@ if ($action == 'act_add_message')
         $user_name = htmlspecialchars(trim($_POST['user_name']));
     }
 
-    $user_id = !empty($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
     $message = array(
         'user_id'     => $user_id,
         'user_name'   => $user_name,
@@ -91,8 +90,7 @@ if ($action == 'act_add_message')
         {
             $_SESSION['send_time'] = $cur_time;
         }
-        $msg_info = $_CFG['message_check'] ? $_LANG['message_submit_wait'] : $_LANG['message_submit_done'];
-        show_message($msg_info, $_LANG['message_list_lnk'], 'message.php');
+        show_message($_LANG['add_message_success'], $_LANG['message_list_lnk'], 'message.php');
     }
     else
     {
@@ -117,7 +115,7 @@ if ($action == 'default')
 
     /* 获取留言的数量 */
     $sql = "SELECT COUNT(*) FROM " .$ecs->table('feedback').
-           " WHERE `msg_area` = '1' AND `msg_status` = 1";
+           " WHERE `msg_area` = '1'";
     $record_count = $db->getOne($sql);
 
     $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
@@ -144,7 +142,7 @@ function get_msg_list($num, $start)
     /* 获取留言数据 */
     $msg = array();
     $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('feedback');
-    $sql .= " WHERE `msg_area`='1' AND `msg_status` = '1' ORDER BY msg_time DESC";
+    $sql .= " WHERE `msg_area`='1' ORDER BY msg_time DESC";
 
 
     $res = $GLOBALS['db']->SelectLimit($sql, $num, $start);

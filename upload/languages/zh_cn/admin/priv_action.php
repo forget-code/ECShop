@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: priv_action.php 15544 2009-01-09 01:54:28Z zblikai $
+ * $Author: testyang $
+ * $Id: priv_action.php 15013 2008-10-23 09:31:42Z testyang $
 */
 /* 权限管理的一级分组 */
 $_LANG['goods'] = '商品管理';
@@ -21,9 +21,6 @@ $_LANG['sys_manage'] = '系统设置';
 $_LANG['order_manage'] = '订单管理';
 $_LANG['promotion'] = '促销管理';
 $_LANG['email'] = '邮件管理';
-$_LANG['templates_manage'] = '模板管理';
-$_LANG['db_manage'] = '数据库管理';
-$_LANG['sms_manage'] = '短信管理';
 
 //商品管理部分的权限
 $_LANG['goods_manage'] = '商品添加/编辑';
@@ -38,10 +35,6 @@ $_LANG['tag_manage'] = '标签管理';
 $_LANG['goods_auto'] = '商品自动上下架';
 $_LANG['topic_manage'] = '专题管理';
 $_LANG['virualcard'] = '虚拟卡管理';
-$_LANG['picture_batch'] = '图片批量处理';
-$_LANG['goods_export'] = '商品批量导出';
-$_LANG['goods_batch'] = '商品批量上传/修改';
-$_LANG['gen_goods_script'] = '生成商品代码';
 
 //文章管理部分的权限
 $_LANG['article_cat'] = '文章分类管理';
@@ -60,7 +53,6 @@ $_LANG['user_rank'] = '会员等级管理';
 $_LANG['feedback_priv'] = '会员留言管理';
 $_LANG['surplus_manage'] = '会员余额管理';
 $_LANG['account_manage'] = '会员账户管理';
-
 
 //权限管理部分的权限
 $_LANG['admin_manage'] = '管理员添加/编辑';
@@ -85,9 +77,6 @@ $_LANG['navigator'] = '自定义导航栏';
 $_LANG['cron'] = '计划任务';
 $_LANG['affiliate'] = '推荐设置';
 $_LANG['affiliate_ck'] = '分成管理';
-$_LANG['sitemap'] = '站点地图管理';
-$_LANG['file_check'] = '文件校验';
-$_LANG['file_priv'] = '文件权限检验';
 
 //订单管理部分权限
 $_LANG['order_os_edit'] = '编辑订单状态';
@@ -112,36 +101,11 @@ $_LANG['auction'] = '拍卖活动';
 $_LANG['group_by'] = '团购活动';
 $_LANG['favourable'] = '优惠活动';
 $_LANG['whole_sale'] = '批发管理';
-$_LANG['package_manage'] = '超值礼包';
-$_LANG['exchange_goods'] = '积分商城商品';
 
 //邮件管理
 $_LANG['attention_list'] = '关注管理';
 $_LANG['email_list'] = '邮件订阅管理';
 $_LANG['magazine_list'] = '杂志管理';
 $_LANG['view_sendlist'] = '邮件队列管理';
-
-//模板管理
-$_LANG['template_select'] = '模板选择';
-$_LANG['template_setup']  = '模板设置';
-$_LANG['library_manage']  = '库项目管理';
-$_LANG['lang_edit']       = '语言项编辑';
-$_LANG['backup_setting']  = '模板设置备份';
-$_LANG['mail_template']  = '邮件模板管理';
-
-//数据库管理
-$_LANG['db_backup']    = '数据备份';
-$_LANG['db_renew']     = '数据恢复';
-$_LANG['db_optimize']  = '数据表优化';
-$_LANG['sql_query']    = 'SQL查询';
-$_LANG['convert']      = '转换数据';
-
-//短信管理
-$_LANG['my_info']         = '账号信息';
-$_LANG['sms_send']        = '发送短信';
-$_LANG['sms_charge']      = '短信充值';
-$_LANG['send_history']    = '发送记录';
-$_LANG['charge_history']  = '充值记录 ';
-
 
 ?>

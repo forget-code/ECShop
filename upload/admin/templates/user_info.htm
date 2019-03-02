@@ -1,4 +1,4 @@
-<!-- $Id: user_info.htm 15587 2009-02-10 07:02:30Z sunxiaodong $ -->
+<!-- $Id: user_info.htm 15059 2008-10-25 06:01:50Z testyang $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form method="post" action="users.php" name="theForm" onsubmit="return validate()">
@@ -38,15 +38,6 @@
   <tr>
     <td class="label">{$lang.confirm_password}:</td>
     <td><input type="password" name="confirm_password" maxlength="20" size="20" />{$lang.require_field}</td>
-  </tr>
-  {elseif  $form_action eq "update"}
-  <tr>
-    <td class="label">{$lang.newpass}:</td>
-    <td><input type="password" name="password" maxlength="20" size="20" /></td>
-  </tr>
-  <tr>
-    <td class="label">{$lang.confirm_password}:</td>
-    <td><input type="password" name="confirm_password" maxlength="20" size="20" /></td>
   </tr>
   {/if}
   <tr>
@@ -143,22 +134,6 @@ function validate()
         validator.required("password", no_password);
         validator.required("confirm_password", no_confirm_password);
         validator.eqaul("password", "confirm_password", password_not_same);
-    }
-    else if (document.forms['theForm'].elements['act'].value == "update")
-    {
-        var newpass = document.forms['theForm'].elements['password'];
-        var confirm_password = document.forms['theForm'].elements['confirm_password'];
-        if(newpass.value.length > 0 || confirm_password.value.length)
-        {
-          if(newpass.value.length >= 6 || confirm_password.value.length >= 6)
-          {
-            validator.eqaul("password", "confirm_password", password_not_same);
-          }
-          else
-          {
-            validator.addErrorMsg(password_len_err);
-          }
-        }
     }
 
     return validator.passed();

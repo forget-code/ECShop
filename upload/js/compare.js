@@ -1,4 +1,3 @@
-/* $Id: compare.js 15469 2008-12-19 06:34:44Z testyang $ */
 var Compare = new Object();
 
 Compare = {
@@ -15,10 +14,10 @@ Compare = {
       }
       count++;
     }
-
+    
     if (this.data[goodsId])
     {
-      alert(exist.replace("%s",goodsName));
+      alert(exist.replace("%s",goodsName)); 
       return;
     }
     else
@@ -34,7 +33,7 @@ Compare = {
     var diffY = Math.max(document.documentElement.scrollTop,document.body.scrollTop);
 
     var percent = .2*(diffY - this.lastScrollY);
-    if(percent > 0)
+    if(percent > 0) 
       percent = Math.ceil(percent);
     else
       percent = Math.floor(percent);
@@ -66,7 +65,7 @@ Compare = {
         var cookieValue = document.getCookie("compareItems");
         var obj = cookieValue.parseJSON();
         var url = document.location.href;
-        url = url.substring(0,url.lastIndexOf('/')+1) + "compare.php";
+        url = url.substring(0,url.lastIndexOf('/')+1) + "compare.php"; 
         var i = 0;
         for(var k in obj)
         {

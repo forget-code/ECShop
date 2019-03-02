@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: zblikai $
- * $Id: magazine_list.php 15586 2009-02-10 03:10:10Z zblikai $
+ * $Author: testyang $
+ * $Id: magazine_list.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -28,15 +28,6 @@ if ($_REQUEST['act'] == 'list')
     $smarty->assign('filter',       $magazinedb['filter']);
     $smarty->assign('record_count', $magazinedb['record_count']);
     $smarty->assign('page_count',   $magazinedb['page_count']);
-
-    $special_ranks = get_rank_list();
-    $send_rank[SEND_LIST . '_0'] = $_LANG['email_user'];
-    $send_rank[SEND_USER . '_0'] = $_LANG['user_list'];
-    foreach($special_ranks as $rank_key => $rank_value)
-    {
-        $send_rank[SEND_RANK . '_' . $rank_key] = $rank_value;
-    }
-    $smarty->assign('send_rank',   $send_rank);
 
     assign_query_info();
     $smarty->display('magazine_list.htm');
@@ -110,115 +101,47 @@ elseif ($_REQUEST['act'] == 'del')
 }
 elseif ($_REQUEST['act'] == 'addtolist')
 {
-    $id         = intval($_REQUEST['id']);
-    $pri        = !empty($_REQUEST['pri']) ? 1 : 0;
-    $start      = empty($_GET['start']) ? 0 : (int)$_GET['start'];
-    $send_rank  = $_REQUEST['send_rank'];
-    $rank_array = explode('_', $send_rank);
+    $id = intval($_REQUEST['id']);
+    $pri = !empty($_REQUEST['pri']) ? 1 : 0;
+    $start = empty($_GET['start']) ? 0 : (int)$_GET['start'];
     $template_id = $db->getOne("SELECT template_id FROM "  . $ecs->table('mail_templates') . " WHERE type = 'magazine' AND template_id = '$id'");
     if (!empty($template_id))
     {
-        if (SEND_LIST == $rank_array['0'])
+        $count = $db->getOne("SELECT COUNT(*) FROM " . $ecs->table('email_list') . "WHERE stat = 1");
+        if ($count > $start)
         {
-            $count = $db->getOne("SELECT COUNT(*) FROM " . $ecs->table('email_list') . "WHERE stat = 1");
-            if ($count > $start)
-            {
-                $sql = "SELECT email FROM " . $ecs->table('email_list') . "WHERE stat = 1 LIMIT $start,100";
-                $query = $db->query($sql);
-                $add = '';
+            $sql = "SELECT email FROM " . $ecs->table('email_list') . "WHERE stat = 1 LIMIT $start,100";
+            $query = $db->query($sql);
+            $add = '';
 
-                $i = 0;
-                while ($rt = $db->fetch_array($query))
-                {
-                    $time = time();
-                    $add .= $add ? ",('$rt[email]','$id','$pri','$time')" : "('$rt[email]','$id','$pri','$time')";
-                    $i ++ ;
-                }
-                if ($add)
-                {
-                    $sql = "INSERT INTO "  . $ecs->table('email_sendlist') . " (email,template_id,pri,last_send) VALUES " . $add;
-                    $db->query($sql);
-                }
-                if($i == 100)
-                {
-                    $start = $start + 100;
-                }
-                else
-                {
-                    $start = $start + $i;
-                }
-                $links[] = array('text' => sprintf($_LANG['finish_list'],$start), 'href' => "magazine_list.php?act=addtolist&id=$id&pri=$pri&start=$start&send_rank=$send_rank");
-                sys_msg($_LANG['finishing'], 0, $links);
+            $i = 0;
+            while ($rt = $db->fetch_array($query))
+            {
+                $time = time();
+                $add .= $add ? ",('$rt[email]','$id','$pri','$time')" : "('$rt[email]','$id','$pri','$time')";
+                $i ++ ;
+            }
+            if ($add)
+            {
+                $sql = "INSERT INTO "  . $ecs->table('email_sendlist') . " (email,template_id,pri,last_send) VALUES " . $add;
+                $db->query($sql);
+            }
+            if($i == 100)
+            {
+                $start = $start + 100;
             }
             else
             {
-                $db->query("UPDATE "  . $ecs->table('mail_templates') . " SET last_send = " . time() . " WHERE type = 'magazine' AND template_id = '$id'");
-                $links[] = array('text' => $_LANG['magazine_list'], 'href' => 'magazine_list.php?act=list');
-                sys_msg($_LANG['edit_ok'], 0, $links);
+                $start = $start + $i;
             }
+            $links[] = array('text' => sprintf($_LANG['finish_list'],$start), 'href' => "magazine_list.php?act=addtolist&id=$id&pri=$pri&start=$start");
+            sys_msg($_LANG['finishing'], 0, $links);
         }
         else
         {
-            $sql = "SELECT special_rank FROM " . $ecs->table('user_rank') . " WHERE rank_id = '" . $rank_array['1'] . "'";
-            $row = $db->getRow($sql);
-            if (SEND_USER == $rank_array['0'])
-            {
-                $count_sql = 'SELECT COUNT(*) FROM ' . $ecs->table('users') . 'WHERE is_validated = 1';
-                $email_sql = 'SELECT email FROM ' . $ecs->table('users') . "WHERE is_validated = 1 LIMIT $start,100";
-            }
-            elseif ($row['special_rank'])
-            {
-                $count_sql = 'SELECT COUNT(*) FROM ' . $ecs->table('users') . 'WHERE is_validated = 1 AND user_rank = ' . $rank_array['1'];
-                $email_sql = 'SELECT email FROM ' . $ecs->table('users') . 'WHERE is_validated = 1 AND user_rank = ' . $rank_array['1'] . " LIMIT $start,100";
-            }
-            else
-            {
-
-                $count_sql = 'SELECT COUNT(*) ' .
-                             'FROM ' . $ecs->table('users') . ' AS u LEFT JOIN ' . $ecs->table('user_rank') . ' AS ur ' .
-                             "  ON ur.special_rank = '0' AND ur.min_points <= u.rank_points AND ur.max_points > u.rank_points" .
-                             " WHERE ur.rank_id = '" . $rank_array['1'] . "' AND u.is_validated = 1";
-                $email_sql = 'SELECT u.email ' .
-                             'FROM ' . $ecs->table('users') . ' AS u LEFT JOIN ' . $ecs->table('user_rank') . ' AS ur ' .
-                             "  ON ur.special_rank = '0' AND ur.min_points <= u.rank_points AND ur.max_points > u.rank_points" .
-                             " WHERE ur.rank_id = '" . $rank_array['1'] . "' AND u.is_validated = 1 LIMIT $start,100";
-            }
-
-            $count = $db->getOne($count_sql);
-            if ($count > $start)
-            {
-                $query = $db->query($email_sql);
-                $add = '';
-
-                $i = 0;
-                while ($rt = $db->fetch_array($query))
-                {
-                    $time = time();
-                    $add .= $add ? ",('$rt[email]','$id','$pri','$time')" : "('$rt[email]','$id','$pri','$time')";
-                    $i ++ ;
-                }
-                if ($add)
-                {
-                    $sql = "INSERT INTO "  . $ecs->table('email_sendlist') . " (email,template_id,pri,last_send) VALUES " . $add;
-                    $db->query($sql);
-                }
-                if($i == 100)
-                {
-                    $start = $start + 100;
-                }
-                else
-                {
-                    $start = $start + $i;
-                }
-                $links[] = array('text' => sprintf($_LANG['finish_list'],$start), 'href' => "magazine_list.php?act=addtolist&id=$id&pri=$pri&start=$start&send_rank=$send_rank");
-                sys_msg($_LANG['finishing'], 0, $links);
-            }
-            else
-            {
-                $db->query("UPDATE "  . $ecs->table('mail_templates') . " SET last_send = " . time() . " WHERE type = 'magazine' AND template_id = '$id'");
-                $links[] = array('text' => $_LANG['magazine_list'], 'href' => 'magazine_list.php?act=list');
-                sys_msg($_LANG['edit_ok'], 0, $links);
-            }
+            $db->query("UPDATE "  . $ecs->table('mail_templates') . " SET last_send = " . time() . " WHERE type = 'magazine' AND template_id = '$id'");
+            $links[] = array('text' => $_LANG['magazine_list'], 'href' => 'magazine_list.php?act=list');
+            sys_msg($_LANG['edit_ok'], 0, $links);
         }
     }
     else

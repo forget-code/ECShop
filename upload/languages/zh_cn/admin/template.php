@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: template.php 15744 2009-03-16 02:26:39Z zblikai $
+ * $Author: testyang $
+ * $Id: template.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 $_LANG['template_manage'] = '模板管理';
@@ -57,7 +57,6 @@ $_LANG['template_files']['auction_list'] = '拍卖活动列表';
 $_LANG['template_files']['auction'] = '拍卖活动详情';
 $_LANG['template_files']['message_board'] = '留言板';
 //$_LANG['template_files']['quotation'] = '报价单';
-$_LANG['template_files']['exchange_list'] = '积分商城列表';
 
 /* 每一个库项目的描述 */
 $_LANG['template_libs']['ad_position'] = '广告位';
@@ -116,8 +115,6 @@ $_LANG['template_libs']['myship'] = '配送方式';
 $_LANG['template_libs']['online'] = '统计在线人数';
 $_LANG['template_libs']['relatetag'] = '其他应用关联标签数据';
 $_LANG['template_libs']['message_list'] = '留言列表';
-$_LANG['template_libs']['exchange_hot'] = '积分商城热卖商品';
-$_LANG['template_libs']['exchange_list'] = '积分商城列表商品';
 
 /* 模板布局备份 */
 $_LANG['backup_setting'] = '备份模板设置';

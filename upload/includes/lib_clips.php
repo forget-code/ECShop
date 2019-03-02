@@ -10,7 +10,7 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: sunxiaodong $
- * $Id: lib_clips.php 15545 2009-01-09 05:30:40Z sunxiaodong $
+ * $Id: lib_clips.php 15374 2008-12-02 08:18:36Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -153,7 +153,6 @@ function get_message_list($user_id, $user_name, $num, $start, $order_id = 0)
 function add_message($message)
 {
     $upload_size_limit = $GLOBALS['_CFG']['upload_size_limit'] == '-1' ? ini_get('upload_max_filesize') : $GLOBALS['_CFG']['upload_size_limit'];
-    $status = 1 - $GLOBALS['_CFG']['message_check'];
 
     $last_char = strtolower($upload_size_limit{strlen($upload_size_limit)-1});
 
@@ -166,14 +165,13 @@ function add_message($message)
             $upload_size_limit *= 1024;
             break;
     }
-
+    if($_FILES['message_img']['size'] / 1024 > $upload_size_limit)
+    {
+        $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['upload_file_limit'], $upload_size_limit));
+        return false;
+    }
     if ($message['upload'])
     {
-        if($_FILES['message_img']['size'] / 1024 > $upload_size_limit)
-        {
-            $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['upload_file_limit'], $upload_size_limit));
-            return false;
-        }
         $img_name = upload_file($_FILES['message_img'], 'feedbackimg');
 
         if ($img_name === false)
@@ -195,9 +193,9 @@ function add_message($message)
 
     $message['msg_area'] = isset($message['msg_area']) ? intval($message['msg_area']) : 0;
     $sql = "INSERT INTO " . $GLOBALS['ecs']->table('feedback') .
-            " (msg_id, parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_status,  msg_content, msg_time, message_img, order_id, msg_area)".
+            " (msg_id, parent_id, user_id, user_name, user_email, msg_title, msg_type, msg_content, msg_time, message_img, order_id, msg_area)".
             " VALUES (NULL, 0, '$message[user_id]', '$message[user_name]', '$message[user_email]', ".
-            " '$message[msg_title]', '$message[msg_type]', '$status', '$message[msg_content]', '".gmtime()."', '$img_name', '$message[order_id]', '$message[msg_area]')";
+            " '$message[msg_title]', '$message[msg_type]', '$message[msg_content]', '".gmtime()."', '$img_name', '$message[order_id]', '$message[msg_area]')";
     $GLOBALS['db']->query($sql);
 
     return true;

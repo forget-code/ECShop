@@ -28,9 +28,7 @@
     <tr>
         <th>{$lang.goods_name}</th>
         <th>{$lang.goods_category}</th>
-        <!--{if $cfg.use_storage and $cfg.show_goodsnumber}-->
         <th>{$lang.goods_inventory}</th>
-        <!-- {/if} -->
         <th>{$lang.price}</th>
         <!--{foreach from=$extend_price item=ext_price}-->
         <th>{$ext_price}</th>
@@ -40,9 +38,7 @@
     <tr>
         <td>{$goods.goods_name}</td>
         <td>{$goods.goods_category}</td>
-        <!--{if $cfg.use_storage and $cfg.show_goodsnumber}-->
         <td>{$goods.goods_number}</td>
-        <!-- {/if} -->
         <td>{$goods.shop_price}</td>
         <!--{foreach from=$extend_rank item=ext_rank}-->
         <td><script>calc_price({$goods.shop_price}, {$ext_rank})</script></td>

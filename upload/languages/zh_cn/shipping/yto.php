@@ -9,14 +9,13 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: yto.php 15459 2008-12-17 04:16:19Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: yto.php 15083 2008-10-27 05:54:55Z testyang $
 */
 
 $_LANG['yto']          = '圆通速递';
 $_LANG['yto_desc']     = '上海圆通物流（速递）有限公司经过多年的网络快速发展，在中国速递行业中一直处于领先地位。为了能更好的发展国际快件市场，加快与国际市场的接轨，强化圆通的整体实力，圆通已在东南亚、欧美、中东、北美洲、非洲等许多城市运作国际快件业务';
-$_LANG['item_fee'] = '单件商品费用：';
-$_LANG['base_fee'] = '首重费用';
+$_LANG['basic_fee'] = '首重费用';
 $_LANG['step_fee'] = '续重费用';
 $_LANG['shipping_print'] = '<table border="0" cellspacing="0" cellpadding="0" style="width:18.6cm; height:11.3cm;">
   <tr>

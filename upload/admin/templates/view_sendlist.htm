@@ -38,24 +38,14 @@
 <table id="page-table" cellspacing="0">
   <tr>
     <td>
-    <input type="hidden" name="act" value=""/>
-    <input type="button" id="btnSubmit1" value="{$lang.button_remove}" disabled="true" class="button" onclick="subFunction('batch_remove')"/>
-    <input type="button" id="btnSubmit2" value="{$lang.batch_send}" disabled="true" class="button" onclick="subFunction('batch_send')"/>
-    <input type="button" value="{$lang.all_send}" class="button" onclick="subFunction('all_send')"/>
+    <input type="hidden" name="act" value="batch_remove" />
+    <input type="submit" id="btnSubmit" value="{$lang.button_remove}" disabled="true" class="button" />
     </td>
     <td align="right" nowrap="true">
     {include file="page.htm"}
     </td>
   </tr>
 </table>
-<script type="text/javascript" language="JavaScript">
-function subFunction(act)
-{
-  var frm = document.forms['listForm'];
-  frm.elements['act'].value = act;
-  frm.submit();
-}
-</script>
 {if $full_page}
 </div>
 </form>

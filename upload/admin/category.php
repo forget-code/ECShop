@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: category.php 15730 2009-03-10 08:38:29Z zblikai $
+ * $Author: testyang $
+ * $Id: category.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -256,7 +256,7 @@ if ($_REQUEST['act'] == 'update')
 
     if ($cat['cat_name'] != $old_cat_name)
     {
-        if (cat_exists($cat['cat_name'],$cat['parent_id'], $cat_id))
+        if (cat_exists($cat['cat_name'],$cat['parent_id']))
         {
            $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
            sys_msg($_LANG['catname_exist'], 0, $link);

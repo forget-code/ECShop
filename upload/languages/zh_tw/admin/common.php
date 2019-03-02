@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: common.php 15548 2009-01-09 12:18:44Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: common.php 15086 2008-10-27 06:21:49Z testyang $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
@@ -182,8 +182,6 @@ $_LANG['10_auction'] = '拍賣活動';
 $_LANG['12_favourable'] = '優惠活動';
 $_LANG['13_wholesale'] = '批發管理';
 $_LANG['ebao_commend'] = '易寶推薦';
-$_LANG['14_package_list'] = '超值禮包';
-$_LANG['package_add'] = '添加超值禮包';
 
 /* 訂單管理 */
 $_LANG['02_order_list'] = '訂單列表';
@@ -226,7 +224,6 @@ $_LANG['04_users_add'] = '添加會員';
 $_LANG['05_user_rank_list'] = '會員等級';
 $_LANG['06_list_integrate'] = '會員整合';
 $_LANG['09_user_account'] = '充值和提現申請';
-$_LANG['10_user_account_manage'] = '資金管理';
 
 /* 權限管理 */
 $_LANG['admin_list'] = '管理員列表';
@@ -248,7 +245,6 @@ $_LANG['check_file_priv'] = '文件權限檢測';
 $_LANG['captcha_manage'] = '驗證碼管理';
 $_LANG['fckfile_manage'] = 'Fck上傳文件管理';
 $_LANG['ucenter_setup'] = 'UCenter設置';
-$_LANG['file_check'] = '文件校驗';
 
 /* 模板管理 */
 $_LANG['02_template_select'] = '模板選擇';
@@ -279,11 +275,6 @@ $_LANG['email_list'] = '郵件訂閱管理';
 $_LANG['magazine_list'] = '雜誌管理';
 $_LANG['attention_list'] = '關注管理';
 $_LANG['view_sendlist'] = '郵件隊列管理';
-
-/* 积分兑换管理 */
-$_LANG['15_exchange_goods'] = '積分商城商品';
-$_LANG['15_exchange_goods_list'] = '積分商城商品列表';
-$_LANG['exchange_goods_add'] = '添加新商品';
 
 /* cls_image類的語言項 */
 $_LANG['directory_readonly'] = '目錄 % 不存在或不可寫';

@@ -9,15 +9,15 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: mail_template.php 15532 2009-01-07 10:48:14Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: mail_template.php 15145 2008-11-03 02:28:16Z testyang $
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 
-admin_priv('mail_template');
+admin_priv('template_manage');
 
 /*------------------------------------------------------ */
 //-- 模版列表

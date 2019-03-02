@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: order.php 15654 2009-02-24 05:57:05Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: order.php 15230 2008-11-19 02:19:36Z testyang $
  */
 
 define('IN_ECS', true);
@@ -332,12 +332,6 @@ elseif ($_REQUEST['act'] == 'info')
         $row['formated_goods_price']    = price_format($row['goods_price']);
 
         $goods_attr[] = explode(' ', trim($row['goods_attr'])); //将商品属性拆分为一个数组
-
-        if ($row['extension_code'] == 'package_buy')
-        {
-            $row['package_goods_list'] = get_package_goods($row['goods_id']);
-        }
-
         $goods_list[] = $row;
     }
 
@@ -611,15 +605,6 @@ elseif ($_REQUEST['act'] == 'step_post')
                 " WHERE goods_id = '$goods_id' LIMIT 1";
         $db->query($sql);
 
-        /* 如果使用库存，且下订单时减库存，则修改库存 */
-        if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
-        {
-            $sql = "UPDATE " . $ecs->table('goods') .
-                    " SET `goods_number` = goods_number - '" . $goods_number . "' " .
-                    " WHERE `goods_id` = '" . $goods_id . "' LIMIT 1";
-             $db->query($sql);
-        }
-
         /* 更新商品总金额和订单总金额 */
         update_order($order_id, array('goods_amount' => order_amount($order_id)));
         update_order_amount($order_id);
@@ -767,7 +752,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         $shipping_id = $_POST['shipping'];
         $shipping = shipping_area_info($shipping_id, $region_id_list);
         $weight_amount = order_weight_price($order_id);
-        $shipping_fee = shipping_fee($shipping['shipping_code'], $shipping['configure'], $weight_amount['weight'], $weight_amount['amount'], $weight_amount['number']);
+        $shipping_fee = shipping_fee($shipping['shipping_code'], $shipping['configure'], $weight_amount['weight'], $weight_amount['amount']);
         $order = array(
             'shipping_id' => $shipping_id,
             'shipping_name' => addslashes($shipping['shipping_name']),
@@ -1263,23 +1248,19 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     {
         /* 取得订单商品 */
         $goods_list = order_goods($order_id);
-        if (!empty($goods_list))
+        foreach ($goods_list AS $key => $goods)
         {
-            foreach ($goods_list AS $key => $goods)
+            /* 计算属性数 */
+            $attr = $goods['goods_attr'];
+            if ($attr == '')
             {
-                /* 计算属性数 */
-                $attr = $goods['goods_attr'];
-                if ($attr == '')
-                {
-                    $goods_list[$key]['rows'] = 1;
-                }
-                else
-                {
-                    $goods_list[$key]['rows'] = count(explode(chr(13), $attr));
-                }
+                $goods_list[$key]['rows'] = 1;
+            }
+            else
+            {
+                $goods_list[$key]['rows'] = count(explode(chr(13), $attr));
             }
         }
-
         $smarty->assign('goods_list', $goods_list);
 
         /* 取得商品总金额 */
@@ -1363,7 +1344,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
         foreach ($shipping_list AS $key => $shipping)
         {
             $shipping_fee = shipping_fee($shipping['shipping_code'],
-                unserialize($shipping['configure']), $total['weight'], $total['amount'], $total['number']);
+                unserialize($shipping['configure']), $total['weight'], $total['amount']);
             $shipping_list[$key]['shipping_fee'] = $shipping_fee;
             $shipping_list[$key]['format_shipping_fee'] = price_format($shipping_fee);
             $shipping_list[$key]['free_money'] = price_format($shipping['configure']['free_money']);
@@ -1469,7 +1450,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
 //        foreach ($shipping_list AS $key => $shipping)
 //        {
 //            $shipping_fee = shipping_fee($shipping['shipping_code'],
-//                unserialize($shipping['configure']), $total['weight'], $total['amount'], $total['number']);
+//                unserialize($shipping['configure']), $total['weight'], $total['amount']);
 //            $shipping_list[$key]['shipping_fee'] = $shipping_fee;
 //            $shipping_list[$key]['format_shipping_fee'] = price_format($shipping_fee);
 //            $shipping_list[$key]['free_money'] = price_format($shipping['configure']['free_money']);
@@ -1501,16 +1482,6 @@ elseif ($_REQUEST['act'] == 'process')
         $rec_id = intval($_GET['rec_id']);
         $step_act = $_GET['step_act'];
         $order_id = intval($_GET['order_id']);
-
-        /* 如果使用库存，且下订单时减库存，则修改库存 */
-        if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
-        {
-             $goods = $db->getRow("SELECT goods_id, goods_number FROM " . $ecs->table('order_goods') . " WHERE rec_id = " . $rec_id );
-             $sql = "UPDATE " . $ecs->table('goods') .
-                    " SET `goods_number` = goods_number + '" . $goods['goods_number'] . "' " .
-                    " WHERE `goods_id` = '" . $goods['goods_id'] . "' LIMIT 1";
-             $db->query($sql);
-        }
 
         /* 删除 */
         $sql = "DELETE FROM " . $ecs->table('order_goods') .
@@ -3060,9 +3031,7 @@ function return_user_surplus_integral_bonus($order)
     /* 处理余额、积分、红包 */
     if ($order['user_id'] > 0 && $order['surplus'] > 0)
     {
-        $surplus = $order['money_paid'] < 0 ? $order['surplus'] + $order['money_paid'] : $order['surplus'];
-        log_account_change($order['user_id'], $surplus, 0, 0, 0, sprintf($GLOBALS['_LANG']['return_order_surplus'], $order['order_sn']));
-        $GLOBALS['db']->query("UPDATE ". $GLOBALS['ecs']->table('order_info') . " SET `order_amount` = '0' WHERE `order_id` =". $order['order_id']);
+        log_account_change($order['user_id'], $order['surplus'], 0, 0, 0, sprintf($GLOBALS['_LANG']['return_order_surplus'], $order['order_sn']));
     }
 
     if ($order['user_id'] > 0 && $order['integral'] > 0)
@@ -3094,7 +3063,6 @@ function return_user_surplus_integral_bonus($order)
 function update_order_amount($order_id)
 {
     include_once(ROOT_PATH . 'includes/lib_order.php');
-    //更新订单总金额
     $sql = "UPDATE " . $GLOBALS['ecs']->table('order_info') .
             " SET order_amount = " . order_due_field() .
             " WHERE order_id = '$order_id' LIMIT 1";

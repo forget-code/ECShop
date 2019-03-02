@@ -6,12 +6,12 @@
    <div class="f_l">
    <!-- {if $navigator_list.bottom} -->
    <!-- {foreach name=nav_bottom_list from=$navigator_list.bottom item=nav} -->
-        <a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a>
+        <a href="{$nav.url}" <!-- {if $nav.opennew eq 1} --> target="_blank" <!-- {/if} -->>{$nav.name}</a> 
         <!-- {if !$smarty.foreach.nav_bottom_list.last} -->
-           -
+           -   
         <!-- {/if} -->
       <!-- {/foreach} -->
-  <!-- {/if} -->
+  <!-- {/if} -->  
    </div>
    <div class="f_r">
    <a href="#top"><img src="images/bnt_top.gif" /></a> <a href="../index.php"><img src="images/bnt_home.gif" /></a>
@@ -39,7 +39,7 @@
       <!-- {/foreach} 结束QQ号码 -->
       <!-- 淘宝旺旺 {foreach from=$ww item=im} -->
       <!-- {if $im} -->
-      <a href="http://amos1.taobao.com/msg.ww?v=2&uid={$im|escape:u8_url}&s=2" target="_blank"><img src="http://amos1.taobao.com/online.ww?v=2&uid={$im|escape:u8_url}&s=2" width="16" height="16" border="0" alt="淘宝旺旺" />{$im}</a>
+			<a href="http://amos1.taobao.com/msg.ww?v=2&uid={$im|escape:u8_url}&s=2" target="_blank"><img src="http://amos1.taobao.com/online.ww?v=2&uid={$im|escape:u8_url}&s=2" width="16" height="16" border="0" alt="淘宝旺旺" />{$im}</a>
       <!-- {/if} -->
       <!--{/foreach} 结束淘宝旺旺 -->
       <!-- Yahoo Messenger {foreach from=$ym item=im} -->
@@ -65,7 +65,7 @@
     {if $stats_code}
     <div align="left">{$stats_code}</div>
     {/if}
-    <div align="left"  id="rss"><a href="{$feed_url}"><img src="../images/xml_rss2.gif" alt="rss" /></a></div>
+		<div align="left"  id="rss"><a href="{$feed_url}"><img src="../images/xml_rss2.gif" alt="rss" /></a></div>
  </div>
 </div>
 

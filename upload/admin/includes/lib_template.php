@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: lib_template.php 15745 2009-03-16 03:43:40Z zblikai $
+ * $Author: testyang $
+ * $Id: lib_template.php 15181 2008-11-17 06:22:35Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -46,7 +46,6 @@ $template_files = array(
     'auction_list.dwt',
     'auction.dwt',
     'message_board.dwt',
-    'exchange_list.dwt',
 );
 
 /* 每个模板允许设置的库项目 */
@@ -251,15 +250,6 @@ $page_libs = array(
         '/library/top10.lbi' => 0,
         '/library/history.lbi' => 0,
         '/library/message_list.lbi' => 10,
-    ),
-    'exchange_list' => array(
-        '/library/ur_here.lbi' => 0,
-        '/library/cart.lbi' => 0,
-        '/library/category_tree.lbi' => 0,
-        '/library/history.lbi' => 0,
-        '/library/pages.lbi' => 0,
-        '/library/exchange_hot.lbi' => 5,
-        '/library/exchange_list.lbi' => 0,
     ),
 );
 

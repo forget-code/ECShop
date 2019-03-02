@@ -12,8 +12,8 @@
  * @author:     Weber Liu <weberliu@hotmail.com>
  * @version:    v2.1
  * ---------------------------------------------
- * $Author: sunxiaodong $
- * $Id: template.php 15532 2009-01-07 10:48:14Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: template.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -26,8 +26,6 @@ require_once('includes/lib_template.php');
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'list')
 {
-    admin_priv('template_select');
-
     /* 获得当前的模版的信息 */
     $curr_template = $_CFG['template'];
 
@@ -80,7 +78,7 @@ if ($_REQUEST['act'] == 'list')
 
 if ($_REQUEST['act'] == 'setup')
 {
-    admin_priv('template_setup');
+    admin_priv('template_manage');
 
     $template_theme = $_CFG['template'];
     $curr_template  = empty($_REQUEST['template_file']) ? 'index' : $_REQUEST['template_file'];
@@ -213,7 +211,7 @@ if ($_REQUEST['act'] == 'setup')
 
 if ($_REQUEST['act'] == 'setting')
 {
-    admin_priv('template_setup');
+    admin_priv('template_manage');
 
     $curr_template = $_CFG['template'];
     $db->query("DELETE FROM " .$ecs->table('template'). " WHERE remarks = '' AND filename = '$_POST[template_file]' AND theme = '$curr_template'");
@@ -443,7 +441,7 @@ if ($_REQUEST['act'] == 'setting')
 
 if ($_REQUEST['act'] == 'library')
 {
-    admin_priv('library_manage');
+    admin_priv('template_manage');
 
     /* 包含插件语言项 */
     $sql = "SELECT code FROM ".$ecs->table('plugins');
@@ -496,7 +494,7 @@ if ($_REQUEST['act'] == 'library')
 
 if ($_REQUEST['act'] == 'install')
 {
-    check_authz_json('backup_setting');
+    check_authz_json('template_manage');
 
     $tpl_name = trim($_GET['tpl_name']);
 
@@ -564,7 +562,7 @@ if ($_REQUEST['act'] == 'load_library')
 
 if ($_REQUEST['act'] == 'update_library')
 {
-    check_authz_json('library_manage');
+    check_authz_json('template_manage');
 
     $html = stripslashes(json_str_iconv($_POST['html']));
     $lib_file = '../themes/' . $_CFG['template'] . '/library/' . $_POST['lib'] . '.lbi';
@@ -611,8 +609,6 @@ if ($_REQUEST['act'] == 'restore_library')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'backup_setting')
 {
-    admin_priv('backup_setting');
-
     $sql = "SELECT DISTINCT(remarks) FROM " . $ecs->table('template') . " WHERE theme = '" . $_CFG['template'] . "' AND remarks > ''";
     $col = $db->getCol($sql);
     $remarks = array();

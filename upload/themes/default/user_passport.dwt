@@ -177,7 +177,6 @@
           <td>&nbsp;</td>
           <td align="left">
           <input name="act" type="hidden" value="act_register" >
-          <input type="hidden" name="back_act" value="{$back_act}" />
           <input name="Submit" type="submit" value="" class="us_Submit_reg">
           </td>
         </tr>

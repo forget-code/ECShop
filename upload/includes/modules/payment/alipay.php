@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: alipay.php 15768 2009-03-26 03:12:14Z zblikai $
+ * $Author: testyang $
+ * $Id: alipay.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -51,17 +51,16 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['website'] = 'http://www.alipay.com';
 
     /* 版本号 */
-    $modules[$i]['version'] = '1.0.2';
+    $modules[$i]['version'] = '1.0.1';
 
     /* 配置信息 */
     $modules[$i]['config']  = array(
         array('name' => 'alipay_account',           'type' => 'text',   'value' => ''),
         array('name' => 'alipay_key',               'type' => 'text',   'value' => ''),
         array('name' => 'alipay_partner',           'type' => 'text',   'value' => ''),
-//        array('name' => 'alipay_real_method',       'type' => 'select', 'value' => '0'),
-//        array('name' => 'alipay_virtual_method',    'type' => 'select', 'value' => '0'),
-//        array('name' => 'is_instant',               'type' => 'select', 'value' => '0')
-        array('name' => 'alipay_pay_method',        'type' => 'select', 'value' => '')
+        array('name' => 'alipay_real_method',       'type' => 'select', 'value' => '0'),
+        array('name' => 'alipay_virtual_method',    'type' => 'select', 'value' => '0'),
+        array('name' => 'is_instant',               'type' => 'select', 'value' => '0')
     );
 
     return;
@@ -105,52 +104,38 @@ class alipay
         {
             $charset = EC_CHARSET;
         }
-//        if (empty($payment['is_instant']))
-//        {
-//            /* 未开通即时到帐 */
-//            $service = 'trade_create_by_buyer';
-//        }
-//        else
-//        {
-//            if (!empty($order['order_id']))
-//            {
-//                /* 检查订单是否全部为虚拟商品 */
-//                $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('order_goods').
-//                        " WHERE is_real=1 AND order_id='$order[order_id]'";
-//
-//                if ($GLOBALS['db']->getOne($sql) > 0)
-//                {
-//                    /* 订单中存在实体商品 */
-//                    $service =  (!empty($payment['alipay_real_method']) && $payment['alipay_real_method'] == 1) ?
-//                        'create_direct_pay_by_user' : 'trade_create_by_buyer';
-//                }
-//                else
-//                {
-//                    /* 订单中全部为虚拟商品 */
-//                    $service = (!empty($payment['alipay_virtual_method']) && $payment['alipay_virtual_method'] == 1) ?
-//                        'create_direct_pay_by_user' : 'create_digital_goods_trade_p';
-//                }
-//            }
-//            else
-//            {
-//                /* 非订单方式，按照虚拟商品处理 */
-//                $service = (!empty($payment['alipay_virtual_method']) && $payment['alipay_virtual_method'] == 1) ?
-//                    'create_direct_pay_by_user' : 'create_digital_goods_trade_p';
-//            }
-//        }
+        if (empty($payment['is_instant']))
+        {
+            /* 未开通即时到帐 */
+            $service = 'trade_create_by_buyer';
+        }
+        else
+        {
+            if (!empty($order['order_id']))
+            {
+                /* 检查订单是否全部为虚拟商品 */
+                $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('order_goods').
+                        " WHERE is_real=1 AND order_id='$order[order_id]'";
 
-        $real_method = $payment['alipay_pay_method'];
-
-        switch ($real_method){
-            case '0':
-                $service = 'trade_create_by_buyer';
-                break;
-            case '1':
-                $service = 'create_partner_trade_by_buyer';
-                break;
-            case '2':
-                $service = 'create_direct_pay_by_user';
-                break;
+                if ($GLOBALS['db']->getOne($sql) > 0)
+                {
+                    /* 订单中存在实体商品 */
+                    $service =  (!empty($payment['alipay_real_method']) && $payment['alipay_real_method'] == 1) ?
+                        'create_direct_pay_by_user' : 'trade_create_by_buyer';
+                }
+                else
+                {
+                    /* 订单中全部为虚拟商品 */
+                    $service = (!empty($payment['alipay_virtual_method']) && $payment['alipay_virtual_method'] == 1) ?
+                        'create_direct_pay_by_user' : 'create_digital_goods_trade_p';
+                }
+            }
+            else
+            {
+                /* 非订单方式，按照虚拟商品处理 */
+                $service = (!empty($payment['alipay_virtual_method']) && $payment['alipay_virtual_method'] == 1) ?
+                    'create_direct_pay_by_user' : 'create_digital_goods_trade_p';
+            }
         }
 
         $agent = 'C4335319945672464113';

@@ -12,8 +12,8 @@
  * @author:     scott ye <scott.yell@gmail.com>
  * @version:    v2.x
  * ---------------------------------------------
- * $Author: sunxiaodong $
- * $Id: wholesale.php 15569 2009-01-15 10:40:56Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: wholesale.php 15226 2008-11-19 01:53:50Z testyang $
  */
 
 define('IN_ECS', true);
@@ -62,7 +62,24 @@ if ($_REQUEST['act'] == 'list')
         $wholesale_list = wholesale_list($size, $page, $where);
         $smarty->assign('wholesale_list',  $wholesale_list);
 
-        $pager = get_pager('wholesale.php', array('act' => 'list'), $count, $page, $size);
+        /* 设置分页链接 */
+        $url = 'wholesale.php?act=list&amp;page=';
+        $pager = array(
+            'search'       => array('act' => 'list'),
+            'page'         => $page,
+            'size'         => $size,
+            'record_count' => $count,
+            'page_count'   => $page_count,
+            'page_first'   => $url . '1',
+            'page_prev'    => $page > 1 ? $url . ($page - 1) : 'javascript:;',
+            'page_next'    => $page < $page_count ? $url . ($page + 1) : 'javascript:;',
+            'page_last'    => $url . $page_count,
+            'array'        => array()
+        );
+        for ($i = 1; $i <= $page_count; $i++)
+        {
+            $pager['array'][$i] = $i;
+        }
         $smarty->assign('pager', $pager);
 
         /* 批发商品购物车 */

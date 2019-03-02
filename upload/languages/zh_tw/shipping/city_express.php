@@ -9,12 +9,11 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: city_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: city_express.php 15086 2008-10-27 06:21:49Z testyang $
 */
 
 $_LANG['city_express']        = '城際快遞';
 $_LANG['city_express_desc']   = '配送的運費是固定的';
-$_LANG['base_fee']      = '基本費用：';
-$_LANG['item_fee']      = '單件商品費用：';
+$_LANG['basic_fee']      = '基本費用：';
 ?>

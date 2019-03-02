@@ -24,22 +24,15 @@
 <!--当前位置 end-->
 <div class="blank"></div>
 <div class="block">
-  <!-- {if $step eq "cart"} -->
+    <!-- {if $step eq "cart"} -->
   <!-- 购物车内容 -->
-  {* 包含脚本文件 *}
-  {insert_scripts files='showdiv.js'}
-  <script type="text/javascript">
-  {foreach from=$lang.password_js item=item key=key}
-    var {$key} = "{$item}";
-  {/foreach}
-  </script>
   <div class="flowBox">
     <h6><span>{$lang.goods_list}</span></h6>
         <form id="formCart" name="formCart" method="post" action="flow.php">
            <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
             <tr>
               <th bgcolor="#ffffff">{$lang.goods_name}</th>
-      <!-- {if $show_goods_attribute eq 1} 显示商品属性 -->
+							<!-- {if $show_goods_attribute eq 1} 显示商品属性 -->
               <th bgcolor="#ffffff">{$lang.goods_attr}</th>
               <!-- {/if} -->
               <!-- {if $show_marketprice} 显示市场价 -->
@@ -53,42 +46,35 @@
             <!-- {foreach from=$goods_list item=goods} -->
             <tr>
               <td bgcolor="#ffffff" align="center">
-                <!-- {if $goods.goods_id gt 0 && $goods.extension_code neq 'package_buy'} 商品 -->
-                  <!-- {if $show_goods_thumb eq 1} -->
-                    <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
-                  <!-- {elseif $show_goods_thumb eq 2} -->
-                    <a href="goods.php?id={$goods.goods_id}" target="_blank"><img src="{$goods.goods_thumb}" border="0" title="{$goods.goods_name|escape:html}" /></a>
-                  <!-- {else} -->
-                    <a href="goods.php?id={$goods.goods_id}" target="_blank"><img src="{$goods.goods_thumb}" border="0" title="{$goods.goods_name|escape:html}" /></a><br />
-                    <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
-                  <!-- {/if} -->
-                  <!-- {if $goods.parent_id gt 0} 配件 -->
-                  <span style="color:#FF0000">（{$lang.accessories}）</span>
-                  <!-- {/if} -->
-                  <!-- {if $goods.is_gift gt 0} 赠品 -->
-                  <span style="color:#FF0000">（{$lang.largess}）</span>
-                  <!-- {/if} -->
-                <!-- {elseif $goods.goods_id gt 0 && $goods.extension_code eq 'package_buy'} -->
-                  <a href="javascript:void(0)" onclick="setSuitShow({$goods.goods_id})" class="f6">{$goods.goods_name}<span style="color:#FF0000;">（{$lang.remark_package}）</span></a>
-                  <div id="suit_{$goods.goods_id}" style="display:none">
-                      <!-- {foreach from=$goods.package_goods_list item=package_goods_list} -->
-                        <a href="goods.php?id={$package_goods_list.goods_id}" target="_blank" class="f6">{$package_goods_list.goods_name}</a><br />
-                      <!-- {/foreach} -->
-                  </div>
-                <!-- {else} 优惠活动 -->
-                  {$goods.goods_name}
+                <!-- {if $goods.goods_id gt 0} 商品 -->
+                <!-- {if $show_goods_thumb eq 1} -->
+                  <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
+                <!-- {elseif $show_goods_thumb eq 2} -->
+                  <a href="goods.php?id={$goods.goods_id}" target="_blank"><img src="{$goods.goods_thumb}" border="0" title="{$goods.goods_name|escape:html}" /></a>
+                <!-- {else} -->
+                  <a href="goods.php?id={$goods.goods_id}" target="_blank"><img src="{$goods.goods_thumb}" border="0" title="{$goods.goods_name|escape:html}" /></a><br />
+                  <a href="goods.php?id={$goods.goods_id}" target="_blank" class="f6">{$goods.goods_name}</a>
                 <!-- {/if} -->
-              </td>
-              <!-- {if $show_goods_attribute eq 1} 显示商品属性 -->
-              <td bgcolor="#ffffff">{$goods.goods_attr|nl2br}</td>
+                <!-- {if $goods.parent_id gt 0} 配件 -->
+                <span style="color:#FF0000">（{$lang.accessories}）</span>
+                <!-- {/if} -->
+                <!-- {if $goods.is_gift gt 0} 赠品 -->
+                <span style="color:#FF0000">（{$lang.largess}）</span>
+                <!-- {/if} -->
+              <!-- {else} 优惠活动 -->
+              {$goods.goods_name}
               <!-- {/if} -->
+                </td>
+							<!-- {if $show_goods_attribute eq 1} 显示商品属性 -->	
+              <td bgcolor="#ffffff">{$goods.goods_attr|nl2br}</td>
+							<!-- {/if} -->
               <!-- {if $show_marketprice} 显示市场价 -->
               <td align="right" bgcolor="#ffffff">{$goods.market_price}</td>
               <!-- {/if} -->
               <td align="right" bgcolor="#ffffff">{$goods.goods_price}</td>
               <td align="right" bgcolor="#ffffff">
                 <!-- {if $goods.goods_id gt 0 && $goods.is_gift eq 0 && $goods.parent_id eq 0} 普通商品可修改数量 -->
-                <input type="text" name="goods_number[{$goods.rec_id}]" id="goods_number_{$goods.rec_id}" value="{$goods.goods_number}" size="4" class="inputBg" style="text-align:center " onkeydown="showdiv(this)"/>
+                <input type="text" name="goods_number[{$goods.rec_id}]" id="goods_number_{$goods.rec_id}" value="{$goods.goods_number}" size="4" class="inputBg" style="text-align:center " />
                 <!-- {else} -->
                 {$goods.goods_number}
                 <!-- {/if} -->
@@ -96,7 +82,7 @@
               <td align="right" bgcolor="#ffffff">{$goods.subtotal}</td>
               <td align="center" bgcolor="#ffffff">
                 <a href="javascript:if (confirm('{$lang.drop_goods_confirm}')) location.href='flow.php?step=drop_goods&amp;id={$goods.rec_id}'; " class="f6">{$lang.drop}</a>
-                <!-- {if $smarty.session.user_id gt 0 && $goods.extension_code neq 'package_buy'} 如果登录了，可以加入收藏 -->
+                <!-- {if $smarty.session.user_id gt 0} 如果登录了，可以加入收藏 -->
                 <a href="javascript:if (confirm('{$lang.drop_goods_confirm}')) location.href='flow.php?step=drop_to_collect&amp;id={$goods.rec_id}'; " class="f6">{$lang.drop_to_collect}</a>
                 <!-- {/if} -->            </td>
             </tr>
@@ -168,98 +154,29 @@
         }
       </script>
   </div>
-    <div class="blank"></div>
+	<div class="blank"></div>
   <!-- {/if} -->
-
+  
   <!-- {if $collection_goods} -->
   <div class="flowBox">
-    <h6><span>{$lang.label_collection}</span></h6>
+    <h6><span>我的收藏</span></h6>
     <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
       <!-- {foreach from=$collection_goods item=goods} -->
           <tr>
             <td bgcolor="#ffffff"><a href="goods.php?id={$goods.goods_id}" class="f6">{$goods.goods_name}</a></td>
-            <td bgcolor="#ffffff" align="center" width="100"><a href="javascript:collect_to_flow({$goods.goods_id})" class="f6">{$lang.collect_to_flow}</a></td>
+            <td bgcolor="#ffffff" align="center" width="100"><a href="javascript:collect_to_flow({$goods.goods_id})" class="f6">立即购买</a></td>
           </tr>
       <!-- {/foreach} -->
         </table>
       <!-- {/if} -->
   </div>
-    <div class="blank5"></div>
+	<div class="blank5"></div>
   <!-- {/if} -->
-
-  <!-- {if $fittings_list} 商品配件 -->
-  {insert_scripts files='transport.js'}
-  <script type="text/javascript" charset="utf-8">
-  function fittings_to_flow(goodsId,parentId)
-  {
-    var goods        = new Object();
-    var spec_arr     = new Array();
-    var number       = 1;
-    goods.spec     = spec_arr;
-    goods.goods_id = goodsId;
-    goods.number   = number;
-    goods.parent   = parentId;
-    Ajax.call('flow.php?step=add_to_cart', 'goods=' + goods.toJSONString(), fittings_to_flow_response, 'POST', 'JSON');
-  }
-  function fittings_to_flow_response(result)
-  {
-    if (result.error > 0)
-    {
-      // 如果需要缺货登记，跳转
-      if (result.error == 2)
-      {
-        if (confirm(result.message))
-        {
-          location.href = 'user.php?act=add_booking&id=' + result.goods_id;
-        }
-      }
-      else if (result.error == 6)
-      {
-        if (confirm(result.message))
-        {
-          location.href = 'goods.php?id=' + result.goods_id;
-        }
-      }
-      else
-      {
-        alert(result.message);
-      }
-    }
-    else
-    {
-      location.href = 'flow.php';
-    }
-  }
-  </script>
-  <div class="block" >
-    <div class="flowBox">
-    <h6><span>{$lang.goods_fittings}</span></h6>
-    <form action="flow.php" method="post">
-        <div class="flowGoodsFittings clearfix">
-          <!-- {foreach from=$fittings_list item=fittings} -->
-            <ul class="clearfix">
-              <li class="goodsimg">
-                <a href="{$fittings.url}" target="_blank"><img src="{$fittings.goods_thumb}" alt="{$fittings.name|escape:html}" class="B_blue" /></a>
-              </li>
-              <li>
-                <a href="{$fittings.url}" target="_blank" title="{$fittings.goods_name|escape:html}" class="f6">{$fittings.short_name|escape:html}</a><br />
-                {$lang.fittings_price}<font class="f1">{$fittings.fittings_price}</font><br />
-                {$lang.parent_name}{$fittings.parent_short_name}<br />
-                <a href="javascript:fittings_to_flow({$fittings.goods_id},{$fittings.parent_id})"><img src="images/bnt_buy.gif" alt="{$lang.collect_to_flow}" /></a>
-              </li>
-            </ul>
-          <!-- {/foreach} 循环商品配件结束 -->
-        </div>
-    </form>
-    </div>
-  </div>
-  <div class="blank5"></div>
-  <!-- {/if} -->
-
+  
   <!-- {if $favourable_list} 优惠活动 -->
   <div class="block">
     <div class="flowBox">
-    <h6><span>{$lang.label_favourable}</span></h6>
+    <h6><span>优惠活动</span></h6>
         <!-- {foreach from=$favourable_list item=favourable} -->
         <form action="flow.php" method="post">
           <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
@@ -447,10 +364,9 @@
           </table>
     </div>
     <div class="blank"></div>
-        <!--{else}-->
-        <input name = "shipping" type="radio" value = "-1" checked="checked"  style="display:none"/>
-        <!--{/if}-->
-    <!--{if $is_exchange_goods neq 1 || $total.real_goods_count neq 0}-->
+		<!--{else}-->
+		<input name = "shipping" type="radio" value = "-1" checked="checked"  style="display:none"/>
+		<!--{/if}-->
     <div class="flowBox">
     <h6><span>{$lang.payment_method}</span></h6>
     <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd" id="paymentTable">
@@ -471,9 +387,6 @@
             <!-- {/foreach} 循环支付方式 -->
           </table>
     </div>
-    <!--{else}-->
-        <input name = "payment" type="radio" value = "-1" checked="checked"  style="display:none"/>
-    <!--{/if}-->
     <div class="blank"></div>
           <!-- {if $pack_list} 是否有包装 -->
           <div class="flowBox">
@@ -511,9 +424,9 @@
             <!-- {/foreach} 循环包装 -->
           </table>
        </div>
-             <div class="blank"></div>
+			 <div class="blank"></div>
           <!-- {/if} 是否使用包装 -->
-
+        
           <!-- {if $card_list} 是否有贺卡 -->
           <div class="flowBox">
           <h6><span>{$lang.goods_card}</span></h6>
@@ -555,9 +468,9 @@
             </tr>
           </table>
         </div>
-                <div class="blank"></div>
+				<div class="blank"></div>
         <!-- {/if} 是否使用贺卡 -->
-
+    
       <div class="flowBox">
     <h6><span>{$lang.other_info}</span></h6>
       <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">

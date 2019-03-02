@@ -9,24 +9,18 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: user_msg.php 15626 2009-02-19 07:58:36Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: user_msg.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 $_LANG['msg_title'] = '留言标题';
 $_LANG['list_all'] = '查看所有留言';
+
 $_LANG['msg_id'] = '编号';
 $_LANG['msg_time'] = '留言时间';
 $_LANG['msg_content'] = '留言内容';
 $_LANG['user_name'] = '用户名';
 $_LANG['msg_type'] = '类型';
-$_LANG['msg_status'] = '状态';
-$_LANG['hidden'] = '隐藏';
-$_LANG['display'] = '显示';
-$_LANG['allow'] = '允许显示';
-$_LANG['forbid'] = '禁止显示';
-$_LANG['user_center'] = '用户中心';
-$_LANG['message_board'] = '留言板';
 
 $_LANG['from'] = '于';
 

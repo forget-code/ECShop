@@ -6,7 +6,7 @@ if (!defined('IN_ECS'))
 }
 
 $checking_dirs = array(
-                    /* 取消检测uc_client */
+                    /* 鍙栨秷妫€娴媢c_client */
                     //'uc_client/data',
                     'cert',
                     'images',

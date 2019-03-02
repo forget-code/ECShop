@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: quotation.php 15686 2009-02-27 08:04:42Z zblikai $
+ * $Author: testyang $
+ * $Id: quotation.php 15153 2008-11-04 01:34:03Z testyang $
 */
 define('IN_ECS', true);
 
@@ -21,15 +21,14 @@ if ($action == 'print_quotation')
 {
     $smarty->template_dir = DATA_DIR;
     $smarty->assign('shop_name', $_CFG['shop_title']);
-    $smarty->assign('cfg',       $_CFG);
 
     $where = get_quotation_where($_POST);
     $sql = "SELECT g.goods_id, g.goods_name, g.shop_price, g.goods_number, c.cat_name AS goods_category".
-    " FROM " . $ecs->table('goods') . " AS g LEFT JOIN " . $ecs->table('category') . " AS c ON g.cat_id = c.cat_id " . $where . " AND is_on_sale = 1 AND is_alone_sale = 1";
+    " FROM " . $ecs->table('goods') . " AS g LEFT JOIN " . $ecs->table('category') . " AS c ON g.cat_id = c.cat_id ". $where;
     $goods_list = $db->getAll($sql);
     $user_rank = $db->getAll("SELECT * FROM " .$ecs->table('user_rank'));
     $rank_point = 0;
-    if (!empty($_SESSION['user_id']))
+    if (!empty($_SESSION[user_id]))
     {
         $rank_point = $db->getOne("SELECT rank_points FROM " . $ecs->table('users') . " WHERE user_id = '$_SESSION[user_id]'");
     }
@@ -60,7 +59,7 @@ $smarty->display('quotation.dwt');
 
 function get_quotation_where($filter)
 {
-    include_once(ROOT_PATH . 'admin/includes/lib_main.php');
+    include_once ROOT_PATH . 'admin/includes/lib_main.php';
     $_filter = new StdClass();
     $_filter->cat_id = $filter['cat_id'];
     $_filter->brand_id = $filter['brand_id'];

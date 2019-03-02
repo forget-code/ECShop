@@ -8,8 +8,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: gen_goods_script.php 15432 2008-12-15 04:43:14Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: gen_goods_script.php 15013 2008-10-23 09:31:42Z testyang $
  */
 $_LANG['label_category'] = '选择商品分类：';
 $_LANG['label_brand'] = '选择商品品牌：';
@@ -17,7 +17,6 @@ $_LANG['label_intro_type'] = '选择推荐类型：';
 $_LANG['label_need_image'] = '是否显示商品图片：';
 $_LANG['label_goods_num'] = '显示商品数量：';
 $_LANG['label_arrange'] = '选择商品排列方式：';
-$_LANG['label_rows_num'] = '排列显示条目数：';
 $_LANG['label_charset'] = '选择编码：';
 $_LANG['label_sitename'] = '引用站点名称：';
 
@@ -38,7 +37,4 @@ $_LANG['intro']['is_random'] = '随机';
 
 $_LANG['js_languages']['goods_num_must_be_int'] = '商品数量应该是整数';
 $_LANG['js_languages']['goods_num_must_over_0'] = '商品数量应该大于0';
-
-$_LANG['js_languages']['rows_num_must_be_int'] = '排列显示条目数应该是整数';
-$_LANG['js_languages']['rows_num_must_over_0'] = '排列显示条目数应该大于0';
 ?>

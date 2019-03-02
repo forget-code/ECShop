@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: picture_batch.php 15532 2009-01-07 10:48:14Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: picture_batch.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -19,9 +19,6 @@ require(dirname(__FILE__) . '/includes/init.php');
 include_once(ROOT_PATH . 'includes/cls_image.php');
 include_once(ROOT_PATH . '/admin/includes/lib_goods.php');
 $image = new cls_image($_CFG['bgcolor']);
-
-/* 权限检查 */
-admin_priv('picture_batch');
 
 if (empty($_GET['is_ajax']))
 {

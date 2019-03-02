@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: init.php 15592 2009-02-13 02:26:56Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: init.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -133,11 +133,6 @@ if (is_spider())
     if (!defined('INIT_NO_USERS'))
     {
         define('INIT_NO_USERS', true);
-        /* 整合UC后，如果是蜘蛛访问，初始化UC需要的常量 */
-        if($_CFG['integrate_code'] == 'ucenter')
-        {
-             $user = & init_users();
-        }
     }
     $_SESSION = array();
 }

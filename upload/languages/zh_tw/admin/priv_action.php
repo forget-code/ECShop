@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: priv_action.php 15544 2009-01-09 01:54:28Z zblikai $
+ * $Author: testyang $
+ * $Id: priv_action.php 15086 2008-10-27 06:21:49Z testyang $
 */
 /* 權限管理的一級分組 */
 $_LANG['goods'] = '商品管理';
@@ -21,9 +21,6 @@ $_LANG['sys_manage'] = '系統設置';
 $_LANG['order_manage'] = '訂單管理';
 $_LANG['promotion'] = '促銷管理';
 $_LANG['email'] = '郵件管理';
-$_LANG['templates_manage'] = '模板管理';
-$_LANG['db_manage'] = '數據庫管理';
-$_LANG['sms_manage'] = '短信管理';
 
 //商品管理部分的權限
 $_LANG['goods_manage'] = '商品添加/編輯';
@@ -38,11 +35,6 @@ $_LANG['tag_manage'] = '標籤管理';
 $_LANG['goods_auto'] = '商品自動上下架';
 $_LANG['topic_manage'] = '專題管理';
 $_LANG['virualcard'] = '虛擬卡管理';
-$_LANG['picture_batch'] = '圖片批量處理';
-$_LANG['goods_export'] = '商品批量導出';
-$_LANG['goods_batch'] = '商品批量上傳/修改';
-$_LANG['gen_goods_script'] = '生成商品代碼';
-
 
 //文章管理部分的權限
 $_LANG['article_cat'] = '文章分類管理';
@@ -85,9 +77,6 @@ $_LANG['navigator'] = '自定義導航欄';
 $_LANG['cron'] = '計劃任務';
 $_LANG['affiliate'] = '推薦設置';
 $_LANG['affiliate_ck'] = '分成管理';
-$_LANG['sitemap'] = '站點地圖管理';
-$_LANG['file_check'] = '文件校驗';
-$_LANG['file_priv'] = '文件權限檢驗';
 
 //訂單管理部分權限
 $_LANG['order_os_edit'] = '編輯訂單狀態';
@@ -112,35 +101,11 @@ $_LANG['auction'] = '拍賣活動';
 $_LANG['group_by'] = '團購活動';
 $_LANG['favourable'] = '優惠活動';
 $_LANG['whole_sale'] = '批發管理';
-$_LANG['package_manage'] = '超值禮包';
-$_LANG['exchange_goods'] = '積分商城商品';
 
 //郵件管理
 $_LANG['attention_list'] = '關注管理';
 $_LANG['email_list'] = '郵件訂閱管理';
 $_LANG['magazine_list'] = '雜誌管理';
 $_LANG['view_sendlist'] = '郵件隊列管理';
-
-//模板管理
-$_LANG['template_select'] = '模板選擇';
-$_LANG['template_setup']  = '模板設置';
-$_LANG['library_manage']  = '庫項目管理';
-$_LANG['lang_edit']       = '語言項編輯';
-$_LANG['backup_setting']  = '模板設置備份';
-$_LANG['mail_template']  = '郵件模板管理';
-
-//數據庫管理
-$_LANG['db_backup']    = '數據備份';
-$_LANG['db_renew']     = '數據恢復';
-$_LANG['db_optimize']  = '數據表優化';
-$_LANG['sql_query']    = ' SQL查詢';
-$_LANG['convert']      = '轉換數據';
-
-//短信管理
-$_LANG['my_info']         = '賬號信息';
-$_LANG['sms_send']        = '發送短信';
-$_LANG['sms_charge']      = '短信充值';
-$_LANG['send_history']    = '發送記錄';
-$_LANG['charge_history']  = '充值記錄 ';
 
 ?>

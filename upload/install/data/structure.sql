@@ -459,7 +459,6 @@ CREATE TABLE `ecs_feedback` (
   `user_email` varchar(60) NOT NULL default '',
   `msg_title` varchar(200) NOT NULL default '',
   `msg_type` tinyint(1) unsigned NOT NULL default '0',
-  `msg_status` tinyint( 1 ) unsigned NOT NULL DEFAULT '0',
   `msg_content` text NOT NULL,
   `msg_time` int(10) unsigned NOT NULL default '0',
   `message_img` varchar(255) NOT NULL default '0',
@@ -542,8 +541,7 @@ CREATE TABLE `ecs_goods` (
   KEY `goods_weight` (`goods_weight`),
   KEY `promote_end_date` (`promote_end_date`),
   KEY `promote_start_date` (`promote_start_date`),
-  KEY `goods_number` (`goods_number`),
-  KEY `sort_order` (`sort_order`)
+  KEY `goods_number` (`goods_number`)
 )  TYPE=MyISAM;
 
 -- --------------------------------------------------------
@@ -958,7 +956,7 @@ CREATE TABLE `ecs_sessions_data` (
   `data` longtext NOT NULL ,
   PRIMARY KEY ( `sesskey` ) ,
   KEY `expiry` ( `expiry` )
-) TYPE = MYISAM;
+) TYPE = MYISAM ;
 
 -- --------------------------------------------------------
 
@@ -1282,7 +1280,7 @@ CREATE TABLE `ecs_pay_log` (
   `order_type` tinyint(1) unsigned NOT NULL default '0',
   `is_paid` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`log_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 
 -- --------------------------------------------------------
 --
@@ -1412,7 +1410,7 @@ CREATE TABLE  `ecs_affiliate_log` (
  `point` INT(10) NOT NULL DEFAULT '0',
  `separate_type` TINYINT(1) NOT NULL DEFAULT '0',
 PRIMARY KEY ( `log_id` )
-) TYPE = MYISAM;
+) TYPE = MYISAM ;
 
 -- --------------------------------------------------------
 
@@ -1459,7 +1457,7 @@ CREATE TABLE `ecs_virtual_card` (
     KEY `goods_id` (`goods_id`),
     KEY `car_sn` (`card_sn`),
     KEY `is_saled` (`is_saled`)
-    ) TYPE=MyISAM;
+    ) TYPE=MyISAM ;
 
 -- --------------------------------------------------------
 
@@ -1476,7 +1474,7 @@ CREATE TABLE IF NOT EXISTS `ecs_wholesale` (
   `enabled` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY  (`act_id`),
   KEY `goods_id` (`goods_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 
 -- --------------------------------------------------------
 
@@ -1509,7 +1507,7 @@ CREATE TABLE  `ecs_email_sendlist` (
  `error` TINYINT( 1 ) NOT NULL DEFAULT  '0' ,
  `pri` TINYINT( 10 ) NOT NULL ,
  `last_send` INT( 10 ) NOT NULL
-) TYPE = MYISAM;
+) TYPE = MYISAM ;
 
 -- 增加电子杂志订阅表
 DROP TABLE IF EXISTS `ecs_email_list`;
@@ -1538,33 +1536,3 @@ CREATE TABLE `ecs_cat_recommend` (
   `recommend_type` tinyint(1) NOT NULL,
   PRIMARY KEY  (`cat_id`,`recommend_type`)
 ) TYPE=MyISAM;
-
--- 增加商品批量购买优惠价格表
-DROP TABLE IF EXISTS `ecs_volume_price`;
-CREATE TABLE IF NOT EXISTS `ecs_volume_price` (
-  `price_type` tinyint(1) unsigned NOT NULL,
-  `goods_id` mediumint(8) unsigned NOT NULL,
-  `volume_number` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `volume_price` decimal(10,2) NOT NULL DEFAULT '0.00',
-  PRIMARY KEY (`price_type`,`goods_id`,`volume_number`)
-) TYPE=MyISAM;
-
--- 增加超值礼包商品表
-DROP TABLE IF EXISTS `ecs_package_goods`;
-CREATE TABLE `ecs_package_goods` (
-  `package_id` mediumint( 8 ) unsigned NOT NULL DEFAULT '0',
-  `goods_id` mediumint( 8 ) unsigned NOT NULL DEFAULT '0',
-  `goods_number` smallint( 5 ) unsigned NOT NULL DEFAULT '1',
-  `admin_id` tinyint( 3 ) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY ( `package_id` , `goods_id` , `admin_id` )
-) TYPE = MYISAM;
-
--- 增加积分商城商品表
-DROP TABLE IF EXISTS `ecs_exchange_goods`;
-CREATE TABLE IF NOT EXISTS `ecs_exchange_goods` (
-  `goods_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `exchange_integral` int(10) unsigned NOT NULL DEFAULT '0',
-  `is_exchange` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `is_hot` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`goods_id`)
-) TYPE=MYISAM;

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: lib_common.php 15746 2009-03-16 06:27:54Z zblikai $
+ * $Author: testyang $
+ * $Id: lib_common.php 15052 2008-10-25 02:46:37Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -595,7 +595,7 @@ function load_config()
         }
 
         //限定语言项
-        $lang_array = array('zh_cn', 'zh_tw', 'en_us');
+        $lang_array = array('zh_cn', 'zh_tw');
         if (empty($arr['lang']) || !in_array($arr['lang'], $lang_array))
         {
             $arr['lang'] = 'zh_cn'; // 默认语言为简体中文
@@ -656,7 +656,6 @@ function get_brands($cat = 0, $app = 'brand')
     foreach ($row AS $key => $val)
     {
         $row[$key]['url'] = build_uri($app, array('cid' => $cat, 'bid' => $val['brand_id']), $val['brand_name']);
-        $row[$key]['brand_desc'] = htmlspecialchars($val['brand_desc'],ENT_QUOTES);
     }
 
     return $row;
@@ -1666,69 +1665,6 @@ function build_uri($app, $params, $append = '', $page = 0, $size = 0)
             break;
         case 'search':
             break;
-        case 'exchange':
-            if ($rewrite)
-            {
-                $uri = 'exchange-' . $cid;
-                if (isset($price_min))
-                {
-                    $uri .= '-min'.$price_min;
-                }
-                if (isset($price_max))
-                {
-                    $uri .= '-max'.$price_max;
-                }
-                if (!empty($page))
-                {
-                    $uri .= '-' . $page;
-                }
-                if (!empty($sort))
-                {
-                    $uri .= '-' . $sort;
-                }
-                if (!empty($order))
-                {
-                    $uri .= '-' . $order;
-                }
-            }
-            else
-            {
-                $uri = 'exchange.php?cat_id=' . $cid;
-                if (isset($price_min))
-                {
-                    $uri .= '&amp;integral_min=' . $price_min;
-                }
-                if (isset($price_max))
-                {
-                    $uri .= '&amp;integral_max=' . $price_max;
-                }
-
-                if (!empty($page))
-                {
-                    $uri .= '&amp;page=' . $page;
-                }
-                if (!empty($sort))
-                {
-                    $uri .= '&amp;sort=' . $sort;
-                }
-                if (!empty($order))
-                {
-                    $uri .= '&amp;order=' . $order;
-                }
-            }
-
-            break;
-        case 'exchange_goods':
-            if (empty($gid))
-            {
-                return false;
-            }
-            else
-            {
-                $uri = $rewrite ? 'exchange-id' . $gid : 'exchange.php?id=' . $gid . '&amp;act=view';
-            }
-
-            break;
         default:
             return false;
             break;
@@ -2154,247 +2090,6 @@ function user_uc_call($func, $params = null)
         return;
     }
 
-}
-
-/**
- * 取得商品优惠价格列表
- *
- * @param   string  $goods_id    商品编号
- * @param   string  $price_type  价格类别(0为全店优惠比率，1为商品优惠价格，2为分类优惠比率)
- *
- * @return  优惠价格列表
- */
-function get_volume_price_list($goods_id, $price_type = '1')
-{
-    $volume_price = array();
-    $temp_index   = '0';
-
-    $sql = "SELECT `volume_number` , `volume_price`".
-           " FROM " .$GLOBALS['ecs']->table('volume_price'). "".
-           " WHERE `goods_id` = '" . $goods_id . "' AND `price_type` = '" . $price_type . "'".
-           " ORDER BY `volume_number`";
-
-    $res = $GLOBALS['db']->getAll($sql);
-
-    foreach ($res as $k => $v)
-    {
-        $volume_price[$temp_index]                 = array();
-        $volume_price[$temp_index]['number']       = $v['volume_number'];
-        $volume_price[$temp_index]['price']        = $v['volume_price'];
-        $volume_price[$temp_index]['format_price'] = price_format($v['volume_price']);
-        $temp_index ++;
-    }
-    return $volume_price;
-}
-
-/**
- * 取得商品最终使用价格
- *
- * @param   string  $goods_id      商品编号
- * @param   string  $goods_num     购买数量
- * @param   boolean $is_spec_price 是否加入规格价格
- * @param   mix     $spec          规格ID的数组或者逗号分隔的字符串
- *
- * @return  商品最终购买价格
- */
-function get_final_price($goods_id, $goods_num = '1', $is_spec_price = false, $spec = array())
-{
-    $final_price   = '0'; //商品最终购买价格
-    $volume_price  = '0'; //商品优惠价格
-    $promote_price = '0'; //商品促销价格
-    $user_price    = '0'; //商品会员价格
-
-    //取得商品优惠价格列表
-    $price_list   = get_volume_price_list($goods_id, '1');
-
-    if (!empty($price_list))
-    {
-        foreach ($price_list as $value)
-        {
-            if ($goods_num >= $value['number'])
-            {
-                $volume_price = $value['price'];
-            }
-        }
-    }
-
-    //取得商品促销价格列表
-    /* 取得商品信息 */
-    $sql = "SELECT g.promote_price, g.promote_start_date, g.promote_end_date, ".
-                "IFNULL(mp.user_price, g.shop_price * '" . $_SESSION['discount'] . "') AS shop_price ".
-           " FROM " .$GLOBALS['ecs']->table('goods'). " AS g ".
-           " LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
-                   "ON mp.goods_id = g.goods_id AND mp.user_rank = '" . $_SESSION['user_rank']. "' ".
-           " WHERE g.goods_id = '" . $goods_id . "'" .
-           " AND g.is_delete = 0";
-    $goods = $GLOBALS['db']->getRow($sql);
-
-    /* 计算商品的促销价格 */
-    if ($goods['promote_price'] > 0)
-    {
-        $promote_price = bargain_price($goods['promote_price'], $goods['promote_start_date'], $goods['promote_end_date']);
-    }
-    else
-    {
-        $promote_price = 0;
-    }
-
-    //取得商品会员价格列表
-    $user_price    = $goods['shop_price'];
-
-    //比较商品的促销价格，会员价格，优惠价格
-    if (empty($volume_price) && empty($promote_price))
-    {
-        //如果优惠价格，促销价格都为空则取会员价格
-        $final_price = $user_price;
-    }
-    elseif (!empty($volume_price) && empty($promote_price))
-    {
-        //如果优惠价格为空时不参加这个比较。
-        $final_price = min($volume_price, $user_price);
-    }
-    elseif (empty($volume_price) && !empty($promote_price))
-    {
-        //如果促销价格为空时不参加这个比较。
-        $final_price = min($promote_price, $user_price);
-    }
-    elseif (!empty($volume_price) && !empty($promote_price))
-    {
-        //取促销价格，会员价格，优惠价格最小值
-        $final_price = min($volume_price, $promote_price, $user_price);
-    }
-    else
-    {
-        $final_price = $user_price;
-    }
-
-    //如果需要加入规格价格
-    if ($is_spec_price)
-    {
-        if (!empty($spec))
-        {
-            $spec_price   = spec_price($spec);
-            $final_price += $spec_price;
-        }
-    }
-
-    //返回商品最终购买价格
-    return $final_price;
-}
-
-/**
- * 获取指定id package 的信息
- *
- * @access  public
- * @param   int         $id         package_id
- *
- * @return array       array(package_id, package_name, goods_id,start_time, end_time, min_price, integral)
- */
-function get_package_info($id)
-{
-    global $ecs, $db,$_CFG;
-
-    $now = gmtime();
-
-    $sql = "SELECT act_id AS id,  act_name AS package_name, goods_id , goods_name, start_time, end_time, act_desc, ext_info".
-           " FROM " . $GLOBALS['ecs']->table('goods_activity') .
-           " WHERE act_id='$id' AND act_type = " . GAT_PACKAGE;
-
-    $package = $db->GetRow($sql);
-
-    /* 将时间转成可阅读格式 */
-    if ($package['start_time'] <= $now && $package['end_time'] >= $now)
-    {
-        $package['is_on_sale'] = "1";
-    }
-    else
-    {
-        $package['is_on_sale'] = "0";
-    }
-    $package['start_time'] = local_date('Y-m-d H:i', $package['start_time']);
-    $package['end_time']   = local_date('Y-m-d H:i', $package['end_time']);
-    $row = unserialize($package['ext_info']);
-    unset($package['ext_info']);
-    if ($row)
-    {
-        foreach ($row as $key=>$val)
-        {
-            $package[$key] = $val;
-        }
-    }
-
-    $sql = "SELECT pg.package_id, pg.goods_id, pg.goods_number, pg.admin_id, ".
-           " g.goods_sn, g.goods_name, g.market_price, g.goods_thumb, g.is_real, ".
-           " IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS rank_price " .
-           " FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg ".
-           "   LEFT JOIN ". $GLOBALS['ecs']->table('goods') . " AS g ".
-           "   ON g.goods_id = pg.goods_id ".
-           " LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
-                "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
-           " WHERE pg.package_id = " . $id. " ".
-           " ORDER BY pg.package_id, pg.goods_id";
-
-    $goods_res = $GLOBALS['db']->getAll($sql);
-
-    $market_price        = 0;
-    $real_goods_count    = 0;
-    $virtual_goods_count = 0;
-
-    foreach($goods_res as $key => $val)
-    {
-        $goods_res[$key]['goods_thumb']         = get_image_path($val['goods_id'], $val['goods_thumb'], true);
-        $goods_res[$key]['market_price_format'] = price_format($val['market_price']);
-        $goods_res[$key]['rank_price_format']   = price_format($val['rank_price']);
-        $market_price += $val['market_price'] * $val['goods_number'];
-        /* 统计实体商品和虚拟商品的个数 */
-        if ($val['is_real'])
-        {
-            $real_goods_count++;
-        }
-        else
-        {
-            $virtual_goods_count++;
-        }
-    }
-
-    if ($real_goods_count > 0)
-    {
-        $package['is_real']            = 1;
-    }
-    else
-    {
-        $package['is_real']            = 0;
-    }
-
-    $package['goods_list']            = $goods_res;
-    $package['market_package']        = $market_price;
-    $package['market_package_format'] = price_format($market_price);
-    $package['package_price_format']  = price_format($package['package_price']);
-
-    return $package;
-}
-
-/**
- * 获得指定礼包的商品
- *
- * @access  public
- * @param   integer $package_id
- * @return  array
- */
-function get_package_goods($package_id)
-{
-    $sql = "SELECT pg.goods_id, CONCAT(g.goods_name, ' -- [', pg.goods_number, ']') AS goods_name " .
-            "FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg, " .
-                $GLOBALS['ecs']->table('goods') . " AS g " .
-            "WHERE pg.package_id = '$package_id' " .
-            "AND pg.goods_id = g.goods_id ";
-    if ($package_id == 0)
-    {
-        $sql .= " AND pg.admin_id = '$_SESSION[admin_id]'";
-    }
-    $row = $GLOBALS['db']->getAll($sql);
-
-    return $row;
 }
 
 ?>

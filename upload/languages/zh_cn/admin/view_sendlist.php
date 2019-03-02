@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: zblikai $
- * $Id: view_sendlist.php 15588 2009-02-10 08:46:38Z zblikai $
+ * $Author: testyang $
+ * $Id: view_sendlist.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 $_LANG['email_val'] = '邮件地址';
@@ -28,9 +28,4 @@ $_LANG['type']['name'] = '邮件类型';
 $_LANG['type']['magazine'] = '杂志订阅';
 $_LANG['type']['template'] = '关注订阅';
 $_LANG['button_remove'] = '删除';
-$_LANG['batch_send'] = '选择发送';
-$_LANG['all_send'] = '全部发送';
-$_LANG['mailsend_null'] = '邮件发送列表空!';
-$_LANG['mailsend_finished'] = '全部邮件发送完成!';
-$_LANG['send_end'] = '选择邮件发送完成!';
 ?>

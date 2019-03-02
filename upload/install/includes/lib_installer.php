@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: lib_installer.php 15652 2009-02-23 09:14:27Z zblikai $
+ * $Author: testyang $
+ * $Id: lib_installer.php 15227 2008-11-19 02:07:35Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -671,15 +671,6 @@ function deal_aftermath()
                 "(link_name, link_url, link_logo, show_order)".
             "VALUES ".
                 "('".$_LANG['default_friend_link']."', 'http://www.ecshop.com/', 'http://www.ecshop.com/images/logo/ecshop_logo.gif','0')";
-    if (!$db->query($sql, 'SILENT'))
-    {
-        $err->add($db->errno() .' '. $db->error());
-    }
-
-    $sql = "INSERT INTO $prefix"."friend_link ".
-                "(link_name, link_url, show_order)".
-            "VALUES ".
-                "('".$_LANG['maifou_friend_link']."', 'http://www.maifou.net/','1')";
     if (!$db->query($sql, 'SILENT'))
     {
         $err->add($db->errno() .' '. $db->error());

@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: en_us.php 15655 2009-02-24 06:22:39Z zblikai $
+ * $Author: testyang $
+ * $Id: en_us.php 15163 2008-11-07 10:51:04Z testyang $
  */
 
 /* Common language item */
@@ -100,7 +100,6 @@ $_LANG['dv'] = 'Digital vidicon';
 $_LANG['cosmetics'] = 'Cosmetics';
 $_LANG['install_at_once'] = 'Install at once';
 $_LANG['default_friend_link'] = 'ECSHOP e-commerce management system';
-$_LANG['maifou_friend_link'] = 'Shop free';
 $_LANG['monitor_title'] = 'Installer Monitor';
 $_LANG['admin_user'][] = 'Goods list|goods.php?act=list';
 $_LANG['admin_user'][] = 'Order list|order.php?act=list';

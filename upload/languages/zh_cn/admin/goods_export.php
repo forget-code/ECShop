@@ -10,8 +10,8 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  *
- * $Author: zblikai $
- * $Id: goods_export.php 15635 2009-02-20 09:05:59Z zblikai $
+ * $Author: sunxiaodong $
+ * $Id: goods_export.php 15232 2008-11-19 02:52:35Z sunxiaodong $
 */
 
 $_LANG['user_guide'] =
@@ -111,38 +111,6 @@ $_LANG['paipai']['pic_width'] = 'pic_width';
 $_LANG['paipai']['pic_height'] = 'pic_height';
 $_LANG['paipai']['skin'] = 'skin';
 $_LANG['paipai']['prop'] = 'prop';
-
-$_LANG['export_paipai4'] = '导出到拍拍助理4.0支持数据格式';
-$_LANG['paipai4']['id'] = 'id';
-$_LANG['paipai4']['goods_name'] = '商品名称';
-$_LANG['paipai4']['auctionType'] = '出售方式';
-$_LANG['paipai4']['category'] = '商品类目';
-$_LANG['paipai4']['shopCategoryId'] = '店铺类目';
-$_LANG['paipai4']['quantity'] = '商品数量';
-$_LANG['paipai4']['duration'] = '有效期';
-$_LANG['paipai4']['startDate'] = '定时上架';
-$_LANG['paipai4']['stuffStatus'] = '新旧程度';
-$_LANG['paipai4']['price'] = '价格';
-$_LANG['paipai4']['increment'] = '加价幅度';
-$_LANG['paipai4']['prov'] = '省';
-$_LANG['paipai4']['city'] = '市';
-$_LANG['paipai4']['shippingOption'] = '运费承担';
-$_LANG['paipai4']['ordinaryPostFee'] = '平邮';
-$_LANG['paipai4']['fastPostFee'] = '快递';
-$_LANG['paipai4']['buyLimit'] = '购买限制';
-$_LANG['paipai4']['paymentOption'] = '付款方式';
-$_LANG['paipai4']['haveInvoice'] = '有发票';
-$_LANG['paipai4']['haveGuarantee'] = '有保修';
-$_LANG['paipai4']['secureTradeAgree'] = '支持财付通';
-$_LANG['paipai4']['autoRepost'] = '自动重发';
-$_LANG['paipai4']['failed_reason'] = '错误原因';
-$_LANG['paipai4']['pic_filename'] = '图片';
-$_LANG['paipai4']['description'] = '商品详情';
-$_LANG['paipai4']['shelfOption'] = '上架选项';
-$_LANG['paipai4']['skin'] = '皮肤风格';
-$_LANG['paipai4']['attr'] = '属性';
-$_LANG['paipai4']['chengBao'] = '诚保';
-$_LANG['paipai4']['shopWindow'] = '橱窗';
 
 // 批量上传商品的字段
 $_LANG['export_ecshop'] = '导出到ECShop数据格式';

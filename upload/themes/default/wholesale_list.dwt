@@ -121,8 +121,6 @@
  <!-- {else} -->
   <div style="margin:2px 10px; font-size:14px; text-align:center; line-height:36px;">{$lang.no_wholesale}</div>
   <!-- {/if} -->
-   <div class="blank5"></div>
-     <!-- #BeginLibraryItem "/library/pages.lbi" --><!-- #EndLibraryItem -->
 </div>
 <div class="blank5"></div>
 <!--帮助-->

@@ -10,8 +10,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: cls_sql_executor.php 15714 2009-03-05 08:30:19Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: cls_sql_executor.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -304,7 +304,6 @@ class sql_executor
                   . 'ALTER\s+TABLE|'
                   . 'UPDATE|'
                   . 'REPLACE\s+INTO|'
-                  . 'DELETE\s+FROM|'
                   . 'INSERT\s+INTO';
 
         $pattern = '/(' . $keywords . ')(\s*)`?' . $this->source_prefix . '(\w+)`?(\s*)/i';

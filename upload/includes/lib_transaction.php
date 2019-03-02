@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: lib_transaction.php 15499 2008-12-24 03:55:06Z zblikai $
+ * $Author: testyang $
+ * $Id: lib_transaction.php 15190 2008-11-18 03:01:36Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -838,7 +838,7 @@ function return_to_cart($order_id)
     /* 查订单商品：不考虑赠品 */
     $sql = "SELECT goods_id, goods_number, goods_attr, parent_id" .
             " FROM " . $GLOBALS['ecs']->table('order_goods') .
-            " WHERE order_id = '$order_id' AND is_gift = 0 AND extension_code <> 'package_buy'" .
+            " WHERE order_id = '$order_id' AND is_gift = 0" .
             " ORDER BY parent_id ASC";
     $res = $GLOBALS['db']->query($sql);
 
@@ -890,15 +890,15 @@ function return_to_cart($order_id)
         }
 
         //检查商品价格是否有会员价格
-        $sql = "SELECT goods_number FROM" . $GLOBALS['ecs']->table('cart') . " " .
-                "WHERE session_id = '" . SESS_ID . "' " .
-                "AND goods_id = '" . $row['goods_id'] . "' " .
-                "AND rec_type = '" . CART_GENERAL_GOODS . "' LIMIT 1";
-        $temp_number = $GLOBALS['db']->getOne($sql);
-        $row['goods_number'] += $temp_number;
-
-        $attr_array           = empty($attr_id) ? array() : explode(',', $attr_id);
-        $goods['goods_price'] = get_final_price($row['goods_id'], $row['goods_number'], true, $attr_array);
+        $user_price = $GLOBALS['db']->getOne("SELECT user_price FROM " . $GLOBALS['ecs']->table('member_price') . " WHERE goods_id='" . $row['goods_id'] . "' AND user_rank='" . $_SESSION['user_rank'] . "'");
+        if (!empty($user_price))
+        {
+            $goods['goods_price'] = $user_price;
+        }
+        else
+        {
+            $goods['goods_price'] = $goods['goods_price'] * $_SESSION['discount'];
+        }
 
         // 要返回购物车的商品
         $return_goods = array(
@@ -969,10 +969,9 @@ function return_to_cart($order_id)
         {
             // 有相同商品，修改数量
             $sql = "UPDATE " . $GLOBALS['ecs']->table('cart') . " SET " .
-                    "goods_number = '" . $return_goods['goods_number'] . "' " .
-                    ",goods_price = '" . $return_goods['goods_price'] . "' " .
+                    "goods_number = goods_number + '$return_goods[goods_number]' " .
                     "WHERE session_id = '" . SESS_ID . "' " .
-                    "AND goods_id = '" . $return_goods['goods_id'] . "' " .
+                    "AND goods_id = '$return_goods[goods_id]' " .
                     "AND rec_type = '" . CART_GENERAL_GOODS . "' LIMIT 1";
             $GLOBALS['db']->query($sql);
         }

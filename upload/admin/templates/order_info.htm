@@ -1,7 +1,7 @@
-<!-- $Id: order_info.htm 15544 2009-01-09 01:54:28Z zblikai $ -->
+<!-- $Id: order_info.htm 14973 2008-10-22 00:30:48Z testyang $ -->
 
 {include file="pageheader.htm"}
-{insert_scripts files="topbar.js,../js/utils.js,listtable.js,selectzone.js,../js/common.js"}
+{insert_scripts files="topbar.js,../js/utils.js,listtable.js,selectzone.js"}
 {if $user}
 <div id="topbar">
   <div align="right"><a href="" onclick="closebar(); return false"><img src="images/close.gif" border="0" /></a></div>
@@ -77,7 +77,7 @@
   </tr>
   <tr>
     <td width="18%"><div align="right"><strong>{$lang.label_order_sn}</strong></div></td>
-    <td width="34%">{$order.order_sn}{if $order.extension_code eq "group_buy"}<a href="group_buy.php?act=edit&id={$order.extension_id}">{$lang.group_buy}</a>{elseif $order.extension_code eq "exchange_goods"}<a href="exchange_goods.php?act=edit&id={$order.extension_id}">{$lang.exchange_goods}</a>{/if}</td>
+    <td width="34%">{$order.order_sn}{if $order.extension_code eq "group_buy"}<a href="group_buy.php?act=edit&id={$order.extension_id}">{$lang.group_buy}</a>{/if}</td>
     <td width="15%"><div align="right"><strong>{$lang.label_order_status}</strong></div></td>
     <td>{$order.status}</td>
   </tr>
@@ -191,20 +191,9 @@
   </tr>
   {foreach from=$goods_list item=goods}
   <tr>
-    <td>
-    {if $goods.goods_id gt 0 && $goods.extension_code neq 'package_buy'}
-    <a href="../goods.php?id={$goods.goods_id}" target="_blank">{$goods.goods_name} {if $goods.brand_name}[ {$goods.brand_name} ]{/if}
+    <td><a href="../goods.php?id={$goods.goods_id}" target="_blank">{$goods.goods_name} {if $goods.brand_name}[ {$goods.brand_name} ]{/if}
     {if $goods.is_gift}{if $goods.goods_price > 0}{$lang.remark_favourable}{else}{$lang.remark_gift}{/if}{/if}
-    {if $goods.parent_id > 0}{$lang.remark_fittings}{/if}</a>
-    {elseif $goods.goods_id gt 0 && $goods.extension_code eq 'package_buy'}
-    <a href="javascript:void(0)" onclick="setSuitShow({$goods.goods_id})">{$goods.goods_name}<span style="color:#FF0000;">{$lang.remark_package}</span></a>
-    <div id="suit_{$goods.goods_id}" style="display:none">
-        {foreach from=$goods.package_goods_list item=package_goods_list}
-          <a href="../goods.php?id={$package_goods_list.goods_id}" target="_blank">{$package_goods_list.goods_name}</a><br />
-        {/foreach}
-    </div>
-    {/if}
-    </td>
+    {if $goods.parent_id > 0}{$lang.remark_fittings}{/if}</a></td>
     <td>{$goods.goods_sn}</td>
     <td><div align="right">{$goods.formated_goods_price}</div></td>
     <td><div align="right">{$goods.goods_number}

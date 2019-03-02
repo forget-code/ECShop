@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: user.php 15544 2009-01-09 01:54:28Z zblikai $
+ * $Author: testyang $
+ * $Id: user.php 15055 2008-10-25 05:03:08Z testyang $
 */
 
 
@@ -272,7 +272,6 @@ $_LANG['order_sn_empty'] = '合并主订单号不能为空';
 $_LANG['merge_order_notice'] = '订单合并是在发货前将相同状态的订单合并成一新的订单。<br />收货地址，送货方式等以主定单为准。';
 $_LANG['order_exist'] = '该订单不存在！';
 $_LANG['order_is_group_buy'] = '[团购]';
-$_LANG['order_is_exchange'] = '[积分商城]';
 $_LANG['gb_deposit'] = '（保证金）';
 $_LANG['notice_gb_order_amount'] = '（备注：团购如果有保证金，第一次只需支付保证金和相应的支付费用）';
 $_LANG['business_message'] = '发送/查看商家留言';
@@ -438,7 +437,6 @@ $_LANG['horizontal'] = '横排';
 $_LANG['verticle'] = '竖排';
 $_LANG['generate'] = '生成代码';
 $_LANG['label_goods_num'] = '显示商品数量：';
-$_LANG['label_rows_num'] = '排列显示条目数：';
 $_LANG['label_arrange'] = '选择商品排列方式：';
 $_LANG['label_charset'] = '选择编码：';
 $_LANG['charset']['utf8'] = '国际化编码（utf8）';
@@ -446,8 +444,6 @@ $_LANG['charset']['zh_cn'] = '简体中文';
 $_LANG['charset']['zh_tw'] = '繁体中文';
 $_LANG['goods_num_must_be_int'] = '商品数量应该是整数';
 $_LANG['goods_num_must_over_0'] = '商品数量应该大于0';
-$_LANG['rows_num_must_be_int'] = '排列显示条目数应该是整数';
-$_LANG['rows_num_must_over_0'] = '排列显示条目数应该大于0';
 
 $_LANG['last_month_order'] = '您最近30天内提交了';
 $_LANG['order_unit'] = '个订单';
@@ -627,8 +623,6 @@ $_LANG['exchange_js']['balance'] = '您的{%s}余额不足，请重新输入';
 $_LANG['exchange_deny'] = '该积分不允许兑换';
 $_LANG['exchange_success'] = '恭喜您， 你用%s个%s兑换了%s个%s';
 $_LANG['exchange_error_1'] = 'UCenter提交积分兑换时发生错误';
-$_LANG['rank_points'] = '商城等级积分';
-$_LANG['pay_points'] = '商城消费积分';
 
 /* 密码强度 */
 $_LANG['pwd_lower'] = '弱';

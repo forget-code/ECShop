@@ -3,14 +3,14 @@
 /**
  * UCenter 会员数据处理类
  * ============================================================================
- * 版权所有 2005-2008 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: ucenter.php 15644 2009-02-23 06:40:40Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: ucenter.php 15376 2008-12-02 10:14:28Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -30,7 +30,7 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['name']    = 'UCenter';
 
     /* 被整合的第三方程序的版本 */
-    $modules[$i]['version'] = '1.x';
+    $modules[$i]['version'] = '1.0';
 
     /* 插件的作者 */
     $modules[$i]['author']  = 'ECSHOP R&D TEAM';
@@ -85,7 +85,7 @@ class ucenter extends integrate
         $this->field_reg_date = 'reg_time';
         $this->need_sync = false;
         $this->is_ecshop = 1;
-
+        
         /* 初始化UC需要常量 */
         if (!defined('UC_CONNECT') && isset($cfg['uc_id']) && isset($cfg['db_host']) && isset($cfg['db_user']) && isset($cfg['db_name']))
         {

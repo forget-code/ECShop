@@ -5,11 +5,7 @@
 <div id="pager">
   {$lang.pager_1}{$pager.record_count}{$lang.pager_2}{$lang.pager_3}{$pager.page_count}{$lang.pager_4} <span> <a href="{$pager.page_first}">{$lang.page_first}</a> <a href="{$pager.page_prev}">{$lang.page_prev}</a> <a href="{$pager.page_next}">{$lang.page_next}</a> <a href="{$pager.page_last}">{$lang.page_last}</a> </span>
     <!--{foreach from=$pager.search key=key item=item}-->
-      {if $key eq 'keywords'}
-          <input type="hidden" name="{$key}" value="{$item|escape:decode_url}" />
-        {else}
-          <input type="hidden" name="{$key}" value="{$item}" />
-      {/if}
+    <input type="hidden" name="{$key}" value="{$item}" />
     <!--{/foreach}-->
     <select name="page" id="page" onchange="selectPage(this)">
     {html_options options=$pager.array selected=$pager.page}
@@ -36,11 +32,7 @@
   <!-- {if $pager.page_last} --><a class="last" href="{$pager.page_last}">...{$lang.page_last}</a><!-- {/if} -->
   <!-- {if $pager.page_kbd} -->
     <!--{foreach from=$pager.search key=key item=item}-->
-      {if $key eq 'keywords'}
-          <input type="hidden" name="{$key}" value="{$item|escape:decode_url}" />
-        {else}
-          <input type="hidden" name="{$key}" value="{$item}" />
-      {/if}
+    <input type="hidden" name="{$key}" value="{$item}" />
     <!--{/foreach}-->
     <kbd style="float:left; margin-left:8px; position:relative; bottom:3px;"><input type="text" name="page" onkeydown="if(event.keyCode==13)selectPage(this)" size="3" class="B_blue" /></kbd>
     <!-- {/if} -->

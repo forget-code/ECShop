@@ -23,9 +23,6 @@ INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES 
 (6, 0, 'order_manage'),
 (7, 0, 'promotion'),
 (8, 0, 'email'),
-(9, 0, 'templates_manage'),
-(10, 0, 'db_manage'),
-(11, 0, 'sms_manage'),
 (21, 1, 'goods_manage'),
 (22, 1, 'remove_back'),
 (23, 1, 'cat_manage'),
@@ -95,32 +92,7 @@ INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES 
 (100 ,8, 'email_list'),
 (101 ,8, 'magazine_list'),
 (102 ,8, 'view_sendlist'),
-(103, 1, 'virualcard'),
-(104, 7, 'package_manage'),
-(105, 1, 'picture_batch'),
-(106, 1, 'goods_export'),
-(107, 1, 'goods_batch'),
-(108, 1, 'gen_goods_script'),
-(109, 5, 'sitemap'),
-(110, 5, 'file_priv'),
-(111, 5, 'file_check'),
-(112, 9, 'template_select'),
-(113, 9, 'template_setup'),
-(114, 9, 'library_manage'),
-(115, 9, 'lang_edit'),
-(116, 9, 'backup_setting'),
-(117, 9, 'mail_template'),
-(118, 10, 'db_backup'),
-(119, 10, 'db_renew'),
-(120, 10, 'db_optimize'),
-(121, 10, 'sql_query'),
-(122, 10, 'convert'),
-(123, 11, 'my_info'),
-(124, 11, 'sms_send'),
-(125, 11, 'sms_charge'),
-(126, 11, 'send_history'),
-(127, 11, 'charge_history'),
-(128, 7, 'exchange_goods');
+(103, 1, 'virualcard');
 
 --
 -- `ecs_mail_templates`
@@ -3585,7 +3557,7 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (118, 1, 'shop_logo', 'file', '', '../themes/{$template}/images/', '', '1'),
 (119, 1, 'licensed', 'select', '0,1', '', '0', '1'),
 (120, 1, 'user_notice', 'textarea', '', '', '用戶中心公告！', '1'),
-(121, 1, 'shop_notice', 'textarea', '', '', '歡迎光臨手機網,我們的宗旨：誠信經營、服務客戶！\r\n<MARQUEE onmouseover=this.stop() onmouseout=this.start() \r\nscrollAmount=3><U><FONT color=red>\r\n<P>諮詢電話010-10124444 010-21252454 8465544</P></FONT></U></MARQUEE>', '1'),
+(121, 1, 'shop_notice', 'textarea', '', '', '歡迎光臨手機網,我們的宗旨：誠信經營、服務客戶！\r\n<MARQUEE onmouseover=this.stop() onmouseout= this.start() \r\nscrollAmount=3><U><FONT color=red>\r\n<P>諮詢電話010-10124444 010-21252454 8465544</P></FONT></U>< /MARQUEE>', '1'),
 (122, 1, 'shop_reg_closed', 'select', '1,0', '', '0', '1'),
 (201, 2, 'lang', 'manual', '', '', 'zh_cn', '1'),
 (202, 2, 'icp_number', 'text', '', '', '', '1'),
@@ -3672,7 +3644,7 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (419, 4, 'anonymous_buy', 'select', '1,0', '', '1', '1'),
 (420, 4, 'min_goods_amount', 'text', '', '', '0', '1'),
 (421, 4, 'one_step_buy', 'select', '1,0', '', '0', '1'),
-(422, 4, 'invoice_type', 'manual', '', '', 'a:2:{s:4:"type";a:3:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:0:"";}s:4:"rate";a:3:{i:0;d:1;i:1;d:1.5;i:2;d:0;}}','1'),
+(422, 4, 'invoice_type', 'manual', '', '', 'a:2:{s:4:"type";a:3:{i:0;s:1:"1"; i:1;s:1:"2";i:2;s:0:"";}s:4:"rate";a:3:{i:0;d:1;i:1;d :1.5;i:2;d:0;}}', '1'),
 (423, 4, 'stock_dec_time', 'select', '1,0', '', '0', '1'),
 (424, 4, 'cart_confirm', 'options', '1,2,3,4', '', '3', '0'),
 (425, 4, 'send_service_email', 'select', '1,0', '', '0', '1'),
@@ -3685,7 +3657,6 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (505, 5, 'smtp_mail', 'text', '', '', '', '1'),
 (506, 5, 'mail_charset', 'select', 'UTF8,GB2312,BIG5', '', 'UTF8', '1'),
 (507, 5, 'mail_service', 'select', '0,1', '', '0', '0'),
-(508, 5, 'smtp_ssl', 'select', '0,1', '', '0', '0'),
 (601, 6, 'integrate_code', 'hidden', '', '', 'ecshop', '1'),
 (602, 6, 'integrate_config', 'hidden', '', '', '', '1'),
 (603, 6, 'hash_code', 'hidden', '', '', '31693422540744c0a6b6da635b7a5a93', '1'),
@@ -3700,11 +3671,11 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (612, 6, 'sms_total_money', 'hidden', '', '', '', '1'),
 (613, 6, 'sms_balance', 'hidden', '', '', '', '1'),
 (614, 6, 'sms_last_request', 'hidden', '', '', '', '1'),
-(616, 6, 'affiliate', 'hidden', '', '', 'a:3:{s:6:"config";a:7:{s:6:"expire";d:24;s:11:"expire_unit";s:4:"hour";s:11:"separate_by";i:0;s:15:"level_point_all";s:2:"5%";s:15:"level_money_all";s:2:"1%";s:18:"level_register_all";i:2;s:17:"level_register_up";i:60;}s:4:"item";a:4:{i:0;a:2:{s:11:"level_point";s:3:"60%";s:11:"level_money";s:3:"60%";}i:1;a:2:{s:11:"level_point";s:3:"30%";s:11:"level_money";s:3:"30%";}i:2;a:2:{s:11:"level_point";s:2:"7%";s:11:"level_money";s:2:"7%";}i:3;a:2:{s:11:"level_point";s:2:"3%";s:11:"level_money";s:2:"3%";}}s:2:"on";i:1;}', '1'),
+(616, 6, 'affiliate', 'hidden', '', '', 'a:3:{s:6:"config";a:7:{s:6:"expire";d:24; s:11:"expire_unit";s:4:"hour";s:11:"separate_by";i:0;s:15:"level_point_all";s:2:"5%";s:15:" level_money_all";s:2:"1%";s:18:"level_register_all";i:2;s:17:"level_register_up";i:60;}s:4:"item";a:4:{ i:0;a:2:{s:11:"level_point";s:3:"60%";s:11:"level_money";s:3:"60%";}i:1;a: 2:{s:11:"level_point";s:3:"30%";s:11:"level_money";s:3:"30%";}i:2;a:2:{s:11 :"level_point";s:2:"7%";s:11:"level_money";s:2:"7%";}i:3;a:2:{s:11:"level_point";s :2:"3%";s:11:"level_money";s:2:"3%";}}s:2:"on";i:1;}', '1'),
 (617, 6, 'captcha', 'hidden', '', '', '36', '1'),
 (618, 6, 'captcha_width', 'hidden', '', '', '100', '1'),
 (619, 6, 'captcha_height', 'hidden', '', '', '20', '1'),
-(620, 6, 'sitemap', 'hidden', '', '', 'a:6:{s:19:"homepage_changefreq";s:6:"hourly";s:17:"homepage_priority";s:3:"0.9";s:19:"category_changefreq";s:6:"hourly";s:17:"category_priority";s:3:"0.8";s:18:"content_changefreq";s:6:"weekly";s:16:"content_priority";s:3:"0.7";}', '0'),
+(620, 6, 'sitemap', 'hidden', '', '', 'a:6:{s:19:"homepage_changefreq";s:6:"hourly";s:17:"homepage_priority";s :3:"0.9";s:19:"category_changefreq";s:6:"hourly";s:17:"category_priority";s:3:"0.8";s:18:"content_changefreq";s:6 :"weekly";s:16:"content_priority";s:3:"0.7";}', '0'),
 (621, 6, 'points_rule', 'hidden', '', '', '', '0'),
 (622, 6, 'flash_theme', 'hidden', '', '', 'dynfocus', '1'),
 (701, 7, 'show_goodssn', 'select', '1,0', '', '1', '1'),
@@ -3719,8 +3690,8 @@ INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`,
 (803, 8, 'sms_order_payed', 'select', '1,0', '', '0', '1'),
 (804, 8, 'sms_order_shipped', 'select', '1,0', '', '0', '1'),
 (901, 9, 'wap_config', 'select', '1,0', '', '0', '1'),
-(902, 9, 'wap_logo', 'file', '', '../images/', '', '1'),
-(903, 2, 'message_check', 'select', '1,0', '', '1', '1');
+(902, 9, 'wap_logo', 'file', '', '../images/', '', '1');
+
 --
 -- user_rank
 --
@@ -3747,14 +3718,14 @@ INSERT INTO `ecs_nav` (`id`, `ctype`, `cid`, `name`, `ifshow`, `vieworder`, `ope
 (14, NULL, NULL, '配送方式', 1, 7, 0, 'myship.php', 'bottom'),
 (15, NULL, NULL, '留言板', 1, 99, 0, 'message.php', 'middle'),
 (16, 'c', 2, 'GSM手機', 1, 11, 0, 'category.php?id=2', 'middle'),
+(17, 'c', 3, 'CDMA手機', 1, 13, 0, 'category.php?id=3', 'middle'),
 (18, 'c', 4, '雙模手機', 0, 14, 0, 'category.php?id=4', 'middle'),
 (19, 'c', 5, '3G手機', 1, 15, 0, 'category.php?id=5', 'middle'),
 (20, '', 0, 'EC論壇', 1, 100, 1, 'http://bbs.ecshop.com/', 'middle'),
 (21, NULL, NULL, '優惠活動', 1, 21, 0, 'activity.php', 'middle'),
 (22, 'a', 10, '手機資訊', 1, 102, 0, 'article_cat.php?id=10', 'middle'),
 (23, NULL, NULL, '報價單', 1, 6, 0, 'quotation.php', 'top'),
-(24, NULL, NULL, '拍賣活動', 1, 23, 0, 'auction.php', 'middle'),
-(25, NULL, NULL, '積分商城', 1, 24, 0, 'exchange.php', 'middle');
+(24, NULL, NULL, '拍賣活動', 1, 23, 0, 'auction.php', 'middle');
 
 --文章默認分類
 INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `cat_desc`, `sort_order`, `parent_id`) VALUES (1, '系統分類', 2, '', '系統保留分類', 0, 0);
@@ -3766,12 +3737,12 @@ INSERT INTO `ecs_article_cat` (`cat_id`, `cat_name`, `cat_type`, `keywords`, `ca
 --
 
 INSERT INTO `ecs_article` (`article_id`, `cat_id`, `title`, `content`, `author`, `author_email`, `keywords`, `article_type`, `is_open`, `add_time`, `file_url`, `open_type`) VALUES
-(1, 2, '免責條款', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(2, 2, '隱私保護', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(3, 2, '諮詢熱點', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(4, 2, '聯繫我們', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(5, 2, '公司簡介', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0),
-(6, -1, '用戶協議', '', '', '', '', 0, 1, UNIX_TIMESTAMP(), '', 0);
+(1, 2, '免責條款', '', '', '', '', 0, 1, 0, '', 0),
+(2, 2, '隱私保護', '', '', '', '', 0, 1, 0, '', 0),
+(3, 2, '諮詢熱點', '', '', '', '', 0, 1, 0, '', 0),
+(4, 2, '聯繫我們', '', '', '', '', 0, 1, 0, '', 0),
+(5, 2, '公司簡介', '', '', '', '', 0, 1, 0, '', 0),
+(6, -1, '用戶協議', '', '', '', '', 0, 1, 0, '', 0);
 
 --
 -- `ecs_template`

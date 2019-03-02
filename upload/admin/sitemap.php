@@ -9,16 +9,13 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: sitemap.php 15532 2009-01-07 10:48:14Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: sitemap.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
-
-/* 检查权限 */
-admin_priv('sitemap');
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {

@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
- * $Author: zblikai $
- * $Id: magazine_list.php 15586 2009-02-10 03:10:10Z zblikai $
+ * $Author: testyang $
+ * $Id: magazine_list.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 $_LANG['add_new'] = '添加新杂志';
@@ -29,7 +29,4 @@ $_LANG['magazine_last_send'] = '杂志上次发送时间';
 $_LANG['magazine_content'] = '杂志内容(支持html)';
 $_LANG['go_list'] = '返回列表';
 $_LANG['edit_ok'] = '操作成功！';
-$_LANG['email_user'] = '邮件订阅用户';
-$_LANG['user_list'] = '全体会员';
-
 ?>

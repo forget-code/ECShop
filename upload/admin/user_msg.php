@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: user_msg.php 15616 2009-02-18 05:16:22Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: user_msg.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -86,36 +86,7 @@ if ($_REQUEST['act'] == 'remove_msg')
     ecs_header("Location: user_msg.php?act=add&order_id=$_GET[order_id]&user_id=$_GET[user_id]\n");
     exit;
 }
-/*------------------------------------------------------ */
-//-- 更新留言的状态为显示或者禁止
-/*------------------------------------------------------ */
-if ($_REQUEST['act'] == 'check')
-{
-    if ($_REQUEST['check'] == 'allow')
-    {
-        /* 允许留言显示 */
-        $sql = "UPDATE " .$ecs->table('feedback'). " SET msg_status = 1 WHERE msg_id = '$_REQUEST[id]'";
-        $db->query($sql);
 
-        /* 清除缓存 */
-        clear_cache_files();
-
-        ecs_header("Location: user_msg.php?act=view&id=$_REQUEST[id]\n");
-        exit;
-    }
-    else
-    {
-        /* 禁止留言显示 */
-        $sql = "UPDATE " .$ecs->table('feedback'). " SET msg_status = 0 WHERE msg_id = '$_REQUEST[id]'";
-        $db->query($sql);
-
-        /* 清除缓存 */
-        clear_cache_files();
-
-        ecs_header("Location: user_msg.php?act=view&id=$_REQUEST[id]\n");
-        exit;
-    }
-}
 /*------------------------------------------------------ */
 //-- 列出所有留言
 /*------------------------------------------------------ */
@@ -282,7 +253,7 @@ function msg_list()
     /* 分页大小 */
     $filter = page_and_size($filter);
 
-    $sql = "SELECT f.msg_id, f.user_name, f.msg_title, f.msg_type, f.order_id, f.msg_status, f.msg_time, f.msg_area, COUNT(r.msg_id) AS reply " .
+    $sql = "SELECT f.msg_id, f.user_name, f.msg_title, f.msg_type, f.msg_time, COUNT(r.msg_id) AS reply " .
             "FROM " . $GLOBALS['ecs']->table('feedback') . " AS f ".
             "LEFT JOIN " . $GLOBALS['ecs']->table('feedback') . " AS r ON r.parent_id=f.msg_id ".
             "WHERE f.parent_id = 0 $where " .
@@ -292,10 +263,7 @@ function msg_list()
 
     $msg_list = $GLOBALS['db']->getAll($sql);
     foreach ($msg_list AS $key => $value)
-    {   if($value['order_id'] > 0)
-        {
-            $msg_list[$key]['order_sn'] = $GLOBALS['db']->getOne("SELECT order_sn FROM " . $GLOBALS['ecs']->table('order_info') ." WHERE order_id= " .$value['order_id']);
-        }
+    {
         $msg_list[$key]['msg_time'] = local_date($GLOBALS['_CFG']['time_format'], $value['msg_time']);
         $msg_list[$key]['msg_type'] = $GLOBALS['_LANG']['type'][$value['msg_type']];
     }

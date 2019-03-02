@@ -264,18 +264,13 @@
       </select></td>
     </tr>
     <tr>
-      <td align="right" bgcolor="#ffffff">{$lang.label_rows_num}</td>
-      <td bgcolor="#ffffff"><input name="rows_num" type="text" id="rows_num" value="1" class="inputBg" /></td>
-    </tr>
-    <tr>
       <td align="right" bgcolor="#ffffff">{$lang.label_charset}</td>
       <td bgcolor="#ffffff"><select name="charset" id="charset">
         {html_options options=$lang_list}
       </select></td>
     </tr>
     <tr>
-      <td colspan="2" align="center" bgcolor="#ffffff"><input type="button" name="gen_code" value="{$lang.generate}" onclick="genCode()" class="bnt_blue_1" />
-			</td>
+      <td colspan="2" align="center" bgcolor="#ffffff"><input type="button" name="gen_code" value="{$lang.generate}" onclick="genCode()" class="submit" />        </td>
   </tr>
     <tr>
       <td colspan="2" align="center" bgcolor="#ffffff"><textarea name="code" cols="80" rows="5" id="code" class="B_blue"></textarea></td>
@@ -302,23 +297,12 @@
               alert('{$lang.goods_num_must_over_0}');
               return;
           }
-          if (isNaN(parseInt(elements['rows_num'].value)))
-          {
-              alert('{$lang.rows_num_must_be_int}');
-              return;
-          }
-          if (elements['rows_num'].value < 1)
-          {
-              alert('{$lang.rows_num_must_over_0}');
-              return;
-          }
 
           // 生成代码
           var code = '\<script src=\"' + url + 'goods_script.php?';
           code += 'need_image=' + elements['need_image'].value + '&';
           code += 'goods_num=' + elements['goods_num'].value + '&';
           code += 'arrange=' + elements['arrange'].value + '&';
-          code += 'rows_num=' + elements['rows_num'].value + '&';
           code += 'charset=' + elements['charset'].value + '&u=' + u;
           code += '\"\>\</script\>';
           elements['code'].value = code;

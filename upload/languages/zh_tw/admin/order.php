@@ -9,8 +9,8 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: zblikai $
- * $Id: order.php 15544 2009-01-09 01:54:28Z zblikai $
+ * $Author: testyang $
+ * $Id: order.php 15086 2008-10-27 06:21:49Z testyang $
  */
 
 /* 訂單搜索 */
@@ -79,7 +79,6 @@ $_LANG['detail'] = '查看';
 $_LANG['phone'] = '電話';
 $_LANG['group_buy'] = '（團購）';
 $_LANG['error_get_goods_info'] = '獲取訂單商品信息錯誤';
-$_LANG['exchange_goods'] = '（積分兌換）';
 
 $_LANG['js_languages']['remove_confirm'] = '刪除訂單將清除該訂單的所有信息。您確定要這麼做嗎？';
 
@@ -234,7 +233,6 @@ $_LANG['edit_template_success'] = '編輯訂單打印模板操作成功!';
 $_LANG['remark_fittings'] = '（配件）';
 $_LANG['remark_gift'] = '（贈品）';
 $_LANG['remark_favourable'] = '（特惠品）';
-$_LANG['remark_package'] = '（禮包）';
 
 /* 訂單來源統計 */
 $_LANG['from_order'] = '訂單來源：';

@@ -5,7 +5,7 @@
       <!-- {if $brand.brand_logo} -->
         <a href="{$brand.url}"><img src="data/brandlogo/{$brand.brand_logo}" alt="{$brand.brand_name|escape:html} ({$brand.goods_num})" /></a>
       <!-- {else} -->
-      <div class="brandText">
+      <div style="clear:both;">
         <a href="{$brand.url}">{$brand.brand_name|escape:html} {if $brand.goods_num}({$brand.goods_num}){/if}</a>
       </div>
       <!-- {/if} -->

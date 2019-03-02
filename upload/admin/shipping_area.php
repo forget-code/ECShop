@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: shipping_area.php 15515 2008-12-29 05:14:36Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: shipping_area.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -122,9 +122,7 @@ elseif ($_REQUEST['act'] == 'insert')
         $count = count($config);
         $config[$count]['name']     = 'free_money';
         $config[$count]['value']    = $_POST['free_money'];
-        $count++;
-        $config[$count]['name']     = 'fee_compute_mode';
-        $config[$count]['value']    = $_POST['fee_compute_mode'];
+
         /* 如果支持货到付款，则允许设置货到付款支付费用 */
         if ($modules[0]['cod'])
         {
@@ -186,40 +184,7 @@ elseif ($_REQUEST['act'] == 'edit')
 
     foreach ($fields AS $key => $val)
     {
-       /* 替换更改的语言项 */
-       if ($val['name'] == 'basic_fee')
-       {
-            $val['name'] = 'base_fee';
-       }
-       if ($val['name'] == 'step_fee1')
-       {
-            $val['name'] = 'step_fee';
-       }
-       if ($val['name'] == 'step_fee2')
-       {
-            $val['name'] = 'step_fee1';
-       }
-
-       if ($val['name'] == 'item_fee')
-       {
-           $item_fee = 1;
-       }
-       if ($val['name'] == 'fee_compute_mode')
-       {
-           $smarty->assign('fee_compute_mode',$val['value']);
-           unset($fields[$key]);
-       }
-       else
-       {
-           $fields[$key]['name'] = $val['name'];
-           $fields[$key]['label']  = $_LANG[$val['name']];
-       }
-    }
-
-    if(!$item_fee)
-    {
-        $field = array('name'=>'item_fee', 'value'=>'0', 'label'=>$_LANG['item_fee']);
-        array_unshift($fields,$field);
+        $fields[$key]['label']  = $_LANG[$val['name']];
     }
 
     /* 获得该区域下的所有地区 */
@@ -284,9 +249,7 @@ elseif ($_REQUEST['act'] == 'update')
         $count = count($config);
         $config[$count]['name']     = 'free_money';
         $config[$count]['value']    = $_POST['free_money'];
-        $count++;
-        $config[$count]['name']     = 'fee_compute_mode';
-        $config[$count]['value']    = $_POST['fee_compute_mode'];
+
         if ($modules[0]['cod'])
         {
             $count++;

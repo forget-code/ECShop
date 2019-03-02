@@ -10,7 +10,7 @@
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: sunxiaodong $
- * $Id: common.php 15578 2009-01-22 08:38:08Z sunxiaodong $
+ * $Id: common.php 15374 2008-12-02 08:18:36Z sunxiaodong $
 */
 
 /* 用户登录语言项 */
@@ -90,10 +90,6 @@ $_LANG['search_result'] = '搜索结果';
 $_LANG['order_number'] = '订单号';
 $_LANG['consignment'] = '发货单';
 $_LANG['activities'] = '商品正在进行的活动';
-$_LANG['remark_package'] = '超值礼包';
-$_LANG['old_price'] = '原  价：';
-$_LANG['package_price'] = '礼包价：';
-$_LANG['then_old_price'] = '节  省：';
 
 $_LANG['searchkeywords_notice'] = '匹配多个关键字全部，可用 "+" 或 "AND" 连接。如 win32 AND unix<br />匹配多个关键字其中部分，可用空格或 "OR" 连接。如 win32 OR unix';
 $_LANG['hidden_outstock'] = '隐藏已脱销的商品';
@@ -124,8 +120,6 @@ $_LANG['day'] = '天';
 $_LANG['hour'] = '小时';
 $_LANG['minute'] = '分钟';
 $_LANG['compare'] = '比较';
-$_LANG['volume_price'] = '购买商品达到以下数量区间时可享受的优惠价格';
-$_LANG['number_to'] = '数量';
 
 /* 商品比较JS语言项 */
 $_LANG['compare_js']['button_compare'] = '比较选定商品';
@@ -177,12 +171,9 @@ $_LANG['addto_cart_success_1'] = "该商品已添加到购物车，您现在还�
 $_LANG['addto_cart_success_2'] = "该商品已添加到购物车，您现在还需要继续购物吗？\n如果您希望继续购物，请点击“确定”按钮。\n如果您希望马上结算，请点击“取消”按钮。";
 
 /* 分页排序 */
-$_LANG['exchange_sort']['goods_id'] = '按上架时间排序';
-$_LANG['exchange_sort']['exchange_integral'] = '按积分排序';
-$_LANG['exchange_sort']['last_update'] = '按更新时间排序';
 $_LANG['sort']['goods_id'] = '按上架时间排序';
 $_LANG['sort']['shop_price'] = '按价格排序';
-$_LANG['sort']['last_update'] = '按更新时间排序';
+$_LANG['sort']['last_update'] = '更新时间';
 $_LANG['order']['DESC'] = '倒序';
 $_LANG['order']['ASC'] = '正序';
 $_LANG['pager_1'] = '总计 ';
@@ -455,15 +446,6 @@ $_LANG['ws_remark'] = '请输入您的联系方式、付款方式和配送方式
 $_LANG['ws_order_submitted'] = '您的订单已提交成功，请记住您的订单号: %s。';
 $_LANG['ws_price_list'] = '价格单';
 
-/* 积分兑换部分语言项 */
-$_LANG['exchange'] = '积分商城';
-$_LANG['exchange_integral'] = '消耗积分：';
-$_LANG['exchange_goods'] = '立刻兑换';
-$_LANG['eg_error_login'] = '对不起，您没有登录，不能参加兑换，请您先登录！';
-$_LANG['eg_error_status'] = '对不起，该商品已经取消，现在不能兑换！';
-$_LANG['eg_error_integral'] = '对不起，您现有的积分值不够兑换本商品！';
-$_LANG['notice_eg_integral'] = '积分商城商品需要消耗积分：';
-
 /* 会员登录注册 */
 $_LANG['member_name'] = '会员';
 $_LANG['password'] = '密码';
@@ -553,7 +535,7 @@ $_LANG['stock_up'] = '缺货';
 
 $_LANG['hot_search'] = '热门搜索';
 
-$_LANG['please_select_attr'] = '你加入购物车的商品有不同型号可选，你是否要立即跳转到商品详情选择型号？';
+$_LANG['please_select_attr'] = '你加入购物车的商品有不同型号可选，你是要否立即跳转到商品详情选择型号？';
 
 /* 促销信息栏 */
 $_LANG['snatch_promotion'] = '[夺宝]';
@@ -584,17 +566,13 @@ $_LANG['message_type'][M_ENQUIRY] = '询问';
 $_LANG['message_type'][M_CUSTOME] = '售后';
 $_LANG['message_type'][M_BUY] = '求购';
 $_LANG['message_type'][M_BUSINESS] = '商家留言';
-$_LANG['message_board_js']['msg_empty_email'] = '请输入您的电子邮件地址';
-$_LANG['message_board_js']['msg_error_email'] = '电子邮件地址格式不正确';
 $_LANG['message_board_js']['msg_title_empty'] = '留言标题为空';
 $_LANG['message_board_js']['msg_content_empty'] = '留言内容为空';
 $_LANG['message_board_js']['msg_captcha_empty'] = '验证码为空';
 $_LANG['message_board_js']['msg_title_limit'] = '留言标题不能超过200个字';
-$_LANG['message_submit_wait'] = '您的留言已成功发表, 请等待管理员的审核!';
-$_LANG['message_submit_done'] = '发表留言成功';
+$_LANG['add_message_success'] = '发表留言成功';
 $_LANG['message_board_close'] = "暂停留言板功能";
 $_LANG['upload_file_limit'] = '文件大小超过了限制 %dKB';
-$_LANG['message_list_lnk'] = '返回留言列表';
 
 /* 报价单 */
 $_LANG['quotation'] = "报价单";

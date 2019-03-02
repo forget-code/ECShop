@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: lib_goods.php 15595 2009-02-13 07:26:20Z zblikai $
+ * $Author: sunxiaodong $
+ * $Id: lib_goods.php 15179 2008-11-17 05:43:07Z sunxiaodong $
  */
 
 if (!defined('IN_ECS'))
@@ -29,7 +29,6 @@ function get_intro_list()
         'is_new'     => $GLOBALS['_LANG']['is_new'],
         'is_hot'     => $GLOBALS['_LANG']['is_hot'],
         'is_promote' => $GLOBALS['_LANG']['is_promote'],
-        'all_type' => $GLOBALS['_LANG']['all_type'],
     );
 }
 
@@ -732,9 +731,6 @@ function goods_list($is_delete, $real_goods=1)
                 break;
             case 'is_promote':
                 $where .= " AND is_promote = 1 AND promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today'";
-                break;
-            case 'all_type';
-                $where .= " AND (is_best=1 OR is_hot=1 OR is_new=1 OR (is_promote = 1 AND promote_price > 0 AND promote_start_date <= '" . $today . "' AND promote_end_date >= '" . $today . "'))";
         }
 
         /* 库存警告 */
@@ -773,7 +769,7 @@ function goods_list($is_delete, $real_goods=1)
         /* 分页大小 */
         $filter = page_and_size($filter);
 
-        $sql = "SELECT goods_id, goods_name, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral, " .
+        $sql = "SELECT goods_id, goods_name, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, goods_number, integral, " .
                     " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ".
                     " FROM " . $GLOBALS['ecs']->table('goods') . " AS g WHERE is_delete='$is_delete' $where" .
                     " ORDER BY $filter[sort_by] $filter[sort_order] ".

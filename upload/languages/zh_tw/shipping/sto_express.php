@@ -9,14 +9,13 @@
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: sto_express.php 15459 2008-12-17 04:16:19Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: sto_express.php 15086 2008-10-27 06:21:49Z testyang $
 */
 
 $_LANG['sto_express']            = '申通快遞';
 $_LANG['sto_express_desc']       = '江、浙、滬地區首重為15元/KG，其他地區18元/KG， 續重均為5-6元/KG， 雲南地區為8元';
-$_LANG['base_fee']              = '1000克以內費用';
-$_LANG['item_fee']              = '單件商品費用：';
+$_LANG['basic_fee']              = '1000克以內費用';
 $_LANG['step_fee']               = '續重每1000克或其零數的費用';
 $_LANG['shipping_print']         = '<table border="0" cellspacing="0" cellpadding="0" style="width:18.9cm;">
   <tr>

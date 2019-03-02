@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: order.php 15570 2009-01-17 02:11:08Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: order.php 15083 2008-10-27 05:54:55Z testyang $
  */
 
 /* 订单搜索 */
@@ -30,9 +30,9 @@ $_LANG['cs'][OS_RETURNED] = '退货';
 /* 订单状态 */
 $_LANG['os'][OS_UNCONFIRMED] = '未确认';
 $_LANG['os'][OS_CONFIRMED] = '已确认';
-$_LANG['os'][OS_CANCELED] = '<font color="red"> 取消</font>';
-$_LANG['os'][OS_INVALID] = '<font color="red">无效</font>';
-$_LANG['os'][OS_RETURNED] = '<font color="red">退货</font>';
+$_LANG['os'][OS_CANCELED] = '取消';
+$_LANG['os'][OS_INVALID] = '无效';
+$_LANG['os'][OS_RETURNED] = '退货';
 
 $_LANG['ss'][SS_UNSHIPPED] = '未发货';
 $_LANG['ss'][SS_PREPARING] = '配货中';
@@ -79,7 +79,6 @@ $_LANG['detail'] = '查看';
 $_LANG['phone'] = '电话';
 $_LANG['group_buy'] = '（团购）';
 $_LANG['error_get_goods_info'] = '获取订单商品信息错误';
-$_LANG['exchange_goods'] = '（积分兑换）';
 
 $_LANG['js_languages']['remove_confirm'] = '删除订单将清除该订单的所有信息。您确定要这么做吗？';
 
@@ -234,7 +233,6 @@ $_LANG['edit_template_success'] = '编辑订单打印模板操作成功!';
 $_LANG['remark_fittings'] = '（配件）';
 $_LANG['remark_gift'] = '（赠品）';
 $_LANG['remark_favourable'] = '（特惠品）';
-$_LANG['remark_package'] = '（礼包）';
 
 /* 订单来源统计 */
 $_LANG['from_order'] = '订单来源：';

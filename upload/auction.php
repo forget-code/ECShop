@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: auction.php 15624 2009-02-18 10:43:54Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: auction.php 15013 2008-10-23 09:31:42Z testyang $
  */
 
 define('IN_ECS', true);
@@ -416,14 +416,12 @@ function auction_count()
 function auction_list($size, $page)
 {
     $auction_list = array();
-    $auction_list['finished'] = $auction_list['finished'] = array();
-
     $now = gmtime();
     $sql = "SELECT a.*, IFNULL(g.goods_thumb, '') AS goods_thumb " .
             "FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS a " .
                 "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS g ON a.goods_id = g.goods_id " .
             "WHERE a.act_type = '" . GAT_AUCTION . "' " .
-            "AND a.start_time <= '$now' ORDER BY a.act_id DESC";
+            "AND a.start_time <= '$now'";
     $res = $GLOBALS['db']->selectLimit($sql, $size, ($page - 1) * $size);
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
@@ -439,17 +437,8 @@ function auction_list($size, $page)
         $auction['goods_thumb'] = get_image_path($row['goods_id'], $row['goods_thumb'], true);
         $auction['url'] = build_uri('auction', array('auid'=>$auction['act_id']));
 
-        if($auction['status_no'] < 2)
-        {
-            $auction_list['under_way'][] = $auction;
-        }
-        else
-        {
-            $auction_list['finished'][] = $auction;
-        }
+        $auction_list[] = $auction;
     }
-
-    $auction_list = @array_merge($auction_list['under_way'], $auction_list['finished']);
 
     return $auction_list;
 }

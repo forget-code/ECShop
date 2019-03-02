@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: testyang $
- * $Id: cls_sql_dump.php 15449 2008-12-16 07:21:16Z testyang $
+ * $Author: sunxiaodong $
+ * $Id: cls_sql_dump.php 15327 2008-11-21 09:01:39Z sunxiaodong $
 */
 
 if (!defined('IN_ECS'))
@@ -100,7 +100,7 @@ class cls_sql_dump
 
         if ($this->db->version() >= '4.1')
         {
-            $table_df .= $tmp_sql . " ENGINE=MyISAM DEFAULT CHARSET=" . str_replace('-', '', EC_CHARSET) . ";\r\n";
+            $table_df .= $tmp_sql . " ENGINE=MyISAM DEFAULT charset=utf8;\r\n";
         }
         else
         {
@@ -456,12 +456,14 @@ class cls_sql_dump
      */
     function get_random_name()
     {
-        $str = date('Ymd');
+        $str = '';
 
         for ($i = 0; $i < 6; $i++)
         {
             $str .= chr(mt_rand(97, 122));
         }
+
+        $str .= date('Ymd');
 
         return $str;
     }

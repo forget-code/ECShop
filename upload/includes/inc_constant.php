@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: zblikai $
- * $Id: inc_constant.php 15586 2009-02-10 03:10:10Z zblikai $
+ * $Author: testyang $
+ * $Id: inc_constant.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -54,14 +54,13 @@ define('ERR_OUT_OF_STOCK',          2); // 商品缺货
 define('ERR_NOT_ON_SALE',           3); // 商品已下架
 define('ERR_CANNT_ALONE_SALE',      4); // 商品不能单独销售
 define('ERR_NO_BASIC_GOODS',        5); // 没有基本件
-define('ERR_NEED_SELECT_ATTR',      6); // 需要用户选择属性
+define('ERR_NEED_SELECT_ATTR',      6); //需要用户选择属性
 
 /* 购物车商品类型 */
 define('CART_GENERAL_GOODS',        0); // 普通商品
 define('CART_GROUP_BUY_GOODS',      1); // 团购商品
 define('CART_AUCTION_GOODS',        2); // 拍卖商品
 define('CART_SNATCH_GOODS',         3); // 夺宝奇兵
-define('CART_EXCHANGE_GOODS',       4); // 积分商城
 
 /* 订单状态 */
 define('OS_UNCONFIRMED',            0); // 未确认
@@ -145,7 +144,6 @@ define('GAT_SNATCH',                0);
 define('GAT_GROUP_BUY',             1);
 define('GAT_AUCTION',               2);
 define('GAT_POINT_BUY',             3);
-define('GAT_PACKAGE',               4); // 超值礼包
 
 /* 帐号变动类型 */
 define('ACT_SAVING',                0);     // 帐户冲值
@@ -220,10 +218,5 @@ define('ALIPAY_ID', '2088002052150939');
 /* 添加feed事件到UC的TYPE*/
 define('BUY_GOODS',                 1); //购买商品
 define('COMMENT_GOODS',             2); //添加商品评论
-
-/* 邮件发送用户 */
-define('SEND_LIST', 0);
-define('SEND_USER', 1);
-define('SEND_RANK', 2);
 
 ?>

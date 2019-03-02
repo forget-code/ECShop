@@ -9,8 +9,8 @@
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: sunxiaodong $
- * $Id: attribute.php 15599 2009-02-16 07:44:09Z sunxiaodong $
+ * $Author: testyang $
+ * $Id: attribute.php 15013 2008-10-23 09:31:42Z testyang $
 */
 
 define('IN_ECS', true);
@@ -265,7 +265,6 @@ elseif ($_REQUEST['act'] == 'remove')
     $id = intval($_GET['id']);
 
     $db->query("DELETE FROM " .$ecs->table('attribute'). " WHERE attr_id='$id'");
-    $db->query("DELETE FROM " .$ecs->table('goods_attr'). " WHERE attr_id='$id'");
 
     $url = 'attribute.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
@@ -307,7 +306,7 @@ elseif ($_REQUEST['act'] == 'get_attr_num')
 
 elseif ($_REQUEST['act'] == 'get_attr_groups')
 {
-    check_authz_json('attr_manage');
+    check_authz_json('attribute');
 
     $cat_id = intval($_GET['cat_id']);
     $groups = get_attr_groups($cat_id);
