@@ -12,15 +12,15 @@
  * @author:     liupeng <laupeng@163.com>
  * @version:    v2.1
  * ---------------------------------------------
- * $Author: liupeng $
- * $Date: 2007-10-17 15:20:10 +0800 (星期三, 17 十月 2007) $
- * $Id: searchengine_stats.php 13024 2007-10-17 07:20:10Z liupeng $
+ * $Author: testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: searchengine_stats.php 14080 2008-01-28 11:27:47Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once('../languages/' .$_CFG['lang']. '/admin/statistic.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/statistic.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -105,8 +105,8 @@ if ($_REQUEST['act'] == 'view')
     $smarty->assign('ur_here',      $_LANG['searchengine_stats']);
     $smarty->assign('general_data', $general_xml);
 
-    $searchengines = array('ecshop'  => false, 
-                            'MSLIVE'  => false, 
+    $searchengines = array('ecshop'  => false,
+                            'MSLIVE'  => false,
                             'BAIDU'  => false,
                             'GOOGLE' => false,
                             'GOOGLE CHINA' => false,

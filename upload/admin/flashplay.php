@@ -10,13 +10,13 @@
  * 进行修改、使用和再发布。
  * ==========================================================
  * $Author: testyang $
- * $Date: 2008-01-25 14:39:48 +0800 (星期五, 25 一月 2008) $
- * $Id: flashplay.php 14051 2008-01-25 06:39:48Z testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: flashplay.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 $uri = $ecs->url();
 $allow_suffix = array('gif', 'jpg', 'png', 'jpeg', 'bmp');
 
@@ -66,7 +66,7 @@ elseif($_REQUEST['act']== 'del')
         }
     }
     put_flash_xml($temp);
-    header("Location: flashplay.php?act=list\n");
+    ecs_header("Location: flashplay.php?act=list\n");
     exit;
 }
 elseif ($_REQUEST['act'] == 'add')

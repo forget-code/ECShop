@@ -70,7 +70,29 @@ $ecs = new ECS($db_name, $prefix);
 //$sess = new cls_session($db, $ecs->table('sessions'), 'ECSCP_ID');
 $sess = new cls_session($db, $ecs->table('sessions'), $ecs->table('sessions_data'), 'ECSCP_ID');
 
-$Config['Enabled'] = isset($_SESSION['admin_id']);
+if (!empty($_SESSION['admin_id']))
+{
+    if ($_SESSION['action_list'] == 'all')
+    {
+        $enable = true;
+    }
+    else
+    {
+        if (strpos(',' . $_SESSION['action_list'] . ',', ',goods_manage,') === false && strpos(',' . $_SESSION['action_list'] . ',', ',virualcard,') === false && strpos(',' . $_SESSION['action_list'] . ',', ',article_manage,') === false)
+        {
+            $enable = false;
+        }
+        else
+        {
+            $enable = true;
+        }
+    }
+}
+else
+{
+    $enable = false;
+}
+$Config['Enabled'] = $enable;
 
 // Path to user files relative to the document root.
 $Config['UserFilesPath'] = $root_path . 'images/upload/';
@@ -81,22 +103,23 @@ $Config['UserFilesPath'] = $root_path . 'images/upload/';
 // user files directory. Usefull if you are using a virtual directory, symbolic
 // link or alias. Examples: 'C:\\MySite\\userfiles\\' or '/root/mysite/userfiles/'.
 // Attention: The above 'UserFilesPath' must point to the same directory.
-$Config['UserFilesAbsolutePath'] = '' ;
+$Config['UserFilesAbsolutePath'] = ROOT_PATH . 'images/upload/' ;
+// edit by dolphin @ 2008-2-25
 
 // Due to security issues with Apache modules, it is reccomended to leave the
 // following setting enabled.
 $Config['ForceSingleExtension'] = true ;
 
 // by weberliu @ 2007-3-29
-//$Config['AllowedExtensions']['File']	= array() ;
-//$Config['DeniedExtensions']['File']		= array('html','htm','php','php2','php3','php4','php5','phtml','pwml','inc','asp','aspx','ascx','jsp','cfm','cfc','pl','bat','exe','com','dll','vbs','js','reg','cgi','htaccess','asis') ;
-$Config['AllowedExtensions']['File']	= array('zip','rar','txt','doc','xls','ppt','pdf') ;
-$Config['DeniedExtensions']['File']		= array() ;
+//$Config['AllowedExtensions']['File']    = array() ;
+//$Config['DeniedExtensions']['File']        = array('html','htm','php','php2','php3','php4','php5','phtml','pwml','inc','asp','aspx','ascx','jsp','cfm','cfc','pl','bat','exe','com','dll','vbs','js','reg','cgi','htaccess','asis') ;
+$Config['AllowedExtensions']['File']    = array('zip','rar','txt','doc','xls','ppt','pdf') ;
+$Config['DeniedExtensions']['File']        = array() ;
 
-$Config['AllowedExtensions']['Image']	= array('jpg','gif','jpeg','png') ;
-$Config['DeniedExtensions']['Image']	= array() ;
+$Config['AllowedExtensions']['Image']    = array('jpg','gif','jpeg','png') ;
+$Config['DeniedExtensions']['Image']    = array() ;
 
-$Config['AllowedExtensions']['Flash']	= array('swf','fla') ;
-$Config['DeniedExtensions']['Flash']	= array() ;
+$Config['AllowedExtensions']['Flash']    = array('swf','fla') ;
+$Config['DeniedExtensions']['Flash']    = array() ;
 
 ?>

@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-25 14:12:18 +0800 (星期五, 25 一月 2008) $
- * $Id: tag_manage.php 14050 2008-01-25 06:12:18Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: tag_manage.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* act操作项的初始化 */
 $_REQUEST['act'] = trim($_REQUEST['act']);
@@ -35,6 +35,7 @@ if ($_REQUEST['act'] == 'list')
 
     /* 模板赋值 */
     $smarty->assign('ur_here',      $_LANG['tag_list']);
+    $smarty->assign('action_link', array('href' => 'tag_manage.php?act=add', 'text' => $_LANG['add_tag']));
     $smarty->assign('full_page',    1);
 
     $tag_list = get_tag_list();
@@ -52,18 +53,34 @@ if ($_REQUEST['act'] == 'list')
 }
 
 /*------------------------------------------------------ */
-//-- 编辑
+//-- 添加 ,编辑
 /*------------------------------------------------------ */
 
-elseif($_REQUEST['act'] == 'edit')
+elseif($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
 {
     admin_priv('tag_manage');
 
-    $tag_id = $_GET['id'];
-    $tag = get_tag_info($tag_id);
+    $is_add = $_REQUEST['act'] == 'add';
+    $smarty->assign('insert_or_update', $is_add ? 'insert' : 'update');
 
+    if($is_add)
+    {
+        $tag = array(
+            'tag_id' => 0,
+            'tag_words' => '',
+            'goods_id' => 0,
+            'goods_name' => $_LANG['pls_select_goods']
+        );
+        $smarty->assign('ur_here',      $_LANG['add_tag']);
+    }
+    else
+    {
+        $tag_id = $_GET['id'];
+        $tag = get_tag_info($tag_id);
+
+        $smarty->assign('ur_here',      $_LANG['tag_edit']);
+    }
     $smarty->assign('tag', $tag);
-    $smarty->assign('ur_here',      $_LANG['tag_edit']);
     $smarty->assign('action_link', array('href' => 'tag_manage.php?act=list', 'text' => $_LANG['tag_list']));
 
     assign_query_info();
@@ -74,36 +91,53 @@ elseif($_REQUEST['act'] == 'edit')
 //-- 更新
 /*------------------------------------------------------ */
 
-elseif($_REQUEST['act'] == 'update')
+elseif($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 {
     admin_priv('tag_manage');
+
+    $is_insert = $_REQUEST['act'] == 'insert';
 
     $tag_words = empty($_POST['tag_name']) ? '' : trim($_POST['tag_name']);
     $id = intval($_POST['id']);
     $goods_id = intval($_POST['goods_id']);
+    if ($goods_id <= 0)
+    {
+        sys_msg($_LANG['pls_select_goods']);
+    }
 
-    if (tag_is_only($tag_words, $id))
+    if (!tag_is_only($tag_words, $id, $goods_id))
     {
         sys_msg(sprintf($_LANG['tagword_exist'], $tag_words));
     }
+
+    if($is_insert)
+    {
+        $sql = 'INSERT INTO ' . $ecs->table('tag') . '(tag_id, goods_id, tag_words)' .
+               " VALUES('$id', '$goods_id', '$tag_words')";
+        $db->query($sql);
+
+        admin_log($tag_words, 'add', 'tag');
+
+         /* 清除缓存 */
+        clear_cache_files();
+
+        $link[0]['text'] = $_LANG['back_list'];
+        $link[0]['href'] = 'tag_manage.php?act=list';
+
+        sys_msg($_LANG['tag_add_success'], 0, $link);
+    }
     else
     {
-        if (edit_tag($tag_words, $id, $goods_id))
-        {
-            admin_log($tag_name, 'edit', 'tag');
 
-            /* 清除缓存 */
-            clear_cache_files();
+        edit_tag($tag_words, $id, $goods_id);
 
-            $link[0]['text'] = $_LANG['back_list'];
-            $link[0]['href'] = 'tag_manage.php?act=list';
+        /* 清除缓存 */
+        clear_cache_files();
 
-            sys_msg($_LANG['tag_edit_success'], 0, $link);
-        }
-        else
-        {
-            sys_msg(sprintf($_LANG['tagedit_fail'], $name));
-        }
+        $link[0]['text'] = $_LANG['back_list'];
+        $link[0]['href'] = 'tag_manage.php?act=list';
+
+        sys_msg($_LANG['tag_edit_success'], 0, $link);
     }
 }
 
@@ -136,7 +170,7 @@ elseif ($_REQUEST['act'] == 'search_goods')
 {
     check_authz_json('tag_manage');
 
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
 
     $json   = new JSON;
     $filter = $json->decode($_GET['JSON']);
@@ -191,7 +225,7 @@ elseif ($_REQUEST['act'] == 'remove')
 {
     check_authz_json('tag_manage');
 
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $id = intval($_GET['id']);
@@ -207,7 +241,7 @@ elseif ($_REQUEST['act'] == 'remove')
         admin_log(addslashes($tag_name), 'remove', 'tag_manage');
 
         $url = 'tag_manage.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
-        header("Location: $url\n");
+        ecs_header("Location: $url\n");
         exit;
     }
     else
@@ -227,21 +261,14 @@ elseif($_REQUEST['act'] == "edit_tag_name")
     $name = trim($_POST['val']);
     $id = intval($_POST['id']);
 
-    if (tag_is_only($name, $id))
+    if (!tag_is_only($name, $id))
     {
         make_json_error(sprintf($_LANG['tagword_exist'], $name));
     }
     else
     {
-        if (edit_tag($name, $id))
-        {
-            admin_log($name,'edit','tag');
-            make_json_result(stripslashes($name));
-        }
-        else
-        {
-            make_json_result(sprintf($_LANG['tagedit_fail'], $name));
-        }
+        edit_tag($name, $id);
+        make_json_result(stripslashes($name));
     }
 }
 
@@ -252,16 +279,20 @@ elseif($_REQUEST['act'] == "edit_tag_name")
  * @param $id  标签id
  * @return bool
  */
-function tag_is_only($name, $id)
+function tag_is_only($name, $tag_id, $goods_id = '')
 {
-    $db = $GLOBALS['db'];
-    $sql = "SELECT goods_id FROM ecs_tag WHERE tag_id = '$id'";
-    $row = $db->getRow($sql);
+    if(empty($goods_id))
+    {
+        $db = $GLOBALS['db'];
+        $sql = 'SELECT goods_id FROM ' . $GLOBALS['ecs']->table('tag') . " WHERE tag_id = '$tag_id'";
+        $row = $GLOBALS['db']->getRow($sql);
+        $goods_id = $row['goods_id'];
+    }
 
-    $sql = "SELECT COUNT(*) FROM ecs_tag WHERE tag_words = '$name'" .
-           " AND goods_id = '$row[goods_id]' AND tag_id != '$id'";
+    $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS['ecs']->table('tag') . " WHERE tag_words = '$name'" .
+           " AND goods_id = '$goods_id' AND tag_id != '$tag_id'";
 
-    if($db->getOne($sql) == 0)
+    if($GLOBALS['db']->getOne($sql) > 0)
     {
         return false;
     }
@@ -276,25 +307,20 @@ function tag_is_only($name, $id)
  *
  * @param  $name
  * @param  $id
- * @return bool
+ * @return void
  */
 function edit_tag($name, $id, $goods_id = '')
 {
     $db = $GLOBALS['db'];
-    $sql = "UPDATE ecs_tag SET tag_words = '$name'";
+    $sql = 'UPDATE ' . $GLOBALS['ecs']->table('tag') . " SET tag_words = '$name'";
     if(!empty($goods_id))
     {
         $sql .= ", goods_id = '$goods_id'";
     }
     $sql .= " WHERE tag_id = '$id'";
-    if ($db->query($sql))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    $GLOBALS['db']->query($sql);
+
+    admin_log($name, 'edit', 'tag');
 }
 
 /**
@@ -335,7 +361,7 @@ function get_tag_list()
 
 function get_tag_info($tag_id)
 {
-    $sql = 'SELECT tag_id, tag_words, goods_name, t.goods_id FROM ' . $GLOBALS['ecs']->table('tag') . ' AS t' .
+    $sql = 'SELECT t.tag_id, t.tag_words, t.goods_id, g.goods_name FROM ' . $GLOBALS['ecs']->table('tag') . ' AS t' .
            ' LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . ' AS g ON t.goods_id=g.goods_id' .
            " WHERE tag_id = '$tag_id'";
     $row = $GLOBALS['db']->getRow($sql);

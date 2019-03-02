@@ -16,7 +16,7 @@
 
 define('IN_ECS', true);
 
-require_once('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* 初始化语言变量 */
 $installer_lang = isset($_REQUEST['lang']) ? trim($_REQUEST['lang']) : 'zh_cn';

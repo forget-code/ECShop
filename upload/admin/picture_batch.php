@@ -10,13 +10,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2007-12-25 16:03:38 +0800 (星期二, 25 十二月 2007) $
- * $Id: picture_batch.php 13893 2007-12-25 08:03:38Z fenghl $
+ * $Date: 2008-02-25 17:06:34 +0800 (星期一, 25 二月 2008) $
+ * $Id: picture_batch.php 14186 2008-02-25 09:06:34Z fenghl $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 include_once(ROOT_PATH . 'includes/cls_image.php');
 $image = new cls_image($_CFG['bgcolor']);
 
@@ -225,9 +225,7 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     $dir = dirname(ROOT_PATH . $row['goods_img']) . '/';
                 }
 
-                $image = empty($row['goods_img']) ? $row['original_img'] : $row['goods_img'];
-
-                $image = $GLOBALS['image']->make_thumb(ROOT_PATH . $image, $GLOBALS['_CFG']['image_width'],  $GLOBALS['_CFG']['image_height'], $dir); //先生成缩略图
+                $image = $GLOBALS['image']->make_thumb(ROOT_PATH . $row['original_img'], $GLOBALS['_CFG']['image_width'],  $GLOBALS['_CFG']['image_height'], $dir); //先生成缩略图
 
                 if (!$image)
                 {
@@ -291,9 +289,7 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     $dir = dirname(ROOT_PATH . $row['goods_thumb']) . '/';
                 }
 
-                $image = empty($row['goods_thumb']) ? $row['original_img'] : $row['goods_thumb'];
-
-                $goods_thumb = $GLOBALS['image']->make_thumb(ROOT_PATH . $image, $GLOBALS['_CFG']['thumb_width'], $GLOBALS['_CFG']['thumb_height'], $dir);
+                $goods_thumb = $GLOBALS['image']->make_thumb(ROOT_PATH.$row['original_img'], $GLOBALS['_CFG']['thumb_width'], $GLOBALS['_CFG']['thumb_height'], $dir);
 
                 /* 出错处理 */
                 if (!$goods_thumb)
@@ -339,7 +335,7 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
             $image     = '';
 
             /* 水印 */
-            if ($watermark && file_exists(ROOT_PATH . $row['img_original']) && empty($row['img_url']))
+            if ($watermark && file_exists(ROOT_PATH . $row['img_original']))
             {
                 if (empty($row['img_url']))
                 {
@@ -350,12 +346,10 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     $dir = dirname(ROOT_PATH . $row['img_url']) . '/';
                 }
 
-                $image = empty($row['img_url']) ? $row['img_original'] : $row['img_url'];
-
                 $file_name  = cls_image::unique_name($dir);
-                $file_name .= cls_image::get_filetype($image);
+                $file_name .= cls_image::get_filetype(empty($row['img_url']) ? $row['img_original']: $row['img_url']);
 
-                copy(ROOT_PATH . $image, $dir . $file_name);
+                copy(ROOT_PATH . $row['img_original'], $dir . $file_name);
                 $image = $GLOBALS['image']->add_watermark($dir . $file_name ,'',$GLOBALS['_CFG']['watermark'], $GLOBALS['_CFG']['watermark_place'], $GLOBALS['_CFG']['watermark_alpha']);
                 if (!$image)
                 {
@@ -402,9 +396,7 @@ function process_image($page = 1, $page_size = 100, $type = 0, $thumb= true, $wa
                     $dir = dirname(ROOT_PATH . $row['thumb_url']) . '/';
                 }
 
-                $image = empty($row['thumb_url']) ? $row['img_original'] : $row['thumb_url'];
-
-                $thumb_url = $GLOBALS['image']->make_thumb(ROOT_PATH . $image, $GLOBALS['_CFG']['thumb_width'], $GLOBALS['_CFG']['thumb_height'], $dir);
+                $thumb_url = $GLOBALS['image']->make_thumb(ROOT_PATH . $row['img_original'], $GLOBALS['_CFG']['thumb_width'], $GLOBALS['_CFG']['thumb_height'], $dir);
 
                 if (!$thumb_url)
                 {

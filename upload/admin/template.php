@@ -12,14 +12,14 @@
  * @author:     Weber Liu <weberliu@hotmail.com>
  * @version:    v2.1
  * ---------------------------------------------
- * $Author: wj $
- * $Date: 2007-11-08 14:55:26 +0800 (星期四, 08 十一月 2007) $
- * $Id: template.php 13494 2007-11-08 06:55:26Z wj $
+ * $Author: dolphin $
+ * $Date: 2008-02-22 15:55:39 +0800 (星期五, 22 二月 2008) $
+ * $Id: template.php 14181 2008-02-22 07:55:39Z dolphin $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 require_once('includes/lib_template.php');
 
 /*------------------------------------------------------ */
@@ -111,7 +111,7 @@ if ($_REQUEST['act'] == 'setup')
     $ad_positions = array();
 
     $sql = "SELECT region, library, sort_order, id, number, type FROM ".$ecs->table('template') ." ".
-           "WHERE theme='$template_theme' AND filename='$curr_template' ".
+           "WHERE theme='$template_theme' AND filename='$curr_template' AND remarks='' ".
            "ORDER BY region, sort_order ASC ";
 
     $rc = $db->query($sql);
@@ -449,9 +449,9 @@ if ($_REQUEST['act'] == 'library')
     while ($row = $db->FetchRow($rs))
     {
         /* 取得语言项 */
-        if (file_exists('../plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php'))
+        if (file_exists(ROOT_PATH . 'plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php'))
         {
-            include_once('../plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php');
+            include_once(ROOT_PATH . 'plugins/'.$row['code'].'/languages/common_'.$_CFG['lang'].'.php');
         }
     };
     $curr_template = $_CFG['template'];

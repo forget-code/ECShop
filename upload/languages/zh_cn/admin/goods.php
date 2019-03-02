@@ -10,8 +10,8 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-17 17:23:25 +0800 (星期四, 17 一月 2008) $
- * $Id: goods.php 13992 2008-01-17 09:23:25Z fenghl $
+ * $Date: 2008-02-13 11:29:03 +0800 (星期三, 13 二月 2008) $
+ * $Id: goods.php 14132 2008-02-13 03:29:03Z fenghl $
 */
 
 $_LANG['edit_goods'] = '编辑商品信息';
@@ -212,6 +212,8 @@ $_LANG['js_languages']['market_price_not_number'] = '市场价格不是数字';
 $_LANG['js_languages']['goods_number_not_int'] = '商品库存不是整数';
 $_LANG['js_languages']['warn_number_not_int'] = '库存警告不是整数';
 $_LANG['js_languages']['promote_not_lt'] = '促销开始日期不能大于结束日期';
+$_LANG['js_languages']['promote_start_not_null'] = '促销开始时间不能为空';
+$_LANG['js_languages']['promote_end_not_null'] = '促销结束时间不能为空';
 
 $_LANG['js_languages']['drop_img_confirm'] = '您确实要删除该图片吗？';
 $_LANG['js_languages']['batch_no_on_sale'] = '您确实要将选定的商品下架吗？';

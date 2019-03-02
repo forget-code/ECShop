@@ -11,13 +11,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-25 14:39:48 +0800 (星期五, 25 一月 2008) $
- * $Id: database.php 14051 2008-01-25 06:39:48Z testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: database.php 14079 2008-01-28 10:33:06Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . 'admin/includes/cls_sql_dump.php');
 
 @ini_set('memory_limit', '64M');

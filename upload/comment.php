@@ -9,20 +9,20 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-11-12 09:49:24 +0800 (星期一, 12 十一月 2007) $
- * $Id: comment.php 13543 2007-11-12 01:49:24Z wj $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: comment.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
-require('./includes/cls_json.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/cls_json.php');
 
 if (!isset($_REQUEST['cmt']) && !isset($_REQUEST['act']))
 {
     /* 只有在没有提交评论内容以及没有act的情况下才跳转 */
-    header("Location: ./\n");
+    ecs_header("Location: ./\n");
     exit;
 }
 
@@ -280,6 +280,8 @@ function add_comment($cmt)
     $user_id = empty($_SESSION['user_id']) ? 0 : $_SESSION['user_id'];
     $email = empty($cmt->email) ? $_SESSION['email'] : trim($cmt->email);
     $user_name = empty($cmt->username) ? $_SESSION['user_name'] : trim($cmt->username);
+    $email = htmlspecialchars($email);
+    $user_name = htmlspecialchars($user_name);
 
     /* 保存评论内容 */
     $sql = "INSERT INTO " .$GLOBALS['ecs']->table('comment'). " ".

@@ -10,8 +10,8 @@
  * 进行修改和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-25 16:57:56 +0800 (星期五, 25 一月 2008) $
- * $Id: lib_common.php 14061 2008-01-25 08:57:56Z fenghl $
+ * $Date: 2008-02-21 15:11:58 +0800 (星期四, 21 二月 2008) $
+ * $Id: lib_common.php 14171 2008-02-21 07:11:58Z fenghl $
 */
 
 if (!defined('IN_ECS'))
@@ -782,12 +782,19 @@ function load_config()
         $GLOBALS['_CFG']['ecs_version'] = 'v2.0.5';
     }
 
-    if (empty($arr['help_open']))
+    if (!isset($arr['help_open']))
     {
         $arr['help_open'] = 1; // 帮助菜单默认打开
     }
 
-    if (empty($arr['lang']))
+    if(!isset($arr['show_order_type']))
+    {
+        $arr['show_order_type'] = 0; // 显示方式默认为列表方式
+    }
+
+    //限定语言项
+    $lang_array = array('zh_cn', 'zh_tw', 'en_us');
+    if (empty($arr['lang']) || !in_array($arr['lang'], $lang_array))
     {
         $arr['lang'] = 'zh_cn'; // 默认语言为简体中文
     }

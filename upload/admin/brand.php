@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-17 17:23:25 +0800 (星期四, 17 一月 2008) $
- * $Id: brand.php 13992 2008-01-17 09:23:25Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: brand.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 include_once(ROOT_PATH . 'includes/cls_image.php');
 $image = new cls_image($_CFG['bgcolor']);
 
@@ -287,7 +287,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'brand.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 

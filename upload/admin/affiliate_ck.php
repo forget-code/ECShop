@@ -9,13 +9,13 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ==========================================================
- * $Author: scottye $
- * $Date: 2007-11-13 17:48:33 +0800 (星期二, 13 十一月 2007) $
- * $Id: affiliate_ck.php 13619 2007-11-13 09:48:33Z scottye $
+ * $Author: fenghl $
+ * $Date: 2008-02-28 14:50:19 +0800 (星期四, 28 二月 2008) $
+ * $Id: affiliate_ck.php 14194 2008-02-28 06:50:19Z fenghl $
  */
 
 define('IN_ECS', true);
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 admin_priv('affiliate_ck');
 $timestamp = time();
@@ -134,7 +134,8 @@ elseif ($_REQUEST['act'] == 'separate')
             $affiliate['config']['level_money_all'] /= 100;
         }
         $money = round($affiliate['config']['level_money_all'] * $row['goods_amount'],2);
-        $point = round($affiliate['config']['level_point_all'] * integral_to_give(array('order_id' => $oid, 'extension_code' => '')),0);
+        $integral = integral_to_give(array('order_id' => $oid, 'extension_code' => ''));
+        $point = round($affiliate['config']['level_point_all'] * intval($integral['rank_points']), 0);
 
         if(empty($separate_by))
         {

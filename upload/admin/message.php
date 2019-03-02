@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: arlicle $
- * $Date: 2007-11-12 10:06:24 +0800 (星期一, 12 十一月 2007) $
- * $Id: message.php 13544 2007-11-12 02:06:24Z arlicle $
+ * $Author: fenghl $
+ * $Date: 2008-02-25 10:16:11 +0800 (星期一, 25 二月 2008) $
+ * $Id: message.php 14183 2008-02-25 02:16:11Z fenghl $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* act操作项的初始化 */
 $_REQUEST['act'] = trim($_REQUEST['act']);
@@ -96,7 +96,7 @@ elseif ($_REQUEST['act'] == 'insert')
     if ($rec_arr[0] == 0)
     {
         /* 获取管理员信息 */
-        $result = $db->query('SELECT user_id FROM ' .$ecs->table('admin_user'));
+        $result = $db->query('SELECT user_id FROM ' .$ecs->table('admin_user') . 'WHERE user_id !=' . $_SESSION['admin_id']);
         while ($rows = $db->FetchRow($result))
         {
             $sql = "INSERT INTO " .$ecs->table('admin_message'). " (sender_id, receiver_id, sent_time, " .
@@ -311,7 +311,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'message.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 

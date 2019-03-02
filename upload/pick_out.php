@@ -9,17 +9,26 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-10-23 14:27:19 +0800 (星期二, 23 十月 2007) $
- * $Id: pick_out.php 13125 2007-10-23 06:27:19Z wj $
+ * $Author: testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: pick_out.php 14079 2008-01-28 10:33:06Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 $condition = array();
 $picks = array();
+$_GET['cat_id'] = !empty($_GET['cat_id']) ? intval($_GET['cat_id']) : 0;
+if (!empty($_GET['attr']))
+{
+    foreach($_GET['attr'] as $key => $value)
+    {
+        $key = intval($key);
+        $_GET['attr'][$key] = htmlspecialchars($value);
+    }
+}
 
 if (empty($_GET['cat_id']))
 {

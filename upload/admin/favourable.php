@@ -9,13 +9,13 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2007-12-10 19:24:18 +0800 (星期一, 10 十二月 2007) $
- * $Id: favourable.php 13848 2007-12-10 11:24:18Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: favourable.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 require(ROOT_PATH . 'includes/lib_goods.php');
 
 $exc = new exchange($ecs->table('favourable_activity'), $db, 'act_id', 'act_name');
@@ -27,7 +27,7 @@ $exc = new exchange($ecs->table('favourable_activity'), $db, 'act_id', 'act_name
 if ($_REQUEST['act'] == 'list')
 {
     admin_priv('favourable');
-    
+
     /* 模板赋值 */
     $smarty->assign('full_page',   1);
     $smarty->assign('ur_here',     $_LANG['favourable_list']);
@@ -92,7 +92,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'favourable.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -377,7 +377,7 @@ elseif ($_REQUEST['act'] == 'search')
     /* 检查权限 */
     check_authz_json('favourable');
 
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
 
     $json   = new JSON;
     $filter = $json->decode($_GET['JSON']);

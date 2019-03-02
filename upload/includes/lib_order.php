@@ -10,8 +10,8 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-03 15:38:43 +0800 (星期四, 03 一月 2008) $
- * $Id: lib_order.php 13948 2008-01-03 07:38:43Z fenghl $
+ * $Date: 2008-02-28 14:50:19 +0800 (星期四, 28 二月 2008) $
+ * $Id: lib_order.php 14194 2008-02-28 06:50:19Z fenghl $
  */
 
 if (!defined('IN_ECS'))
@@ -1640,7 +1640,7 @@ function get_total_bonus()
     $amount = floatval($GLOBALS['db']->getOne($sql));
 
     /* 按订单发的红包 */
-    $sql = "SELECT ROUND('$amount' / min_amount) * type_money " .
+    $sql = "SELECT FLOOR('$amount' / min_amount) * type_money " .
             "FROM " . $GLOBALS['ecs']->table('bonus_type') .
             " WHERE send_type = '" . SEND_BY_ORDER . "' " .
             " AND send_start_date <= '$today' " .
@@ -2257,7 +2257,8 @@ function get_give_integral()
                 "AND c.parent_id = 0 " .
                 "AND c.is_gift = 0";
 
-        return intval($GLOBALS['db']->getOne($sql));}
+        return intval($GLOBALS['db']->getOne($sql));
+}
 
 /**
  * 取得某订单应该赠送的积分数
@@ -2271,12 +2272,12 @@ function integral_to_give($order)
     {
         include_once(ROOT_PATH . 'includes/lib_goods.php');
         $group_buy = group_buy_info(intval($order['extension_id']));
-
-        return $group_buy['gift_integral'];
+        
+        return array('custom_points' => $group_buy['gift_integral'], 'rank_points' => $order['goods_amount']);
     }
     else
     {
-        $sql = "SELECT SUM(og.goods_number * IF(g.give_integral > -1, g.give_integral, og.goods_price))" .
+        $sql = "SELECT SUM(og.goods_number * IF(g.give_integral > -1, g.give_integral, og.goods_price)) AS custom_points, SUM(og.goods_number * og.goods_price) AS rank_points " .
                 "FROM " . $GLOBALS['ecs']->table('order_goods') . " AS og, " .
                           $GLOBALS['ecs']->table('goods') . " AS g " .
                 "WHERE og.goods_id = g.goods_id " .
@@ -2285,7 +2286,7 @@ function integral_to_give($order)
                 "AND og.parent_id = 0 " .
                 "AND og.is_gift = 0";
 
-        return intval($GLOBALS['db']->getOne($sql));
+        return $GLOBALS['db']->getRow($sql);
     }
 }
 

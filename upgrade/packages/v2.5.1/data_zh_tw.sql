@@ -1,3 +1,5 @@
+INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES (8, 0, 'email');
+REPLACE INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES (NULL, 5, 'navigator');
 -- 增加拍卖权限
 INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES (NULL, 7, 'auction');
 -- 增加团购权限
@@ -29,7 +31,4 @@ INSERT INTO `ecs_admin_action` (`action_id`, `parent_id`, `action_code`) VALUES 
 UPDATE `ecs_admin_action` SET `parent_id` = 7 WHERE `action_code` = 'topic_manage';
 -- 给shop_config表的上传附件大小增加一个选项
 UPDATE `ecs_shop_config` SET `store_range` = 'default,0,64,128,256,512,1024,2048,4096' WHERE `code` = 'upload_size_limit';
--- 增加商品显示方式的设置
-INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (322, 3, 'show_order_type', 'select', '0,1,2', '', '0', '1');
--- 增加帮助菜单是否打开的设置
-INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES (333, 3, 'help_open', 'select', '0,1', '', '1', '1');
+REPLACE INTO `ecs_mail_templates` (`template_id`, `template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`, `type`) VALUES (NULL, 'remind_of_new_order', 0, '新订单通知', '亲爱的店长，您好：\n   快来看看吧，又有新订单了。订单金额为{$order.order_amount}，收货人是{$order.consignee}，地址是{$order.address}，电话是{$order.tel} {$order.mobile}。\n\n               系统提醒\n               {$send_date}', 0, 'template');

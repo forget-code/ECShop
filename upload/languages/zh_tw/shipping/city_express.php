@@ -15,6 +15,6 @@
 */
 
 $_LANG['city_express']        = '城際快遞';
-$_LANG['express_desc']   = '配送的運費是固定的';
+$_LANG['city_express_desc']   = '配送的運費是固定的';
 $_LANG['basic_fee']      = '基本費用：';
 ?>

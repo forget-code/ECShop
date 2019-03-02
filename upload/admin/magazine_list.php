@@ -9,13 +9,13 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ==========================================================
- * $Author: huangjb $
- * $Date: 2007-11-22 10:42:22 +0800 (星期四, 22 十一月 2007) $
- * $Id: magazine_list.php 13727 2007-11-22 02:42:22Z huangjb $
+ * $Author: testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: magazine_list.php 14079 2008-01-28 10:33:06Z testyang $
  */
 
 define('IN_ECS', true);
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 admin_priv('magazine_list');
 if ($_REQUEST['act'] == 'list')
 {

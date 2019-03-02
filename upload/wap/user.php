@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: bugii $
- * $Date: 2007-09-25 09:33:50 +0800 (星期二, 25 九月 2007) $
- * $Id: user.php 12449 2007-09-25 01:33:50Z bugii $
+ * $Author: testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: user.php 14079 2008-01-28 10:33:06Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 $act = !empty($_GET['act']) ? $_GET['act'] : 'login';
 

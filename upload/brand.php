@@ -10,13 +10,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: brand.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Date: 2008-02-20 10:12:57 +0800 (星期三, 20 二月 2008) $
+ * $Id: brand.php 14156 2008-02-20 02:12:57Z fenghl $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -39,7 +39,7 @@ if (!empty($_REQUEST['brand']))
 if (empty($brand_id))
 {
     /* 如果分类ID为0，则返回首页 */
-    header("Location: ./\n");
+    ecs_header("Location: ./\n");
     exit;
 }
 
@@ -48,33 +48,14 @@ $page = !empty($_REQUEST['page'])  && intval($_REQUEST['page'])  > 0 ? intval($_
 $size = !empty($_CFG['page_size']) && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
 $cate = !empty($_REQUEST['cat'])   && intval($_REQUEST['cat'])   > 0 ? intval($_REQUEST['cat'])   : 0;
 
-/* 排序方式以及类型 */
-$default_display_type = 'list';
+/* 排序、显示方式以及类型 */
+$default_display_type = $_CFG['show_order_type'] == '0' ? 'list' : ($_CFG['show_order_type'] == '1' ? 'grid' : 'text');
 $default_sort_order_method = $_CFG['sort_order_method'] == '0' ? 'DESC' : 'ASC';
-$default_sort_order_type   = '';
+$default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_CFG['sort_order_type'] == '1' ? 'shop_price' : 'last_update');
 
-switch ($_CFG['sort_order_type'])
-{
-    case '0':
-        $default_sort_order_type = 'goods_id';
-        break;
-
-    case '1':
-        $default_sort_order_type = 'shop_price';
-        break;
-
-    case '2':
-        $default_sort_order_type = 'last_update';
-        break;
-
-    default:
-        $default_sort_order_type = 'goods_id';
-        break;
-}
-
-$sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update', ''))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
+$sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
 $order = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
-$display  = (isset($_REQUEST['display'])  && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text', ''))) ? trim($_REQUEST['display'])  : (isset($_SESSION['display']) ? $_SESSION['display'] : $default_display_type);
+$display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_SESSION['display']) ? $_SESSION['display'] : $default_display_type);
 
 $_SESSION['display'] = $display;
 
@@ -91,7 +72,7 @@ if (!$smarty->is_cached('brand.dwt', $cache_id))
 
     if (empty($brand_info))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -306,7 +287,14 @@ function brand_get_goods($brand_id, $cate, $size, $page, $sort, $order)
         }
 
         $arr[$row['goods_id']]['goods_id']      = $row['goods_id'];
-        $arr[$row['goods_id']]['goods_name']    = $row['goods_name'];
+        if($GLOBALS['display'] == 'grid')
+        {
+            $arr[$row['goods_id']]['goods_name']       = $GLOBALS['_CFG']['goods_name_length'] > 0 ? sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
+        }
+        else
+        {
+            $arr[$row['goods_id']]['goods_name']       = $row['goods_name'];
+        }
         $arr[$row['goods_id']]['market_price']  = price_format($row['market_price']);
         $arr[$row['goods_id']]['shop_price']    = price_format($row['shop_price']);
         $arr[$row['goods_id']]['promote_price'] = ($promote_price > 0) ? price_format($promote_price) : '';

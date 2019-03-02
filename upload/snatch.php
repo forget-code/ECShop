@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: snatch.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: snatch.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /*------------------------------------------------------ */
 //-- 如果用没有指定活动id，将页面重定向到即将结束的活动
@@ -34,7 +34,7 @@ if (empty($_REQUEST['id']))
     if ($id)
     {
         $page = build_uri('snatch', array('sid'=>$id));
-        header("Location: $page\n");
+        ecs_header("Location: $page\n");
         exit;
     }
     else
@@ -195,7 +195,7 @@ if ($_REQUEST['act'] == 'buy')
 {
     if (empty($id))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -209,7 +209,7 @@ if ($_REQUEST['act'] == 'buy')
 
     if (empty($snatch))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -217,7 +217,7 @@ if ($_REQUEST['act'] == 'buy')
     if (empty($snatch['is_end']))
     {
         $page = build_uri('snatch', array('sid'=>$id));
-        header("Location: $page\n");
+        ecs_header("Location: $page\n");
         exit;
     }
 
@@ -264,7 +264,7 @@ if ($_REQUEST['act'] == 'buy')
     $_SESSION['extension_id'] = $id;
 
     /* 进入收货人页面 */
-    header("Location: ./flow.php?step=consignee\n");
+    ecs_header("Location: ./flow.php?step=consignee\n");
     exit;
 
 }

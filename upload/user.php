@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: dolphin $
- * $Date: 2008-01-18 16:13:25 +0800 (星期五, 18 一月 2008) $
- * $Id: user.php 13998 2008-01-18 08:13:25Z dolphin $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: user.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* 载入语言文件 */
 require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/user.php');
@@ -192,9 +192,9 @@ elseif ($action == 'validate_email')
 elseif ($action == 'is_registered')
 {
     include_once(ROOT_PATH . 'includes/lib_passport.php');
-    
+
     $username = trim($_GET['username']);
-    
+
     if ($user->check_user($username) || admin_registered($username))
     {
         echo 'false';
@@ -284,7 +284,7 @@ elseif ($action == 'act_login')
         else
         {
             //有链接直接跳转
-            header('Location: ' .$url. "\n");
+            ecs_header('Location: ' .$url. "\n");
             exit;
         }
     }
@@ -663,7 +663,7 @@ elseif ($action == 'cancel_order')
 
     if (cancel_order($order_id, $user_id))
     {
-        header("Location: user.php?act=order_list\n");
+        ecs_header("Location: user.php?act=order_list\n");
         exit;
     }
     else
@@ -763,7 +763,7 @@ elseif ($action == 'drop_consignee')
 
     if (drop_consignee($consignee_id))
     {
-        header("Location: user.php?act=address_list\n");
+        ecs_header("Location: user.php?act=address_list\n");
         exit;
     }
     else
@@ -808,7 +808,7 @@ elseif ($action == 'delete_collection')
         $db->query('DELETE FROM ' .$ecs->table('collect_goods'). " WHERE rec_id='$collection_id' AND user_id ='$user_id'" );
     }
 
-    header("Location: user.php?act=collection_list\n");
+    ecs_header("Location: user.php?act=collection_list\n");
     exit;
 }
 
@@ -820,7 +820,7 @@ elseif ($action == 'add_to_attention')
     {
         $db->query('UPDATE ' .$ecs->table('collect_goods'). "SET is_attention = 1 WHERE rec_id='$rec_id' AND user_id ='$user_id'" );
     }
-    header("Location: user.php?act=collection_list\n");
+    ecs_header("Location: user.php?act=collection_list\n");
     exit;
 }
 /* 取消关注商品 */
@@ -831,7 +831,7 @@ elseif ($action == 'del_attention')
     {
         $db->query('UPDATE ' .$ecs->table('collect_goods'). "SET is_attention = 0 WHERE rec_id='$rec_id' AND user_id ='$user_id'" );
     }
-    header("Location: user.php?act=collection_list\n");
+    ecs_header("Location: user.php?act=collection_list\n");
     exit;
 }
 /* 显示留言列表 */
@@ -939,7 +939,7 @@ elseif ($action == 'act_del_tag')
     $tag_words = isset($_GET['tag_words']) ? trim($_GET['tag_words']) : '';
     delete_tag($tag_words, $user_id);
 
-    header("Location: user.php?act=tag_list\n");
+    ecs_header("Location: user.php?act=tag_list\n");
     exit;
 
 }
@@ -1019,14 +1019,14 @@ elseif ($action == 'act_del_booking')
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
     if ($id == 0 || $user_id == 0)
     {
-        header("Location: user.php?act=booking_list\n");
+        ecs_header("Location: user.php?act=booking_list\n");
         exit;
     }
 
     $result = delete_booking($id, $user_id);
     if ($result)
     {
-        header("Location: user.php?act=booking_list\n");
+        ecs_header("Location: user.php?act=booking_list\n");
         exit;
     }
 }
@@ -1040,7 +1040,7 @@ elseif ($action == 'affirm_received')
 
     if (affirm_received($order_id, $user_id))
     {
-        header("Location: user.php?act=order_list\n");
+        ecs_header("Location: user.php?act=order_list\n");
         exit;
     }
     else
@@ -1270,14 +1270,14 @@ elseif ($action == 'cancel')
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
     if ($id == 0 || $user_id == 0)
     {
-        header("Location: user.php?act=account_log\n");
+        ecs_header("Location: user.php?act=account_log\n");
         exit;
     }
 
     $result = del_user_account($id, $user_id);
     if ($result)
     {
-        header("Location: user.php?act=account_log\n");
+        ecs_header("Location: user.php?act=account_log\n");
         exit;
     }
 }
@@ -1295,14 +1295,14 @@ elseif ($action == 'pay')
 
     if ($surplus_id == 0)
     {
-        header("Location: user.php?act=account_log\n");
+        ecs_header("Location: user.php?act=account_log\n");
         exit;
     }
 
     //如果原来的支付方式已禁用或者已删除, 重新选择支付方式
     if ($payment_id == 0)
     {
-        header("Location: user.php?act=account_deposit&id=".$surplus_id."\n");
+        ecs_header("Location: user.php?act=account_deposit&id=".$surplus_id."\n");
         exit;
     }
 
@@ -1474,7 +1474,7 @@ elseif ($action == 'del_msg')
             $db->query($sql);
         }
     }
-    header("Location: user.php?act=message_list&order_id=$order_id\n");
+    ecs_header("Location: user.php?act=message_list&order_id=$order_id\n");
     exit;
 }
 
@@ -1484,10 +1484,10 @@ elseif ($action == 'del_cmt')
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
     if ($id > 0)
     {
-        $sql = "DELETE FROM " .$ecs->table('comment'). " WHERE comment_id = '$id'";
+        $sql = "DELETE FROM " .$ecs->table('comment'). " WHERE comment_id = '$id' AND user_id = '$user_id'";
         $db->query($sql);
     }
-    header("Location: user.php?act=comment_list\n");
+    ecs_header("Location: user.php?act=comment_list\n");
     exit;
 }
 
@@ -1572,7 +1572,7 @@ elseif ($action == 'act_edit_surplus')
     /* 检查是否登录 */
     if ($_SESSION['user_id'] <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1580,7 +1580,7 @@ elseif ($action == 'act_edit_surplus')
     $order_id = intval($_POST['order_id']);
     if ($order_id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1598,14 +1598,14 @@ elseif ($action == 'act_edit_surplus')
     $order = order_info($order_id);
     if (empty($order))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
     /* 检查订单用户跟当前用户是否一致 */
     if ($_SESSION['user_id'] != $order['user_id'])
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1680,7 +1680,7 @@ elseif ($action == 'act_edit_surplus')
     log_account_change($user['user_id'], (-1) * $surplus, 0, 0, 0, $change_desc);
 
     /* 跳转 */
-    header('Location: user.php?act=order_detail&order_id=' . $order_id . "\n");
+    ecs_header('Location: user.php?act=order_detail&order_id=' . $order_id . "\n");
     exit;
 }
 
@@ -1690,7 +1690,7 @@ elseif ($action == 'act_edit_payment')
     /* 检查是否登录 */
     if ($_SESSION['user_id'] <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1698,7 +1698,7 @@ elseif ($action == 'act_edit_payment')
     $pay_id = intval($_POST['pay_id']);
     if ($pay_id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1706,7 +1706,7 @@ elseif ($action == 'act_edit_payment')
     $payment_info = payment_info($pay_id);
     if (empty($payment_info))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1714,7 +1714,7 @@ elseif ($action == 'act_edit_payment')
     $order_id = intval($_POST['order_id']);
     if ($order_id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -1722,21 +1722,21 @@ elseif ($action == 'act_edit_payment')
     $order = order_info($order_id);
     if (empty($order))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
     /* 检查订单用户跟当前用户是否一致 */
     if ($_SESSION['user_id'] != $order['user_id'])
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
     /* 检查订单是否未付款和未发货 以及订单金额是否为0 和支付id是否为改变*/
     if ($order['pay_status'] != PS_UNPAYED || $order['shipping_status'] != SS_UNSHIPPED || $order['goods_amount'] <= 0 || $order['pay_id'] == $pay_id)
     {
-        header("Location: user.php?act=order_detail&order_id=$order_id\n");
+        ecs_header("Location: user.php?act=order_detail&order_id=$order_id\n");
         exit;
     }
 
@@ -1750,7 +1750,7 @@ elseif ($action == 'act_edit_payment')
     $db->query($sql);
 
     /* 跳转 */
-    header("Location: user.php?act=order_detail&order_id=$order_id\n");
+    ecs_header("Location: user.php?act=order_detail&order_id=$order_id\n");
     exit;
 }
 
@@ -1772,7 +1772,7 @@ elseif ($action == 'save_order_address')
         );
     if (save_order_address($address, $user_id))
     {
-        header('Location: user.php?act=order_detail&order_id=' .$address['order_id']. "\n");
+        ecs_header('Location: user.php?act=order_detail&order_id=' .$address['order_id']. "\n");
         exit;
     }
     else
@@ -1994,7 +1994,7 @@ elseif ($action == 'affiliate')
 elseif ($action =='email_list')
 {
     $job = $_GET['job'];
-    
+
     if($job == 'add' || $job == 'del')
     {
         if(isset($_SESSION['last_order_query']))
@@ -2008,7 +2008,7 @@ elseif ($action =='email_list')
     }
 
     $email = trim($_GET['email']);
-    
+
     if (!is_email($email))
     {
         $info = sprintf($_LANG['email_invalid'], $email);
@@ -2188,7 +2188,8 @@ else if ($action == 'track_packages')
 }
 else if ($action == 'order_query')
 {
-    $order_sn = empty($_GET['order_sn']) ? '' : trim(substr($_GET['order_sn'], 1));
+    $_GET['order_sn'] = trim(substr($_GET['order_sn'], 1));
+    $order_sn = empty($_GET['order_sn']) ? '' : addslashes($_GET['order_sn']);
     include_once(ROOT_PATH .'includes/cls_json.php');
     $json = new JSON();
 

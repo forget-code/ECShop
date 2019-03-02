@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: luhengqi $
- * $Date: 2007-10-24 16:29:30 +0800 (星期三, 24 十月 2007) $
- * $Id: user_msg.php 13155 2007-10-24 08:29:30Z luhengqi $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: user_msg.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /*初始化数据交换对象 */
 $exc = new exchange($ecs->table("feedback"), $db, 'msg_id', 'msg_title');
@@ -58,7 +58,7 @@ if ($_REQUEST['act']=='insert')
 
     $db->query($sql);
 
-    header("Location: user_msg.php?act=add&order_id=$_POST[order_id]&user_id=$_POST[user_id]\n");
+    ecs_header("Location: user_msg.php?act=add&order_id=$_POST[order_id]&user_id=$_POST[user_id]\n");
     exit;
 }
 
@@ -84,7 +84,7 @@ if ($_REQUEST['act'] == 'remove_msg')
         }
     }
 
-    header("Location: user_msg.php?act=add&order_id=$_GET[order_id]&user_id=$_GET[user_id]\n");
+    ecs_header("Location: user_msg.php?act=add&order_id=$_GET[order_id]&user_id=$_GET[user_id]\n");
     exit;
 }
 
@@ -149,7 +149,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
         admin_log(addslashes($msg_title), 'remove', 'message');
         $url = 'user_msg.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
-        header("Location: $url\n");
+        ecs_header("Location: $url\n");
         exit;
     }
     else
@@ -185,7 +185,7 @@ elseif ($_REQUEST['act']=='action')
                     "'".$_SESSION['admin_name']."', '".$_POST['user_email']."', ".
                     "'".$_REQUEST['msg_id']."', '".$_POST['msg_content']."') ";
         $db->query($sql);
-        header("Location: ?act=view&id=".$_REQUEST['msg_id']);
+        ecs_header("Location: ?act=view&id=".$_REQUEST['msg_id']);
         exit;
 
     }
@@ -193,7 +193,7 @@ elseif ($_REQUEST['act']=='action')
     {
         $sql = "UPDATE ".$ecs->table('feedback')." SET user_email = '".$_POST['user_email']."', msg_content='".$_POST['msg_content']."', msg_time = '".gmtime()."' WHERE msg_id = '".$_REQUEST['parent_id']."'";
         $db->query($sql);
-        header("Location: ?act=view&id=".$_REQUEST['msg_id']."\n");
+        ecs_header("Location: ?act=view&id=".$_REQUEST['msg_id']."\n");
         exit;
     }
 }
@@ -213,7 +213,7 @@ elseif ($_REQUEST['act'] == 'drop_file')
     /* 更新数据库 */
     $db->query("UPDATE ".$ecs->table('feedback')." SET message_img = '' WHERE msg_id = '$_GET[id]'");
 
-    header("Location: user_msg.php?act=view&amp;id=".$_GET['id']."\n");
+    ecs_header("Location: user_msg.php?act=view&amp;id=".$_GET['id']."\n");
     exit;
 }
 

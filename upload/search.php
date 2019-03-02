@@ -9,9 +9,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-01-22 10:05:25 +0800 (星期二, 22 一月 2008) $
- * $Id: search.php 14032 2008-01-22 02:05:25Z testyang $
+ * $Author: paulgao $
+ * $Date: 2008-02-11 23:46:28 +0800 (星期一, 11 二月 2008) $
+ * $Id: search.php 14129 2008-02-11 15:46:28Z paulgao $
 */
 
 define('IN_ECS', true);
@@ -21,7 +21,7 @@ if (empty($_GET['encode']))
     $string = array_merge($_GET, $_POST);
     if (get_magic_quotes_gpc())
     {
-        require('./includes/lib_common.php');
+        require(dirname(__FILE__) . '/includes/lib_common.php');
 
         $string = stripslashes_deep($string);
     }
@@ -29,6 +29,7 @@ if (empty($_GET['encode']))
     $string = str_replace('+', '%2b', base64_encode(serialize($string)));
 
     header("Location: search.php?encode=$string\n");
+
     exit;
 }
 else
@@ -63,7 +64,7 @@ else
     }
 }
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 $_REQUEST = array_merge($_REQUEST, addslashes_deep($string));
 

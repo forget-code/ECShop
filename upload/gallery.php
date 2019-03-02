@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-09-13 16:15:00 +0800 (星期四, 13 九月 2007) $
- * $Id: gallery.php 12056 2007-09-13 08:15:00Z weberliu $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: gallery.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* 参数 */
 $_REQUEST['id']  = isset($_REQUEST['id'])  ? intval($_REQUEST['id'])  : 0; // 商品编号
@@ -29,7 +29,7 @@ $goods_name = $db->getOne($sql);
 /* 如果该商品不存在，返回首页 */
 if ($goods_name === false)
 {
-    header("Location: ./\n");
+    ecs_header("Location: ./\n");
 
     exit;
 }
@@ -44,7 +44,7 @@ $img_count = count($img_list);
 if ($img_count == 0)
 {
     /* 如果没有图片，返回商品详情页 */
-    header('Location: goods.php?id=' . $_REQUEST['id'] . "\n");
+    ecs_header('Location: goods.php?id=' . $_REQUEST['id'] . "\n");
     exit;
 }
 else

@@ -9,9 +9,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-18 20:26:58 +0800 (星期五, 18 一月 2008) $
- * $Id: alipay.php 13999 2008-01-18 12:26:58Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-01-31 10:30:46 +0800 (星期四, 31 一月 2008) $
+ * $Id: alipay.php 14096 2008-01-31 02:30:46Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -57,6 +57,8 @@ if (isset($set_modules) && $set_modules == TRUE)
     /* 配置信息 */
     $modules[$i]['config']  = array(
         array('name' => 'alipay_account',           'type' => 'text',   'value' => ''),
+        array('name' => 'alipay_key',               'type' => 'text',   'value' => ''),
+        array('name' => 'alipay_partner',           'type' => 'text',   'value' => ''),
         array('name' => 'alipay_real_method',       'type' => 'select', 'value' => '0'),
         array('name' => 'alipay_virtual_method',    'type' => 'select', 'value' => '0'),
         array('name' => 'is_instant',               'type' => 'select', 'value' => '0')
@@ -132,8 +134,8 @@ class alipay
 
         $parameter = array(
             'service'           => $service,
-            //'partner'           => $payment['alipay_partner'],
-            'partner'           => ALIPAY_ID,
+            'partner'           => $payment['alipay_partner'],
+            //'partner'           => ALIPAY_ID,
             '_input_charset'    => 'utf-8',
             'return_url'        => return_url(basename(__FILE__, '.php')),
             /* 业务参数 */
@@ -163,8 +165,8 @@ class alipay
         }
 
         $param = substr($param, 0, -1);
-        //$sign  = substr($sign, 0, -1). $payment['alipay_key'];
-        $sign  = substr($sign, 0, -1). ALIPAY_AUTH;
+        $sign  = substr($sign, 0, -1). $payment['alipay_key'];
+        //$sign  = substr($sign, 0, -1). ALIPAY_AUTH;
 
         $button = '<div style="text-align:center"><input type="button" onclick="window.open(\'https://www.alipay.com/cooperate/gateway.do?'.$param. '&sign='.md5($sign).'&sign_type=MD5\')" value="' .$GLOBALS['_LANG']['pay_button']. '" /></div>';
 
@@ -200,8 +202,8 @@ class alipay
             }
         }
 
-        //$sign = substr($sign, 0, -1) . $payment['alipay_key'];
-        $sign = substr($sign, 0, -1) . ALIPAY_AUTH;
+        $sign = substr($sign, 0, -1) . $payment['alipay_key'];
+        //$sign = substr($sign, 0, -1) . ALIPAY_AUTH;
         if (md5($sign) != $_GET['sign'])
         {
             return false;

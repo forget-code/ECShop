@@ -9,16 +9,16 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: hackfan $
- * $Date: 2007-10-12 10:00:20 +0800 (星期五, 12 十月 2007) $
- * $Id: guest_stats.php 12844 2007-10-12 02:00:20Z hackfan $
+ * $Author: testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: guest_stats.php 14080 2008-01-28 11:27:47Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once('../includes/lib_order.php');
-require_once('../languages/' .$_CFG['lang']. '/admin/statistic.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'includes/lib_order.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/statistic.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -43,7 +43,7 @@ if ($_REQUEST['act'] == 'list')
     $sql = "SELECT COUNT(*) FROM " . $ecs->table("users");
     $res = $db->getCol($sql);
     $user_num   = $res[0];
-   
+
 
     /* 计算订单各种费用之和的语句 */
     $total_fee = " SUM(" . order_amount_field() . ") AS turnover ";
@@ -78,19 +78,19 @@ if ($_REQUEST['act'] == 'list')
 
         header("Content-type: application/vnd.ms-excel; charset=GB2312");
         header("Content-Disposition: attachment; filename=$filename.xls");
-        
+
         /* 生成会员购买率 */
         $data  = $_LANG['percent_buy_member'] . "\t\n";
-        $data .= $_LANG['member_count'] . "\t" . $_LANG['order_member_count'] . "\t" . 
+        $data .= $_LANG['member_count'] . "\t" . $_LANG['order_member_count'] . "\t" .
                 $_LANG['member_order_count'] . "\t" . $_LANG['percent_buy_member'] . "\n";
 
-        $data .= $user_num . "\t" . $have_order_usernum . "\t" . 
+        $data .= $user_num . "\t" . $have_order_usernum . "\t" .
                 $user_all_order['order_num'] . "\t" . sprintf("%0.2f", ($user_num > 0 ? $have_order_usernum / $user_num : 0) * 100) . "\n\n";
 
         /* 每会员平均订单数及购物额 */
         $data .= $_LANG['order_turnover_peruser'] . "\t\n";
 
-        $data .= $_LANG['member_sum'] . "\t" . $_LANG['average_member_order'] . "\t" . 
+        $data .= $_LANG['member_sum'] . "\t" . $_LANG['average_member_order'] . "\t" .
                 $_LANG['member_order_sum'] . "\n";
 
         $ave_user_ordernum = $user_num > 0 ? sprintf("%0.2f", $user_all_order['order_num'] / $user_num) : 0;
@@ -100,11 +100,11 @@ if ($_REQUEST['act'] == 'list')
 
         /* 每会员平均订单数及购物额 */
         $data .= $_LANG['order_turnover_percus'] . "\t\n";
-        $data .= $_LANG['guest_member_orderamount'] . "\t" . $_LANG['guest_member_ordercount'] . "\t" . 
+        $data .= $_LANG['guest_member_orderamount'] . "\t" . $_LANG['guest_member_ordercount'] . "\t" .
                 $_LANG['guest_order_sum'] . "\n";
 
         $order_num = $guest_all_order['order_num'] > 0 ? price_format($guest_all_order['turnover'] / $guest_all_order['order_num']) : 0;
-        $data .= price_format($guest_all_order['turnover']) . "\t" . $guest_all_order['order_num'] . "\t" . 
+        $data .= price_format($guest_all_order['turnover']) . "\t" . $guest_all_order['order_num'] . "\t" .
                 $order_num;
 
         echo ecs_iconv('UTF8', 'GB2312', $data) . "\t";

@@ -10,14 +10,14 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-12 16:35:53 +0800 (星期六, 12 一月 2008) $
- * $Id: flow.php 13975 2008-01-12 08:35:53Z fenghl $
+ * $Date: 2008-02-28 14:50:19 +0800 (星期四, 28 二月 2008) $
+ * $Id: flow.php 14194 2008-02-28 06:50:19Z fenghl $
  */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
-require('./includes/lib_order.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/lib_order.php');
 
 /* 载入语言文件 */
 require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/shopping_flow.php');
@@ -57,7 +57,7 @@ if ($_REQUEST['step'] == 'add_to_cart')
     {
         if (!is_numeric($_REQUEST['goods_id']) || intval($_REQUEST['goods_id']) <= 0)
         {
-            header("location:./\n");
+            ecs_header("Location:./\n");
         }
         $goods_id = intval($_REQUEST['goods_id']);
         exit;
@@ -140,7 +140,7 @@ elseif ($_REQUEST['step'] == 'link_buy')
     {
         addto_cart($goods_id);
     }
-    header("location:./flow.php\n");
+    ecs_header("Location:./flow.php\n");
     exit;
 }
 elseif ($_REQUEST['step'] == 'login')
@@ -203,7 +203,7 @@ elseif ($_REQUEST['step'] == 'login')
             {
                 update_user_info();  //更新用户信息
                 recalculate_price(); // 重新计算购物车中的商品价格
-                header("Location: flow.php?step=checkout\n");
+                ecs_header("Location: flow.php?step=checkout\n");
                 exit;
             }
             else
@@ -234,7 +234,7 @@ elseif ($_REQUEST['step'] == 'login')
             if (register(trim($_POST['username']), trim($_POST['password']), trim($_POST['email'])))
             {
                 /* 用户注册成功 */
-                header("Location: flow.php?step=consignee\n");
+                ecs_header("Location: flow.php?step=consignee\n");
                 exit;
             }
             else
@@ -353,7 +353,7 @@ elseif ($_REQUEST['step'] == 'consignee')
         /* 保存到session */
         $_SESSION['flow_consignee'] = stripslashes_deep($consignee);
 
-        header("Location: flow.php?step=checkout\n");
+        ecs_header("Location: flow.php?step=checkout\n");
         exit;
     }
 }
@@ -368,7 +368,7 @@ elseif ($_REQUEST['step'] == 'drop_consignee')
 
     if (drop_consignee($consignee_id))
     {
-        header("Location: flow.php?step=consignee\n");
+        ecs_header("Location: flow.php?step=consignee\n");
         exit;
     }
     else
@@ -409,7 +409,7 @@ elseif ($_REQUEST['step'] == 'checkout')
     if (empty($_SESSION['direct_shopping']) && $_SESSION['user_id'] == 0)
     {
         /* 用户没有登录且没有选定匿名购物，转向到登录页面 */
-        header("Location: flow.php?step=login\n");
+        ecs_header("Location: flow.php?step=login\n");
         exit;
     }
 
@@ -419,7 +419,7 @@ elseif ($_REQUEST['step'] == 'checkout')
     if (!check_consignee_info($consignee, $flow_type))
     {
         /* 如果不完整则转向到收货人信息填写界面 */
-        header("Location: flow.php?step=consignee\n");
+        ecs_header("Location: flow.php?step=consignee\n");
         exit;
     }
 
@@ -1263,7 +1263,7 @@ elseif ($_REQUEST['step'] == 'done')
     if (empty($_SESSION['direct_shopping']) && $_SESSION['user_id'] == 0)
     {
         /* 用户没有登录且没有选定匿名购物，转向到登录页面 */
-        header("Location: flow.php?step=login\n");
+        ecs_header("Location: flow.php?step=login\n");
         exit;
     }
 
@@ -1273,26 +1273,31 @@ elseif ($_REQUEST['step'] == 'done')
     if (!check_consignee_info($consignee, $flow_type))
     {
         /* 如果不完整则转向到收货人信息填写界面 */
-        header("Location: flow.php?step=consignee\n");
+        ecs_header("Location: flow.php?step=consignee\n");
         exit;
     }
 
     $_POST['how_oos'] = isset($_POST['how_oos']) ? intval($_POST['how_oos']) : 0;
+    $_POST['card_message'] = isset($_POST['card_message']) ? htmlspecialchars($_POST['card_message']) : '';
+    $_POST['inv_type'] = !empty($_POST['inv_type']) ? htmlspecialchars($_POST['inv_type']) : '';
+    $_POST['inv_payee'] = isset($_POST['inv_payee']) ? htmlspecialchars($_POST['inv_payee']) : '';
+    $_POST['inv_content'] = isset($_POST['inv_content']) ? htmlspecialchars($_POST['inv_content']) : '';
+    $_POST['postscript'] = isset($_POST['postscript']) ? htmlspecialchars($_POST['postscript']) : '';
 
     $order = array(
         'shipping_id'     => intval($_POST['shipping']),
         'pay_id'          => intval($_POST['payment']),
         'pack_id'         => isset($_POST['pack']) ? intval($_POST['pack']) : 0,
         'card_id'         => isset($_POST['card']) ? intval($_POST['card']) : 0,
-        'card_message'    => isset($_POST['card_message']) ? trim($_POST['card_message']) : '',
+        'card_message'    => trim($_POST['card_message']),
         'surplus'         => isset($_POST['surplus']) ? floatval($_POST['surplus']) : 0.00,
         'integral'        => isset($_POST['integral']) ? intval($_POST['integral']) : 0,
         'bonus_id'        => isset($_POST['bonus']) ? intval($_POST['bonus']) : 0,
         'need_inv'        => empty($_POST['need_inv']) ? 0 : 1,
-        'inv_type'        => empty($_POST['inv_type']) ? '' : $_POST['inv_type'],
-        'inv_payee'       => isset($_POST['inv_payee']) ? trim($_POST['inv_payee']) : '',
-        'inv_content'     => isset($_POST['inv_content']) ? $_POST['inv_content'] : '',
-        'postscript'      => isset($_POST['postscript']) ? trim($_POST['postscript']) : '',
+        'inv_type'        => $_POST['inv_type'],
+        'inv_payee'       => trim($_POST['inv_payee']),
+        'inv_content'     => $_POST['inv_content'],
+        'postscript'      => trim($_POST['postscript']),
         'how_oos'         => isset($_LANG['oos'][$_POST['how_oos']]) ? addslashes($_LANG['oos'][$_POST['how_oos']]) : '',
         'need_insure'     => isset($_POST['need_insure']) ? intval($_POST['need_insure']) : 0,
         'user_id'         => $_SESSION['user_id'],
@@ -1424,7 +1429,7 @@ elseif ($_REQUEST['step'] == 'done')
         $pack               = pack_info($order['pack_id']);
         $order['pack_name'] = addslashes($pack['pack_name']);
     }
-    $order['pack_fee']      = $total['pack_fee'];
+    $order['pack_fee'] = $total['pack_fee'];
 
     /* 祝福贺卡 */
     if ($order['card_id'] > 0)
@@ -1439,7 +1444,12 @@ elseif ($_REQUEST['step'] == 'done')
     /* 如果全部使用余额支付，检查余额是否足够 */
     if ($payment['pay_code'] == 'balance' && $order['order_amount'] > 0)
     {
-        if ($order['order_amount'] > $user_info['user_money'] + $user_info['credit_line'])
+        if($order['surplus'] >0) //余额支付里如果输入了一个金额
+        {
+            $order['order_amount'] = $order['order_amount'] + $order['surplus'];
+            $order['surplus'] = 0;
+        }
+        if ($order['order_amount'] > ($user_info['user_money'] + $user_info['credit_line']))
         {
             show_message($_LANG['balance_not_enough']);
         }
@@ -1604,7 +1614,7 @@ elseif ($_REQUEST['step'] == 'done')
 
                         /* 计算并发放积分 */
                         $integral = integral_to_give($order);
-                        log_account_change($order['user_id'], 0, 0, $integral, $integral, sprintf($_LANG['order_gift_integral'], $order['order_sn']));
+                        log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($_LANG['order_gift_integral'], $order['order_sn']));
 
                         /* 发放红包 */
                         send_order_bonus($order['order_id']);
@@ -1673,7 +1683,7 @@ elseif ($_REQUEST['step'] == 'drop_goods')
     $rec_id = intval($_GET['id']);
     flow_drop_cart_goods($rec_id);
 
-    header("Location: flow.php\n");
+    ecs_header("Location: flow.php\n");
     exit;
 }
 
@@ -1749,7 +1759,7 @@ elseif ($_REQUEST['step'] == 'add_favourable')
     }
 
     /* 刷新购物车 */
-    header("Location: flow.php\n");
+    ecs_header("Location: flow.php\n");
     exit;
 }
 elseif ($_REQUEST['step'] == 'clear')
@@ -1757,7 +1767,7 @@ elseif ($_REQUEST['step'] == 'clear')
     $sql = "DELETE FROM " . $ecs->table('cart') . " WHERE session_id='" . SESS_ID . "'";
     $db->query($sql);
 
-    header("Location:./\n");
+    ecs_header("Location:./\n");
 }
 elseif ($_REQUEST['step'] == 'drop_to_collect')
 {
@@ -1775,7 +1785,7 @@ elseif ($_REQUEST['step'] == 'drop_to_collect')
         }
         flow_drop_cart_goods($rec_id);
     }
-    header("Location: flow.php\n");
+    ecs_header("Location: flow.php\n");
     exit;
 }
 
@@ -1802,7 +1812,7 @@ else
     /* 如果是一步购物，跳到结算中心 */
     if ($_CFG['one_step_buy'] == '1')
     {
-        header("Location: flow.php?step=checkout\n");
+        ecs_header("Location: flow.php?step=checkout\n");
         exit;
     }
 

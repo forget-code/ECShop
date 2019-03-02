@@ -1,4 +1,4 @@
-/* $Id: listtable.js 12570 2007-09-28 06:51:29Z hackfan $ */
+/* $Id: listtable.js 14139 2008-02-15 03:22:13Z fenghl $ */
 if (typeof Ajax != 'object')
 {
   alert('Ajax object doesn\'t exists.');
@@ -270,7 +270,7 @@ listTable.compileFilter = function()
   var args = '';
   for (var i in this.filter)
   {
-    if (typeof(this.filter[i]) != "function" && !Utils.isEmpty(this.filter[i]))
+    if (typeof(this.filter[i]) != "function" && typeof(this.filter[i]) != "undefined")
     {
       args += "&" + i + "=" + encodeURIComponent(this.filter[i]);
     }

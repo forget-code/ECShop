@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-10-30 11:35:58 +0800 (星期二, 30 十月 2007) $
- * $Id: user_account.php 13287 2007-10-30 03:35:58Z wj $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: user_account.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -269,7 +269,7 @@ elseif ($_REQUEST['act'] == 'check')
     /* 如果参数不合法，返回 */
     if ($id == 0)
     {
-        header("Location: user_account.php?act=list\n");
+        ecs_header("Location: user_account.php?act=list\n");
         exit;
     }
 
@@ -329,7 +329,7 @@ elseif ($_REQUEST['act'] == 'action')
     /* 如果参数不合法，返回 */
     if ($id == 0 || empty($admin_note))
     {
-        header("Location: user_account.php?act=list\n");
+        ecs_header("Location: user_account.php?act=list\n");
         exit;
     }
 
@@ -422,7 +422,7 @@ elseif ($_REQUEST['act'] == 'remove')
     {
        admin_log(addslashes($user_name), 'remove', 'user_surplus');
        $url = 'user_account.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
-       header("Location: $url\n");
+       ecs_header("Location: $url\n");
        exit;
     }
     else
@@ -491,7 +491,7 @@ function account_list()
         $filter['is_paid'] = isset($_REQUEST['is_paid']) ? intval($_REQUEST['is_paid']) : -1;
         $filter['sort_by'] = empty($_REQUEST['sort_by']) ? 'add_time' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
-    
+
         $where = " WHERE 1 ";
         if ($filter['user_id'] > 0)
         {
@@ -513,7 +513,7 @@ function account_list()
         {
             $where .= " AND ua.is_paid = '$filter[is_paid]' ";
         }
-    
+
         $where .= " AND ua.user_id = u.user_id ";
         if ($filter['keywords'])
         {
@@ -524,10 +524,10 @@ function account_list()
         $sql = "SELECT COUNT(*) FROM " .$GLOBALS['ecs']->table('user_account'). " AS ua, ".
                    $GLOBALS['ecs']->table('users') . " AS u " . $where;
         $filter['record_count'] = $GLOBALS['db']->getOne($sql);
-    
+
         /* 分页大小 */
         $filter = page_and_size($filter);
-    
+
         /* 查询数据 */
         $sql  = 'SELECT ua.*, u.user_name FROM ' .
             $GLOBALS['ecs']->table('user_account'). ' AS ua, ' .

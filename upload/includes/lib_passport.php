@@ -9,9 +9,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: weberliu $
- * $Date: 2007-11-08 18:12:17 +0800 (星期四, 08 十一月 2007) $
- * $Id: lib_passport.php 13507 2007-11-08 10:12:17Z weberliu $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: lib_passport.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -133,12 +133,22 @@ function register($username, $password, $email, $other = array())
             }
         }
 
+        //定义other合法的变量数组
+        $other_key_array = array('msn', 'qq', 'office_phone', 'home_phone', 'mobile_phone');
         $update_data['reg_time'] = local_strtotime(local_date('Y-m-d H:i:s'));
         if ($other)
         {
             foreach ($other as $key=>$val)
             {
-                $other[$key] =  htmlentities($val); //防止用户输入javascript代码
+                //删除非法key值
+                if (!in_array($key, $other_key_array))
+                {
+                    unset($other[$key]);
+                }
+                else
+                {
+                    $other[$key] =  htmlentities($val); //防止用户输入javascript代码
+                }
             }
             $update_data = array_merge($update_data, $other);
         }
@@ -204,7 +214,7 @@ function check_userinfo($user_name, $email)
 {
     if (empty($user_name) || empty($email))
     {
-        header("Location: user.php?act=get_password\n");
+        ecs_header("Location: user.php?act=get_password\n");
 
         exit;
     }
@@ -236,7 +246,7 @@ function send_pwd_email($uid, $user_name, $email, $code)
 {
     if (empty($uid) || empty($user_name) || empty($email) || empty($code))
     {
-        header("Location: user.php?act=get_password\n");
+        ecs_header("Location: user.php?act=get_password\n");
 
         exit;
     }

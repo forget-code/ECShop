@@ -9,13 +9,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-17 17:24:10 +0800 (星期四, 17 一月 2008) $
- * $Id: goods_batch.php 13993 2008-01-17 09:24:10Z testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: goods_batch.php 14079 2008-01-28 10:33:06Z testyang $
  */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 require('includes/lib_goods.php');
 
 /*------------------------------------------------------ */

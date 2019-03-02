@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-11-20 11:46:59 +0800 (星期二, 20 十一月 2007) $
- * $Id: snatch.php 13693 2007-11-20 03:46:59Z paulgao $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: snatch.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 $exc = new exchange($ecs->table("goods_activity"), $db, 'act_id', 'act_name');
 
 /*------------------------------------------------------ */
@@ -185,7 +185,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'snatch.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -325,7 +325,7 @@ elseif ($_REQUEST['act'] == 'query_bid')
 
 elseif ($_REQUEST['act'] == 'search_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $filters = $json->decode($_GET['JSON']);

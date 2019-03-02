@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: scottye $
- * $Date: 2007-11-06 16:01:11 +0800 (星期二, 06 十一月 2007) $
- * $Id: convert.php 13458 2007-11-06 08:01:11Z scottye $
+ * $Author: testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: convert.php 14080 2008-01-28 11:27:47Z testyang $
  */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /*------------------------------------------------------ */
 //-- 转换程序主页面
@@ -149,7 +149,7 @@ elseif ($_REQUEST['act'] == 'check')
     $_SESSION['convert_config'] = $config;
 
     /* 包含插件语言文件 */
-    include_once('../languages/' . $_CFG['lang'] . '/convert/' . $config->code . '.php');
+    include_once(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/convert/' . $config->code . '.php');
 
     /* 取得第一步操作 */
     $step = $convert->next_step('');

@@ -10,12 +10,12 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2007-12-25 11:54:30 +0800 (星期二, 25 十二月 2007) $
- * $Id: ebao_commend.php 13892 2007-12-25 03:54:30Z testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: ebao_commend.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 require('includes/lib_goods.php');
 
 if ($_REQUEST['act'] == 'list')
@@ -36,11 +36,11 @@ if ($_REQUEST['act'] == 'list')
 }
 elseif ($_REQUEST['act'] == 'add')
 {
-    
+
 }
 elseif ($_REQUEST['act'] == 'select')
 {
-    
+
     /* 取得分类列表 */
     $smarty->assign('cat_list', cat_list());
 
@@ -59,15 +59,15 @@ elseif ($_REQUEST['act'] == 'insert')
 {
     $url = 'ebao_commend.php?act=list';
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
 }
 elseif ($_REQUEST['act'] == 'remove')
 {
-    
+
 }
 elseif ($_REQUEST['edit_name'] && $_REQUEST['name'])
 {
-    
+
 }
 elseif ($_REQUEST['act'] == 'get_goods')
 {

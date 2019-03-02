@@ -10,13 +10,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-20 15:16:13 +0800 (星期日, 20 一月 2008) $
- * $Id: payment.php 14002 2008-01-20 07:16:13Z fenghl $
+ * $Date: 2008-01-31 11:28:42 +0800 (星期四, 31 一月 2008) $
+ * $Id: payment.php 14098 2008-01-31 03:28:42Z fenghl $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 $exc = new exchange($ecs->table('payment'), $db, 'pay_code', 'pay_name');
 

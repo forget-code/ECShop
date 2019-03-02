@@ -9,13 +9,13 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ==========================================================
- * $Author: dolphin $
- * $Date: 2008-01-21 16:19:07 +0800 (星期一, 21 一月 2008) $
- * $Id: navigator.php 14017 2008-01-21 08:19:07Z dolphin $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: navigator.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 admin_priv('navigator');
 
@@ -218,7 +218,7 @@ elseif ($_REQUEST['act'] == 'del')
     $sql = " DELETE FROM " . $GLOBALS['ecs']->table('nav') . " WHERE id='$id' LIMIT 1";
     $db->query($sql);
     clear_cache_files();
-    header("Location: navigator.php?act=list\n");
+    ecs_header("Location: navigator.php?act=list\n");
     exit;
 }
 

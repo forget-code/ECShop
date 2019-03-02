@@ -9,15 +9,15 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: hackfan $
- * $Date: 2007-10-15 13:58:43 +0800 (星期一, 15 十月 2007) $
- * $Id: respond.php 12919 2007-10-15 05:58:43Z hackfan $
+ * $Author: zhuwenyuan $
+ * $Date: 2008-02-27 17:50:52 +0800 (星期三, 27 二月 2008) $
+ * $Id: respond.php 14192 2008-02-27 09:50:52Z zhuwenyuan $
  */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
-require('./includes/lib_payment.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require(ROOT_PATH . 'includes/lib_payment.php');
 
 /* 支付方式代码 */
 $pay_code = !empty($_REQUEST['code']) ? trim($_REQUEST['code']) : '';
@@ -26,6 +26,12 @@ $pay_code = !empty($_REQUEST['code']) ? trim($_REQUEST['code']) : '';
 if (empty($pay_code) && !empty($_REQUEST['v_pmode']) && !empty($_REQUEST['v_pstring']))
 {
     $pay_code = 'cappay';
+}
+
+//获取快钱神州行支付方式
+if (empty($pay_code) && ($_REQUEST['ext1'] == 'shenzhou') && ($_REQUEST['ext2'] == 'ecshop'))
+{
+    $pay_code = 'shenzhou';
 }
 
 /* 参数是否为空 */

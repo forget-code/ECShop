@@ -10,8 +10,8 @@
  * 進行修改、使用和再發佈。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-21 17:06:00 +0800 (星期一, 21 一月 2008) $
- * $Id: goods_export.php 14018 2008-01-21 09:06:00Z fenghl $
+ * $Date: 2008-02-19 08:49:06 +0800 (星期二, 19 二月 2008) $
+ * $Id: goods_export.php 14147 2008-02-19 00:49:06Z fenghl $
 */
 
 
@@ -106,6 +106,29 @@ $_LANG['paipai']['pic_width'] = 'pic_width';
 $_LANG['paipai']['pic_height'] = 'pic_height';
 $_LANG['paipai']['skin'] = 'skin';
 $_LANG['paipai']['prop'] = 'prop';
+	
+$_LANG['export_ecshop'] = '導出到ECShop數據格式';
+$_LANG['ecshop']['goods_name'] = '商品名稱';
+$_LANG['ecshop']['goods_sn'] = '商品貨號';
+$_LANG['ecshop']['brand_name'] = '商品品牌';
+$_LANG['ecshop']['market_price'] = '市場售價';
+$_LANG['ecshop']['shop_price'] = '本店售價';
+$_LANG['ecshop']['integral'] = '積分購買額度';
+$_LANG['ecshop']['original_img'] = '商品原始圖';
+$_LANG['ecshop']['goods_img'] = '商品圖片';
+$_LANG['ecshop']['goods_thumb'] = '商品縮略圖';
+$_LANG['ecshop']['keywords'] = '商品關鍵詞';
+$_LANG['ecshop']['goods_brief'] = '簡單描述';
+$_LANG['ecshop']['goods_desc'] = '詳細描述';
+$_LANG['ecshop']['goods_weight'] = '商品重量（kg）';
+$_LANG['ecshop']['goods_number'] = '庫存數量';
+$_LANG['ecshop']['warn_number'] = '庫存警告數量';
+$_LANG['ecshop']['is_best'] = '是否精品';
+$_LANG['ecshop']['is_new'] = '是否新品';
+$_LANG['ecshop']['is_hot'] = '是否熱銷';
+$_LANG['ecshop']['is_on_sale'] = '是否上架';
+$_LANG['ecshop']['is_alone_sale'] = '能否作為普通商品銷售';
+$_LANG['ecshop']['is_real'] = '是否實體商品';
 
 
 ?>

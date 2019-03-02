@@ -10,14 +10,14 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2007-12-26 10:27:20 +0800 (星期三, 26 十二月 2007) $
- * $Id: blog_sohu.php 13896 2007-12-26 02:27:20Z testyang $
+ * $Date: 2008-02-22 16:13:56 +0800 (星期五, 22 二月 2008) $
+ * $Id: blog_sohu.php 14182 2008-02-22 08:13:56Z testyang $
 */
 
 define('IN_ECS', true);
 define('INIT_NO_USERS', true);
 define('INIT_NO_SMARTY', true);
-require('../includes/init.php');
+require(dirname(dirname(__FILE__)) . '/includes/init.php');
 include_once(ROOT_PATH . 'includes/cls_json.php');
 
 $num = !empty($_GET['num']) ? intval($_GET['num']) : 10;
@@ -28,7 +28,8 @@ if ($num <= 0 || $num > 10)
 $json = new JSON;
 $result = $db->getAll("SELECT goods_id, goods_name, shop_price, promote_price, promote_start_date, promote_end_date, goods_brief, goods_thumb FROM " . $ecs->table('goods') . " WHERE is_on_sale = 1 AND is_alone_sale = 1 AND is_delete = 0 ORDER BY rand() LIMIT 0, $num");
 $idx = 0;
-$content['domain'] = 'http://' . $_SERVER['SERVER_NAME'] . '/';
+$content['domain'] = 'http://' . $_SERVER['SERVER_NAME'];
+//$content['domain'] .= substr($_SERVER['REQUEST_URI'], 0 , strrpos($_SERVER['REQUEST_URI'], '/widget')) . '/';
 $goods = array();
 foreach ($result as $row)
 {
@@ -45,7 +46,7 @@ foreach ($result as $row)
     $goods[$idx]['goods_name'] = $row['goods_name'];
     $goods[$idx]['shop_price'] = price_format($row['shop_price']);
     $goods[$idx]['goods_brief'] = $row['goods_brief'];
-    $goods[$idx]['goods_thumb'] = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $GLOBALS['user_filesdir'] . '/' . $row['goods_thumb'];
+    $goods[$idx]['goods_thumb'] = empty($row['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $row['goods_thumb'];
     $idx++;
 }
 $content['goods'] = $goods;

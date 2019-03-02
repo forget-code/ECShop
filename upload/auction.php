@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: auction.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: auction.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -118,7 +118,7 @@ elseif ($_REQUEST['act'] == 'view')
     $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
     if ($id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -126,7 +126,7 @@ elseif ($_REQUEST['act'] == 'view')
     $auction = auction_info($id);
     if (empty($auction))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -159,7 +159,7 @@ elseif ($_REQUEST['act'] == 'view')
         $goods = goods_info($goods_id);
         if (empty($goods))
         {
-            header("Location: ./\n");
+            ecs_header("Location: ./\n");
             exit;
         }
         $goods['url'] = build_uri('goods', array('gid' => $goods_id), $goods['goods_name']);
@@ -203,7 +203,7 @@ elseif ($_REQUEST['act'] == 'bid')
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     if ($id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -211,7 +211,7 @@ elseif ($_REQUEST['act'] == 'bid')
     $auction = auction_info($id);
     if (empty($auction))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -323,7 +323,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     if ($id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -331,7 +331,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $auction = auction_info($id);
     if (empty($auction))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -398,7 +398,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $_SESSION['extension_id'] = $id;
 
     /* 进入收货人页面 */
-    header("Location: ./flow.php?step=consignee\n");
+    ecs_header("Location: ./flow.php?step=consignee\n");
     exit;
 }
 

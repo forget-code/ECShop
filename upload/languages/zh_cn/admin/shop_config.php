@@ -8,9 +8,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-24 21:38:09 +0800 (星期四, 24 一月 2008) $
- * $Id: shop_config.php 14047 2008-01-24 13:38:09Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-14 10:36:17 +0800 (星期四, 14 二月 2008) $
+ * $Id: shop_config.php 14137 2008-02-14 02:36:17Z testyang $
  */
 
 $_LANG['cfg_name']['basic'] = '基本设置';
@@ -344,7 +344,7 @@ $_LANG['cfg_range']['upload_size_limit']['4096'] = '4MB';
 $_LANG['cfg_range']['visit_stats']['on'] = '开启';
 $_LANG['cfg_range']['visit_stats']['off'] = '关闭';
 
-$_LANG['rewrite_confirm'] = "URL Rewrite 功能要求您的 Web Server 必须是 Apache，\\n并且起用了 rewrite 模块。\\n同时请您确认是否已经将htaccess.txt文件重命名为.htaccess。";
+$_LANG['rewrite_confirm'] = "URL Rewrite 功能要求您的 Web Server 必须是 Apache，\\n并且起用了 rewrite 模块。\\n同时请您确认是否已经将htaccess.txt文件重命名为.htaccess。\\n如果服务器上还有其他的重写规则请去掉注释,请将RewriteBase行的注释去掉,并将路径设置为服务器请求的绝对路径";
 $_LANG['gzip_confirm'] = "GZip 功能需要您的服务器支持 zlib 扩展库。\\n如果您发现开启Gzip后页面出现乱码，可能是您的服务器已经开启了Gzip，您不需要在 ECSHOP 中再次开启。";
 $_LANG['msg_invalid_file'] = '您上传了一个非法的文件类型。该文件名为：%s';
 $_LANG['msg_upload_failed'] = '上传文件 %s 失败，请检查 %s 目录是否可写。';

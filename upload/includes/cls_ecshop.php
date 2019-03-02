@@ -10,8 +10,8 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-25 17:38:18 +0800 (星期五, 25 一月 2008) $
- * $Id: cls_ecshop.php 14065 2008-01-25 09:38:18Z testyang $
+ * $Date: 2008-02-29 13:58:27 +0800 (星期五, 29 二月 2008) $
+ * $Id: cls_ecshop.php 14195 2008-02-29 05:58:27Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -20,8 +20,8 @@ if (!defined('IN_ECS'))
 }
 
 define('APPNAME', 'ECSHOP');
-define('VERSION', 'v2.5.1 beta');
-define('RELEASE', '20080121');
+define('VERSION', 'v2.5.1');
+define('RELEASE', '20080229');
 
 class ECS
 {

@@ -10,8 +10,8 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-21 18:17:02 +0800 (星期一, 21 一月 2008) $
- * $Id: init.php 14025 2008-01-21 10:17:02Z testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: init.php 14080 2008-01-28 11:27:47Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -236,7 +236,7 @@ else
 }
 if ((DEBUG_MODE & 4) == 4)
 {
-    include('./includes/lib.debug.php');
+    include(ROOT_PATH . 'includes/lib.debug.php');
 }
 
 /* 判断是否支持 Gzip 模式 */

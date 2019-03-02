@@ -9,9 +9,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: wj $
- * $Date: 2007-12-20 13:12:46 +0800 (星期四, 20 十二月 2007) $
- * $Id: cncard.php 13881 2007-12-20 05:12:46Z wj $
+ * $Author: testyang $
+ * $Date: 2008-02-13 13:50:50 +0800 (星期三, 13 二月 2008) $
+ * $Id: cncard.php 14134 2008-02-13 05:50:50Z testyang $
  */
 
 if (!defined('IN_ECS'))
@@ -112,7 +112,7 @@ class cncard
         $c_memo1    = abs(crc32(trim($payment['c_memo1'])));     //商户需要在支付结果通知中转发的商户参数一
         $c_memo2    = "ecshop";                      //商户需要在支付结果通知中转发的商户参数二
         $c_pass     = trim($payment['c_pass']);      //支付密钥，请登录商户管理后台，在帐户信息-基本信息-安全信息中的支付密钥项
-        $notifytype = "1";                           //0普通通知方式/1服务器通知方式，空值为普通通知方式
+        $notifytype = "0";                           //0普通通知方式/1服务器通知方式，空值为普通通知方式
         $c_language = trim($payment['c_language']);  //对启用了国际卡支付时，可使用该值定义消费者在银行支付时的页面语种，值为：0银行页面显示为中文/1银行页面显示为英文
 
         $srcStr = $c_mid . $c_order . $c_orderamount . $c_ymd . $c_moneytype . $c_retflag . $c_returl . $c_paygate . $c_memo1 . $c_memo2 . $notifytype . $c_language . $c_pass;      //说明：如果您想指定支付方式(c_paygate)的值时，需要先让用户选择支付方式，然后再根据用户选择的结果在这里进行MD5加密，也就是说，此时，本页面应该拆分为两个页面，分为两个步骤完成。

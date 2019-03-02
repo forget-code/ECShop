@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: group_buy.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: group_buy.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -118,7 +118,7 @@ elseif ($_REQUEST['act'] == 'view')
     $group_buy_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
     if ($group_buy_id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -126,7 +126,7 @@ elseif ($_REQUEST['act'] == 'view')
     $group_buy = group_buy_info($group_buy_id);
     if (empty($group_buy))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 //    elseif ($group_buy['is_on_sale'] == 0 || $group_buy['is_alone_sale'] == 0)
@@ -154,7 +154,7 @@ elseif ($_REQUEST['act'] == 'view')
         $goods = goods_info($goods_id);
         if (empty($goods))
         {
-            header("Location: ./\n");
+            ecs_header("Location: ./\n");
             exit;
         }
         $goods['url'] = build_uri('goods', array('gid' => $goods_id), $goods['goods_name']);
@@ -203,7 +203,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $group_buy_id = isset($_POST['group_buy_id']) ? intval($_POST['group_buy_id']) : 0;
     if ($group_buy_id <= 0)
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -215,7 +215,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $group_buy = group_buy_info($group_buy_id, $number);
     if (empty($group_buy))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -229,7 +229,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $goods = goods_info($group_buy['goods_id']);
     if (empty($goods))
     {
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
 
@@ -294,7 +294,7 @@ elseif ($_REQUEST['act'] == 'buy')
     $_SESSION['extension_id'] = $group_buy_id;
 
     /* 进入收货人页面 */
-    header("Location: ./flow.php?step=consignee\n");
+    ecs_header("Location: ./flow.php?step=consignee\n");
     exit;
 }
 

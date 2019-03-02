@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-23 11:28:11 +0800 (星期三, 23 一月 2008) $
- * $Id: goods.php 14037 2008-01-23 03:28:11Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: goods.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -97,7 +97,7 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
     if ($goods === false)
     {
         /* 如果没有找到任何记录则跳回到首页 */
-        header("Location: ./\n");
+        ecs_header("Location: ./\n");
         exit;
     }
     else

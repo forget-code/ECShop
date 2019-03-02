@@ -9,16 +9,16 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: liupeng $
- * $Date: 2007-10-18 13:52:30 +0800 (星期四, 18 十月 2007) $
- * $Id: sale_list.php 13052 2007-10-18 05:52:30Z liupeng $
+ * $Author: testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: sale_list.php 14080 2008-01-28 11:27:47Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once('../includes/lib_order.php');
-require_once('../languages/' .$_CFG['lang']. '/admin/statistic.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'includes/lib_order.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/statistic.php');
 $smarty->assign('lang', $_LANG);
 
 /* act操作项的初始化 */

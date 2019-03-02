@@ -8,15 +8,15 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-22 20:36:13 +0800 (星期二, 22 一月 2008) $
- * $Id: index.php 14034 2008-01-22 12:36:13Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: index.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once('../includes/lib_order.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'includes/lib_order.php');
 
 /*------------------------------------------------------ */
 //-- 框架
@@ -172,7 +172,7 @@ elseif ($_REQUEST['act'] == 'main')
     {
         unset($_SESSION['shop_guide']);//销毁session
 
-        header("Location: ./index.php?act=first\n");
+        ecs_header("Location: ./index.php?act=first\n");
 
         exit();
     }
@@ -508,7 +508,31 @@ elseif ($_REQUEST['act'] == 'first')
     $smarty->assign('shop_title', $shop_title);
 
     //获取配送方式
-    $modules = read_modules('../includes/modules/shipping');
+//    $modules = read_modules('../includes/modules/shipping');
+    $directory = ROOT_PATH . 'includes/modules/shipping';
+    $dir         = @opendir($directory);
+    $set_modules = true;
+    $modules     = array();
+
+    while (false !== ($file = @readdir($dir)))
+    {
+        if (preg_match("/^.*?\.php$/", $file))
+        {
+            if ($file != 'express.php')
+            {
+                include_once($directory. '/' .$file);
+            }
+        }
+    }
+    @closedir($dir);
+    unset($set_modules);
+
+    foreach ($modules AS $key => $value)
+    {
+        ksort($modules[$key]);
+    }
+    ksort($modules);
+
     for ($i = 0; $i < count($modules); $i++)
     {
         $lang_file = ROOT_PATH.'languages/' .$_CFG['lang']. '/shipping/' .$modules[$i]['code']. '.php';
@@ -609,9 +633,9 @@ elseif ($_REQUEST['act'] == 'second')
         $set_modules = true;
         include_once(ROOT_PATH . 'includes/modules/shipping/' . $shipping . '.php');
         $sql = "SELECT shipping_id FROM " .$ecs->table('shipping'). " WHERE shipping_code = '$shipping'";
-        $id = $db->GetOne($sql);
+        $shipping_id = $db->GetOne($sql);
 
-        if($id <= 0)
+        if($shipping_id <= 0)
         {
             $insure = empty($modules[0]['insure']) ? 0 : $modules[0]['insure'];
             $sql = "INSERT INTO " . $ecs->table('shipping') . " (" .
@@ -620,54 +644,57 @@ elseif ($_REQUEST['act'] == 'second')
             "'" . addslashes($modules[0]['code']). "', '" . addslashes($_LANG[$modules[0]['code']]) . "', '" .
             addslashes($_LANG[$modules[0]['desc']]) . "', '$insure', '" . intval($modules[0]['cod']) . "', 1)";
             $db->query($sql);
-            $id = $db->insert_Id();
+            $shipping_id = $db->insert_Id();
+        }
 
-            //设置配送区域
-            $area_name = empty($_POST['area_name']) ? '' : $_POST['area_name'];
-            if(!empty($area_name))
+        //设置配送区域
+        $area_name = empty($_POST['area_name']) ? '' : $_POST['area_name'];
+        if(!empty($area_name))
+        {
+            $sql = "SELECT shipping_area_id FROM " .$ecs->table("shipping_area").
+            " WHERE shipping_id='$shipping_id' AND shipping_area_name='$area_name'";
+            $area_id = $db->getOne($sql);
+
+            if($area_id <= 0)
             {
-                $sql = "SELECT COUNT(*) FROM " .$ecs->table("shipping_area").
-                " WHERE shipping_id='$id' AND shipping_area_name='$_POST[shipping_area_name]'";
-
-                if($db->getOne($sql) <= 0)
+                $config = array();
+                foreach ($modules[0]['configure'] AS $key => $val)
                 {
-                    $config = array();
-                    foreach ($modules[0]['configure'] AS $key => $val)
-                    {
-                        $config[$key]['name']   = $val['name'];
-                        $config[$key]['value']  = $val['value'];
-                    }
-
-                    $count = count($config);
-                    $config[$count]['name']     = 'free_money';
-                    $config[$count]['value']    = 0;
-
-                    /* 如果支持货到付款，则允许设置货到付款支付费用 */
-                    if ($modules[0]['cod'])
-                    {
-                        $count++;
-                        $config[$count]['name']     = 'pay_fee';
-                        $config[$count]['value']    = make_semiangle(0);
-                    }
-
-                    $sql = "INSERT INTO " .$ecs->table('shipping_area').
-                    " (shipping_area_name, shipping_id, configure) ".
-                    "VALUES" . " ('$area_name', '$id', '" .serialize($config). "')";
-                    $db->query($sql);
-                    $new_id = $db->insert_Id();
-
-                    $area = empty($_POST['shipping_country']) ? '' : $_POST['shipping_country'];
-                    $area = empty($_POST['shipping_province']) ? '' : $_POST['shipping_province'];
-                    $area = empty($_POST['shipping_city']) ? '' : $_POST['shipping_city'];
-                    $area = empty($_POST['shipping_district']) ? '' : $_POST['shipping_district'];
-
-                    /* 添加选定的城市和地区 */
-                    $sql = "INSERT INTO ".$ecs->table('area_region')." (shipping_area_id, region_id) VALUES ('$new_id', '$area')";
-                    $db->query($sql);
+                    $config[$key]['name']   = $val['name'];
+                    $config[$key]['value']  = $val['value'];
                 }
+
+                $count = count($config);
+                $config[$count]['name']     = 'free_money';
+                $config[$count]['value']    = 0;
+
+                /* 如果支持货到付款，则允许设置货到付款支付费用 */
+                if ($modules[0]['cod'])
+                {
+                    $count++;
+                    $config[$count]['name']     = 'pay_fee';
+                    $config[$count]['value']    = make_semiangle(0);
+                }
+
+                $sql = "INSERT INTO " .$ecs->table('shipping_area').
+                " (shipping_area_name, shipping_id, configure) ".
+                "VALUES" . " ('$area_name', '$shipping_id', '" .serialize($config). "')";
+                $db->query($sql);
+                $area_id = $db->insert_Id();
             }
+
+            $region_id = empty($_POST['shipping_country']) ? 1 : intval($_POST['shipping_country']);
+            $region_id = empty($_POST['shipping_province']) ? $region_id : intval($_POST['shipping_province']);
+            $region_id = empty($_POST['shipping_city']) ? $region_id : intval($_POST['shipping_city']);
+            $region_id = empty($_POST['shipping_district']) ? $region_id : intval($_POST['shipping_district']);
+
+            /* 添加选定的城市和地区 */
+            $sql = "REPLACE INTO ".$ecs->table('area_region')." (shipping_area_id, region_id) VALUES ('$area_id', '$region_id')";
+            $db->query($sql);
         }
     }
+
+    unset($modules);
 
     if(!empty($payment))
     {
@@ -704,7 +731,7 @@ elseif ($_REQUEST['act'] == 'second')
 
             $payment_info = array();
             $payment_info['name'] = $_LANG[$modules[0]['code']];
-            $payment_info['pay_fee'] = empty($modules[0]['pay_fee']) ? 0 : $modules[$i]['pay_fee'];
+            $payment_info['pay_fee'] = empty($modules[0]['pay_fee']) ? 0 : $modules[0]['pay_fee'];
             $payment_info['desc'] = $_LANG[$modules[0]['desc']];
 
             $sql = "INSERT INTO " . $ecs->table('payment') . " (pay_code, pay_name, pay_desc, pay_config, is_cod, pay_fee, enabled, is_online)" .
@@ -780,7 +807,7 @@ elseif ($_REQUEST['act'] == 'third')
         $cat_id = $db->insert_Id();
 
         //货号
-        require_once('./includes/lib_goods.php');
+        require_once(ROOT_PATH . 'admin/includes/lib_goods.php');
         $max_id     = $db->getOne("SELECT MAX(goods_id) + 1 FROM ".$ecs->table('goods'));
         $goods_sn   = generate_goods_sn($max_id);
 

@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: scottye $
- * $Date: 2007-11-09 11:03:54 +0800 (星期五, 09 十一月 2007) $
- * $Id: bonus.php 13514 2007-11-09 03:03:54Z scottye $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: bonus.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -164,7 +164,7 @@ if ($_REQUEST['act'] == 'remove')
 
     $url = 'bonus.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -625,7 +625,7 @@ if ($_REQUEST['act'] == 'gen_excel')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'get_goods_list')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $filters = $json->decode($_GET['JSON']);
@@ -648,7 +648,7 @@ if ($_REQUEST['act'] == 'get_goods_list')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'add_bonus_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('bonus_manage');
@@ -682,7 +682,7 @@ if ($_REQUEST['act'] == 'add_bonus_goods')
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'drop_bonus_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('bonus_manage');
@@ -806,7 +806,7 @@ elseif ($_REQUEST['act'] == 'remove_bonus')
 
     $url = 'bonus.php?act=query_bonus&' . str_replace('act=remove_bonus', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 

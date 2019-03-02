@@ -10,13 +10,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-21 15:42:29 +0800 (星期一, 21 一月 2008) $
- * $Id: order.php 14014 2008-01-21 07:42:29Z fenghl $
+ * $Date: 2008-02-28 14:50:19 +0800 (星期四, 28 二月 2008) $
+ * $Id: order.php 14194 2008-02-28 06:50:19Z fenghl $
  */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . 'includes/lib_order.php');
 
 /*------------------------------------------------------ */
@@ -427,7 +427,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         $db->query($sql);
 
         /* 下一步 */
-        header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
+        ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
         exit;
     }
     /* 编辑商品信息 */
@@ -470,7 +470,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         }
 
         /* 跳回订单商品 */
-        header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
+        ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
         exit;
     }
     /* 添加商品 */
@@ -545,7 +545,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         admin_log($sn, 'edit', 'order');
 
         /* 跳回订单商品 */
-        header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
+        ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
         exit;
     }
     /* 商品 */
@@ -554,7 +554,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         /* 下一步 */
         if (isset($_POST['next']))
         {
-            header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=consignee\n");
+            ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=consignee\n");
             exit;
         }
         /* 完成 */
@@ -576,7 +576,7 @@ elseif ($_REQUEST['act'] == 'step_post')
             else
             {
                 /* 跳转到订单详情 */
-                header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+                ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
                 exit;
             }
         }
@@ -602,13 +602,13 @@ elseif ($_REQUEST['act'] == 'step_post')
             if (exist_real_goods($order_id))
             {
                 /* 存在实体商品，去配送方式 */
-                header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=shipping\n");
+                ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=shipping\n");
                 exit;
             }
             else
             {
                 /* 不存在实体商品，去支付方式 */
-                header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=payment\n");
+                ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=payment\n");
                 exit;
             }
         }
@@ -649,11 +649,11 @@ elseif ($_REQUEST['act'] == 'step_post')
             /* 完成 */
             if ($agency_changed)
             {
-                header("Location: order.php?act=list\n");
+                ecs_header("Location: order.php?act=list\n");
             }
             else
             {
-                header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+                ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
             }
             exit;
         }
@@ -712,7 +712,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         if (isset($_POST['next']))
         {
             /* 下一步 */
-            header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=payment\n");
+            ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=payment\n");
             exit;
         }
         elseif (isset($_POST['finish']))
@@ -746,7 +746,7 @@ elseif ($_REQUEST['act'] == 'step_post')
             else
             {
                 /* 完成 */
-                header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+                ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
                 exit;
             }
         }
@@ -798,7 +798,7 @@ elseif ($_REQUEST['act'] == 'step_post')
         if (isset($_POST['next']))
         {
             /* 下一步 */
-            header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=other\n");
+            ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=other\n");
             exit;
         }
         elseif (isset($_POST['finish']))
@@ -819,7 +819,7 @@ elseif ($_REQUEST['act'] == 'step_post')
             else
             {
                 /* 完成 */
-                header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+                ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
                 exit;
             }
         }
@@ -875,13 +875,13 @@ elseif ($_REQUEST['act'] == 'step_post')
         if (isset($_POST['next']))
         {
             /* 下一步 */
-            header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=money\n");
+            ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=money\n");
             exit;
         }
         elseif (isset($_POST['finish']))
         {
             /* 完成 */
-            header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+            ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
             exit;
         }
     }
@@ -1070,7 +1070,7 @@ elseif ($_REQUEST['act'] == 'step_post')
             }
             else
             {
-                header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+                ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
                 exit;
             }
         }
@@ -1101,7 +1101,7 @@ elseif ($_REQUEST['act'] == 'step_post')
 
         if (isset($_POST['finish']))
         {
-            header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+            ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
             exit;
         }
     }
@@ -1416,7 +1416,7 @@ elseif ($_REQUEST['act'] == 'process')
         update_order_amount($order_id);
 
         /* 跳回订单商品 */
-        header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
+        ecs_header("Location: order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods\n");
         exit;
     }
 
@@ -1434,13 +1434,13 @@ elseif ($_REQUEST['act'] == 'process')
                         " WHERE order_id = '$order_id' LIMIT 1";
                 $db->query($sql);
             }
-            header("Location: order.php?act=list\n");
+            ecs_header("Location: order.php?act=list\n");
             exit;
         }
         else
         {
             /* 如果是编辑，返回订单信息 */
-            header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+            ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
             exit;
         }
     }
@@ -1460,7 +1460,7 @@ elseif ($_REQUEST['act'] == 'process')
         update_order($order_id, array('order_amount' => 0, 'money_paid' => $order['money_paid'] - $refund_amount));
 
         /* 返回订单详情 */
-        header("Location: order.php?act=info&order_id=" . $order_id . "\n");
+        ecs_header("Location: order.php?act=info&order_id=" . $order_id . "\n");
         exit;
     }
 
@@ -1911,14 +1911,14 @@ elseif ($_REQUEST['act'] == 'operate')
         if (!$batch)
         {
             /* 一个订单 */
-            header("Location: order.php?act=operate_post&order_id=" . $order_id .
+            ecs_header("Location: order.php?act=operate_post&order_id=" . $order_id .
                     "&operation=" . $operation . "&action_note=" . urlencode($action_note) . "\n");
             exit;
         }
         else
         {
             /* 多个订单 */
-            header("Location: order.php?act=batch_operate_post&order_id=" . $order_id .
+            ecs_header("Location: order.php?act=batch_operate_post&order_id=" . $order_id .
                     "&operation=" . $operation . "&action_note=" . urlencode($action_note) . "\n");
             exit;
         }
@@ -1938,7 +1938,10 @@ elseif ($_REQUEST['act'] == 'batch_operate_post')
 
     $order_id_list = explode(',', $order_id);
 
+    /* 初始化处理的订单sn */
+    $sn_list = array();
     $sn_not_list = array();
+
     /* 确认 */
     if ('confirm' == $operation)
     {
@@ -2175,9 +2178,8 @@ elseif ($_REQUEST['act'] == 'batch_operate_post')
 
         /* 模板赋值 */
         $smarty->assign('order_info', $sn_str);
-        $smarty->assign('action_link', array('href' => 'order.php?act=order_list', 'text' => $_LANG['02_order_list']));
+        $smarty->assign('action_link', array('href' => 'order.php?act=list', 'text' => $_LANG['02_order_list']));
         $smarty->assign('order_list',   $order_list_no_fail);
-        $smarty->assign('sort_order_time', '<img src="images/sort_desc.gif">');
 
         /* 显示模板 */
         assign_query_info();
@@ -2346,7 +2348,8 @@ elseif ($_REQUEST['act'] == 'operate_post')
 
             /* 计算并发放积分 */
             $integral = integral_to_give($order);
-            log_account_change($order['user_id'], 0, 0, $integral, $integral, sprintf($_LANG['order_gift_integral'], $order['order_sn']));
+            
+            log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($_LANG['order_gift_integral'], $order['order_sn']));
 
             /* 发放红包 */
             send_order_bonus($order_id);
@@ -2406,7 +2409,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
 
             /* 计算并退回积分 */
             $integral = integral_to_give($order);
-            log_account_change($order['user_id'], 0, 0, (-1) * $integral, (-1) * $integral, sprintf($_LANG['return_order_gift_integral'], $order['order_sn']));
+            log_account_change($order['user_id'], 0, 0, (-1) * intval($integral['rank_points']), (-1) * intval($integral['custom_points']), sprintf($_LANG['return_order_gift_integral'], $order['order_sn']));
 
             /* todo 计算并退回红包 */
             return_order_bonus($order_id);
@@ -2552,7 +2555,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
 
             /* 计算并退回积分 */
             $integral = integral_to_give($order);
-            log_account_change($order['user_id'], 0, 0, (-1) * $integral, (-1) * $integral, sprintf($_LANG['return_order_gift_integral'], $order['order_sn']));
+            log_account_change($order['user_id'], 0, 0, (-1) * intval($integral['rank_points']), (-1) * intval($integral['custom_points']), sprintf($_LANG['return_order_gift_integral'], $order['order_sn']));
 
             /* todo 计算并退回红包 */
             return_order_bonus($order_id);
@@ -2686,7 +2689,7 @@ elseif ($_REQUEST['act'] == 'remove_order')
     {
         $url = 'order.php?act=query&' . str_replace('act=remove_order', '', $_SERVER['QUERY_STRING']);
 
-        header("Location: $url\n");
+        ecs_header("Location: $url\n");
         exit;
     }
     else
@@ -3216,8 +3219,8 @@ function order_list()
         $filter['sort_by'] = empty($_REQUEST['sort_by']) ? 'add_time' : trim($_REQUEST['sort_by']);
         $filter['sort_order'] = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
 
-        $filter['start_time'] = empty($_REQUEST['start_time']) ? '' : local_strtotime($_REQUEST['start_time']);
-        $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : local_strtotime($_REQUEST['end_time']);
+        $filter['start_time'] = empty($_REQUEST['start_time']) ? '' : (strpos($_REQUEST['start_time'], '-') > 0 ?  local_strtotime($_REQUEST['start_time']) : $_REQUEST['start_time']);
+        $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : (strpos($_REQUEST['end_time'], '-') > 0 ?  local_strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']);
 
         $where = 'WHERE 1 ';
         if ($filter['order_sn'])
@@ -3298,7 +3301,7 @@ function order_list()
         }
         if ($filter['end_time'])
         {
-            $where .= " AND o.add_time < '$filter[end_time]'";
+            $where .= " AND o.add_time <= '$filter[end_time]'";
         }
 
         //综合状态

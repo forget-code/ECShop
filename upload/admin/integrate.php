@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: paulgao $
- * $Date: 2007-12-08 23:14:23 +0800 (星期六, 08 十二月 2007) $
- * $Id: integrate.php 13846 2007-12-08 15:14:23Z paulgao $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: integrate.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 /*------------------------------------------------------ */
 //-- 会员数据整合插件列表
 /*------------------------------------------------------ */
@@ -240,7 +240,7 @@ if ($_REQUEST['act'] == 'check_config')
     {
         /* 商城没有用户时，直接保存完成整合 */
         save_integrate_config($_POST['code'], $_POST['cfg']);
-        header("Location: integrate.php?act=complete\n");
+        ecs_header("Location: integrate.php?act=complete\n");
         exit;
     }
 
@@ -494,7 +494,7 @@ if ($_REQUEST['act'] == 'act_modify')
     }
 
     /* 跳转  */
-    header("Location: integrate.php?act=modify");
+    ecs_header("Location: integrate.php?act=modify");
     exit;
 }
 
@@ -846,7 +846,7 @@ if ($_REQUEST['act'] == 'edit_points')
 
     clear_cache_files();
 
-    header("Location: integrate.php?act=points_set\n");
+    ecs_header("Location: integrate.php?act=points_set\n");
     exit;
 }
 

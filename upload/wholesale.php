@@ -12,14 +12,14 @@
  * @author:     scott ye <scott.yell@gmail.com>
  * @version:    v2.x
  * ---------------------------------------------
- * $Author: fenghl $
- * $Date: 2008-01-04 13:40:06 +0800 (星期五, 04 一月 2008) $
- * $Id: wholesale.php 13953 2008-01-04 05:40:06Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: wholesale.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* 如果没登录，提示登录 */
 if ($_SESSION['user_rank'] <= 0)
@@ -223,7 +223,7 @@ elseif ($_REQUEST['act'] == 'add_to_cart')
     );
 
     /* 刷新页面 */
-    header("Location: ./wholesale.php\n");
+    ecs_header("Location: ./wholesale.php\n");
     exit;
 }
 
@@ -239,7 +239,7 @@ elseif ($_REQUEST['act'] == 'drop_goods')
     }
 
     /* 刷新页面 */
-    header("Location: ./wholesale.php\n");
+    ecs_header("Location: ./wholesale.php\n");
     exit;
 }
 

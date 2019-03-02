@@ -10,13 +10,13 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: fenghl $
- * $Date: 2008-01-14 17:46:45 +0800 (星期一, 14 一月 2008) $
- * $Id: index.php 13976 2008-01-14 09:46:45Z fenghl $
+ * $Date: 2008-02-20 10:12:57 +0800 (星期三, 20 二月 2008) $
+ * $Id: index.php 14156 2008-02-20 02:12:57Z fenghl $
 */
 
 define('IN_ECS', true);
 
-require('./includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ((DEBUG_MODE & 2) != 2)
 {
@@ -224,6 +224,9 @@ function index_get_group_buy()
             ksort($price_ladder);
             $row['last_price'] = price_format(end($price_ladder));
             $row['url'] = build_uri('group_buy', array('gbid' => $row['group_buy_id']));
+            $row['short_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
+                                           sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
+            $row['short_style_name']   = add_style($row['short_name'],'');
             $group_buy_list[] = $row;
         }
     }
@@ -261,7 +264,9 @@ function index_get_auction()
         $arr['formated_end_price'] = price_format($arr['end_price']);
         $arr['thumb'] = empty($arr['goods_thumb']) ? $GLOBALS['_CFG']['no_picture'] : $arr['goods_thumb'];
         $arr['url'] = build_uri('auction', array('auid' => $arr['act_id']));
-
+        $arr['short_name']   = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
+                                           sub_str($arr['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $arr['goods_name'];
+        $arr['short_style_name']   = add_style($arr['short_name'],'');
         $list[] = $arr;
     }
 

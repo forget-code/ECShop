@@ -8,7 +8,7 @@
       <td align="center"><A href="{$goods.url}"><img src="{$goods.thumb}" border="0" alt="{$goods.goods_name|escape:html}" class="thumb" /></A></td>
     </tr>
     <tr>
-      <td><a href="{$goods.url}">{$goods.goods_name|escape:html}</A> <br />
+      <td><a href="{$goods.url}" title="{$goods.goods_name|escape:html}">{$goods.short_style_name|escape:html}</A> <br />
         <span class="goods-price">{$goods.last_price}</span> </td>
     </tr>
   </table>

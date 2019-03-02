@@ -7,9 +7,6 @@
     <img src="images/tw.gif" alt="<?php echo $lang['traditional_chinese'];?>" />
     <input type="radio" name="js-lang" id="js-zh_tw" class="p" />
     <label for="js-zh_tw"><?php echo $lang['traditional_chinese'];?></label>&nbsp;&nbsp;&nbsp;&nbsp;
-    <img src="images/us.gif" alt="<?php echo $lang['americanese'];?>" />
-    <input type="radio" name="js-lang" id="js-en_us" class="p" />
-    <label for="js-en_us"><?php echo $lang['americanese'];?></label>
   </div>
 </div>
 </div>

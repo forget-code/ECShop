@@ -72,6 +72,20 @@ function edit_profile($profile)
         return false;
     }
 
+    /* 过滤非法的键值 */
+    $other_key_array = array('msn', 'qq', 'office_phone', 'home_phone', 'mobile_phone');
+    foreach ($profile['other'] as $key => $val)
+    {
+        //删除非法key值
+        if (!in_array($key, $other_key_array))
+        {
+            unset($profile['other'][$key]);
+        }
+        else
+        {
+            $profile['other'][$key] =  htmlentities($val); //防止用户输入javascript代码
+        }
+    }
     /* 修改在其他资料 */
     if (!empty($profile['other']))
     {

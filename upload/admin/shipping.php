@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-20 21:04:16 +0800 (星期日, 20 一月 2008) $
- * $Id: shipping.php 14003 2008-01-20 13:04:16Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: shipping.php 14079 2008-01-28 10:33:06Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 $exc = new exchange($ecs->table('shipping'), $db, 'shipping_code', 'shipping_name');
 
 /*------------------------------------------------------ */

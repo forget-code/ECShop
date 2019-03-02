@@ -8,9 +8,9 @@
  * 這是一個免費開源的軟件；這意味著您可以在不用於商業目的的前提下對程序代碼
  * 進行修改、使用和再發佈。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-24 21:38:09 +0800 (星期四, 24 一月 2008) $
- * $Id: shop_config.php 14047 2008-01-24 13:38:09Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-14 10:36:17 +0800 (星期四, 14 二月 2008) $
+ * $Id: shop_config.php 14137 2008-02-14 02:36:17Z testyang $
  */
 
 $_LANG['cfg_name']['basic'] = '基本設定';
@@ -291,7 +291,7 @@ $_LANG['cfg_range']['enable_order_check']['1'] = '啟用';
 $_LANG['cfg_range']['stock_dec_time']['0'] = '發貨時';
 $_LANG['cfg_range']['stock_dec_time']['1'] = '下訂單時';
 
-$_LANG['rewrite_confirm'] = "URL Rewrite 功能要求您的 Web Server 必須是 Apache，\\n並且啟用了 rewrite 模組。\\n同時請您確認是否已經將htaccess.txt檔案重命名為.htaccess。";
+$_LANG['rewrite_confirm'] = "URL Rewrite 功能要求您的 Web Server 必須是 Apache，\\n並且啟用了 rewrite 模組。\\n同時請您確認是否已經將htaccess.txt檔案重命名為.htaccess。\\n如果服務器上還有其他的重寫規則請去掉註釋,請將RewriteBase行的註釋去掉,並將路徑設置為服務器請求的絕對路徑";
 $_LANG['gzip_confirm'] = "GZip 功能需要您的伺服器支援 zlib 功能。\\n如果您發現開啟Gzip後頁面出現亂碼，可能是您的伺服器已經開啟了Gzip，您不需要在 ECSHOP 中再次開啟。";
 $_LANG['msg_invalid_file'] = '您上傳了一個非法的檔案類型。該檔案名為：%s';
 $_LANG['msg_upload_failed'] = '上傳檔案 %s 失敗，請檢查 %s 目錄是否可寫。';

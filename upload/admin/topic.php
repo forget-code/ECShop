@@ -16,7 +16,7 @@
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -34,7 +34,7 @@ else
 if ($_REQUEST['act'] == 'list')
 {
     admin_priv('topic_manage');
-    
+
     $smarty->assign('ur_here',     $_LANG['09_topic']);
 
     $smarty->assign('full_page',   1);
@@ -78,12 +78,12 @@ if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
 
         create_html_editor('topic_intro', $topic['intro']);
 
-        require('../includes/cls_json.php');
+        require(ROOT_PATH . 'includes/cls_json.php');
 
         $json          = new JSON;
         $topic['data'] = addcslashes($topic['data'], "'");
         $topic['data'] = $json->encode(@unserialize($topic['data']));
-        
+
         $topic['data'] = addcslashes($topic['data'], "'");
         $smarty->assign('topic', $topic);
         $smarty->assign('act',   "update");
@@ -102,7 +102,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $is_insert = $_REQUEST['act'] == 'insert';
     $topic_id  = empty($_POST['topic_id']) ? 0 : intval($_POST['topic_id']);
 
-    require('../includes/cls_json.php');
+    require(ROOT_PATH . 'includes/cls_json.php');
 
     $start_time = local_strtotime($_POST['start_time']);
     $end_time   = local_strtotime($_POST['end_time']);
@@ -133,7 +133,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 }
 elseif ($_REQUEST['act'] == 'get_goods_list')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $filters = $json->decode($_GET['JSON']);
@@ -176,7 +176,7 @@ elseif ($_REQUEST["act"] == "delete")
     if (!empty($_REQUEST['is_ajax']))
     {
         $url = 'topic.php?act=query&' . str_replace('act=delete', '', $_SERVER['QUERY_STRING']);
-        header("Location: $url\n");
+        ecs_header("Location: $url\n");
         exit;
     }
 

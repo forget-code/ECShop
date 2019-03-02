@@ -10,8 +10,8 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-21 18:17:02 +0800 (星期一, 21 一月 2008) $
- * $Id: init.php 14025 2008-01-21 10:17:02Z testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: init.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -48,13 +48,13 @@ else
     @ini_set('include_path',      '.:' . ROOT_PATH);
 }
 
-if (file_exists('../data/config.php'))
+if (file_exists(ROOT_PATH . 'data/config.php'))
 {
-    include('../data/config.php');
+    include(ROOT_PATH . 'data/config.php');
 }
 else
 {
-    include('../includes/config.php');
+    include(ROOT_PATH . 'includes/config.php');
 }
 
 if (defined('DEBUG_MODE') == false)
@@ -76,13 +76,13 @@ else
     define('PHP_SELF', $_SERVER['SCRIPT_NAME']);
 }
 
-require('../includes/inc_constant.php');
-require('../includes/cls_ecshop.php');
-require('../includes/cls_error.php');
-require('../includes/lib_time.php');
-require('../includes/lib_common.php');
-require('./includes/lib_main.php');
-require('./includes/cls_exchange.php');
+require(ROOT_PATH . 'includes/inc_constant.php');
+require(ROOT_PATH . 'includes/cls_ecshop.php');
+require(ROOT_PATH . 'includes/cls_error.php');
+require(ROOT_PATH . 'includes/lib_time.php');
+require(ROOT_PATH . 'includes/lib_common.php');
+require(ROOT_PATH . 'admin/includes/lib_main.php');
+require(ROOT_PATH . 'admin/includes/cls_exchange.php');
 
 /* 对用户传入的变量进行转义操作。*/
 if (!get_magic_quotes_gpc())
@@ -103,7 +103,8 @@ if (!get_magic_quotes_gpc())
 /* 对路径进行安全处理 */
 if (strpos(PHP_SELF, '.php/') !== false)
 {
-    header("Location:" . substr(PHP_SELF, 0, strpos(PHP_SELF, '.php/') + 4) . "\n");
+    ecs_header("Location:" . substr(PHP_SELF, 0, strpos(PHP_SELF, '.php/') + 4) . "\n");
+    exit();
 }
 
 /* 创建 ECSHOP 对象 */
@@ -143,7 +144,7 @@ $_CFG = load_config();
 // TODO : 登录部分准备拿出去做，到时候把以下操作一起挪过去
 if ($_REQUEST['act'] == 'captcha')
 {
-    include('../includes/cls_captcha.php');
+    include(ROOT_PATH . 'includes/cls_captcha.php');
 
     $img = new captcha('../data/captcha/');
     @ob_end_clean(); //清除之前出现的多余输入
@@ -152,12 +153,12 @@ if ($_REQUEST['act'] == 'captcha')
     exit;
 }
 
-require('../languages/' .$_CFG['lang']. '/admin/common.php');
-require('../languages/' .$_CFG['lang']. '/admin/log_action.php');
+require(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/common.php');
+require(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/log_action.php');
 
-if (file_exists('../languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF)))
+if (file_exists(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF)))
 {
-    include('../languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF));
+    include(ROOT_PATH . 'languages/' . $_CFG['lang'] . '/admin/' . basename(PHP_SELF));
 }
 
 if (!file_exists('../templates/caches'))
@@ -175,7 +176,7 @@ if (!file_exists('../templates/compiled/admin'))
 clearstatcache();
 
 /* 创建 Smarty 对象。*/
-require('../includes/cls_template.php');
+require(ROOT_PATH . 'includes/cls_template.php');
 $smarty = new cls_template;
 
 $smarty->template_dir  = ROOT_PATH . 'admin/templates';
@@ -208,7 +209,7 @@ if (preg_replace('/(?:\.|\s+)[a-z]*$/i', '', $_CFG['ecs_version']) != preg_repla
         && file_exists('../upgrade/index.php'))
 {
     // 转到升级文件
-    header("Location: ../upgrade/index.php\n");
+    ecs_header("Location: ../upgrade/index.php\n");
 
     exit;
 }
@@ -239,7 +240,7 @@ if ((!isset($_SESSION['admin_id']) || intval($_SESSION['admin_id']) <= 0) &&
             }
             else
             {
-                header("Location: privilege.php?act=login\n");
+                ecs_header("Location: privilege.php?act=login\n");
             }
 
             exit;
@@ -268,7 +269,7 @@ if ((!isset($_SESSION['admin_id']) || intval($_SESSION['admin_id']) <= 0) &&
                 }
                 else
                 {
-                    header("Location: privilege.php?act=login\n");
+                    ecs_header("Location: privilege.php?act=login\n");
                 }
 
                 exit;
@@ -283,7 +284,7 @@ if ((!isset($_SESSION['admin_id']) || intval($_SESSION['admin_id']) <= 0) &&
         }
         else
         {
-            header("Location: privilege.php?act=login\n");
+            ecs_header("Location: privilege.php?act=login\n");
         }
 
         exit;
@@ -303,7 +304,7 @@ if ($_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
         }
         else
         {
-            header("Location: privilege.php?act=login\n");
+            ecs_header("Location: privilege.php?act=login\n");
         }
 
         exit;
@@ -335,7 +336,7 @@ else
 }
 if ((DEBUG_MODE & 4) == 4)
 {
-    include('../includes/lib.debug.php');
+    include(ROOT_PATH . 'includes/lib.debug.php');
 }
 
 /* 判断是否支持gzip模式 */

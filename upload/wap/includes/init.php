@@ -10,8 +10,8 @@
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: testyang $
- * $Date: 2008-01-21 18:17:02 +0800 (星期一, 21 一月 2008) $
- * $Id: init.php 14025 2008-01-21 10:17:02Z testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: init.php 14080 2008-01-28 11:27:47Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -47,13 +47,13 @@ else
     @ini_set('include_path',      '.:' . ROOT_PATH);
 }
 
-if (file_exists('../data/config.php'))
+if (file_exists(ROOT_PATH . 'data/config.php'))
 {
-    include('../data/config.php');
+    include(ROOT_PATH . 'data/config.php');
 }
 else
 {
-    include('../includes/config.php');
+    include(ROOT_PATH . 'includes/config.php');
 }
 
 if (defined('DEBUG_MODE') == false)
@@ -73,13 +73,13 @@ if ('/' == substr($php_self, -1))
 }
 define('PHP_SELF', $php_self);
 
-require('../includes/cls_ecshop.php');
-require('../includes/lib_goods.php');
-require('../includes/lib_common.php');
-require('../includes/lib_time.php');
-require('../includes/lib_main.php');
-require('./includes/lib_main.php');
-require('../includes/inc_constant.php');
+require(ROOT_PATH . 'includes/cls_ecshop.php');
+require(ROOT_PATH . 'includes/lib_goods.php');
+require(ROOT_PATH . 'includes/lib_common.php');
+require(ROOT_PATH . 'includes/lib_time.php');
+require(ROOT_PATH . 'includes/lib_main.php');
+require(ROOT_PATH . 'wap/includes/lib_main.php');
+require(ROOT_PATH . 'includes/inc_constant.php');
 
 /* 对用户传入的变量进行转义操作。*/
 if (!get_magic_quotes_gpc())
@@ -174,7 +174,7 @@ else
 }
 if ((DEBUG_MODE & 4) == 4)
 {
-    include('../includes/lib.debug.php');
+    include(ROOT_PATH . 'includes/lib.debug.php');
 }
 
 /* 判断是否支持gzip模式 */

@@ -13,13 +13,13 @@
  * @version:    v2.x
  * ---------------------------------------------
  * $Author: fenghl $
- * $Date: 2008-01-21 17:06:00 +0800 (星期一, 21 一月 2008) $
- * $Id: goods_export.php 14018 2008-01-21 09:06:00Z fenghl $
+ * $Date: 2008-02-27 14:59:53 +0800 (星期三, 27 二月 2008) $
+ * $Id: goods_export.php 14190 2008-02-27 06:59:53Z fenghl $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 if ($_REQUEST['act'] == 'goods_export')
 {
@@ -102,7 +102,7 @@ elseif ($_REQUEST['act'] == 'act_export_taobao')
         $goods_value['goods_name'] = '"' . $row['goods_name'] . '"';
         $goods_value['shop_price'] = $row['shop_price'];
         $goods_value['goods_number'] = $row['goods_number'];
-        $goods_value['goods_desc'] = '"' . str_replace('"', '""', $row['goods_desc']) . '"';
+        $goods_value['goods_desc'] = '"' . str_replace('"', '""', str_replace('src="', 'src="http://' . $_SERVER['SERVER_NAME'], $row['goods_desc'])) . '"';
         $goods_value['goods_img'] = '"' . $row['goods_img'] . '"';
 
         $content .= implode("\t", $goods_value) . "\n";
@@ -114,7 +114,7 @@ elseif ($_REQUEST['act'] == 'act_export_taobao')
         }
     }
 
-    $zip->add_file(ecs_iconv('UTF8', 'UTF8', $content), 'goods_list.csv');
+    $zip->add_file("\xFF\xFE" . utf82u2($content), 'goods_list.csv');
 
     header("Content-Disposition: attachment; filename=goods_list.zip");
     header("Content-Type: application/unknown");
@@ -185,7 +185,7 @@ elseif($_REQUEST['act'] == 'act_export_ecshop')
         $goods_value['original_img'] = $row['original_img'];
         $goods_value['keywords'] = '"' . $row['keywords'] . '"';
         $goods_value['goods_brief'] = '"' . $row['goods_brief'] . '"';
-        $goods_value['goods_desc'] = '"' . $row['goods_desc'] . '"';
+        $goods_value['goods_desc'] = '"' . str_replace('"', '""', str_replace('src="', 'src="http://' . $_SERVER['SERVER_NAME'], $row['goods_desc'])) . '"';
         $goods_value['goods_weight'] = $row['goods_weight'];
         $goods_value['goods_number'] = $row['goods_number'];
         $goods_value['warn_number'] = $row['warn_number'];
@@ -331,7 +331,7 @@ elseif ($_REQUEST['act'] == 'act_export_paipai')
         $goods_value['title'] = '"' . $row['goods_name'] . '"';
         $goods_value['price'] = $row['shop_price'];
         $goods_value['quantity'] = $row['goods_number'];
-        $goods_value['description'] = '"' . str_replace('"', '""', $row['goods_desc']) . '"';
+        $goods_value['description'] = '"' . str_replace('"', '""', str_replace('src="', 'src="http://' . $_SERVER['SERVER_NAME'], $row['goods_desc'])) . '"';
         $goods_value['pic_filename'] = '"' . $row['goods_img'] . '"';
 
         $content .= implode(",", $goods_value) . "\n";

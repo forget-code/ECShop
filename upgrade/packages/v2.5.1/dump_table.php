@@ -1,5 +1,5 @@
 <?php
 
-$temp = array('ecs_admin_action', 'ecs_shop_config');
+$temp = array('admin_action', 'shop_config', 'mail_templates');
 
 ?>

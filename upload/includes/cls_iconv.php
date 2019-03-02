@@ -554,7 +554,7 @@ class Chinese
                     case 12: case 13:
                         // 110x xxxx   10xx xxxx
                         $char2 = ord($this->SourceText{$i++});
-                        $char3 = $this->unicode_table[(($c & 0x1F) << 6) | ($char2 & 0x3F)];
+                        $char3 = @$this->unicode_table[(($c & 0x1F) << 6) | ($char2 & 0x3F)];
 
                         if ($this->config['target_lang'] == 'GBK')
                         {

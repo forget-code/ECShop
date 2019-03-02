@@ -9,9 +9,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: testyang $
- * $Date: 2008-01-25 14:39:48 +0800 (星期五, 25 一月 2008) $
- * $Id: lib_main.php 14051 2008-01-25 06:39:48Z testyang $
+ * $Author: zhuwenyuan $
+ * $Date: 2008-02-19 16:27:21 +0800 (星期二, 19 二月 2008) $
+ * $Id: lib_main.php 14153 2008-02-19 08:27:21Z zhuwenyuan $
 */
 
 if (!defined('IN_ECS'))
@@ -1751,6 +1751,9 @@ function get_navigator($ctype = '', $catlist = array())
     $sql = 'SELECT * FROM '. $GLOBALS['ecs']->table('nav') . '
             WHERE ifshow = \'1\' ORDER BY type, vieworder';
     $res = $GLOBALS['db']->query($sql);
+    $cur_url = substr(strrchr($_SERVER['REQUEST_URI'],'/'),1);
+    $noindex = false;
+    $active = 0;
     $navlist = array(
         'top' => array(),
         'middle' => array(),
@@ -1767,7 +1770,18 @@ function get_navigator($ctype = '', $catlist = array())
             );
     }
 
-    if(!empty($ctype))
+    /*遍历自定义是否存在currentPage*/
+    foreach($navlist['middle'] as $k=>$v)
+    {
+    	if ($v['url'] == $cur_url)
+    	{
+    		$navlist['middle'][$k]['active'] = 1;
+    		$noindex = true;
+    		$active += 1;
+    	}
+    }
+
+    if(!empty($ctype) && $active < 1)
     {
         foreach($catlist as $key => $val)
         {
@@ -1776,12 +1790,16 @@ function get_navigator($ctype = '', $catlist = array())
                 if(!empty($v['ctype']) && $v['ctype'] == $ctype && $v['cid'] == $val)
                 {
                     $navlist['middle'][$k]['active'] = 1;
-                    return $navlist;
+                    $noindex = true;
                 }
             }
         }
     }
-    $navlist['config']['index'] = 1;
+
+    if ($noindex == false) {
+        $navlist['config']['index'] = 1;
+    }
+
     return $navlist;
 }
 

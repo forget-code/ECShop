@@ -9,15 +9,15 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-21 10:31:35 +0800 (星期一, 21 一月 2008) $
- * $Id: goods.php 14007 2008-01-21 02:31:35Z fenghl $
+ * $Author: zhuwenyuan $
+ * $Date: 2008-02-19 09:43:06 +0800 (星期二, 19 二月 2008) $
+ * $Id: goods.php 14148 2008-02-19 01:43:06Z zhuwenyuan $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once('./includes/lib_goods.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'admin/includes/lib_goods.php');
 include_once(ROOT_PATH . 'includes/cls_image.php');
 $image = new cls_image($_CFG['bgcolor']);
 $exc = new exchange($ecs->table('goods'), $db, 'goods_id', 'goods_name');
@@ -83,12 +83,19 @@ if ($_REQUEST['act'] == 'list' || $_REQUEST['act'] == 'trash')
 
 elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['act'] == 'copy')
 {
-    include_once(ROOT_PATH.'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
-
-    admin_priv('goods_manage'); // 检查权限
+    include_once(ROOT_PATH . 'includes/fckeditor/fckeditor.php'); // 包含 html editor 类文件
 
     $is_add = $_REQUEST['act'] == 'add'; // 添加还是编辑的标识
+    $is_copy = $_REQUEST['act'] == 'copy'; //是否复制
     $code = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
+    if ($code == 'virual_card')
+    {
+        admin_priv('virualcard'); // 检查权限
+    }
+    else
+    {
+        admin_priv('goods_manage'); // 检查权限
+    }
 
     /* 如果是安全模式，检查目录是否存在 */
     if (ini_get('safe_mode') == 1 && (!file_exists('../images/'.date('Ym')) || !is_dir('../images/'.date('Ym'))))
@@ -167,6 +174,11 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
         /* 商品信息 */
         $sql = "SELECT * FROM " . $ecs->table('goods') . " WHERE goods_id = '$_REQUEST[goods_id]'";
         $goods = $db->getRow($sql);
+        
+        /* 虚拟卡商品复制时, 将其库存置为0*/
+        if ($is_copy && $code != '') {
+        	$goods['goods_number'] = 0;
+        }
 
         if (empty($goods) === true)
         {
@@ -370,9 +382,15 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
 
 elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 {
-    /* 检查权限 */
-    admin_priv('goods_manage');
     $code = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
+    if ($code == 'virual_card')
+    {
+        admin_priv('virualcard'); // 检查权限
+    }
+    else
+    {
+        admin_priv('goods_manage'); // 检查权限
+    }
 
     /* 检查货号是否重复 */
     if ($_POST['goods_sn'])
@@ -642,10 +660,10 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     }
 
     /* 处理商品数据 */
-    $is_promote = isset($_POST['is_promote']) ? 1 : 0;
     $shop_price = !empty($_POST['shop_price']) ? $_POST['shop_price'] : 0;
     $market_price = !empty($_POST['market_price']) ? $_POST['market_price'] : 0;
     $promote_price = !empty($_POST['promote_price']) ? floatval($_POST['promote_price'] ) : 0;
+    $is_promote = empty($promote_price) ? 0 : 1;
     $promote_start_date = ($is_promote && !empty($_POST['promote_start_date'])) ? local_strtotime($_POST['promote_start_date']) : 0;
     $promote_end_date = ($is_promote && !empty($_POST['promote_end_date'])) ? local_strtotime($_POST['promote_end_date']) : 0;
 
@@ -1305,7 +1323,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
         $url = 'goods.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-        header("Location: $url\n");
+        ecs_header("Location: $url\n");
         exit;
     }
 }
@@ -1320,7 +1338,7 @@ elseif ($_REQUEST['act'] == 'restore_goods')
 
     check_authz_json('remove_back'); // 检查权限
 
-    $exc->edit("is_delete = 0", $goods_id);
+    $exc->edit("is_delete = 0, add_time = '" . gmtime() . "'", $goods_id);
     clear_cache_files();
 
     $goods_name = $exc->get_name($goods_id);
@@ -1329,7 +1347,7 @@ elseif ($_REQUEST['act'] == 'restore_goods')
 
     $url = 'goods.php?act=query&' . str_replace('act=restore_goods', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -1450,7 +1468,7 @@ elseif ($_REQUEST['act'] == 'drop_goods')
     clear_cache_files();
     $url = 'goods.php?act=query&' . str_replace('act=drop_goods', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
 
     exit;
 }
@@ -1511,7 +1529,7 @@ elseif ($_REQUEST['act'] == 'drop_image')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'get_goods_list')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $filters = $json->decode($_GET['JSON']);
@@ -1534,7 +1552,7 @@ elseif ($_REQUEST['act'] == 'get_goods_list')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'add_link_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('goods_manage');
@@ -1578,7 +1596,7 @@ elseif ($_REQUEST['act'] == 'add_link_goods')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'drop_link_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('goods_manage');
@@ -1634,7 +1652,7 @@ elseif ($_REQUEST['act'] == 'drop_link_goods')
 
 elseif ($_REQUEST['act'] == 'add_group_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('goods_manage');
@@ -1671,7 +1689,7 @@ elseif ($_REQUEST['act'] == 'add_group_goods')
 
 elseif ($_REQUEST['act'] == 'drop_group_goods')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('goods_manage');
@@ -1709,7 +1727,7 @@ elseif ($_REQUEST['act'] == 'drop_group_goods')
 
 elseif ($_REQUEST['act'] == 'get_article_list')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     $filters =(array) $json->decode($_GET['JSON']);
@@ -1740,7 +1758,7 @@ elseif ($_REQUEST['act'] == 'get_article_list')
 
 elseif ($_REQUEST['act'] == 'add_goods_article')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('goods_manage');
@@ -1775,7 +1793,7 @@ elseif ($_REQUEST['act'] == 'add_goods_article')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'drop_goods_article')
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
     $json = new JSON;
 
     check_authz_json('goods_manage');

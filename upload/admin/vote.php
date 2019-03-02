@@ -9,14 +9,14 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: hackfan $
- * $Date: 2007-10-12 10:00:20 +0800 (星期五, 12 十月 2007) $
- * $Id: vote.php 12844 2007-10-12 02:00:20Z hackfan $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: vote.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 
 /* act操作项的初始化 */
 if (empty($_REQUEST['act']))
@@ -246,7 +246,7 @@ elseif ($_REQUEST['act'] == 'new_option')
 
             $url = 'vote.php?act=query_option&vid='.$vote_id.'&' . str_replace('act=new_option', '', $_SERVER['QUERY_STRING']);
 
-            header("Location: $url\n");
+            ecs_header("Location: $url\n");
             exit;
         }
     }
@@ -329,7 +329,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'vote.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -351,7 +351,7 @@ elseif ($_REQUEST['act'] == 'remove_option')
 
     $url = 'vote.php?act=query_option&vid='.$vote_id.'&' . str_replace('act=remove_option', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 

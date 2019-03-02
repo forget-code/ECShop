@@ -9,16 +9,16 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: scottye $
- * $Date: 2007-11-06 17:28:52 +0800 (星期二, 06 十一月 2007) $
- * $Id: activity.php 13461 2007-11-06 09:28:52Z scottye $
+ * $Author: testyang $
+ * $Date: 2008-01-28 18:33:06 +0800 (星期一, 28 一月 2008) $
+ * $Id: activity.php 14079 2008-01-28 10:33:06Z testyang $
  */
 
 define('IN_ECS', true);
 
-require_once('./includes/init.php');
-require_once('./includes/lib_order.php');
-include_once('includes/lib_transaction.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'includes/lib_order.php');
+include_once(ROOT_PATH . 'includes/lib_transaction.php');
 
 /* 载入语言文件 */
 require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/shopping_flow.php');

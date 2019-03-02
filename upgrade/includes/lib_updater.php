@@ -322,15 +322,14 @@ function update_version($next_ver)
 
 function dump_database($next_ver)
 {
-    global $db, $err;
+    global $db, $err, $prefix;
 
     include_once(ROOT_PATH . 'admin/includes/cls_sql_dump.php');
     require_once(ROOT_PATH . 'upgrade/packages/' . $next_ver . '/dump_table.php');
-    $path = ROOT_PATH . 'upgrade';
     @set_time_limit(300);
 
     $dump = new cls_sql_dump($db);
-    $run_log = ROOT_PATH . 'upgrade/run.log';
+    $run_log = ROOT_PATH . 'data/sqldata/run.log';
     $sql_file_name = $next_ver;
     $max_size = '2048';
     $vol = 1;
@@ -350,7 +349,7 @@ function dump_database($next_ver)
     $tables = array();
     foreach ($temp AS $table)
     {
-        $tables[$table] = -1;
+        $tables[$prefix . $table] = -1;
     }
 
     $dump->put_tables_list($run_log, $tables);
@@ -364,7 +363,7 @@ function dump_database($next_ver)
         return false;
     }
 
-    if(@file_put_contents(ROOT_PATH . 'upgrade/' . $sql_file_name . '.sql', $dump->dump_sql))
+    if(@file_put_contents(ROOT_PATH . 'data/sqldata/' . $sql_file_name . '.sql', $dump->dump_sql))
     {
         return true;
     }
@@ -378,7 +377,7 @@ function rollback($next_ver)
 {
     global $db, $prefix, $err;
 
-    $structure_path[] = ROOT_PATH . 'upgrade/' . $next_ver . '.sql';
+    $structure_path[] = ROOT_PATH . 'data/sqldata/' . $next_ver . '.sql';
 
     if(!file_exists($structure_path[0]))
     {

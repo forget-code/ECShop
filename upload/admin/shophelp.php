@@ -9,15 +9,15 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: dolphin $
- * $Date: 2008-01-21 16:19:07 +0800 (星期一, 21 一月 2008) $
- * $Id: shophelp.php 14017 2008-01-21 08:19:07Z dolphin $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: shophelp.php 14122 2008-02-01 15:40:15Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once("../includes/fckeditor/fckeditor.php");
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . "includes/fckeditor/fckeditor.php");
 
 /*初始化数据交换对象 */
 $exc_article = new exchange($ecs->table("article"), $db, 'article_id', 'title');
@@ -252,7 +252,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'shophelp.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -279,7 +279,7 @@ elseif ($_REQUEST['act'] == 'remove_art')
 
     $url = 'shophelp.php?act=query_art&cat='.$cat_id.'&' . str_replace('act=remove_art', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
 
     exit;
 }
@@ -306,7 +306,7 @@ elseif ($_REQUEST['act'] == 'add_catname')
 
             admin_log($cat_name, 'add', 'shophelpcat');
 
-            header("Location: shophelp.php?act=query\n");
+            ecs_header("Location: shophelp.php?act=query\n");
             exit;
         }
     }
@@ -315,7 +315,7 @@ elseif ($_REQUEST['act'] == 'add_catname')
         make_json_error($_LANG['js_languages']['no_catname']);
     }
 
-    header("Location: shophelp.php?act=list_cat\n");
+    ecs_header("Location: shophelp.php?act=list_cat\n");
     exit;
 }
 

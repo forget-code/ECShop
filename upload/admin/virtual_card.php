@@ -9,16 +9,16 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-17 11:03:50 +0800 (星期四, 17 一月 2008) $
- * $Id: virtual_card.php 13989 2008-01-17 03:03:50Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: virtual_card.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
 
 /* 包含文件 */
-require_once('includes/init.php');
-require_once('../includes/lib_code.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'includes/lib_code.php');
 
 /*------------------------------------------------------ */
 //-- 补货处理
@@ -424,7 +424,7 @@ elseif ($_REQUEST['act'] == 'remove_card')
 
         $url = 'virtual_card.php?act=query_card&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-        header("Location: $url\n");
+        ecs_header("Location: $url\n");
         exit;
     }
     else

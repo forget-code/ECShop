@@ -9,13 +9,13 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2007-12-27 16:25:22 +0800 (星期四, 27 十二月 2007) $
- * $Id: wholesale.php 13913 2007-12-27 08:25:22Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-02-01 23:40:15 +0800 (星期五, 01 二月 2008) $
+ * $Id: wholesale.php 14122 2008-02-01 15:40:15Z testyang $
  */
 
 define('IN_ECS', true);
-require('includes/init.php');
+require(dirname(__FILE__) . '/includes/init.php');
 include_once('../includes/lib_goods.php');
 
 /*------------------------------------------------------ */
@@ -94,7 +94,7 @@ elseif ($_REQUEST['act'] == 'remove')
 
     $url = 'wholesale.php?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
 
-    header("Location: $url\n");
+    ecs_header("Location: $url\n");
     exit;
 }
 
@@ -395,7 +395,7 @@ elseif ($_REQUEST['act'] == 'search_goods')
 {
     check_authz_json('whole_sale');
 
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
 
     $json   = new JSON;
     $filter = $json->decode($_GET['JSON']);

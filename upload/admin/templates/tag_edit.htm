@@ -2,7 +2,7 @@
 {include file="pageheader.htm"}
 {insert_scripts files="validator.js,../js/transport.js}
 <div class="main-div">
-<form method="post" action="tag_manage.php?act=update" name="theForm" onSubmit="return validate()">
+<form method="post" action="tag_manage.php" name="theForm" onSubmit="return validate()">
 <table cellspacing="1" cellpadding="3" width="100%">
   <tr>
     <td class="label">{$lang.tag_words}</td>
@@ -28,6 +28,7 @@
       <input type="submit" class="button" value="{$lang.button_submit}" />
       <input type="reset" class="button" value="{$lang.button_reset}" />
       <input type="hidden" name="id" value="{$tag.tag_id}" /></td>
+      <input type="hidden" name="act" value="{$insert_or_update}" />
   </tr>
 </table>
 </form>
@@ -47,7 +48,7 @@ onload = function()
 function validate()
 {
     validator = new Validator("theForm");
-    validator.required('tag_name', goods_name_not_empty);
+    validator.required('tag_name', tag_name_not_empty);
     return validator.passed();
 }
 

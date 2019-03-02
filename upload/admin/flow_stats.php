@@ -9,15 +9,15 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: arlicle $
- * $Date: 2007-10-25 17:12:57 +0800 (星期四, 25 十月 2007) $
- * $Id: flow_stats.php 13187 2007-10-25 09:12:57Z arlicle $
+ * $Author: testyang $
+ * $Date: 2008-01-28 19:27:47 +0800 (星期一, 28 一月 2008) $
+ * $Id: flow_stats.php 14080 2008-01-28 11:27:47Z testyang $
 */
 
 define('IN_ECS', true);
 
-require('includes/init.php');
-require_once('../languages/' .$_CFG['lang']. '/admin/statistic.php');
+require(dirname(__FILE__) . '/includes/init.php');
+require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/admin/statistic.php');
 $smarty->assign('lang', $_LANG);
 
 /* act操作项的初始化 */
@@ -52,7 +52,7 @@ if ($_REQUEST['act'] == 'view')
         $start_date = $today - 86400 * 7;
         $end_date   = $today;
     }
-        
+
     $start_date_arr = array();
     $end_date_arr = array();
     if(!empty($_POST['year_month']))
@@ -217,7 +217,7 @@ if ($_REQUEST['act'] == 'view')
             $key++;
             $date = local_date('Y-m', $val);
             $area_xml .= "<dataset seriesName='$date' color='" .chart_color($key). "' showValues='0'>";
-            
+
             foreach ($area_arr AS $k => $v)
             {
                 if (isset($category[$date][$k]))
@@ -303,7 +303,7 @@ if ($_REQUEST['act'] == 'view')
             $key++;
             $date = local_date('Y-m', $val);
             $from_xml .= "<dataset seriesName='$date' color='" .chart_color($key). "' showValues='0'>";
-            
+
             foreach ($domain_arr AS $k => $v)
             {
                 if (isset($category[$date][$k]))
@@ -319,7 +319,7 @@ if ($_REQUEST['act'] == 'view')
         }
         $from_xml .= "</chart>";
     }
-    
+
     /* 模板赋值 */
     $smarty->assign('ur_here',      $_LANG['flow_stats']);
     $smarty->assign('general_data', $general_xml);
@@ -330,7 +330,7 @@ if ($_REQUEST['act'] == 'view')
 
     $smarty->assign('start_date',   local_date('Y-m-d', $start_date));
     $smarty->assign('end_date',     local_date('Y-m-d', $end_date));
-    
+
     for ($i = 0; $i < 5; $i++)
     {
         if (isset($start_date_arr[$i]))
@@ -343,7 +343,7 @@ if ($_REQUEST['act'] == 'view')
         }
     }
     $smarty->assign('start_date_arr', $start_date_arr);
-    
+
     if (!$is_multi)
     {
         $filename = gmdate($_CFG['date_format'], $start_date + $timezone * 3600) . '_' .

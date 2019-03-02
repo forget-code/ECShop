@@ -9,9 +9,9 @@
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
- * $Author: fenghl $
- * $Date: 2008-01-16 09:25:22 +0800 (星期三, 16 一月 2008) $
- * $Id: lib_main.php 13978 2008-01-16 01:25:22Z fenghl $
+ * $Author: testyang $
+ * $Date: 2008-01-29 11:03:31 +0800 (星期二, 29 一月 2008) $
+ * $Id: lib_main.php 14081 2008-01-29 03:03:31Z testyang $
 */
 
 if (!defined('IN_ECS'))
@@ -539,7 +539,7 @@ function get_charset_list()
  */
 function make_json_response($content='', $error="0", $message='', $append=array())
 {
-    include_once('../includes/cls_json.php');
+    include_once(ROOT_PATH . 'includes/cls_json.php');
 
     $json = new JSON;
 

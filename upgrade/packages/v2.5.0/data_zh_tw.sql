@@ -7,6 +7,7 @@ INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_ra
 VALUES (
 '223', '2', 'timezone', 'options', '-12,-11,-10,-9,-8,-7,-6,-5,-4,-3.5,-3,-2,-1,0,1,2,3,3.5,4,4.5,5,5.5,5.75,6,6.5,7,8,9,9.5,10,11,12', '', '8', 1
 ),
+(121, 1, 'shop_notice', 'textarea', '', '', '商店公告', '1'),
 (224, 2, 'upload_size_limit', 'options', '0,64,128,256,512,1024,2048,4096', '', '0', '1'),
 (226, 2, 'cron_method', 'select', '0,1', '', '0', 1),
 (227, 2, 'comment_factor', 'select', '0,1,2,3', '', '0', '1'),
@@ -16,11 +17,13 @@ VALUES (
 (327, 3, 'name_of_region_2', 'text', '', '', '省', '1'),
 (328, 3, 'name_of_region_3', 'text', '', '', '市', '1'),
 (329, 3, 'name_of_region_4', 'text', '', '', '区', '1'),
+(330, 3, 'search_keywords', 'text', '', '', '', 0),
 (332, 3, 'related_goods_number', 'text', '', '', '4', '1'),
 (420, 4, 'min_goods_amount', 'text', '', '', '0', '1'),
 (421, 4, 'one_step_buy', 'select', '1,0', '', '0', '1'),
 (422, 4, 'invoice_type', 'manual', '', '', '', '1'),
 (423, 4, 'stock_dec_time', 'select', '1,0', '', '0', '1'),
+(424, 4, 'cart_confirm', 'options', '1,2,3,4', '', '3', '0'),
 (507, 5, 'mail_service', 'select', '0,1', '', '0', 0),
 (616, 6, 'affiliate', 'hidden', '', '', 'a:3:{s:6:"config";a:7:{s:6:"expire";d:24;s:11:"expire_unit";s:4:"hour";s:11:"separate_by";i:0;s:15:"level_point_all";s:2:"5%";s:15:"level_money_all";s:2:"1%";s:18:"level_register_all";i:2;s:17:"level_register_up";i:60;}s:4:"item";a:4:{i:0;a:2:{s:11:"level_point";s:3:"60%";s:11:"level_money";s:3:"60%";}i:1;a:2:{s:11:"level_point";s:3:"30%";s:11:"level_money";s:3:"30%";}i:2;a:2:{s:11:"level_point";s:2:"7%";s:11:"level_money";s:2:"7%";}i:3;a:2:{s:11:"level_point";s:2:"3%";s:11:"level_money";s:2:"3%";}}s:2:"on";i:0;}', 1),
 (617, 6, 'captcha', 'hidden', '', '', '0', 1),
@@ -45,24 +48,24 @@ UPDATE `ecs_shop_config` SET `parent_id` = 6 WHERE `code` IN ('group_goods_numbe
 
 -- 郵件驗證
 DELETE FROM `ecs_mail_templates`  WHERE template_code = 'virtual_card';
-INSERT INTO `ecs_mail_templates` (`template_id`, `template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`, `type`) VALUES 
-(NULL, 'register_validate', 1, '郵件驗證', '{$user_name}您好！\r\n\r\n<br><br>這封郵件是由 {$shop_name} 所發出的。你收到這封郵件是為了驗證你註冊的郵件信箱是否有效。如果您已經通過驗證了，請忽略這封郵件。\r\n<br>請點選以下連結(或者複製到您的瀏覽器)來驗證你的郵件地址:<br><br>\r\n\r\n<a href="{$validate_email}" target="_blank">{$validate_email}\r\n\r\n<br><br>{$shop_name}\r\n<br>{$send_date}', 0, 'template'),
-(NULL, 'virtual_card', 0, '虛擬卡片', '親愛的{$order.consignee}\r\n你好！您的訂單{$order.order_sn}中{$goods.goods_name} 商品的詳細信息如下:\r\n{foreach from=$virtual_card item=card}\r\n{if $card.card_sn}卡號：{$card.card_sn}{/if}{if $card.card_password}卡片密碼：{$card.card_password}{/if}{if $card.end_date}截至日期：{$card.end_date}{/if}\r\n{/foreach}\r\n再次感謝您對我們的支持。歡迎您的再次光臨。\r\n\r\n{$shop_name}\r\n{$send_date}', 0, 'template'),
+INSERT INTO `ecs_mail_templates` (`template_id`, `template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`, `type`) VALUES
+(NULL, 'register_validate', 1, '郵件驗證', '{$user_name}您好！\r\n\r\n<br><br>這封郵件是由 {$shop_name} 所發出的。你收到這封郵件是為了驗證你註冊的郵件信箱是否有效。如果您已經通過驗證了，請忽略這封郵件。\r\n<br>請點選以下連結(或者複製到您的瀏覽器)來驗證你的郵件地址:<br><br>\r\n\r\n<a href="{$validate_email}" target="_blank">{$validate_email}\r\n\r\n<br><br>{$shop_name}\r\n<br>{$send_date}', 0, 'template');
+INSERT INTO `ecs_mail_templates` (`template_id`, `template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`, `type`) VALUES
+(NULL, 'virtual_card', 0, '虛擬卡片', '親愛的{$order.consignee}\r\n你好！您的訂單{$order.order_sn}中{$goods.goods_name} 商品的詳細信息如下:\r\n{foreach from=$virtual_card item=card}\r\n{if $card.card_sn}卡號：{$card.card_sn}{/if}{if $card.card_password}卡片密碼：{$card.card_password}{/if}{if $card.end_date}截至日期：{$card.end_date}{/if}\r\n{/foreach}\r\n再次感謝您對我們的支持。歡迎您的再次光臨。\r\n\r\n{$shop_name}\r\n{$send_date}', 0, 'template');
+INSERT INTO `ecs_mail_templates` (`template_id`, `template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`, `type`) VALUES
 (NULL, 'remind_of_new_order', 0, '新订单通知', '亲爱的店长，您好：\n   快来看看吧，又有新订单了。订单金额为{$order.order_amount}，收货人是{$order.consignee}，地址是{$order.address}，电话是{$order.tel} {$order.mobile}。\n\n               系统提醒\n               {$send_date}', 0, 'template');
+
 UPDATE `ecs_mail_templates` SET template_content = '親愛的{$order.consignee}。你好！\r\n\r\n您的訂單{$order.order_sn}已於{$send_time}按照您預定的配送方式給您發貨了。\r\n\r\n{if $order.invoice_no}發貨單號是{$order.invoice_no}。{/if}\r\n\r\n在您收到貨物之後請點擊下面的鏈接確認您已經收到貨物：\r\n{$confirm_url}\r\n如果您還沒有收到貨物可以點擊以下鏈接給我們留言：\r\n{$send_msg_url}\r\n\r\n再次感謝您對我們的支持。歡迎您的再次光臨。 \r\n\r\n{$shop_name}\r\n{$send_date}' WHERE template_code = 'deliver_notice';
 
 -- 更新支付插件
 UPDATE `ecs_payment` SET is_online = 1 WHERE pay_code IN ('alipay','cappay','ctopay','ips','kuaiqian','nps','pay800','paypal','paypalcn','tenpay','udpay','xpay','yeepay','dodolink');
 
--- 商店公告和縮略圖背景色
-INSERT INTO `ecs_shop_config` (`id` ,`parent_id` ,`code` ,`type` ,`store_range` ,`store_dir` ,`value` ,`sort_order`)
-VALUES ('121', '1', 'shop_notice', 'textarea', '', '', '商店公告', '0');
-
+-- 縮略圖背景色
 INSERT INTO `ecs_shop_config` (`id` ,`parent_id` ,`code` ,`type` ,`store_range` ,`store_dir` ,`value` ,`sort_order`)
 VALUES ('230', '2', 'bgcolor', 'text', '', '', '#FFFFFF', '0');
 
 -- 自定義導航欄
-INSERT INTO `ecs_nav` (`id`, `name`, `ifshow`, `vieworder`, `opennew`, `url`, `type`) VALUES 
+INSERT INTO `ecs_nav` (`id`, `name`, `ifshow`, `vieworder`, `opennew`, `url`, `type`) VALUES
 (1, '用戶中心', 1, 0, 0, 'user.php', 'middle'),
 (2, '選購中心', 1, 1, 0, 'pick_out.php', 'top'),
 (3, '查看購物車', 1, 0, 0, 'flow.php', 'top'),
@@ -87,11 +90,6 @@ INSERT INTO `ecs_mail_templates` (`template_code`, `is_html`, `template_subject`
 INSERT INTO `ecs_article` (`article_id`, `cat_id`, `title`, `content`, `author`, `author_email`, `keywords`, `article_type`, `is_open`, `add_time`, `file_url`, `open_type`) VALUES
 (null, -1, '用戶協議', '', '', '', '', 0, 1, 0, '', 0);
 
--- 添加商店設置數據
-INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` , `sort_order` )  VALUES
-(330, 3, 'search_keywords', 'text', '', '', '', 0),
-(424, 4, 'cart_confirm', 'options', '1,2,3,4', '', '2', 0);
-
 -- UPDATE `ecs_shop_config` SET value = '20' WHERE id='212';
 UPDATE `ecs_shop_config` SET value = '30' WHERE id='325';
 -- UPDATE `ecs_shop_config` SET value = '0' WHERE id='402';
@@ -99,7 +97,7 @@ DELETE FROM `ecs_shop_config` WHERE id in (308 , 309 , 310 , 311 , 322);
 
 
 -- 积分规则设置
-REPLACE INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES 
+REPLACE INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`, `sort_order`) VALUES
 (621, 6, 'points_rule', 'hidden', '', '', '', '');
 
 -- 订单确认邮件模版改个变量

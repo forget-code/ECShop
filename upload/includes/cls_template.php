@@ -371,6 +371,7 @@ class cls_template
                     }
                     else
                     {
+                        array_pop($this->_patchstack);
                         $output = '<?php endforeach; endif; unset($_from); ?>';
                     }
                     $output .= "<?php \$this->pop_vars();; ?>";
@@ -415,7 +416,10 @@ class cls_template
 
                 case 'foreach':
                     $this->_foreachmark = 'foreach';
-
+                    if(!isset($this->_patchstack))
+                    {
+                        $this->_patchstack = array();
+                    }
                     return $this->_compile_foreach_start(substr($tag, 8));
                     break;
 
@@ -617,6 +621,10 @@ class cls_template
         {
             $t = explode('.', $val);
             $_var_name = array_shift($t);
+            if (isset($this->_var[$_var_name]) && isset($this->_patchstack[$_var_name]))
+            {
+                $_var_name = $this->_patchstack[$_var_name];
+            }
             if ($_var_name == 'smarty')
             {
                  $p = $this->_compile_smarty_ref($t);
@@ -799,6 +807,15 @@ class cls_template
         $attrs = $this->get_para($tag_args, 0);
         $arg_list = array();
         $from = $attrs['from'];
+        if(isset($this->_var[$attrs['item']]) && !isset($this->_patchstack[$attrs['item']]))
+        {
+            $this->_patchstack[$attrs['item']] = $attrs['item'] . '_1';
+            $attrs['item'] = $this->_patchstack[$attrs['item']];
+        }
+        else
+        {
+            $this->_patchstack[$attrs['item']] = $attrs['item'];
+        }
 
         $item = $this->get_val($attrs['item']);
 

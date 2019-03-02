@@ -8,7 +8,7 @@
       <td align="center"><a href="{$auction.url}"><img src="{$auction.thumb}" border="0" alt="{$auction.goods_name|escape:html}" class="thumb" /></a></td>
     </tr>
     <tr>
-      <td><a href="{$auction.url}">{$auction.goods_name|escape:html}</a> <br />
+      <td><a href="{$auction.url}" title="{$auction.goods_name|escape:html}">{$auction.short_style_name|escape:html}</a> <br />
         <span class="goods-price">{$auction.formated_start_price}</span> </td>
     </tr>
   </table>
