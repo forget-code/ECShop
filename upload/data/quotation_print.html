@@ -27,6 +27,7 @@
 <table width="100%" cellspacing="0" cellpadding="0">
     <tr>
         <th>{$lang.goods_name}</th>
+        <th>{$lang.specifications}</th>
         <th>{$lang.goods_category}</th>
         <!--{if $cfg.use_storage and $cfg.show_goodsnumber}-->
         <th>{$lang.goods_inventory}</th>
@@ -40,13 +41,14 @@
     <!--{foreach from=$goods_list item=goods}-->
     <tr>
         <td>{$goods.goods_name}</td>
+        <td>{$goods.product_name}</td>
         <td>{$goods.goods_category}</td>
         <!--{if $cfg.use_storage and $cfg.show_goodsnumber}-->
         <td>{$goods.goods_number}</td>
         <!-- {/if} -->
-        <td>{$goods.shop_price}</td>         
-        <!--{foreach from=$extend_rank[$goods.goods_id] item=ext_rank}-->
-        <td>{$ext_rank.price}</td>       
+        <td>{$goods.shop_price}</td>
+        <!--{foreach from=$extend_rank[$goods.goods_key] item=ext_rank}-->
+        <td>{$ext_rank.price}</td>
         <!--{/foreach}-->
     </tr>
     <!--{/foreach}-->

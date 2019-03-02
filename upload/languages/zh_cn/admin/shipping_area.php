@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心配送方式管理语言文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: shipping_area.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: shipping_area.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['shipping_area_name'] = '配送区域名称';
@@ -52,6 +52,7 @@ $_LANG['disable_shipping_success'] = '指定的配送方式已经从该配送区
 $_LANG['js_languages']['no_area_name'] = '配送区域名称不能为空。';
 $_LANG['js_languages']['del_shipping_area'] = '请先删除该配送区域，然后重新添加。';
 $_LANG['js_languages']['invalid_free_mondy'] = '免费额度不能为空且必须是一个整数。';
+$_LANG['js_languages']['blank_shipping_area'] = '配送区域的所辖区域不能为空。';
 $_LANG['js_languages']['lang_remove'] = '移除';
 $_LANG['js_languages']['lang_remove_confirm'] = '您确定要移除该地区吗？';
 $_LANG['js_languages']['lang_disabled'] = '禁用';

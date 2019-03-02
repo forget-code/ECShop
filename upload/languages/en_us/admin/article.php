@@ -3,7 +3,7 @@
 /**
  * ECSHOP Article management language item
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: article.php 16615 2009-08-26 10:07:39Z wangleisvn $
+ * $Author: liubo $
+ * $Id: article.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['title'] ='Title';
@@ -40,6 +40,7 @@ $_LANG['isopen'] ='Open';
 $_LANG['isclose'] ='Close';
 $_LANG['no_article'] = 'There is no article.';
 $_LANG['no_select_article'] = 'Please select an article.';
+$_LANG['no_select_act'] = 'Select Article Categories！';
 
 $_LANG['display'] = 'Display the article content.';
 $_LANG['download'] = 'Download';

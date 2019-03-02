@@ -1,4 +1,4 @@
-<!-- $Id: vote_option.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: vote_option.htm 16902 2009-12-18 03:56:55Z sxc_shop $ -->
 {if $full_page}
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
@@ -18,6 +18,7 @@
 <table cellspacing='1' cellpadding='3' id='listTable'>
   <tr>
     <th>{$lang.option_name}</th>
+    <th>{$lang.option_order}</th>
     <th>{$lang.vote_count}</th>
     <th>{$lang.handler}</th>
   </tr>
@@ -26,6 +27,7 @@
       <td align="left" class="first-cell">
       <span onclick="javascript:listTable.edit(this, 'edit_option_name', {$list.option_id})">{$list.option_name|escape:"html"}</span>
       </td>
+      <td><span onclick="javascript:listTable.edit(this, 'edit_option_order', {$list.option_id})">{$list.option_order}</span></td>
       <td>{$list.option_count}</td>
       <td><a href="javascript:;" onclick="listTable.remove({$list.option_id}, '{$lang.drop_confirm}', 'remove_option')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="16" width="16"></a>
       </td>

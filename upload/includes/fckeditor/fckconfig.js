@@ -132,6 +132,17 @@ FCKConfig.ToolbarSets["Normal"] = [
   ['TextColor','BGColor']
 ] ;
 
+FCKConfig.ToolbarSets["Mail"] = [
+  ['Cut','Copy','Paste','PasteText','PasteWord','-','Undo','Redo','-','Find','Replace','-','RemoveFormat'],
+  ['Table'],
+  ['FitWindow','-','Source'],
+  '/',
+  ['FontFormat','FontSize'],
+  ['Bold','Italic','Underline'],
+  ['OrderedList','UnorderedList','-','Outdent','Indent'],
+  ['JustifyLeft','JustifyCenter','JustifyRight'],
+  ['TextColor','BGColor']
+];
 
 FCKConfig.EnterMode = 'p' ;			// p | div | br
 FCKConfig.ShiftEnterMode = 'br' ;	// p | div | br

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 安装程序 之 控制器
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: index.php 16885 2009-12-14 09:38:40Z liubo $
+ * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -20,7 +20,7 @@ if (isset($_REQUEST['dbhost']) || isset($_REQUEST['dbname']) || isset($_REQUEST[
     exit;
 }
 require(dirname(__FILE__) . '/includes/init.php');
-
+session_start();
 /* 初始化语言变量 */
 $installer_lang = isset($_REQUEST['lang']) ? trim($_REQUEST['lang']) : 'zh_cn';
 
@@ -28,7 +28,7 @@ if ($installer_lang != 'zh_cn' && $installer_lang != 'zh_tw' && $installer_lang 
 {
     $installer_lang = 'zh_cn';
 }
-
+$_SESSION['ecs_lang'] = $installer_lang;
 /* 加载安装程序所使用的语言包 */
 $installer_lang_package_path = ROOT_PATH . 'install/languages/' . $installer_lang . '.php';
 if (file_exists($installer_lang_package_path))
@@ -43,7 +43,7 @@ else
 
 /* 初始化流程控制变量 */
 $step = isset($_REQUEST['step']) ? $_REQUEST['step'] : 'welcome';
-if (file_exists(ROOT_PATH . 'data/install.lock'))
+if (file_exists(ROOT_PATH . 'data/install.lock') && $step != 'active')
 {
     $step = 'error';
     $err->add($_LANG['has_locked_installer']);
@@ -58,6 +58,9 @@ if (file_exists(ROOT_PATH . 'data/install.lock'))
 switch ($step)
 {
 case 'welcome' :
+    $_SESSION['welcome']['ucapi'] = $_POST['ucapi'];
+    $_SESSION['welcome']['ucfounderpw'] = $_POST['ucfounderpw'];
+    $_SESSION['welcome']['installer_lang'] = $installer_lang;
     $smarty->assign('ucapi', $_POST['ucapi']);
     $smarty->assign('ucfounderpw', $_POST['ucfounderpw']);
     $smarty->assign('installer_lang', $installer_lang);
@@ -102,6 +105,16 @@ case 'check' :
     }
 
     $ui = (!empty($_POST['user_interface']))?$_POST['user_interface'] : $_GET['ui'];
+    $_SESSION['check']['ucapi'] = $_POST['ucapi'];
+    $_SESSION['check']['ucfounderpw'] = $_POST['ucfounderpw'];
+    $_SESSION['check']['installer_lang'] = $installer_lang;
+    $_SESSION['check']['system_info'] = get_system_info();
+    $_SESSION['check']['dir_checking'] = $dir_checking['detail'];
+    $_SESSION['check']['has_unwritable_tpl'] = $has_unwritable_tpl;
+    $_SESSION['check']['template_checking'] = $template_checking;
+    $_SESSION['check']['rename_priv'] = $rename_priv;
+    $_SESSION['check']['disabled'] = $disabled;
+    $_SESSION['check']['userinterface'] = $ui;
     $smarty->assign('ucapi', $_POST['ucapi']);
     $smarty->assign('ucfounderpw', $_POST['ucfounderpw']);
     $smarty->assign('installer_lang', $installer_lang);
@@ -144,6 +157,17 @@ case 'setting_ui' :
     }
 
     $show_timezone = PHP_VERSION >= '5.1' ? 'yes' : 'no';
+    $timezones = get_timezone_list($installer_lang);
+    $_SESSION['setting_ui']['ucapi'] = $_POST['ucapi'];
+    $_SESSION['setting_ui']['ucfounderpw'] = $_POST['ucfounderpw'];
+    $_SESSION['setting_ui']['installer_lang'] = $installer_lang;
+    $_SESSION['setting_ui']['checked'] = $checked;
+    $_SESSION['setting_ui']['disabled'] = $disabled;
+    $_SESSION['setting_ui']['goods_types'] = $goods_types;
+    $_SESSION['setting_ui']['show_timezone'] = $show_timezone;
+    $_SESSION['setting_ui']['local_timezone'] = get_local_timezone();
+    $_SESSION['setting_ui']['timezones'] = $timezones;
+    $_SESSION['setting_ui']['userinterface'] = empty($_GET['ui'])?'ecshop':$_GET['ui'];
     $smarty->assign('ucapi', $_POST['ucapi']);
     $smarty->assign('ucfounderpw', $_POST['ucfounderpw']);
     $smarty->assign('installer_lang', $installer_lang);
@@ -152,7 +176,7 @@ case 'setting_ui' :
     $smarty->assign('goods_types', $goods_types);
     $smarty->assign('show_timezone', $show_timezone);
     $smarty->assign('local_timezone', get_local_timezone());
-    $smarty->assign('timezones', get_timezone_list($installer_lang));
+    $smarty->assign('timezones', $timezones);
     $smarty->assign('userinterface', empty($_GET['ui'])?'ecshop':$_GET['ui']);
     $smarty->display('setting.php');
 
@@ -380,9 +404,32 @@ case 'done' :
     else
     {
         @unlink(ROOT_PATH .'data/config_temp.php');
-        $smarty->assign('spt_code', get_spt_code());
+        $spt_code = get_spt_code();
+        $_SESSION['done']['spt_code'] = $spt_code;
+        $smarty->assign('spt_code', spt_code);
         $smarty->display('done.php');
     }
+
+    break;
+
+case 'active' :
+    $path = dirname(dirname($_SERVER['PHP_SELF']));
+    if ($path != '/')
+    {
+        $path .= '/';
+    }
+    $admin_url = 'http://'.$_SERVER['HTTP_HOST'].$path.'admin';
+    $link_url = base64_encode($admin_url);
+    $_SESSION['active']['installer_lang'] = $installer_lang;
+    $_SESSION['active']['admin_url'] = $admin_url;
+    $_SESSION['active']['link_url'] = $link_url;
+    $_SESSION['active']['nowtime'] = time();
+    $smarty->assign('installer_lang', $installer_lang);
+    $smarty->assign('admin_url', $admin_url);
+    $smarty->assign('link_url', $link_url);
+    $smarty->assign('nowtime', time());
+    $smarty->assign('spt_code', spt_code);
+    $smarty->display('active.php');
 
     break;
 

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户相关函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_clips.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_clips.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -102,7 +102,7 @@ function get_message_list($user_id, $user_name, $num, $start, $order_id = 0)
     $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('feedback');
     if ($order_id)
     {
-        $sql .= " WHERE parent_id = 0 AND order_id = '$order_id' ORDER BY msg_time DESC";
+        $sql .= " WHERE parent_id = 0 AND order_id = '$order_id' AND user_id = '$user_id' ORDER BY msg_time DESC";
     }
     else
     {
@@ -577,7 +577,7 @@ function get_user_default($user_id)
     $info['formated_credit_line'] = price_format($info['credit_line'], false);
 
     //如果$_SESSION中时间无效说明用户是第一次登录。取当前登录时间。
-    $last_time = !isset($_SESSION['last_time']) ? $row['last_time'] : $_SESSION['last_time'];
+    $last_time = !isset($_SESSION['last_time']) ? $row['last_login'] : $_SESSION['last_time'];
 
     if ($last_time == 0)
     {

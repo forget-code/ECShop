@@ -3,7 +3,7 @@
 /**
  * ECSHOP Time JS language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,7 +11,7 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
+ * $Author: liubo $
  * $Id: calendar.php 14481 2008-07-20 11:23:01Z apachen$
 */
 

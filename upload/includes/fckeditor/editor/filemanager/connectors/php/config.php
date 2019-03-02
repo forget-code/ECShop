@@ -90,6 +90,10 @@ else
 {
     $enable = false;
 }
+
+/* 载入系统参数 */
+$_CFG = load_config();
+
 $Config['Enabled'] = $enable;
 
 // SECURITY: You must explicitly enable this "connector". (Set it to "true").

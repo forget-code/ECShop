@@ -3,7 +3,7 @@
 /**
  * ECSHOP 会员资金管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -160,7 +160,7 @@ function order_list()
     {
         /* 过滤条件 */
         $filter['keywords'] = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keywords'] = json_str_iconv($filter['keywords']);
         }

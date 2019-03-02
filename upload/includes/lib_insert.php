@@ -3,14 +3,14 @@
 /**
  * ECSHOP 动态内容函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_insert.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_insert.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -290,6 +290,62 @@ function insert_comments($arr)
 
     return $val;
 }
+
+
+/**
+ * 调用商品购买记录
+ *
+ * @access  public
+ * @return  string
+ */
+function insert_bought_notes($arr)
+{
+    $need_cache = $GLOBALS['smarty']->caching;
+    $need_compile = $GLOBALS['smarty']->force_compile;
+
+    $GLOBALS['smarty']->caching = false;
+    $GLOBALS['smarty']->force_compile = true;
+
+    /* 商品购买记录 */
+    $sql = 'SELECT u.user_name, og.goods_number, oi.add_time, IF(oi.order_status IN (2, 3, 4), 0, 1) AS order_status ' .
+           'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS oi LEFT JOIN ' . $GLOBALS['ecs']->table('users') . ' AS u ON oi.user_id = u.user_id, ' . $GLOBALS['ecs']->table('order_goods') . ' AS og ' .
+           'WHERE oi.order_id = og.order_id AND ' . time() . ' - oi.add_time < 2592000 AND og.goods_id = ' . $arr['id'] . ' ORDER BY oi.add_time DESC LIMIT 5';
+    $bought_notes = $GLOBALS['db']->getAll($sql);
+
+    foreach ($bought_notes as $key => $val)
+    {
+        $bought_notes[$key]['add_time'] = local_date("Y-m-d G:i:s", $val['add_time']);
+    }
+
+    $sql = 'SELECT count(*) ' .
+           'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS oi LEFT JOIN ' . $GLOBALS['ecs']->table('users') . ' AS u ON oi.user_id = u.user_id, ' . $GLOBALS['ecs']->table('order_goods') . ' AS og ' .
+           'WHERE oi.order_id = og.order_id AND ' . time() . ' - oi.add_time < 2592000 AND og.goods_id = ' . $arr['id'];
+    $count = $GLOBALS['db']->getOne($sql);
+
+
+    /* 商品购买记录分页样式 */
+    $pager = array();
+    $pager['page']         = $page = 1;
+    $pager['size']         = $size = 5;
+    $pager['record_count'] = $count;
+    $pager['page_count']   = $page_count = ($count > 0) ? intval(ceil($count / $size)) : 1;;
+    $pager['page_first']   = "javascript:gotoBuyPage(1,$arr[id])";
+    $pager['page_prev']    = $page > 1 ? "javascript:gotoBuyPage(" .($page-1). ",$arr[id])" : 'javascript:;';
+    $pager['page_next']    = $page < $page_count ? 'javascript:gotoBuyPage(' .($page + 1) . ",$arr[id])" : 'javascript:;';
+    $pager['page_last']    = $page < $page_count ? 'javascript:gotoBuyPage(' .$page_count. ",$arr[id])"  : 'javascript:;';
+
+    $GLOBALS['smarty']->assign('notes', $bought_notes);
+    $GLOBALS['smarty']->assign('pager', $pager);
+
+
+    $val= $GLOBALS['smarty']->fetch('library/bought_notes.lbi');
+
+    $GLOBALS['smarty']->caching = $need_cache;
+    $GLOBALS['smarty']->force_compile = $need_compile;
+
+    return $val;
+}
+
 
 /**
  * 调用在线调查信息

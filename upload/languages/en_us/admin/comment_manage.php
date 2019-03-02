@@ -3,7 +3,7 @@
 /**
  * ECSHOP Comment management\'s language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: comment_manage.php 15646 2009-02-23 08:33:00Z zblikai $
+ * $Author: liubo $
+ * $Id: comment_manage.php 17217 2011-01-19 06:29:08Z liubo $
 */
 $_LANG['comment_id'] = 'ID';
 $_LANG['user_name'] = 'Username';
@@ -21,7 +21,8 @@ $_LANG['to'] = 'about';
 $_LANG['send_comment'] = '';
 $_LANG['user_name'] = 'Username';
 $_LANG['email'] = 'Email';
-$_LANG['anonymous'] = '匿名用户';
+$_LANG['anonymous'] = 'Anonymous';
+$_LANG['remail'] = 'Re-issued e-mail';
 
 $_LANG['comment_type'] = 'Type';
 $_LANG['comment_obj'] = 'Comment object';
@@ -34,6 +35,7 @@ $_LANG['yes_reply'] = 'Replied';
 $_LANG['admin_user_name'] = 'Administrator';
 
 $_LANG['type'] = array('Product','Article');
+$_LANG['send_email_notice'] = 'Email notification';
 
 $_LANG['ip_address'] = 'IP';
 $_LANG['comment_rank'] = 'Rank';
@@ -69,8 +71,10 @@ $_LANG['js_languages']['no_content'] = 'Please enter comment contents!';
 $_LANG['have_reply_content'] = 'TIP: The comment has replied, if you reply the message again, the old message will be losed!';
 
 
-$_LANG['cfm_allow'] = '你确定要允许显示所选评论吗？';
-$_LANG['cfm_remove'] = '你确定要删除所选评论吗？';
-$_LANG['cfm_deny'] = '你确定要禁止显示所选评论吗？';
+$_LANG['cfm_allow'] = 'Are you sure you want to allow shows the selected comments?';
+$_LANG['cfm_remove'] = 'Are you sure you want to delete the selected comments?';
+$_LANG['cfm_deny'] = 'Are you sure you want to ban shows the selected comments?';
+
+$_LANG['mail_send_fail'] = 'Mail sent failed, please check the e-mail server settings and try again.';
 
 ?>

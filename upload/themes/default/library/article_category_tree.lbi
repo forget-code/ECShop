@@ -1,4 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- {if $article_categories} -->
 <div class="box">
  <div class="box_1">
   <h3><span>{$lang.article_cat}</span></h3>
@@ -13,3 +14,4 @@
  </div>
 </div>
 <div class="blank5"></div>
+<!-- {/if} -->

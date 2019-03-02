@@ -3,20 +3,20 @@
 /**
  * ECSHOP 安装程序语言文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: zh_cn.php 16885 2009-12-14 09:38:40Z liubo $
+ * $Id: zh_cn.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 /* 通用语言项 */
 $_LANG['prev_step'] = '上一步：';
 $_LANG['next_step'] = '下一步：';
-$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">上海商派网络科技有限公司</a>。保留所有权利。';
+$_LANG['copyright'] = '&copy; 2005-2011 <a href="http://www.ecshop.com" target="_blank">上海商派网络科技有限公司</a>。保留所有权利。';
 
 
 /* 欢迎页 */
@@ -28,6 +28,7 @@ $_LANG['americanese'] = 'English';
 $_LANG['agree_license'] = '我已仔细阅读，并同意上述条款中的所有内容';
 $_LANG['check_system_environment'] = '检测系统环境';
 $_LANG['setup_environment'] = '配置安装环境';
+$_LANG['loading'] = '正在加载，请稍等...';
 
 /* UCenter 安装配置 */
 $_LANG['setup_title'] = '请选择用户接口方式';
@@ -111,6 +112,7 @@ $_LANG['mobile2'] = '精品手机';
 $_LANG['install_at_once'] = '立即安装';
 $_LANG['default_friend_link'] = 'ECSHOP 网上商店管理系统';
 $_LANG['maifou_friend_link'] = '免费申请网店';
+$_LANG['wdwd_friend_link']='免费开独立网店';
 $_LANG['monitor_title'] = '安装程序监视器';
 $_LANG['admin_user'][] = '商品列表|goods.php?act=list';
 $_LANG['admin_user'][] = '订单列表|order.php?act=list';

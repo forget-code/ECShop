@@ -2,14 +2,14 @@
 /**
  * ECSHOP 控制台首页
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: index.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -188,6 +188,11 @@ elseif ($_REQUEST['act'] == 'main')
     {
         $warning[] = $_LANG['remove_upgrade'];
     }
+    
+    if (file_exists('../demo'))
+    {
+        $warning[] = $_LANG['remove_demo'];
+    }
 
     $open_basedir = ini_get('open_basedir');
     if (!empty($open_basedir))
@@ -315,7 +320,7 @@ elseif ($_REQUEST['act'] == 'main')
     ' FROM ' .$ecs->table('order_info') .
     " WHERE 1 " . order_query_sql('await_ship'));
     $status['await_ship']  = CS_AWAIT_SHIP;
-
+    
     /* 待付款的订单： */
     $order['await_pay']    = $db->GetOne('SELECT COUNT(*)'.
     ' FROM ' .$ecs->table('order_info') .
@@ -326,6 +331,11 @@ elseif ($_REQUEST['act'] == 'main')
     $order['unconfirmed']  = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('order_info').
     " WHERE 1 " . order_query_sql('unconfirmed'));
     $status['unconfirmed'] = OS_UNCONFIRMED;
+
+    /* “部分发货”的订单 */
+    $order['shipped_part']  = $db->GetOne('SELECT COUNT(*) FROM ' .$ecs->table('order_info').
+    " WHERE  shipping_status=" .SS_SHIPPED_PART);
+    $status['shipped_part'] = OS_SHIPPED_PART;
 
 //    $today_start = mktime(0,0,0,date('m'),date('d'),date('Y'));
     $order['stats']        = $db->getRow('SELECT COUNT(*) AS oCount, IFNULL(SUM(order_amount), 0) AS oAmount' .
@@ -477,10 +487,11 @@ elseif ($_REQUEST['act'] == 'main')
 }
 elseif ($_REQUEST['act'] == 'main_api')
 {
-        /* 如果管理员的最后登陆时间大于24小时则检查最新版本 */
-    if (gmtime() - $_SESSION['last_check'] > (3600 * 12))
-    {
+    require_once(ROOT_PATH . '/includes/lib_base.php');
+    $data = read_static_cache('api_str');
 
+    if($data === false || API_TIME < date('Y-m-d H:i:s',time()-43200))
+    {
         include_once(ROOT_PATH . 'includes/cls_transport.php');
         $ecs_version = VERSION;
         $ecs_lang = $_CFG['lang'];
@@ -505,14 +516,78 @@ elseif ($_REQUEST['act'] == 'main_api')
         $ecs_style = $style;
         $shop_url = urlencode($ecs->url());
 
-        $apiget = "ver= $ecs_version &lang= $ecs_lang &release= $ecs_release &php_ver= $php_ver &mysql_ver= $mysql_ver &ocount= $ocount &oamount= $oamount &gcount= $gcount &charset= $ecs_charset &usecount= $ecs_user &template= $ecs_template &style= $ecs_style &url= $shop_url ";
+        $patch_file = file_get_contents(ROOT_PATH.ADMIN_PATH."/patch_num");
+
+        $apiget = "ver= $ecs_version &lang= $ecs_lang &release= $ecs_release &php_ver= $php_ver &mysql_ver= $mysql_ver &ocount= $ocount &oamount= $oamount &gcount= $gcount &charset= $ecs_charset &usecount= $ecs_user &template= $ecs_template &style= $ecs_style &url= $shop_url &patch= $patch_file ";
 
         $t = new transport;
         $api_comment = $t->request('http://api.ecshop.com/checkver.php', $apiget);
         $api_str = $api_comment["body"];
         echo $api_str;
+        
+        $f=ROOT_PATH . 'data/config.php'; 
+        file_put_contents($f,str_replace("'API_TIME', '".API_TIME."'","'API_TIME', '".date('Y-m-d H:i:s',time())."'",file_get_contents($f)));
+        
+        write_static_cache('api_str', $api_str);
+    }
+    else 
+    {
+        echo $data;
+    }
+
+}
+elseif ($_REQUEST['act'] == 'menu_api')
+{
+    if (!admin_priv('all','',false))
+    {
+        exit();
+    }
+    require_once(ROOT_PATH . '/includes/lib_base.php');
+    $data = read_static_cache('menu_api');
+
+    if($data === false || (isset($data['api_time']) && $data['api_time']<date('Ymd')))
+    {
+        include_once(ROOT_PATH . 'includes/cls_transport.php');
+        $ecs_lang = $_CFG['lang'];
+        $ecs_charset = strtoupper(EC_CHARSET);
+        $ecs_version = VERSION;
+        $apiget = "ver= $ecs_version &ecs_lang= $ecs_lang &charset= $ecs_charset ";
+        $t = new transport;
+        $api_comment = $t->request('http://cloud.ecshop.com/menu_api.php', $apiget);
+        $api_str = $api_comment["body"];
+        if (!empty($api_str))
+        {
+            include_once(ROOT_PATH . 'includes/cls_json.php');
+            $json = new JSON;
+            $api_arr = @$json->decode($api_str,1);
+            if (!empty($api_arr) && $api_arr['error'] == 0 && md5($api_arr['content']) == $api_arr['hash'])
+            {
+                $api_arr['content'] = urldecode($api_arr['content']);
+                if ($ecs_charset != 'UTF-8')
+                {
+                    $api_arr['content'] = ecs_iconv('UTF-8',$ecs_charset,$api_arr['content']);
+                }
+                echo $api_arr['content'];
+                $api_arr['api_time'] = date('Ymd');
+                write_static_cache('menu_api', $api_arr);
+                exit();
+            }
+            else
+            {
+                exit();
+            }
+        }
+        else
+        {
+            exit();
+        }
+    }
+    else 
+    {
+        die($data['content']);
     }
 }
+
 /*------------------------------------------------------ */
 //-- 开店向导第一步
 /*------------------------------------------------------ */
@@ -656,8 +731,23 @@ elseif ($_REQUEST['act'] == 'second')
     //设置配送方式
     if(!empty($shipping))
     {
+        $shop_add = read_modules('../includes/modules/shipping');
+        
+        foreach ($shop_add as $val)
+        {
+            $mod_shop[] = $val['code'];
+        }
+        $mod_shop = implode(',',$mod_shop);
+
         $set_modules = true;
-        include_once(ROOT_PATH . 'includes/modules/shipping/' . $shipping . '.php');
+        if(strpos($mod_shop,$shipping) === false)
+        {
+            exit;   
+        }
+        else 
+        {
+            include_once(ROOT_PATH . 'includes/modules/shipping/' . $shipping . '.php');
+        }
         $sql = "SELECT shipping_id FROM " .$ecs->table('shipping'). " WHERE shipping_code = '$shipping'";
         $shipping_id = $db->GetOne($sql);
 
@@ -1184,7 +1274,7 @@ elseif ($_REQUEST['act'] == 'license')
         switch ($license['flag'])
         {
             case 'login_succ':
-                if (isset($license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str']) && $license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str'] != '')
+                if (isset($license['request']['info']['service']['ecshop_b2c']['cert_auth']['auth_str']))
                 {
                     make_json_result(process_login_license($license['request']['info']['service']['ecshop_b2c']['cert_auth']));
                 }

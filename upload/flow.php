@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 购物流程
+ * ECSHOP 璐?墿娴佺▼
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 鐗堟潈鎵€鏈 2005-2010 涓婃捣鍟嗘淳缃戠粶绉戞妧鏈夐檺鍏?徃锛屽苟淇濈暀鎵€鏈夋潈鍒┿€
+ * 缃戠珯鍦板潃: http://www.ecshop.com锛
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 杩欎笉鏄?竴涓?嚜鐢辫蒋浠讹紒鎮ㄥ彧鑳藉湪涓嶇敤浜庡晢涓氱洰鐨勭殑鍓嶆彁涓嬪?绋嬪簭浠ｇ爜杩涜?淇?敼鍜
+ * 浣跨敤锛涗笉鍏佽?瀵圭▼搴忎唬鐮佷互浠讳綍褰㈠紡浠讳綍鐩?殑鐨勫啀鍙戝竷銆
  * ============================================================================
- * $Author: liubo $
- * $Id: flow.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Author: yehuaixiao $
+ * $Id: flow.php 17218 2011-01-24 04:10:41Z yehuaixiao $
  */
 
 define('IN_ECS', true);
@@ -18,7 +18,7 @@ define('IN_ECS', true);
 require(dirname(__FILE__) . '/includes/init.php');
 require(ROOT_PATH . 'includes/lib_order.php');
 
-/* 载入语言文件 */
+/* 杞藉叆璇?█鏂囦欢 */
 require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/user.php');
 require_once(ROOT_PATH . 'languages/' .$_CFG['lang']. '/shopping_flow.php');
 
@@ -38,21 +38,22 @@ if (!isset($_REQUEST['step']))
 assign_template();
 assign_dynamic('flow');
 $position = assign_ur_here(0, $_LANG['shopping_flow']);
-$smarty->assign('page_title',       $position['title']);    // 页面标题
-$smarty->assign('ur_here',          $position['ur_here']);  // 当前位置
+$smarty->assign('page_title',       $position['title']);    // 椤甸潰鏍囬?
+$smarty->assign('ur_here',          $position['ur_here']);  // 褰撳墠浣嶇疆
 
-$smarty->assign('categories',       get_categories_tree()); // 分类树
-$smarty->assign('helps',            get_shop_help());       // 网店帮助
+$smarty->assign('categories',       get_categories_tree()); // 鍒嗙被鏍
+$smarty->assign('helps',            get_shop_help());       // 缃戝簵甯?姪
 $smarty->assign('lang',             $_LANG);
 $smarty->assign('show_marketprice', $_CFG['show_marketprice']);
-$smarty->assign('data_dir',    DATA_DIR);       // 数据目录
+$smarty->assign('data_dir',    DATA_DIR);       // 鏁版嵁鐩?綍
 
+/*------------------------------------------------------ */
+//-- 娣诲姞鍟嗗搧鍒拌喘鐗╄溅
+/*------------------------------------------------------ */
 if ($_REQUEST['step'] == 'add_to_cart')
 {
-    /*------------------------------------------------------ */
-    //-- 添加商品到购物车
-    /*------------------------------------------------------ */
     include_once('includes/cls_json.php');
+    $_POST['goods']=strip_tags(urldecode($_POST['goods']));
     $_POST['goods'] = json_str_iconv($_POST['goods']);
 
     if (!empty($_REQUEST['goods_id']) && empty($_POST['goods']))
@@ -76,7 +77,7 @@ if ($_REQUEST['step'] == 'add_to_cart')
 
     $goods = $json->decode($_POST['goods']);
 
-    /* 如果商品有规格，而post的数据没有规格，把商品的规格属性通过JSON传到前台 */
+    /* 妫€鏌ワ細濡傛灉鍟嗗搧鏈夎?鏍硷紝鑰宲ost鐨勬暟鎹?病鏈夎?鏍硷紝鎶婂晢鍝佺殑瑙勬牸灞炴€ч€氳繃JSON浼犲埌鍓嶅彴 */
     if (empty($goods->spec) AND empty($goods->quick))
     {
         $sql = "SELECT a.attr_id, a.attr_name, a.attr_type, ".
@@ -88,7 +89,7 @@ if ($_REQUEST['step'] == 'add_to_cart')
 
         $res = $GLOBALS['db']->getAll($sql);
 
-        if ($res)
+        if (!empty($res))
         {
             $spe_arr = array();
             foreach ($res AS $row)
@@ -117,21 +118,22 @@ if ($_REQUEST['step'] == 'add_to_cart')
         }
     }
 
-    /* 如果是一步购物，先清空购物车 */
+    /* 鏇存柊锛氬?鏋滄槸涓€姝ヨ喘鐗╋紝鍏堟竻绌鸿喘鐗╄溅 */
     if ($_CFG['one_step_buy'] == '1')
     {
         clear_cart();
     }
 
-    /* 商品数量是否合法 */
+    /* 妫€鏌ワ細鍟嗗搧鏁伴噺鏄?惁鍚堟硶 */
     if (!is_numeric($goods->number) || intval($goods->number) <= 0)
     {
         $result['error']   = 1;
         $result['message'] = $_LANG['invalid_number'];
     }
+    /* 鏇存柊锛氳喘鐗╄溅 */
     else
     {
-        /* 添加到购物车 */
+        // 鏇存柊锛氭坊鍔犲埌璐?墿杞
         if (addto_cart($goods->goods_id, $goods->number, $goods->spec, $goods->parent))
         {
             if ($_CFG['cart_confirm'] > 2)
@@ -151,8 +153,17 @@ if ($_REQUEST['step'] == 'add_to_cart')
             $result['message']  = $err->last_message();
             $result['error']    = $err->error_no;
             $result['goods_id'] = stripslashes($goods->goods_id);
+            if (is_array($goods->spec))
+            {
+                $result['product_spec'] = implode(',', $goods->spec);
+            }
+            else
+            {
+                $result['product_spec'] = $goods->spec;
+            }
         }
     }
+
     $result['confirm_type'] = !empty($_CFG['cart_confirm']) ? $_CFG['cart_confirm'] : 2;
     die($json->encode($result));
 }
@@ -172,13 +183,13 @@ elseif ($_REQUEST['step'] == 'login')
     include_once('languages/'. $_CFG['lang']. '/user.php');
 
     /*
-     * 用户登录注册
+     * 鐢ㄦ埛鐧诲綍娉ㄥ唽
      */
     if ($_SERVER['REQUEST_METHOD'] == 'GET')
     {
         $smarty->assign('anonymous_buy', $_CFG['anonymous_buy']);
 
-        /* 检查是否有赠品，如果有提示登录后重新选择赠品 */
+        /* 妫€鏌ユ槸鍚︽湁璧犲搧锛屽?鏋滄湁鎻愮ず鐧诲綍鍚庨噸鏂伴€夋嫨璧犲搧 */
         $sql = "SELECT COUNT(*) FROM " . $ecs->table('cart') .
                 " WHERE session_id = '" . SESS_ID . "' AND is_gift > 0";
         if ($db->getOne($sql) > 0)
@@ -186,7 +197,7 @@ elseif ($_REQUEST['step'] == 'login')
             $smarty->assign('need_rechoose_gift', 1);
         }
 
-        /* 检查是否需要注册码 */
+        /* 妫€鏌ユ槸鍚﹂渶瑕佹敞鍐岀爜 */
         $captcha = intval($_CFG['captcha']);
         if (($captcha & CAPTCHA_LOGIN) && (!($captcha & CAPTCHA_LOGIN_FAIL) || (($captcha & CAPTCHA_LOGIN_FAIL) && $_SESSION['login_fail'] > 2)) && gd_version() > 0)
         {
@@ -212,7 +223,7 @@ elseif ($_REQUEST['step'] == 'login')
                     show_message($_LANG['invalid_captcha']);
                 }
 
-                /* 检查验证码 */
+                /* 妫€鏌ラ獙璇佺爜 */
                 include_once('includes/cls_captcha.php');
 
                 $validator = new captcha();
@@ -223,12 +234,12 @@ elseif ($_REQUEST['step'] == 'login')
                 }
             }
 
-            if ($user->login($_POST['username'], $_POST['password']))
+            if ($user->login($_POST['username'], $_POST['password'],isset($_POST['remember'])))
             {
-                update_user_info();  //更新用户信息
-                recalculate_price(); // 重新计算购物车中的商品价格
+                update_user_info();  //鏇存柊鐢ㄦ埛淇℃伅
+                recalculate_price(); // 閲嶆柊璁＄畻璐?墿杞︿腑鐨勫晢鍝佷环鏍
 
-                /* 检查购物车中是否有商品 没有商品则跳转到首页 */
+                /* 妫€鏌ヨ喘鐗╄溅涓?槸鍚︽湁鍟嗗搧 娌℃湁鍟嗗搧鍒欒烦杞?埌棣栭〉 */
                 $sql = "SELECT COUNT(*) FROM " . $ecs->table('cart') . " WHERE session_id = '" . SESS_ID . "' ";
                 if ($db->getOne($sql) > 0)
                 {
@@ -256,7 +267,7 @@ elseif ($_REQUEST['step'] == 'login')
                     show_message($_LANG['invalid_captcha']);
                 }
 
-                /* 检查验证码 */
+                /* 妫€鏌ラ獙璇佺爜 */
                 include_once('includes/cls_captcha.php');
 
                 $validator = new captcha();
@@ -268,7 +279,7 @@ elseif ($_REQUEST['step'] == 'login')
 
             if (register(trim($_POST['username']), trim($_POST['password']), trim($_POST['email'])))
             {
-                /* 用户注册成功 */
+                /* 鐢ㄦ埛娉ㄥ唽鎴愬姛 */
                 ecs_header("Location: flow.php?step=consignee\n");
                 exit;
             }
@@ -279,24 +290,24 @@ elseif ($_REQUEST['step'] == 'login')
         }
         else
         {
-            // TODO: 非法访问的处理
+            // TODO: 闈炴硶璁块棶鐨勫?鐞
         }
     }
 }
 elseif ($_REQUEST['step'] == 'consignee')
 {
     /*------------------------------------------------------ */
-    //-- 收货人信息
+    //-- 鏀惰揣浜轰俊鎭
     /*------------------------------------------------------ */
     include_once('includes/lib_transaction.php');
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET')
     {
-        /* 取得购物类型 */
+        /* 鍙栧緱璐?墿绫诲瀷 */
         $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
         /*
-         * 收货人信息填写界面
+         * 鏀惰揣浜轰俊鎭?～鍐欑晫闈
          */
 
         if (isset($_REQUEST['direct_shopping']))
@@ -304,19 +315,19 @@ elseif ($_REQUEST['step'] == 'consignee')
             $_SESSION['direct_shopping'] = 1;
         }
 
-        /* 取得国家列表、商店所在国家、商店所在国家的省列表 */
+        /* 鍙栧緱鍥藉?鍒楄〃銆佸晢搴楁墍鍦ㄥ浗瀹躲€佸晢搴楁墍鍦ㄥ浗瀹剁殑鐪佸垪琛 */
         $smarty->assign('country_list',       get_regions());
         $smarty->assign('shop_country',       $_CFG['shop_country']);
         $smarty->assign('shop_province_list', get_regions(1, $_CFG['shop_country']));
 
-        /* 获得用户所有的收货人信息 */
+        /* 鑾峰緱鐢ㄦ埛鎵€鏈夌殑鏀惰揣浜轰俊鎭 */
         if ($_SESSION['user_id'] > 0)
         {
             $consignee_list = get_consignee_list($_SESSION['user_id']);
 
             if (count($consignee_list) < 5)
             {
-                /* 如果用户收货人信息的总数小于 5 则增加一个新的收货人信息 */
+                /* 濡傛灉鐢ㄦ埛鏀惰揣浜轰俊鎭?殑鎬绘暟灏忎簬 5 鍒欏?鍔犱竴涓?柊鐨勬敹璐т汉淇℃伅 */
                 $consignee_list[] = array('country' => $_CFG['shop_country'], 'email' => isset($_SESSION['email']) ? $_SESSION['email'] : '');
             }
         }
@@ -333,7 +344,7 @@ elseif ($_REQUEST['step'] == 'consignee')
         $smarty->assign('name_of_region',   array($_CFG['name_of_region_1'], $_CFG['name_of_region_2'], $_CFG['name_of_region_3'], $_CFG['name_of_region_4']));
         $smarty->assign('consignee_list', $consignee_list);
 
-        /* 取得每个收货地址的省市区列表 */
+        /* 鍙栧緱姣忎釜鏀惰揣鍦板潃鐨勭渷甯傚尯鍒楄〃 */
         $province_list = array();
         $city_list = array();
         $district_list = array();
@@ -351,13 +362,13 @@ elseif ($_REQUEST['step'] == 'consignee')
         $smarty->assign('city_list',     $city_list);
         $smarty->assign('district_list', $district_list);
 
-        /* 返回收货人页面代码 */
+        /* 杩斿洖鏀惰揣浜洪〉闈?唬鐮 */
         $smarty->assign('real_goods_count', exist_real_goods(0, $flow_type) ? 1 : 0);
     }
     else
     {
         /*
-         * 保存收货人信息
+         * 淇濆瓨鏀惰揣浜轰俊鎭
          */
         $consignee = array(
             'address_id'    => empty($_POST['address_id']) ? 0  : intval($_POST['address_id']),
@@ -379,13 +390,13 @@ elseif ($_REQUEST['step'] == 'consignee')
         {
             include_once(ROOT_PATH . 'includes/lib_transaction.php');
 
-            /* 如果用户已经登录，则保存收货人信息 */
+            /* 濡傛灉鐢ㄦ埛宸茬粡鐧诲綍锛屽垯淇濆瓨鏀惰揣浜轰俊鎭 */
             $consignee['user_id'] = $_SESSION['user_id'];
 
             save_consignee($consignee, true);
         }
 
-        /* 保存到session */
+        /* 淇濆瓨鍒皊ession */
         $_SESSION['flow_consignee'] = stripslashes_deep($consignee);
 
         ecs_header("Location: flow.php?step=checkout\n");
@@ -395,7 +406,7 @@ elseif ($_REQUEST['step'] == 'consignee')
 elseif ($_REQUEST['step'] == 'drop_consignee')
 {
     /*------------------------------------------------------ */
-    //-- 删除收货人信息
+    //-- 鍒犻櫎鏀惰揣浜轰俊鎭
     /*------------------------------------------------------ */
     include_once('includes/lib_transaction.php');
 
@@ -414,29 +425,29 @@ elseif ($_REQUEST['step'] == 'drop_consignee')
 elseif ($_REQUEST['step'] == 'checkout')
 {
     /*------------------------------------------------------ */
-    //-- 订单确认
+    //-- 璁㈠崟纭??
     /*------------------------------------------------------ */
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 团购标志 */
+    /* 鍥㈣喘鏍囧織 */
     if ($flow_type == CART_GROUP_BUY_GOODS)
     {
         $smarty->assign('is_group_buy', 1);
     }
-    /* 积分兑换商品 */
+    /* 绉?垎鍏戞崲鍟嗗搧 */
     elseif ($flow_type == CART_EXCHANGE_GOODS)
     {
         $smarty->assign('is_exchange_goods', 1);
     }
     else
     {
-        //正常购物流程  清空其他购物流程情况
+        //姝ｅ父璐?墿娴佺▼  娓呯┖鍏朵粬璐?墿娴佺▼鎯呭喌
         $_SESSION['flow_order']['extension_code'] = '';
     }
 
-    /* 检查购物车中是否有商品 */
+    /* 妫€鏌ヨ喘鐗╄溅涓?槸鍚︽湁鍟嗗搧 */
     $sql = "SELECT COUNT(*) FROM " . $ecs->table('cart') .
         " WHERE session_id = '" . SESS_ID . "' " .
         "AND parent_id = 0 AND is_gift = 0 AND rec_type = '$flow_type'";
@@ -447,23 +458,23 @@ elseif ($_REQUEST['step'] == 'checkout')
     }
 
     /*
-     * 检查用户是否已经登录
-     * 如果用户已经登录了则检查是否有默认的收货地址
-     * 如果没有登录则跳转到登录和注册页面
+     * 妫€鏌ョ敤鎴锋槸鍚﹀凡缁忕櫥褰
+     * 濡傛灉鐢ㄦ埛宸茬粡鐧诲綍浜嗗垯妫€鏌ユ槸鍚︽湁榛樿?鐨勬敹璐у湴鍧€
+     * 濡傛灉娌℃湁鐧诲綍鍒欒烦杞?埌鐧诲綍鍜屾敞鍐岄〉闈
      */
     if (empty($_SESSION['direct_shopping']) && $_SESSION['user_id'] == 0)
     {
-        /* 用户没有登录且没有选定匿名购物，转向到登录页面 */
+        /* 鐢ㄦ埛娌℃湁鐧诲綍涓旀病鏈夐€夊畾鍖垮悕璐?墿锛岃浆鍚戝埌鐧诲綍椤甸潰 */
         ecs_header("Location: flow.php?step=login\n");
         exit;
     }
 
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 检查收货人信息是否完整 */
+    /* 妫€鏌ユ敹璐т汉淇℃伅鏄?惁瀹屾暣 */
     if (!check_consignee_info($consignee, $flow_type))
     {
-        /* 如果不完整则转向到收货人信息填写界面 */
+        /* 濡傛灉涓嶅畬鏁村垯杞?悜鍒版敹璐т汉淇℃伅濉?啓鐣岄潰 */
         ecs_header("Location: flow.php?step=consignee\n");
         exit;
     }
@@ -471,11 +482,11 @@ elseif ($_REQUEST['step'] == 'checkout')
     $_SESSION['flow_consignee'] = $consignee;
     $smarty->assign('consignee', $consignee);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
     $smarty->assign('goods_list', $cart_goods);
 
-    /* 对是否允许修改购物车赋值 */
+    /* 瀵规槸鍚﹀厑璁镐慨鏀硅喘鐗╄溅璧嬪€ */
     if ($flow_type != CART_GENERAL_GOODS || $_CFG['one_step_buy'] == '1')
     {
         $smarty->assign('allow_edit_cart', 0);
@@ -486,16 +497,16 @@ elseif ($_REQUEST['step'] == 'checkout')
     }
 
     /*
-     * 取得购物流程设置
+     * 鍙栧緱璐?墿娴佺▼璁剧疆
      */
     $smarty->assign('config', $_CFG);
     /*
-     * 取得订单信息
+     * 鍙栧緱璁㈠崟淇℃伅
      */
     $order = flow_order_info();
     $smarty->assign('order', $order);
 
-    /* 计算折扣 */
+    /* 璁＄畻鎶樻墸 */
     if ($flow_type != CART_EXCHANGE_GOODS && $flow_type != CART_GROUP_BUY_GOODS)
     {
         $discount = compute_discount();
@@ -505,7 +516,7 @@ elseif ($_REQUEST['step'] == 'checkout')
     }
 
     /*
-     * 计算订单的费用
+     * 璁＄畻璁㈠崟鐨勮垂鐢
      */
     $total = order_fee($order, $cart_goods, $consignee);
 
@@ -513,14 +524,14 @@ elseif ($_REQUEST['step'] == 'checkout')
     $smarty->assign('shopping_money', sprintf($_LANG['shopping_money'], $total['formated_goods_price']));
     $smarty->assign('market_price_desc', sprintf($_LANG['than_market_price'], $total['formated_market_price'], $total['formated_saving'], $total['save_rate']));
 
-    /* 取得配送列表 */
+    /* 鍙栧緱閰嶉€佸垪琛 */
     $region            = array($consignee['country'], $consignee['province'], $consignee['city'], $consignee['district']);
     $shipping_list     = available_shipping_list($region);
     $cart_weight_price = cart_weight_price($flow_type);
     $insure_disabled   = true;
     $cod_disabled      = true;
 
-    // 查看购物车中是否全为免运费商品，若是则把运费赋为零
+    // 鏌ョ湅璐?墿杞︿腑鏄?惁鍏ㄤ负鍏嶈繍璐瑰晢鍝侊紝鑻ユ槸鍒欐妸杩愯垂璧嬩负闆
     $sql = 'SELECT count(*) FROM ' . $ecs->table('cart') . " WHERE `session_id` = '" . SESS_ID. "' AND `extension_code` != 'package_buy' AND `is_shipping` = 0";
     $shipping_count = $db->getOne($sql);
 
@@ -536,7 +547,7 @@ elseif ($_REQUEST['step'] == 'checkout')
         $shipping_list[$key]['insure_formated']     = strpos($val['insure'], '%') === false ?
             price_format($val['insure'], false) : $val['insure'];
 
-        /* 当前的配送方式是否支持保价 */
+        /* 褰撳墠鐨勯厤閫佹柟寮忔槸鍚︽敮鎸佷繚浠 */
         if ($val['shipping_id'] == $order['shipping_id'])
         {
             $insure_disabled = ($val['insure'] == 0);
@@ -548,7 +559,7 @@ elseif ($_REQUEST['step'] == 'checkout')
     $smarty->assign('insure_disabled', $insure_disabled);
     $smarty->assign('cod_disabled',    $cod_disabled);
 
-    /* 取得支付列表 */
+    /* 鍙栧緱鏀?粯鍒楄〃 */
     if ($order['shipping_id'] == 0)
     {
         $cod        = true;
@@ -561,7 +572,7 @@ elseif ($_REQUEST['step'] == 'checkout')
 
         if ($cod)
         {
-            /* 如果是团购，且保证金大于0，不能使用货到付款 */
+            /* 濡傛灉鏄?洟璐?紝涓斾繚璇侀噾澶т簬0锛屼笉鑳戒娇鐢ㄨ揣鍒颁粯娆 */
             if ($flow_type == CART_GROUP_BUY_GOODS)
             {
                 $group_buy_id = $_SESSION['extension_id'];
@@ -580,7 +591,7 @@ elseif ($_REQUEST['step'] == 'checkout')
                     $cod = false;
                     $cod_fee = 0;
 
-                    /* 赋值保证金 */
+                    /* 璧嬪€间繚璇侀噾 */
                     $smarty->assign('gb_deposit', $group_buy['deposit']);
                 }
             }
@@ -597,7 +608,7 @@ elseif ($_REQUEST['step'] == 'checkout')
         }
     }
 
-    // 给货到付款的手续费加<span id>，以便改变配送的时候动态显示
+    // 缁欒揣鍒颁粯娆剧殑鎵嬬画璐瑰姞<span id>锛屼互渚挎敼鍙橀厤閫佺殑鏃跺€欏姩鎬佹樉绀
     $payment_list = available_payment_list(1, $cod_fee);
     if(isset($payment_list))
     {
@@ -607,15 +618,15 @@ elseif ($_REQUEST['step'] == 'checkout')
             {
                 $payment_list[$key]['format_pay_fee'] = '<span id="ECS_CODFEE">' . $payment['format_pay_fee'] . '</span>';
             }
-            /* 如果有易宝神州行支付 如果订单金额大于300 则不显示 */
+            /* 濡傛灉鏈夋槗瀹濈?宸炶?鏀?粯 濡傛灉璁㈠崟閲戦?澶т簬300 鍒欎笉鏄剧ず */
             if ($payment['pay_code'] == 'yeepayszx' && $total['amount'] > 300)
             {
                 unset($payment_list[$key]);
             }
-            /* 如果有余额支付 */
+            /* 濡傛灉鏈変綑棰濇敮浠 */
             if ($payment['pay_code'] == 'balance')
             {
-                /* 如果未登录，不显示 */
+                /* 濡傛灉鏈?櫥褰曪紝涓嶆樉绀 */
                 if ($_SESSION['user_id'] == 0)
                 {
                     unset($payment_list[$key]);
@@ -632,17 +643,17 @@ elseif ($_REQUEST['step'] == 'checkout')
     }
     $smarty->assign('payment_list', $payment_list);
 
-    /* 取得包装与贺卡 */
+    /* 鍙栧緱鍖呰?涓庤春鍗 */
     if ($total['real_goods_count'] > 0)
     {
-        /* 只有有实体商品,才要判断包装和贺卡 */
+        /* 鍙?湁鏈夊疄浣撳晢鍝?鎵嶈?鍒ゆ柇鍖呰?鍜岃春鍗 */
         if (!isset($_CFG['use_package']) || $_CFG['use_package'] == '1')
         {
-            /* 如果使用包装，取得包装列表及用户选择的包装 */
+            /* 濡傛灉浣跨敤鍖呰?锛屽彇寰楀寘瑁呭垪琛ㄥ強鐢ㄦ埛閫夋嫨鐨勫寘瑁 */
             $smarty->assign('pack_list', pack_list());
         }
 
-        /* 如果使用贺卡，取得贺卡列表及用户选择的贺卡 */
+        /* 濡傛灉浣跨敤璐哄崱锛屽彇寰楄春鍗″垪琛ㄥ強鐢ㄦ埛閫夋嫨鐨勮春鍗 */
         if (!isset($_CFG['use_card']) || $_CFG['use_card'] == '1')
         {
             $smarty->assign('card_list', card_list());
@@ -651,33 +662,33 @@ elseif ($_REQUEST['step'] == 'checkout')
 
     $user_info = user_info($_SESSION['user_id']);
 
-    /* 如果使用余额，取得用户余额 */
+    /* 濡傛灉浣跨敤浣欓?锛屽彇寰楃敤鎴蜂綑棰 */
     if ((!isset($_CFG['use_surplus']) || $_CFG['use_surplus'] == '1')
         && $_SESSION['user_id'] > 0
         && $user_info['user_money'] > 0)
     {
-        // 能使用余额
+        // 鑳戒娇鐢ㄤ綑棰
         $smarty->assign('allow_use_surplus', 1);
         $smarty->assign('your_surplus', $user_info['user_money']);
     }
 
-    /* 如果使用积分，取得用户可用积分及本订单最多可以使用的积分 */
+    /* 濡傛灉浣跨敤绉?垎锛屽彇寰楃敤鎴峰彲鐢ㄧН鍒嗗強鏈??鍗曟渶澶氬彲浠ヤ娇鐢ㄧ殑绉?垎 */
     if ((!isset($_CFG['use_integral']) || $_CFG['use_integral'] == '1')
         && $_SESSION['user_id'] > 0
         && $user_info['pay_points'] > 0
         && ($flow_type != CART_GROUP_BUY_GOODS && $flow_type != CART_EXCHANGE_GOODS))
     {
-        // 能使用积分
+        // 鑳戒娇鐢ㄧН鍒
         $smarty->assign('allow_use_integral', 1);
-        $smarty->assign('order_max_integral', flow_available_points());  // 可用积分
-        $smarty->assign('your_integral',      $user_info['pay_points']); // 用户积分
+        $smarty->assign('order_max_integral', flow_available_points());  // 鍙?敤绉?垎
+        $smarty->assign('your_integral',      $user_info['pay_points']); // 鐢ㄦ埛绉?垎
     }
 
-    /* 如果使用红包，取得用户可以使用的红包及用户选择的红包 */
+    /* 濡傛灉浣跨敤绾㈠寘锛屽彇寰楃敤鎴峰彲浠ヤ娇鐢ㄧ殑绾㈠寘鍙婄敤鎴烽€夋嫨鐨勭孩鍖 */
     if ((!isset($_CFG['use_bonus']) || $_CFG['use_bonus'] == '1')
         && ($flow_type != CART_GROUP_BUY_GOODS && $flow_type != CART_EXCHANGE_GOODS))
     {
-        // 取得用户可用红包
+        // 鍙栧緱鐢ㄦ埛鍙?敤绾㈠寘
         $user_bonus = user_bonus($_SESSION['user_id'], $total['goods_price']);
         if (!empty($user_bonus))
         {
@@ -688,11 +699,11 @@ elseif ($_REQUEST['step'] == 'checkout')
             $smarty->assign('bonus_list', $user_bonus);
         }
 
-        // 能使用红包
+        // 鑳戒娇鐢ㄧ孩鍖
         $smarty->assign('allow_use_bonus', 1);
     }
 
-    /* 如果使用缺货处理，取得缺货处理列表 */
+    /* 濡傛灉浣跨敤缂鸿揣澶勭悊锛屽彇寰楃己璐у?鐞嗗垪琛 */
     if (!isset($_CFG['use_how_oos']) || $_CFG['use_how_oos'] == '1')
     {
         if (is_array($GLOBALS['_LANG']['oos']) && !empty($GLOBALS['_LANG']['oos']))
@@ -701,7 +712,7 @@ elseif ($_REQUEST['step'] == 'checkout')
         }
     }
 
-    /* 如果能开发票，取得发票内容列表 */
+    /* 濡傛灉鑳藉紑鍙戠エ锛屽彇寰楀彂绁ㄥ唴瀹瑰垪琛 */
     if ((!isset($_CFG['can_invoice']) || $_CFG['can_invoice'] == '1')
         && isset($_CFG['invoice_content'])
         && trim($_CFG['invoice_content']) != '' && $flow_type != CART_EXCHANGE_GOODS)
@@ -720,26 +731,26 @@ elseif ($_REQUEST['step'] == 'checkout')
         $smarty->assign('inv_type_list', $inv_type_list);
     }
 
-    /* 保存 session */
+    /* 淇濆瓨 session */
     $_SESSION['flow_order'] = $order;
 }
 elseif ($_REQUEST['step'] == 'select_shipping')
 {
     /*------------------------------------------------------ */
-    //-- 改变配送方式
+    //-- 鏀瑰彉閰嶉€佹柟寮
     /*------------------------------------------------------ */
     include_once('includes/cls_json.php');
     $json = new JSON;
     $result = array('error' => '', 'content' => '', 'need_insure' => 0);
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -747,25 +758,25 @@ elseif ($_REQUEST['step'] == 'select_shipping')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         $order['shipping_id'] = intval($_REQUEST['shipping']);
         $regions = array($consignee['country'], $consignee['province'], $consignee['city'], $consignee['district']);
         $shipping_info = shipping_area_info($order['shipping_id'], $regions);
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 取得可以得到的积分和红包 */
+        /* 鍙栧緱鍙?互寰楀埌鐨勭Н鍒嗗拰绾㈠寘 */
         $smarty->assign('total_integral', cart_amount(false, $flow_type) - $total['bonus'] - $total['integral_money']);
         $smarty->assign('total_bonus',    price_format(get_total_bonus(), false));
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -786,21 +797,21 @@ elseif ($_REQUEST['step'] == 'select_shipping')
 elseif ($_REQUEST['step'] == 'select_insure')
 {
     /*------------------------------------------------------ */
-    //-- 选定/取消配送的保价
+    //-- 閫夊畾/鍙栨秷閰嶉€佺殑淇濅环
     /*------------------------------------------------------ */
 
     include_once('includes/cls_json.php');
     $json = new JSON;
     $result = array('error' => '', 'content' => '', 'need_insure' => 0);
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -808,26 +819,26 @@ elseif ($_REQUEST['step'] == 'select_insure')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         $order['need_insure'] = intval($_REQUEST['insure']);
 
-        /* 保存 session */
+        /* 淇濆瓨 session */
         $_SESSION['flow_order'] = $order;
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 取得可以得到的积分和红包 */
+        /* 鍙栧緱鍙?互寰楀埌鐨勭Н鍒嗗拰绾㈠寘 */
         $smarty->assign('total_integral', cart_amount(false, $flow_type) - $total['bonus'] - $total['integral_money']);
         $smarty->assign('total_bonus',    price_format(get_total_bonus(), false));
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -842,21 +853,21 @@ elseif ($_REQUEST['step'] == 'select_insure')
 elseif ($_REQUEST['step'] == 'select_payment')
 {
     /*------------------------------------------------------ */
-    //-- 改变支付方式
+    //-- 鏀瑰彉鏀?粯鏂瑰紡
     /*------------------------------------------------------ */
 
     include_once('includes/cls_json.php');
     $json = new JSON;
     $result = array('error' => '', 'content' => '', 'need_insure' => 0, 'payment' => 1);
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -864,28 +875,28 @@ elseif ($_REQUEST['step'] == 'select_payment')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         $order['pay_id'] = intval($_REQUEST['payment']);
         $payment_info = payment_info($order['pay_id']);
         $result['pay_code'] = $payment_info['pay_code'];
 
-        /* 保存 session */
+        /* 淇濆瓨 session */
         $_SESSION['flow_order'] = $order;
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 取得可以得到的积分和红包 */
+        /* 鍙栧緱鍙?互寰楀埌鐨勭Н鍒嗗拰绾㈠寘 */
         $smarty->assign('total_integral', cart_amount(false, $flow_type) - $total['bonus'] - $total['integral_money']);
         $smarty->assign('total_bonus',    price_format(get_total_bonus(), false));
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -900,21 +911,21 @@ elseif ($_REQUEST['step'] == 'select_payment')
 elseif ($_REQUEST['step'] == 'select_pack')
 {
     /*------------------------------------------------------ */
-    //-- 改变商品包装
+    //-- 鏀瑰彉鍟嗗搧鍖呰?
     /*------------------------------------------------------ */
 
     include_once('includes/cls_json.php');
     $json = new JSON;
     $result = array('error' => '', 'content' => '', 'need_insure' => 0);
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -922,26 +933,26 @@ elseif ($_REQUEST['step'] == 'select_pack')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         $order['pack_id'] = intval($_REQUEST['pack']);
 
-        /* 保存 session */
+        /* 淇濆瓨 session */
         $_SESSION['flow_order'] = $order;
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 取得可以得到的积分和红包 */
+        /* 鍙栧緱鍙?互寰楀埌鐨勭Н鍒嗗拰绾㈠寘 */
         $smarty->assign('total_integral', cart_amount(false, $flow_type) - $total['bonus'] - $total['integral_money']);
         $smarty->assign('total_bonus',    price_format(get_total_bonus(), false));
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -956,21 +967,21 @@ elseif ($_REQUEST['step'] == 'select_pack')
 elseif ($_REQUEST['step'] == 'select_card')
 {
     /*------------------------------------------------------ */
-    //-- 改变贺卡
+    //-- 鏀瑰彉璐哄崱
     /*------------------------------------------------------ */
 
     include_once('includes/cls_json.php');
     $json = new JSON;
     $result = array('error' => '', 'content' => '', 'need_insure' => 0);
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -978,26 +989,26 @@ elseif ($_REQUEST['step'] == 'select_card')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         $order['card_id'] = intval($_REQUEST['card']);
 
-        /* 保存 session */
+        /* 淇濆瓨 session */
         $_SESSION['flow_order'] = $order;
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 取得可以得到的积分和红包 */
+        /* 鍙栧緱鍙?互寰楀埌鐨勭Н鍒嗗拰绾㈠寘 */
         $smarty->assign('total_integral', cart_amount(false, $flow_type) - $order['bonus'] - $total['integral_money']);
         $smarty->assign('total_bonus',    price_format(get_total_bonus(), false));
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -1012,7 +1023,7 @@ elseif ($_REQUEST['step'] == 'select_card')
 elseif ($_REQUEST['step'] == 'change_surplus')
 {
     /*------------------------------------------------------ */
-    //-- 改变余额
+    //-- 鏀瑰彉浣欓?
     /*------------------------------------------------------ */
     include_once('includes/cls_json.php');
 
@@ -1025,17 +1036,17 @@ elseif ($_REQUEST['step'] == 'change_surplus')
     }
     else
     {
-        /* 取得购物类型 */
+        /* 鍙栧緱璐?墿绫诲瀷 */
         $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 获得收货人信息 */
+        /* 鑾峰緱鏀惰揣浜轰俊鎭 */
         $consignee = get_consignee($_SESSION['user_id']);
 
-        /* 对商品信息赋值 */
-        $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+        /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+        $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
         if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
         {
@@ -1043,15 +1054,15 @@ elseif ($_REQUEST['step'] == 'change_surplus')
         }
         else
         {
-            /* 取得订单信息 */
+            /* 鍙栧緱璁㈠崟淇℃伅 */
             $order = flow_order_info();
             $order['surplus'] = $surplus;
 
-            /* 计算订单的费用 */
+            /* 璁＄畻璁㈠崟鐨勮垂鐢 */
             $total = order_fee($order, $cart_goods, $consignee);
             $smarty->assign('total', $total);
 
-            /* 团购标志 */
+            /* 鍥㈣喘鏍囧織 */
             if ($flow_type == CART_GROUP_BUY_GOODS)
             {
                 $smarty->assign('is_group_buy', 1);
@@ -1067,18 +1078,18 @@ elseif ($_REQUEST['step'] == 'change_surplus')
 elseif ($_REQUEST['step'] == 'change_integral')
 {
     /*------------------------------------------------------ */
-    //-- 改变积分
+    //-- 鏀瑰彉绉?垎
     /*------------------------------------------------------ */
     include_once('includes/cls_json.php');
 
     $points    = floatval($_GET['points']);
     $user_info = user_info($_SESSION['user_id']);
 
-    /* 取得订单信息 */
+    /* 鍙栧緱璁㈠崟淇℃伅 */
     $order = flow_order_info();
 
-    $flow_points = flow_available_points();  // 该订单允许使用的积分
-    $user_points = $user_info['pay_points']; // 用户的积分总数
+    $flow_points = flow_available_points();  // 璇ヨ?鍗曞厑璁镐娇鐢ㄧ殑绉?垎
+    $user_points = $user_info['pay_points']; // 鐢ㄦ埛鐨勭Н鍒嗘€绘暟
 
     if ($points > $user_points)
     {
@@ -1090,16 +1101,16 @@ elseif ($_REQUEST['step'] == 'change_integral')
     }
     else
     {
-        /* 取得购物类型 */
+        /* 鍙栧緱璐?墿绫诲瀷 */
         $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
         $order['integral'] = $points;
 
-        /* 获得收货人信息 */
+        /* 鑾峰緱鏀惰揣浜轰俊鎭 */
         $consignee = get_consignee($_SESSION['user_id']);
 
-        /* 对商品信息赋值 */
-        $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+        /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+        $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
         if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
         {
@@ -1107,12 +1118,12 @@ elseif ($_REQUEST['step'] == 'change_integral')
         }
         else
         {
-            /* 计算订单的费用 */
+            /* 璁＄畻璁㈠崟鐨勮垂鐢 */
             $total = order_fee($order, $cart_goods, $consignee);
             $smarty->assign('total',  $total);
             $smarty->assign('config', $_CFG);
 
-            /* 团购标志 */
+            /* 鍥㈣喘鏍囧織 */
             if ($flow_type == CART_GROUP_BUY_GOODS)
             {
                 $smarty->assign('is_group_buy', 1);
@@ -1129,19 +1140,19 @@ elseif ($_REQUEST['step'] == 'change_integral')
 elseif ($_REQUEST['step'] == 'change_bonus')
 {
     /*------------------------------------------------------ */
-    //-- 改变红包
+    //-- 鏀瑰彉绾㈠寘
     /*------------------------------------------------------ */
     include_once('includes/cls_json.php');
     $result = array('error' => '', 'content' => '');
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -1149,17 +1160,17 @@ elseif ($_REQUEST['step'] == 'change_bonus')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         $bonus = bonus_info(intval($_GET['bonus']));
 
         if ((!empty($bonus) && $bonus['user_id'] == $_SESSION['user_id']) || $_GET['bonus'] == 0)
         {
-            $order['bonus_id'] = $_GET['bonus'];
+            $order['bonus_id'] = intval($_GET['bonus']);
         }
         else
         {
@@ -1167,11 +1178,11 @@ elseif ($_REQUEST['step'] == 'change_bonus')
             $result['error'] = $_LANG['invalid_bonus'];
         }
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -1186,7 +1197,7 @@ elseif ($_REQUEST['step'] == 'change_bonus')
 elseif ($_REQUEST['step'] == 'change_needinv')
 {
     /*------------------------------------------------------ */
-    //-- 改变发票的设置
+    //-- 鏀瑰彉鍙戠エ鐨勮?缃
     /*------------------------------------------------------ */
     include_once('includes/cls_json.php');
     $result = array('error' => '', 'content' => '');
@@ -1195,14 +1206,14 @@ elseif ($_REQUEST['step'] == 'change_needinv')
     $_GET['invPayee'] = !empty($_GET['invPayee']) ? json_str_iconv(urldecode($_GET['invPayee'])) : '';
     $_GET['inv_content'] = !empty($_GET['inv_content']) ? json_str_iconv(urldecode($_GET['inv_content'])) : '';
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -1211,10 +1222,10 @@ elseif ($_REQUEST['step'] == 'change_needinv')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
         if (isset($_GET['need_inv']) && intval($_GET['need_inv']) == 1)
@@ -1232,11 +1243,11 @@ elseif ($_REQUEST['step'] == 'change_needinv')
             $order['inv_content'] = '';
         }
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
         $smarty->assign('total', $total);
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -1248,21 +1259,21 @@ elseif ($_REQUEST['step'] == 'change_needinv')
 elseif ($_REQUEST['step'] == 'change_oos')
 {
     /*------------------------------------------------------ */
-    //-- 改变缺货处理时的方式
+    //-- 鏀瑰彉缂鸿揣澶勭悊鏃剁殑鏂瑰紡
     /*------------------------------------------------------ */
 
-    /* 取得订单信息 */
+    /* 鍙栧緱璁㈠崟淇℃伅 */
     $order = flow_order_info();
 
     $order['how_oos'] = intval($_GET['oos']);
 
-    /* 保存 session */
+    /* 淇濆瓨 session */
     $_SESSION['flow_order'] = $order;
 }
 elseif ($_REQUEST['step'] == 'check_surplus')
 {
     /*------------------------------------------------------ */
-    //-- 检查用户输入的余额
+    //-- 妫€鏌ョ敤鎴疯緭鍏ョ殑浣欓?
     /*------------------------------------------------------ */
     $surplus   = floatval($_GET['surplus']);
     $user_info = user_info($_SESSION['user_id']);
@@ -1277,12 +1288,12 @@ elseif ($_REQUEST['step'] == 'check_surplus')
 elseif ($_REQUEST['step'] == 'check_integral')
 {
     /*------------------------------------------------------ */
-    //-- 检查用户输入的余额
+    //-- 妫€鏌ョ敤鎴疯緭鍏ョ殑浣欓?
     /*------------------------------------------------------ */
     $points      = floatval($_GET['integral']);
     $user_info   = user_info($_SESSION['user_id']);
-    $flow_points = flow_available_points();  // 该订单允许使用的积分
-    $user_points = $user_info['pay_points']; // 用户的积分总数
+    $flow_points = flow_available_points();  // 璇ヨ?鍗曞厑璁镐娇鐢ㄧ殑绉?垎
+    $user_points = $user_info['pay_points']; // 鐢ㄦ埛鐨勭Н鍒嗘€绘暟
 
     if ($points > $user_points)
     {
@@ -1296,19 +1307,18 @@ elseif ($_REQUEST['step'] == 'check_integral')
 
     exit;
 }
+/*------------------------------------------------------ */
+//-- 瀹屾垚鎵€鏈夎?鍗曟搷浣滐紝鎻愪氦鍒版暟鎹?簱
+/*------------------------------------------------------ */
 elseif ($_REQUEST['step'] == 'done')
 {
-    /*------------------------------------------------------ */
-    //-- 完成所有订单操作，提交到数据库
-    /*------------------------------------------------------ */
-
     include_once('includes/lib_clips.php');
     include_once('includes/lib_payment.php');
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 检查购物车中是否有商品 */
+    /* 妫€鏌ヨ喘鐗╄溅涓?槸鍚︽湁鍟嗗搧 */
     $sql = "SELECT COUNT(*) FROM " . $ecs->table('cart') .
         " WHERE session_id = '" . SESS_ID . "' " .
         "AND parent_id = 0 AND is_gift = 0 AND rec_type = '$flow_type'";
@@ -1317,8 +1327,8 @@ elseif ($_REQUEST['step'] == 'done')
         show_message($_LANG['no_goods_in_cart'], '', '', 'warning');
     }
 
-    /* 检查商品库存 */
-    /* 如果使用库存，且下订单时减库存，则减少库存 */
+    /* 妫€鏌ュ晢鍝佸簱瀛 */
+    /* 濡傛灉浣跨敤搴撳瓨锛屼笖涓嬭?鍗曟椂鍑忓簱瀛橈紝鍒欏噺灏戝簱瀛 */
     if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
     {
         $cart_goods_stock = get_cart_goods();
@@ -1332,23 +1342,23 @@ elseif ($_REQUEST['step'] == 'done')
     }
 
     /*
-     * 检查用户是否已经登录
-     * 如果用户已经登录了则检查是否有默认的收货地址
-     * 如果没有登录则跳转到登录和注册页面
+     * 妫€鏌ョ敤鎴锋槸鍚﹀凡缁忕櫥褰
+     * 濡傛灉鐢ㄦ埛宸茬粡鐧诲綍浜嗗垯妫€鏌ユ槸鍚︽湁榛樿?鐨勬敹璐у湴鍧€
+     * 濡傛灉娌℃湁鐧诲綍鍒欒烦杞?埌鐧诲綍鍜屾敞鍐岄〉闈
      */
     if (empty($_SESSION['direct_shopping']) && $_SESSION['user_id'] == 0)
     {
-        /* 用户没有登录且没有选定匿名购物，转向到登录页面 */
+        /* 鐢ㄦ埛娌℃湁鐧诲綍涓旀病鏈夐€夊畾鍖垮悕璐?墿锛岃浆鍚戝埌鐧诲綍椤甸潰 */
         ecs_header("Location: flow.php?step=login\n");
         exit;
     }
 
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 检查收货人信息是否完整 */
+    /* 妫€鏌ユ敹璐т汉淇℃伅鏄?惁瀹屾暣 */
     if (!check_consignee_info($consignee, $flow_type))
     {
-        /* 如果不完整则转向到收货人信息填写界面 */
+        /* 濡傛灉涓嶅畬鏁村垯杞?悜鍒版敹璐т汉淇℃伅濉?啓鐣岄潰 */
         ecs_header("Location: flow.php?step=consignee\n");
         exit;
     }
@@ -1384,7 +1394,7 @@ elseif ($_REQUEST['step'] == 'done')
         'agency_id'       => get_agency_by_regions(array($consignee['country'], $consignee['province'], $consignee['city'], $consignee['district']))
         );
 
-    /* 扩展信息 */
+    /* 鎵╁睍淇℃伅 */
     if (isset($_SESSION['flow_type']) && intval($_SESSION['flow_type']) != CART_GENERAL_GOODS)
     {
         $order['extension_code'] = $_SESSION['extension_code'];
@@ -1396,7 +1406,7 @@ elseif ($_REQUEST['step'] == 'done')
         $order['extension_id'] = 0;
     }
 
-    /* 检查积分余额是否合法 */
+    /* 妫€鏌ョН鍒嗕綑棰濇槸鍚﹀悎娉 */
     $user_id = $_SESSION['user_id'];
     if ($user_id > 0)
     {
@@ -1408,9 +1418,9 @@ elseif ($_REQUEST['step'] == 'done')
             $order['surplus'] = 0;
         }
 
-        // 查询用户有多少积分
-        $flow_points = flow_available_points();  // 该订单允许使用的积分
-        $user_points = $user_info['pay_points']; // 用户的积分总数
+        // 鏌ヨ?鐢ㄦ埛鏈夊?灏戠Н鍒
+        $flow_points = flow_available_points();  // 璇ヨ?鍗曞厑璁镐娇鐢ㄧ殑绉?垎
+        $user_points = $user_info['pay_points']; // 鐢ㄦ埛鐨勭Н鍒嗘€绘暟
 
         $order['integral'] = min($order['integral'], $user_points, $flow_points);
         if ($order['integral'] < 0)
@@ -1424,7 +1434,7 @@ elseif ($_REQUEST['step'] == 'done')
         $order['integral'] = 0;
     }
 
-    /* 检查红包是否存在 */
+    /* 妫€鏌ョ孩鍖呮槸鍚﹀瓨鍦 */
     if ($order['bonus_id'] > 0)
     {
         $bonus = bonus_info($order['bonus_id']);
@@ -1454,7 +1464,7 @@ elseif ($_REQUEST['step'] == 'done')
         }
     }
 
-    /* 订单中的商品 */
+    /* 璁㈠崟涓?殑鍟嗗搧 */
     $cart_goods = cart_goods($flow_type);
 
     if (empty($cart_goods))
@@ -1462,38 +1472,53 @@ elseif ($_REQUEST['step'] == 'done')
         show_message($_LANG['no_goods_in_cart'], $_LANG['back_home'], './', 'warning');
     }
 
-    /* 检查商品总额是否达到最低限购金额 */
+    /* 妫€鏌ュ晢鍝佹€婚?鏄?惁杈惧埌鏈€浣庨檺璐?噾棰 */
     if ($flow_type == CART_GENERAL_GOODS && cart_amount(true, CART_GENERAL_GOODS) < $_CFG['min_goods_amount'])
     {
         show_message(sprintf($_LANG['goods_amount_not_enough'], price_format($_CFG['min_goods_amount'], false)));
     }
 
-    /* 收货人信息 */
+    /* 鏀惰揣浜轰俊鎭 */
     foreach ($consignee as $key => $value)
     {
         $order[$key] = addslashes($value);
     }
 
-    /* 订单中的总额 */
+   /* 鍒ゆ柇鏄?笉鏄?疄浣撳晢鍝 */
+    foreach ($cart_goods AS $val)
+    {
+        /* 缁熻?瀹炰綋鍟嗗搧鐨勪釜鏁 */
+        if ($val['is_real'])
+        {
+            $is_real_good=1;
+        }
+    }
+    if(isset($is_real_good))
+    {
+        $sql="SELECT shipping_id FROM " . $ecs->table('shipping') . " WHERE shipping_id=".$order['shipping_id'] ." AND enabled =1"; 
+        if(!$db->getOne($sql))
+        {
+           show_message($_LANG['flow_no_shipping']);
+        }
+    }
+    /* 璁㈠崟涓?殑鎬婚? */
     $total = order_fee($order, $cart_goods, $consignee);
-
     $order['bonus']        = $total['bonus'];
     $order['goods_amount'] = $total['goods_price'];
     $order['discount']     = $total['discount'];
     $order['surplus']      = $total['surplus'];
     $order['tax']          = $total['tax'];
 
-    // 购物车中的商品能享受红包支付的总额
+    // 璐?墿杞︿腑鐨勫晢鍝佽兘浜?彈绾㈠寘鏀?粯鐨勬€婚?
     $discount_amout = compute_discount_amount();
-    // 红包和积分最多能支付的金额为商品总额
+    // 绾㈠寘鍜岀Н鍒嗘渶澶氳兘鏀?粯鐨勯噾棰濅负鍟嗗搧鎬婚?
     $temp_amout = $order['goods_amount'] - $discount_amout;
     if ($temp_amout <= 0)
     {
         $order['bonus_id'] = 0;
     }
 
-
-    /* 配送方式 */
+    /* 閰嶉€佹柟寮 */
     if ($order['shipping_id'] > 0)
     {
         $shipping = shipping_info($order['shipping_id']);
@@ -1502,7 +1527,7 @@ elseif ($_REQUEST['step'] == 'done')
     $order['shipping_fee'] = $total['shipping_fee'];
     $order['insure_fee']   = $total['shipping_insure'];
 
-    /* 支付方式 */
+    /* 鏀?粯鏂瑰紡 */
     if ($order['pay_id'] > 0)
     {
         $payment = payment_info($order['pay_id']);
@@ -1511,7 +1536,7 @@ elseif ($_REQUEST['step'] == 'done')
     $order['pay_fee'] = $total['pay_fee'];
     $order['cod_fee'] = $total['cod_fee'];
 
-    /* 商品包装 */
+    /* 鍟嗗搧鍖呰? */
     if ($order['pack_id'] > 0)
     {
         $pack               = pack_info($order['pack_id']);
@@ -1519,7 +1544,7 @@ elseif ($_REQUEST['step'] == 'done')
     }
     $order['pack_fee'] = $total['pack_fee'];
 
-    /* 祝福贺卡 */
+    /* 绁濈?璐哄崱 */
     if ($order['card_id'] > 0)
     {
         $card               = card_info($order['card_id']);
@@ -1529,10 +1554,10 @@ elseif ($_REQUEST['step'] == 'done')
 
     $order['order_amount']  = number_format($total['amount'], 2, '.', '');
 
-    /* 如果全部使用余额支付，检查余额是否足够 */
+    /* 濡傛灉鍏ㄩ儴浣跨敤浣欓?鏀?粯锛屾?鏌ヤ綑棰濇槸鍚﹁冻澶 */
     if ($payment['pay_code'] == 'balance' && $order['order_amount'] > 0)
     {
-        if($order['surplus'] >0) //余额支付里如果输入了一个金额
+        if($order['surplus'] >0) //浣欓?鏀?粯閲屽?鏋滆緭鍏ヤ簡涓€涓?噾棰
         {
             $order['order_amount'] = $order['order_amount'] + $order['surplus'];
             $order['surplus'] = 0;
@@ -1548,7 +1573,7 @@ elseif ($_REQUEST['step'] == 'done')
         }
     }
 
-    /* 如果订单金额为0（使用余额或积分或红包支付），修改订单状态为已确认、已付款 */
+    /* 濡傛灉璁㈠崟閲戦?涓?锛堜娇鐢ㄤ綑棰濇垨绉?垎鎴栫孩鍖呮敮浠橈級锛屼慨鏀硅?鍗曠姸鎬佷负宸茬‘璁ゃ€佸凡浠樻? */
     if ($order['order_amount'] <= 0)
     {
         $order['order_status'] = OS_CONFIRMED;
@@ -1570,7 +1595,7 @@ elseif ($_REQUEST['step'] == 'done')
     $order['from_ad']          = !empty($_SESSION['from_ad']) ? $_SESSION['from_ad'] : '0';
     $order['referer']          = !empty($_SESSION['referer']) ? addslashes($_SESSION['referer']) : '';
 
-    /* 记录扩展信息 */
+    /* 璁板綍鎵╁睍淇℃伅 */
     if ($flow_type != CART_GENERAL_GOODS)
     {
         $order['extension_code'] = $_SESSION['extension_code'];
@@ -1580,7 +1605,7 @@ elseif ($_REQUEST['step'] == 'done')
     $affiliate = unserialize($_CFG['affiliate']);
     if(isset($affiliate['on']) && $affiliate['on'] == 1 && $affiliate['config']['separate_by'] == 1)
     {
-        //推荐订单分成
+        //鎺ㄨ崘璁㈠崟鍒嗘垚
         $parent_id = get_affiliate();
         if($user_id == $parent_id)
         {
@@ -1589,21 +1614,21 @@ elseif ($_REQUEST['step'] == 'done')
     }
     elseif(isset($affiliate['on']) && $affiliate['on'] == 1 && $affiliate['config']['separate_by'] == 0)
     {
-        //推荐注册分成
+        //鎺ㄨ崘娉ㄥ唽鍒嗘垚
         $parent_id = 0;
     }
     else
     {
-        //分成功能关闭
+        //鍒嗘垚鍔熻兘鍏抽棴
         $parent_id = 0;
     }
     $order['parent_id'] = $parent_id;
 
-    /* 插入订单表 */
+    /* 鎻掑叆璁㈠崟琛 */
     $error_no = 0;
     do
     {
-        $order['order_sn'] = get_order_sn(); //获取新订单号
+        $order['order_sn'] = get_order_sn(); //鑾峰彇鏂拌?鍗曞彿
         $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('order_info'), $order, 'INSERT');
 
         $error_no = $GLOBALS['db']->errno();
@@ -1613,28 +1638,28 @@ elseif ($_REQUEST['step'] == 'done')
             die($GLOBALS['db']->errorMsg());
         }
     }
-    while ($error_no == 1062); //如果是订单号重复则重新提交数据
+    while ($error_no == 1062); //濡傛灉鏄??鍗曞彿閲嶅?鍒欓噸鏂版彁浜ゆ暟鎹
 
     $new_order_id = $db->insert_id();
     $order['order_id'] = $new_order_id;
 
-    /* 插入订单商品 */
+    /* 鎻掑叆璁㈠崟鍟嗗搧 */
     $sql = "INSERT INTO " . $ecs->table('order_goods') . "( " .
-                "order_id, goods_id, goods_name, goods_sn, goods_number, market_price, ".
+                "order_id, goods_id, goods_name, goods_sn, product_id, goods_number, market_price, ".
                 "goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id) ".
-            " SELECT '$new_order_id', goods_id, goods_name, goods_sn, goods_number, market_price, ".
+            " SELECT '$new_order_id', goods_id, goods_name, goods_sn, product_id, goods_number, market_price, ".
                 "goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id".
             " FROM " .$ecs->table('cart') .
             " WHERE session_id = '".SESS_ID."' AND rec_type = '$flow_type'";
     $db->query($sql);
-    /* 修改拍卖活动状态 */
+    /* 淇?敼鎷嶅崠娲诲姩鐘舵€ */
     if ($order['extension_code']=='auction')
     {
         $sql = "UPDATE ". $ecs->table('goods_activity') ." SET is_finished='2' WHERE act_id=".$order['extension_id'];
         $db->query($sql);
     }
 
-    /* 处理余额、积分、红包 */
+    /* 澶勭悊浣欓?銆佺Н鍒嗐€佺孩鍖 */
     if ($order['user_id'] > 0 && $order['surplus'] > 0)
     {
         log_account_change($order['user_id'], $order['surplus'] * (-1), 0, 0, 0, sprintf($_LANG['pay_order'], $order['order_sn']));
@@ -1650,14 +1675,14 @@ elseif ($_REQUEST['step'] == 'done')
         use_bonus($order['bonus_id'], $new_order_id);
     }
 
-    /* 如果使用库存，且下订单时减库存，则减少库存 */
+    /* 濡傛灉浣跨敤搴撳瓨锛屼笖涓嬭?鍗曟椂鍑忓簱瀛橈紝鍒欏噺灏戝簱瀛 */
     if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
     {
         change_order_goods_storage($order['order_id'], true, SDT_PLACE);
     }
 
-    /* 给商家发邮件 */
-    /* 增加是否给客服发送邮件选项 */
+    /* 缁欏晢瀹跺彂閭?欢 */
+    /* 澧炲姞鏄?惁缁欏?鏈嶅彂閫侀偖浠堕€夐」 */
     if ($_CFG['send_service_email'] && $_CFG['service_email'] != '')
     {
         $tpl = get_mail_template('remind_of_new_order');
@@ -1669,17 +1694,17 @@ elseif ($_REQUEST['step'] == 'done')
         send_mail($_CFG['shop_name'], $_CFG['service_email'], $tpl['template_subject'], $content, $tpl['is_html']);
     }
 
-    /* 如果需要，发短信 */
+    /* 濡傛灉闇€瑕侊紝鍙戠煭淇 */
     if ($_CFG['sms_order_placed'] == '1' && $_CFG['sms_shop_mobile'] != '')
     {
         include_once('includes/cls_sms.php');
         $sms = new sms();
         $msg = $order['pay_status'] == PS_UNPAYED ?
             $_LANG['order_placed_sms'] : $_LANG['order_placed_sms'] . '[' . $_LANG['sms_paid'] . ']';
-        $sms->send($_CFG['sms_shop_mobile'], sprintf($msg, $order['consignee'], $order['tel']), 0);
+        $sms->send($_CFG['sms_shop_mobile'], sprintf($msg, $order['consignee'], $order['tel']),'', 13,1);
     }
 
-    /* 如果订单金额为0 处理虚拟卡 */
+    /* 濡傛灉璁㈠崟閲戦?涓? 澶勭悊铏氭嫙鍗 */
     if ($order['order_amount'] <= 0)
     {
         $sql = "SELECT goods_id, goods_name, goods_number AS num FROM ".
@@ -1697,30 +1722,30 @@ elseif ($_REQUEST['step'] == 'done')
 
         if ($virtual_goods AND $flow_type != CART_GROUP_BUY_GOODS)
         {
-            /* 虚拟卡发货 */
+            /* 铏氭嫙鍗″彂璐 */
             if (virtual_goods_ship($virtual_goods,$msg, $order['order_sn'], true))
             {
-                /* 如果没有实体商品，修改发货状态，送积分和红包 */
+                /* 濡傛灉娌℃湁瀹炰綋鍟嗗搧锛屼慨鏀瑰彂璐х姸鎬侊紝閫佺Н鍒嗗拰绾㈠寘 */
                 $sql = "SELECT COUNT(*)" .
                         " FROM " . $ecs->table('order_goods') .
                         " WHERE order_id = '$order[order_id]' " .
                         " AND is_real = 1";
                 if ($db->getOne($sql) <= 0)
                 {
-                    /* 修改订单状态 */
+                    /* 淇?敼璁㈠崟鐘舵€ */
                     update_order($order['order_id'], array('shipping_status' => SS_SHIPPED, 'shipping_time' => gmtime()));
 
-                    /* 如果订单用户不为空，计算积分，并发给用户；发红包 */
+                    /* 濡傛灉璁㈠崟鐢ㄦ埛涓嶄负绌猴紝璁＄畻绉?垎锛屽苟鍙戠粰鐢ㄦ埛锛涘彂绾㈠寘 */
                     if ($order['user_id'] > 0)
                     {
-                        /* 取得用户信息 */
+                        /* 鍙栧緱鐢ㄦ埛淇℃伅 */
                         $user = user_info($order['user_id']);
 
-                        /* 计算并发放积分 */
+                        /* 璁＄畻骞跺彂鏀剧Н鍒 */
                         $integral = integral_to_give($order);
                         log_account_change($order['user_id'], 0, 0, intval($integral['rank_points']), intval($integral['custom_points']), sprintf($_LANG['order_gift_integral'], $order['order_sn']));
 
-                        /* 发放红包 */
+                        /* 鍙戞斁绾㈠寘 */
                         send_order_bonus($order['order_id']);
                     }
                 }
@@ -1729,15 +1754,15 @@ elseif ($_REQUEST['step'] == 'done')
 
     }
 
-    /* 清空购物车 */
+    /* 娓呯┖璐?墿杞 */
     clear_cart($flow_type);
-    /* 清除缓存，否则买了商品，但是前台页面读取缓存，商品数量不减少 */
+    /* 娓呴櫎缂撳瓨锛屽惁鍒欎拱浜嗗晢鍝侊紝浣嗘槸鍓嶅彴椤甸潰璇诲彇缂撳瓨锛屽晢鍝佹暟閲忎笉鍑忓皯 */
     clear_all_files();
 
-    /* 插入支付日志 */
+    /* 鎻掑叆鏀?粯鏃ュ織 */
     $order['log_id'] = insert_pay_log($new_order_id, $order['order_amount'], PAY_ORDER);
 
-    /* 取得支付信息，生成支付代码 */
+    /* 鍙栧緱鏀?粯淇℃伅锛岀敓鎴愭敮浠樹唬鐮 */
     if ($order['order_amount'] > 0)
     {
         $payment = payment_info($order['pay_id']);
@@ -1757,23 +1782,24 @@ elseif ($_REQUEST['step'] == 'done')
         $order['shipping_name']=trim(stripcslashes($order['shipping_name']));
     }
 
-    /* 订单信息 */
+    /* 璁㈠崟淇℃伅 */
     $smarty->assign('order',      $order);
     $smarty->assign('total',      $total);
     $smarty->assign('goods_list', $cart_goods);
-    $smarty->assign('order_submit_back', sprintf($_LANG['order_submit_back'], $_LANG['back_home'], $_LANG['goto_user_center'])); // 返回提示
+    $smarty->assign('order_submit_back', sprintf($_LANG['order_submit_back'], $_LANG['back_home'], $_LANG['goto_user_center'])); // 杩斿洖鎻愮ず
 
-    user_uc_call('add_feed', array($order['order_id'], BUY_GOODS)); //推送feed到uc
-    unset($_SESSION['flow_consignee']); // 清除session中保存的收货人信息
+    user_uc_call('add_feed', array($order['order_id'], BUY_GOODS)); //鎺ㄩ€乫eed鍒皍c
+    unset($_SESSION['flow_consignee']); // 娓呴櫎session涓?繚瀛樼殑鏀惰揣浜轰俊鎭
     unset($_SESSION['flow_order']);
     unset($_SESSION['direct_shopping']);
 }
+
+/*------------------------------------------------------ */
+//-- 鏇存柊璐?墿杞
+/*------------------------------------------------------ */
+
 elseif ($_REQUEST['step'] == 'update_cart')
 {
-    /*------------------------------------------------------ */
-    //-- 更新购物车
-    /*------------------------------------------------------ */
-
     if (isset($_POST['goods_number']) && is_array($_POST['goods_number']))
     {
         flow_update_cart($_POST['goods_number']);
@@ -1782,11 +1808,13 @@ elseif ($_REQUEST['step'] == 'update_cart')
     show_message($_LANG['update_cart_notice'], $_LANG['back_to_cart'], 'flow.php');
     exit;
 }
+
+/*------------------------------------------------------ */
+//-- 鍒犻櫎璐?墿杞︿腑鐨勫晢鍝
+/*------------------------------------------------------ */
+
 elseif ($_REQUEST['step'] == 'drop_goods')
 {
-    /*------------------------------------------------------ */
-    //-- 删除购物车中的商品
-    /*------------------------------------------------------ */
     $rec_id = intval($_GET['id']);
     flow_drop_cart_goods($rec_id);
 
@@ -1794,10 +1822,10 @@ elseif ($_REQUEST['step'] == 'drop_goods')
     exit;
 }
 
-/* 把优惠活动加入购物车 */
+/* 鎶婁紭鎯犳椿鍔ㄥ姞鍏ヨ喘鐗╄溅 */
 elseif ($_REQUEST['step'] == 'add_favourable')
 {
-    /* 取得优惠活动信息 */
+    /* 鍙栧緱浼樻儬娲诲姩淇℃伅 */
     $act_id = intval($_POST['act_id']);
     $favourable = favourable_info($act_id);
     if (empty($favourable))
@@ -1805,29 +1833,29 @@ elseif ($_REQUEST['step'] == 'add_favourable')
         show_message($_LANG['favourable_not_exist']);
     }
 
-    /* 判断用户能否享受该优惠 */
+    /* 鍒ゆ柇鐢ㄦ埛鑳藉惁浜?彈璇ヤ紭鎯 */
     if (!favourable_available($favourable))
     {
         show_message($_LANG['favourable_not_available']);
     }
 
-    /* 检查购物车中是否已有该优惠 */
+    /* 妫€鏌ヨ喘鐗╄溅涓?槸鍚﹀凡鏈夎?浼樻儬 */
     $cart_favourable = cart_favourable();
     if (favourable_used($favourable, $cart_favourable))
     {
         show_message($_LANG['favourable_used']);
     }
 
-    /* 赠品（特惠品）优惠 */
+    /* 璧犲搧锛堢壒鎯犲搧锛変紭鎯 */
     if ($favourable['act_type'] == FAT_GOODS)
     {
-        /* 检查是否选择了赠品 */
+        /* 妫€鏌ユ槸鍚﹂€夋嫨浜嗚禒鍝 */
         if (empty($_POST['gift']))
         {
             show_message($_LANG['pls_select_gift']);
         }
 
-        /* 检查是否已在购物车 */
+        /* 妫€鏌ユ槸鍚﹀凡鍦ㄨ喘鐗╄溅 */
         $sql = "SELECT goods_name" .
                 " FROM " . $ecs->table('cart') .
                 " WHERE session_id = '" . SESS_ID . "'" .
@@ -1840,14 +1868,14 @@ elseif ($_REQUEST['step'] == 'add_favourable')
             show_message(sprintf($_LANG['gift_in_cart'], join(',', $gift_name)));
         }
 
-        /* 检查数量是否超过上限 */
+        /* 妫€鏌ユ暟閲忔槸鍚﹁秴杩囦笂闄 */
         $count = isset($cart_favourable[$act_id]) ? $cart_favourable[$act_id] : 0;
         if ($favourable['act_type_ext'] > 0 && $count + count($_POST['gift']) > $favourable['act_type_ext'])
         {
             show_message($_LANG['gift_count_exceed']);
         }
 
-        /* 添加赠品到购物车 */
+        /* 娣诲姞璧犲搧鍒拌喘鐗╄溅 */
         foreach ($favourable['gift'] as $gift)
         {
             if (in_array($gift['id'], $_POST['gift']))
@@ -1865,7 +1893,7 @@ elseif ($_REQUEST['step'] == 'add_favourable')
         add_favourable_to_cart($act_id, $favourable['act_name'], $favourable['act_type_ext']);
     }
 
-    /* 刷新购物车 */
+    /* 鍒锋柊璐?墿杞 */
     ecs_header("Location: flow.php\n");
     exit;
 }
@@ -1896,7 +1924,7 @@ elseif ($_REQUEST['step'] == 'drop_to_collect')
     exit;
 }
 
-/* 验证红包序列号 */
+/* 楠岃瘉绾㈠寘搴忓垪鍙 */
 elseif ($_REQUEST['step'] == 'validate_bonus')
 {
     $bonus_sn = trim($_REQUEST['bonus_sn']);
@@ -1923,14 +1951,14 @@ elseif ($_REQUEST['step'] == 'validate_bonus')
     include_once('includes/cls_json.php');
     $result = array('error' => '', 'content' => '');
 
-    /* 取得购物类型 */
+    /* 鍙栧緱璐?墿绫诲瀷 */
     $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 
-    /* 获得收货人信息 */
+    /* 鑾峰緱鏀惰揣浜轰俊鎭 */
     $consignee = get_consignee($_SESSION['user_id']);
 
-    /* 对商品信息赋值 */
-    $cart_goods = cart_goods($flow_type); // 取得商品列表，计算合计
+    /* 瀵瑰晢鍝佷俊鎭?祴鍊 */
+    $cart_goods = cart_goods($flow_type); // 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁
 
     if (empty($cart_goods) || !check_consignee_info($consignee, $flow_type))
     {
@@ -1938,10 +1966,10 @@ elseif ($_REQUEST['step'] == 'validate_bonus')
     }
     else
     {
-        /* 取得购物流程设置 */
+        /* 鍙栧緱璐?墿娴佺▼璁剧疆 */
         $smarty->assign('config', $_CFG);
 
-        /* 取得订单信息 */
+        /* 鍙栧緱璁㈠崟淇℃伅 */
         $order = flow_order_info();
 
 
@@ -1967,12 +1995,20 @@ elseif ($_REQUEST['step'] == 'validate_bonus')
             $result['error'] = $_LANG['invalid_bonus'];
         }
 
-        /* 计算订单的费用 */
+        /* 璁＄畻璁㈠崟鐨勮垂鐢 */
         $total = order_fee($order, $cart_goods, $consignee);
+
+        if($total['goods_price']<$bonus['min_goods_amount'])
+        {
+         $order['bonus_id'] = '';
+         /* 閲嶆柊璁＄畻璁㈠崟 */
+         $total = order_fee($order, $cart_goods, $consignee);
+         $result['error'] = sprintf($_LANG['bonus_min_amount_error'], price_format($bonus['min_goods_amount'], false));
+        }
 
         $smarty->assign('total', $total);
 
-        /* 团购标志 */
+        /* 鍥㈣喘鏍囧織 */
         if ($flow_type == CART_GROUP_BUY_GOODS)
         {
             $smarty->assign('is_group_buy', 1);
@@ -1984,7 +2020,7 @@ elseif ($_REQUEST['step'] == 'validate_bonus')
     die($json->encode($result));
 }
 /*------------------------------------------------------ */
-//-- 添加礼包到购物车
+//-- 娣诲姞绀煎寘鍒拌喘鐗╄溅
 /*------------------------------------------------------ */
 elseif ($_REQUEST['step'] == 'add_package_to_cart')
 {
@@ -2002,13 +2038,13 @@ elseif ($_REQUEST['step'] == 'add_package_to_cart')
 
     $package = $json->decode($_POST['package_info']);
 
-    /* 如果是一步购物，先清空购物车 */
+    /* 濡傛灉鏄?竴姝ヨ喘鐗╋紝鍏堟竻绌鸿喘鐗╄溅 */
     if ($_CFG['one_step_buy'] == '1')
     {
         clear_cart();
     }
 
-    /* 商品数量是否合法 */
+    /* 鍟嗗搧鏁伴噺鏄?惁鍚堟硶 */
     if (!is_numeric($package->number) || intval($package->number) <= 0)
     {
         $result['error']   = 1;
@@ -2016,7 +2052,7 @@ elseif ($_REQUEST['step'] == 'add_package_to_cart')
     }
     else
     {
-        /* 添加到购物车 */
+        /* 娣诲姞鍒拌喘鐗╄溅 */
         if (add_package_to_cart($package->package_id, $package->number))
         {
             if ($_CFG['cart_confirm'] > 2)
@@ -2043,27 +2079,27 @@ elseif ($_REQUEST['step'] == 'add_package_to_cart')
 }
 else
 {
-    /* 标记购物流程为普通商品 */
+    /* 鏍囪?璐?墿娴佺▼涓烘櫘閫氬晢鍝 */
     $_SESSION['flow_type'] = CART_GENERAL_GOODS;
 
-    /* 如果是一步购物，跳到结算中心 */
+    /* 濡傛灉鏄?竴姝ヨ喘鐗╋紝璺冲埌缁撶畻涓?績 */
     if ($_CFG['one_step_buy'] == '1')
     {
         ecs_header("Location: flow.php?step=checkout\n");
         exit;
     }
 
-    /* 取得商品列表，计算合计 */
+    /* 鍙栧緱鍟嗗搧鍒楄〃锛岃?绠楀悎璁 */
     $cart_goods = get_cart_goods();
     $smarty->assign('goods_list', $cart_goods['goods_list']);
     $smarty->assign('total', $cart_goods['total']);
 
-    //购物车的描述的格式化
+    //璐?墿杞︾殑鎻忚堪鐨勬牸寮忓寲
     $smarty->assign('shopping_money',         sprintf($_LANG['shopping_money'], $cart_goods['total']['goods_price']));
     $smarty->assign('market_price_desc',      sprintf($_LANG['than_market_price'],
         $cart_goods['total']['market_price'], $cart_goods['total']['saving'], $cart_goods['total']['save_rate']));
 
-    // 显示收藏夹内的商品
+    // 鏄剧ず鏀惰棌澶瑰唴鐨勫晢鍝
     if ($_SESSION['user_id'] > 0)
     {
         require_once(ROOT_PATH . 'includes/lib_clips.php');
@@ -2071,43 +2107,43 @@ else
         $smarty->assign('collection_goods', $collection_goods);
     }
 
-    /* 取得优惠活动 */
+    /* 鍙栧緱浼樻儬娲诲姩 */
     $favourable_list = favourable_list($_SESSION['user_rank']);
     usort($favourable_list, 'cmp_favourable');
 
     $smarty->assign('favourable_list', $favourable_list);
 
-    /* 计算折扣 */
+    /* 璁＄畻鎶樻墸 */
     $discount = compute_discount();
     $smarty->assign('discount', $discount['discount']);
     $favour_name = empty($discount['name']) ? '' : join(',', $discount['name']);
     $smarty->assign('your_discount', sprintf($_LANG['your_discount'], $favour_name, price_format($discount['discount'])));
 
-    /* 增加是否在购物车里显示商品图 */
+    /* 澧炲姞鏄?惁鍦ㄨ喘鐗╄溅閲屾樉绀哄晢鍝佸浘 */
     $smarty->assign('show_goods_thumb', $GLOBALS['_CFG']['show_goods_in_cart']);
 
-    /* 增加是否在购物车里显示商品属性 */
+    /* 澧炲姞鏄?惁鍦ㄨ喘鐗╄溅閲屾樉绀哄晢鍝佸睘鎬 */
     $smarty->assign('show_goods_attribute', $GLOBALS['_CFG']['show_attr_in_cart']);
 
-    //取得购物车中基本件ID
+    /* 璐?墿杞︿腑鍟嗗搧閰嶄欢鍒楄〃 */
+    //鍙栧緱璐?墿杞︿腑鍩烘湰浠禝D
     $sql = "SELECT goods_id " .
             "FROM " . $GLOBALS['ecs']->table('cart') .
             " WHERE session_id = '" . SESS_ID . "' " .
             "AND rec_type = '" . CART_GENERAL_GOODS . "' " .
             "AND is_gift = 0 " .
+            "AND extension_code <> 'package_buy' " .
             "AND parent_id = 0 ";
-
     $parent_list = $GLOBALS['db']->getCol($sql);
 
-    /* 购物车中商品配件列表 */
     $fittings_list = get_goods_fittings($parent_list);
+
     $smarty->assign('fittings_list', $fittings_list);
 }
 
 $smarty->assign('currency_format', $_CFG['currency_format']);
 $smarty->assign('integral_scale',  $_CFG['integral_scale']);
 $smarty->assign('step',            $_REQUEST['step']);
-
 assign_dynamic('shopping_flow');
 
 $smarty->display('flow.dwt');
@@ -2117,7 +2153,7 @@ $smarty->display('flow.dwt');
 /*------------------------------------------------------ */
 
 /**
- * 获得用户的可用积分
+ * 鑾峰緱鐢ㄦ埛鐨勫彲鐢ㄧН鍒
  *
  * @access  private
  * @return  integral
@@ -2135,7 +2171,7 @@ function flow_available_points()
 }
 
 /**
- * 更新购物车中的商品数量
+ * 鏇存柊璐?墿杞︿腑鐨勫晢鍝佹暟閲
  *
  * @access  public
  * @param   array   $arr
@@ -2143,15 +2179,17 @@ function flow_available_points()
  */
 function flow_update_cart($arr)
 {
+    /* 澶勭悊 */
     foreach ($arr AS $key => $val)
     {
         $val = intval(make_semiangle($val));
-        if ($val <= 0)
+        if ($val <= 0 && !is_numeric($key))
         {
             continue;
         }
 
-        $sql = "SELECT `goods_id`, `goods_attr_id`, `extension_code` FROM" .$GLOBALS['ecs']->table('cart').
+        //鏌ヨ?锛
+        $sql = "SELECT `goods_id`, `goods_attr_id`, `product_id`, `extension_code` FROM" .$GLOBALS['ecs']->table('cart').
                " WHERE rec_id='$key' AND session_id='" . SESS_ID . "'";
         $goods = $GLOBALS['db']->getRow($sql);
 
@@ -2159,10 +2197,9 @@ function flow_update_cart($arr)
                 "FROM " .$GLOBALS['ecs']->table('goods'). " AS g, ".
                     $GLOBALS['ecs']->table('cart'). " AS c ".
                 "WHERE g.goods_id = c.goods_id AND c.rec_id = '$key'";
-
         $row = $GLOBALS['db']->getRow($sql);
 
-        /* 系统启用了库存，检查输入的商品数量是否有效 */
+        //鏌ヨ?锛氱郴缁熷惎鐢ㄤ簡搴撳瓨锛屾?鏌ヨ緭鍏ョ殑鍟嗗搧鏁伴噺鏄?惁鏈夋晥
         if (intval($GLOBALS['_CFG']['use_storage']) > 0 && $goods['extension_code'] != 'package_buy')
         {
             if ($row['goods_number'] < $val)
@@ -2170,6 +2207,20 @@ function flow_update_cart($arr)
                 show_message(sprintf($GLOBALS['_LANG']['stock_insufficiency'], $row['goods_name'],
                 $row['goods_number'], $row['goods_number']));
                 exit;
+            }
+            /* 鏄?揣鍝 */
+            $goods['product_id'] = trim($goods['product_id']);
+            if (!empty($goods['product_id']))
+            {
+                $sql = "SELECT product_number FROM " .$GLOBALS['ecs']->table('products'). " WHERE goods_id = '" . $goods['goods_id'] . "' AND product_id = '" . $goods['product_id'] . "'";
+
+                $product_number = $GLOBALS['db']->getOne($sql);
+                if ($product_number < $val)
+                {
+                    show_message(sprintf($GLOBALS['_LANG']['stock_insufficiency'], $row['goods_name'],
+                    $product_number['product_number'], $product_number['product_number']));
+                    exit;
+                }
             }
         }
         elseif (intval($GLOBALS['_CFG']['use_storage']) > 0 && $goods['extension_code'] == 'package_buy')
@@ -2181,50 +2232,63 @@ function flow_update_cart($arr)
             }
         }
 
-        /* 检查该项是否为基本件以及有没有配件存在 */
-        $sql = "SELECT a.goods_number, a.rec_id FROM " .$GLOBALS['ecs']->table('cart') . " AS b ".
-                "LEFT JOIN " . $GLOBALS['ecs']->table('cart') . " AS a ".
-                    "ON a.parent_id = b.goods_id AND a.session_id = '" . SESS_ID . "' AND a.extension_code <> 'package_buy'".
-                "WHERE b.rec_id = '$key'";
+        /* 鏌ヨ?锛氭?鏌ヨ?椤规槸鍚︿负鍩烘湰浠 浠ュ強鏄?惁瀛樺湪閰嶄欢 */
+        /* 姝ゅ?閰嶄欢鏄?寚娣诲姞鍟嗗搧鏃堕檮鍔犵殑骞朵笖鏄??缃?簡浼樻儬浠锋牸鐨勯厤浠 姝ょ被閰嶄欢閮芥湁parent_id goods_number涓? */
+        $sql = "SELECT b.goods_number, b.rec_id
+                FROM " .$GLOBALS['ecs']->table('cart') . " a, " .$GLOBALS['ecs']->table('cart') . " b
+                WHERE a.rec_id = '$key'
+                AND a.session_id = '" . SESS_ID . "'
+                AND a.extension_code <> 'package_buy'
+                AND b.parent_id = a.goods_id
+                AND b.session_id = '" . SESS_ID . "'";
 
-        $fittings = $GLOBALS['db']->getAll($sql);
+        $offers_accessories_res = $GLOBALS['db']->query($sql);
 
+        //璁㈣揣鏁伴噺澶т簬0
         if ($val > 0)
         {
-            foreach ($fittings AS $k => $v)
+            /* 鍒ゆ柇鏄?惁涓鸿秴鍑烘暟閲忕殑浼樻儬浠锋牸鐨勯厤浠 鍒犻櫎*/
+            $row_num = 1;
+            while ($offers_accessories_row = $GLOBALS['db']->fetchRow($offers_accessories_res))
             {
-                if ($v['goods_number'] != null && $v['rec_id'] != null)
+                if ($row_num > $val)
                 {
-                    /* 该商品有配件，更新配件的商品数量 */
-                    $num = ($v['goods_number']) > $val ? $val : $v['goods_number'];
-
-                    $sql = "UPDATE " . $GLOBALS['ecs']->table('cart') .
-                            " SET goods_number = '$num' WHERE rec_id = $v[rec_id]";
+                    $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
+                            " WHERE session_id = '" . SESS_ID . "' " .
+                            "AND rec_id = '" . $offers_accessories_row['rec_id'] ."' LIMIT 1";
                     $GLOBALS['db']->query($sql);
                 }
+
+                $row_num ++;
             }
 
+            /* 澶勭悊瓒呭€肩ぜ鍖 */
             if ($goods['extension_code'] == 'package_buy')
             {
-                /* 更新购物车中的商品数量 */
+                //鏇存柊璐?墿杞︿腑鐨勫晢鍝佹暟閲
                 $sql = "UPDATE " .$GLOBALS['ecs']->table('cart').
                         " SET goods_number = '$val' WHERE rec_id='$key' AND session_id='" . SESS_ID . "'";
             }
+            /* 澶勭悊鏅?€氬晢鍝佹垨闈炰紭鎯犵殑閰嶄欢 */
             else
             {
                 $attr_id    = empty($goods['goods_attr_id']) ? array() : explode(',', $goods['goods_attr_id']);
                 $goods_price = get_final_price($goods['goods_id'], $val, true, $attr_id);
 
-                /* 更新购物车中的商品数量 */
+                //鏇存柊璐?墿杞︿腑鐨勫晢鍝佹暟閲
                 $sql = "UPDATE " .$GLOBALS['ecs']->table('cart').
                         " SET goods_number = '$val', goods_price = '$goods_price' WHERE rec_id='$key' AND session_id='" . SESS_ID . "'";
             }
         }
+        //璁㈣揣鏁伴噺绛変簬0
         else
         {
-            if (is_object($fittings) && $fittings->goods_number != null && $fittings->rec_id != null)
+            /* 濡傛灉鏄?熀鏈?欢骞朵笖鏈変紭鎯犱环鏍肩殑閰嶄欢鍒欏垹闄や紭鎯犱环鏍肩殑閰嶄欢 */
+            while ($offers_accessories_row = $GLOBALS['db']->fetchRow($offers_accessories_res))
             {
-                $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart'). " WHERE rec_id=$fittings[rec_id]";
+                $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
+                        " WHERE session_id = '" . SESS_ID . "' " .
+                        "AND rec_id = '" . $offers_accessories_row['rec_id'] ."' LIMIT 1";
                 $GLOBALS['db']->query($sql);
             }
 
@@ -2235,16 +2299,17 @@ function flow_update_cart($arr)
         $GLOBALS['db']->query($sql);
     }
 
-    /* 删除所有赠品 */
+    /* 鍒犻櫎鎵€鏈夎禒鍝 */
     $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') . " WHERE session_id = '" .SESS_ID. "' AND is_gift <> 0";
     $GLOBALS['db']->query($sql);
 }
 
 /**
- * 检查订单中商品库存
+ * 妫€鏌ヨ?鍗曚腑鍟嗗搧搴撳瓨
  *
  * @access  public
  * @param   array   $arr
+ *
  * @return  void
  */
 function flow_cart_stock($arr)
@@ -2261,14 +2326,13 @@ function flow_cart_stock($arr)
                " WHERE rec_id='$key' AND session_id='" . SESS_ID . "'";
         $goods = $GLOBALS['db']->getRow($sql);
 
-        $sql = "SELECT g.goods_name, g.goods_number ".
+        $sql = "SELECT g.goods_name, g.goods_number, c.product_id ".
                 "FROM " .$GLOBALS['ecs']->table('goods'). " AS g, ".
                     $GLOBALS['ecs']->table('cart'). " AS c ".
                 "WHERE g.goods_id = c.goods_id AND c.rec_id = '$key'";
-
         $row = $GLOBALS['db']->getRow($sql);
 
-        /* 系统启用了库存，检查输入的商品数量是否有效 */
+        //绯荤粺鍚?敤浜嗗簱瀛橈紝妫€鏌ヨ緭鍏ョ殑鍟嗗搧鏁伴噺鏄?惁鏈夋晥
         if (intval($GLOBALS['_CFG']['use_storage']) > 0 && $goods['extension_code'] != 'package_buy')
         {
             if ($row['goods_number'] < $val)
@@ -2276,6 +2340,20 @@ function flow_cart_stock($arr)
                 show_message(sprintf($GLOBALS['_LANG']['stock_insufficiency'], $row['goods_name'],
                 $row['goods_number'], $row['goods_number']));
                 exit;
+            }
+
+            /* 鏄?揣鍝 */
+            $row['product_id'] = trim($row['product_id']);
+            if (!empty($row['product_id']))
+            {
+                $sql = "SELECT product_number FROM " .$GLOBALS['ecs']->table('products'). " WHERE goods_id = '" . $goods['goods_id'] . "' AND product_id = '" . $row['product_id'] . "'";
+                $product_number = $GLOBALS['db']->getOne($sql);
+                if ($product_number < $val)
+                {
+                    show_message(sprintf($GLOBALS['_LANG']['stock_insufficiency'], $row['goods_name'],
+                    $row['goods_number'], $row['goods_number']));
+                    exit;
+                }
             }
         }
         elseif (intval($GLOBALS['_CFG']['use_storage']) > 0 && $goods['extension_code'] == 'package_buy')
@@ -2291,7 +2369,7 @@ function flow_cart_stock($arr)
 }
 
 /**
- * 删除购物车中的商品
+ * 鍒犻櫎璐?墿杞︿腑鐨勫晢鍝
  *
  * @access  public
  * @param   integer $id
@@ -2299,34 +2377,137 @@ function flow_cart_stock($arr)
  */
 function flow_drop_cart_goods($id)
 {
-    /* 取得商品id */
+    /* 鍙栧緱鍟嗗搧id */
     $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('cart'). " WHERE rec_id = '$id'";
     $row = $GLOBALS['db']->getRow($sql);
     if ($row)
     {
-        /* 如果是普通商品，同时删除所有赠品及其配件 */
-        if ($row['parent_id'] == 0 && $row['is_gift'] == 0)
+        //濡傛灉鏄?秴鍊肩ぜ鍖
+        if ($row['extension_code'] == 'package_buy')
         {
             $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
                     " WHERE session_id = '" . SESS_ID . "' " .
-                    "AND (rec_id = '$id' OR parent_id = '$row[goods_id]' OR is_gift <> 0)";
+                    "AND rec_id = '$id' LIMIT 1";
         }
-        /* 如果不是普通商品，只删除该商品即可 */
+
+        //濡傛灉鏄?櫘閫氬晢鍝侊紝鍚屾椂鍒犻櫎鎵€鏈夎禒鍝佸強鍏堕厤浠
+        elseif ($row['parent_id'] == 0 && $row['is_gift'] == 0)
+        {
+            /* 妫€鏌ヨ喘鐗╄溅涓??鏅?€氬晢鍝佺殑涓嶅彲鍗曠嫭閿€鍞?殑閰嶄欢骞跺垹闄 */
+            $sql = "SELECT c.rec_id
+                    FROM " . $GLOBALS['ecs']->table('cart') . " AS c, " . $GLOBALS['ecs']->table('group_goods') . " AS gg, " . $GLOBALS['ecs']->table('goods'). " AS g
+                    WHERE gg.parent_id = '" . $row['goods_id'] . "'
+                    AND c.goods_id = gg.goods_id
+                    AND c.parent_id = '" . $row['goods_id'] . "'
+                    AND c.extension_code <> 'package_buy'
+                    AND gg.goods_id = g.goods_id
+                    AND g.is_alone_sale = 0";
+            $res = $GLOBALS['db']->query($sql);
+            $_del_str = $id . ',';
+            while ($id_alone_sale_goods = $GLOBALS['db']->fetchRow($res))
+            {
+                $_del_str .= $id_alone_sale_goods['rec_id'] . ',';
+            }
+            $_del_str = trim($_del_str, ',');
+
+            $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
+                    " WHERE session_id = '" . SESS_ID . "' " .
+                    "AND (rec_id IN ($_del_str) OR parent_id = '$row[goods_id]' OR is_gift <> 0)";
+        }
+
+        //濡傛灉涓嶆槸鏅?€氬晢鍝侊紝鍙?垹闄よ?鍟嗗搧鍗冲彲
         else
         {
             $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') .
                     " WHERE session_id = '" . SESS_ID . "' " .
                     "AND rec_id = '$id' LIMIT 1";
         }
+
         $GLOBALS['db']->query($sql);
     }
+
+    flow_clear_cart_alone();
 }
 
 /**
- * 比较优惠活动的函数，用于排序（把可用的排在前面）
- * @param   array   $a      优惠活动a
- * @param   array   $b      优惠活动b
- * @return  int     相等返回0，小于返回-1，大于返回1
+ * 鍒犻櫎璐?墿杞︿腑涓嶈兘鍗曠嫭閿€鍞?殑鍟嗗搧
+ *
+ * @access  public
+ * @return  void
+ */
+function flow_clear_cart_alone()
+{
+    /* 鏌ヨ?锛氳喘鐗╄溅涓?墍鏈変笉鍙?互鍗曠嫭閿€鍞?殑閰嶄欢 */
+    $sql = "SELECT c.rec_id, gg.parent_id
+            FROM " . $GLOBALS['ecs']->table('cart') . " AS c
+                LEFT JOIN " . $GLOBALS['ecs']->table('group_goods') . " AS gg ON c.goods_id = gg.goods_id
+                LEFT JOIN" . $GLOBALS['ecs']->table('goods') . " AS g ON c.goods_id = g.goods_id
+            WHERE c.session_id = '" . SESS_ID . "'
+            AND c.extension_code <> 'package_buy'
+            AND gg.parent_id > 0
+            AND g.is_alone_sale = 0";
+    $res = $GLOBALS['db']->query($sql);
+    $rec_id = array();
+    while ($row = $GLOBALS['db']->fetchRow($res))
+    {
+        $rec_id[$row['rec_id']][] = $row['parent_id'];
+    }
+
+    if (empty($rec_id))
+    {
+        return;
+    }
+
+    /* 鏌ヨ?锛氳喘鐗╄溅涓?墍鏈夊晢鍝 */
+    $sql = "SELECT DISTINCT goods_id
+            FROM " . $GLOBALS['ecs']->table('cart') . "
+            WHERE session_id = '" . SESS_ID . "'
+            AND extension_code <> 'package_buy'";
+    $res = $GLOBALS['db']->query($sql);
+    $cart_good = array();
+    while ($row = $GLOBALS['db']->fetchRow($res))
+    {
+        $cart_good[] = $row['goods_id'];
+    }
+
+    if (empty($cart_good))
+    {
+        return;
+    }
+
+    /* 濡傛灉璐?墿杞︿腑涓嶅彲浠ュ崟鐙?攢鍞?厤浠剁殑鍩烘湰浠朵笉瀛樺湪鍒欏垹闄よ?閰嶄欢 */
+    $del_rec_id = '';
+    foreach ($rec_id as $key => $value)
+    {
+        foreach ($value as $v)
+        {
+            if (in_array($v, $cart_good))
+            {
+                continue 2;
+            }
+        }
+
+        $del_rec_id = $key . ',';
+    }
+    $del_rec_id = trim($del_rec_id, ',');
+
+    if ($del_rec_id == '')
+    {
+        return;
+    }
+
+    /* 鍒犻櫎 */
+    $sql = "DELETE FROM " . $GLOBALS['ecs']->table('cart') ."
+            WHERE session_id = '" . SESS_ID . "'
+            AND rec_id IN ($del_rec_id)";
+    $GLOBALS['db']->query($sql);
+}
+
+/**
+ * 姣旇緝浼樻儬娲诲姩鐨勫嚱鏁帮紝鐢ㄤ簬鎺掑簭锛堟妸鍙?敤鐨勬帓鍦ㄥ墠闈?級
+ * @param   array   $a      浼樻儬娲诲姩a
+ * @param   array   $b      浼樻儬娲诲姩b
+ * @return  int     鐩哥瓑杩斿洖0锛屽皬浜庤繑鍥?1锛屽ぇ浜庤繑鍥?
  */
 function cmp_favourable($a, $b)
 {
@@ -2348,16 +2529,16 @@ function cmp_favourable($a, $b)
 }
 
 /**
- * 取得某用户等级当前时间可以享受的优惠活动
- * @param   int     $user_rank      用户等级id，0表示非会员
+ * 鍙栧緱鏌愮敤鎴风瓑绾у綋鍓嶆椂闂村彲浠ヤ韩鍙楃殑浼樻儬娲诲姩
+ * @param   int     $user_rank      鐢ㄦ埛绛夌骇id锛?琛ㄧず闈炰細鍛
  * @return  array
  */
 function favourable_list($user_rank)
 {
-    /* 购物车中已有的优惠活动及数量 */
+    /* 璐?墿杞︿腑宸叉湁鐨勪紭鎯犳椿鍔ㄥ強鏁伴噺 */
     $used_list = cart_favourable();
 
-    /* 当前用户可享受的优惠活动 */
+    /* 褰撳墠鐢ㄦ埛鍙?韩鍙楃殑浼樻儬娲诲姩 */
     $favourable_list = array();
     $user_rank = ',' . $user_rank . ',';
     $now = gmtime();
@@ -2375,19 +2556,26 @@ function favourable_list($user_rank)
         $favourable['formated_min_amount'] = price_format($favourable['min_amount'], false);
         $favourable['formated_max_amount'] = price_format($favourable['max_amount'], false);
         $favourable['gift']       = unserialize($favourable['gift']);
+
         foreach ($favourable['gift'] as $key => $value)
         {
             $favourable['gift'][$key]['formated_price'] = price_format($value['price'], false);
+            $sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('goods') . " WHERE is_on_sale = 1 AND goods_id = ".$value['id'];
+            $is_sale = $GLOBALS['db']->getOne($sql);
+            if(!$is_sale)
+            {
+                unset($favourable['gift'][$key]);
+            }
         }
 
         $favourable['act_range_desc'] = act_range_desc($favourable);
         $favourable['act_type_desc'] = sprintf($GLOBALS['_LANG']['fat_ext'][$favourable['act_type']], $favourable['act_type_ext']);
 
-        /* 是否能享受 */
+        /* 鏄?惁鑳戒韩鍙 */
         $favourable['available'] = favourable_available($favourable);
         if ($favourable['available'])
         {
-            /* 是否尚未享受 */
+            /* 鏄?惁灏氭湭浜?彈 */
             $favourable['available'] = !favourable_used($favourable, $used_list);
         }
 
@@ -2398,30 +2586,30 @@ function favourable_list($user_rank)
 }
 
 /**
- * 根据购物车判断是否可以享受某优惠活动
- * @param   array   $favourable     优惠活动信息
+ * 鏍规嵁璐?墿杞﹀垽鏂?槸鍚﹀彲浠ヤ韩鍙楁煇浼樻儬娲诲姩
+ * @param   array   $favourable     浼樻儬娲诲姩淇℃伅
  * @return  bool
  */
 function favourable_available($favourable)
 {
-    /* 会员等级是否符合 */
+    /* 浼氬憳绛夌骇鏄?惁绗﹀悎 */
     $user_rank = $_SESSION['user_rank'];
     if (strpos(',' . $favourable['user_rank'] . ',', ',' . $user_rank . ',') === false)
     {
         return false;
     }
 
-    /* 优惠范围内的商品总额 */
+    /* 浼樻儬鑼冨洿鍐呯殑鍟嗗搧鎬婚? */
     $amount = cart_favourable_amount($favourable);
 
-    /* 金额上限为0表示没有上限 */
+    /* 閲戦?涓婇檺涓?琛ㄧず娌℃湁涓婇檺 */
     return $amount >= $favourable['min_amount'] &&
         ($amount <= $favourable['max_amount'] || $favourable['max_amount'] == 0);
 }
 
 /**
- * 取得优惠范围描述
- * @param   array   $favourable     优惠活动
+ * 鍙栧緱浼樻儬鑼冨洿鎻忚堪
+ * @param   array   $favourable     浼樻儬娲诲姩
  * @return  string
  */
 function act_range_desc($favourable)
@@ -2451,7 +2639,7 @@ function act_range_desc($favourable)
 }
 
 /**
- * 取得购物车中已有的优惠活动及数量
+ * 鍙栧緱璐?墿杞︿腑宸叉湁鐨勪紭鎯犳椿鍔ㄥ強鏁伴噺
  * @return  array
  */
 function cart_favourable()
@@ -2473,9 +2661,9 @@ function cart_favourable()
 }
 
 /**
- * 购物车中是否已经有某优惠
- * @param   array   $favourable     优惠活动
- * @param   array   $cart_favourable购物车中已有的优惠活动及数量
+ * 璐?墿杞︿腑鏄?惁宸茬粡鏈夋煇浼樻儬
+ * @param   array   $favourable     浼樻儬娲诲姩
+ * @param   array   $cart_favourable璐?墿杞︿腑宸叉湁鐨勪紭鎯犳椿鍔ㄥ強鏁伴噺
  */
 function favourable_used($favourable, $cart_favourable)
 {
@@ -2492,10 +2680,10 @@ function favourable_used($favourable, $cart_favourable)
 }
 
 /**
- * 添加优惠活动（赠品）到购物车
- * @param   int     $act_id     优惠活动id
- * @param   int     $id         赠品id
- * @param   float   $price      赠品价格
+ * 娣诲姞浼樻儬娲诲姩锛堣禒鍝侊級鍒拌喘鐗╄溅
+ * @param   int     $act_id     浼樻儬娲诲姩id
+ * @param   int     $id         璧犲搧id
+ * @param   float   $price      璧犲搧浠锋牸
  */
 function add_gift_to_cart($act_id, $id, $price)
 {
@@ -2510,10 +2698,10 @@ function add_gift_to_cart($act_id, $id, $price)
 }
 
 /**
- * 添加优惠活动（非赠品）到购物车
- * @param   int     $act_id     优惠活动id
- * @param   string  $act_name   优惠活动name
- * @param   float   $amount     优惠金额
+ * 娣诲姞浼樻儬娲诲姩锛堥潪璧犲搧锛夊埌璐?墿杞
+ * @param   int     $act_id     浼樻儬娲诲姩id
+ * @param   string  $act_name   浼樻儬娲诲姩name
+ * @param   float   $amount     浼樻儬閲戦?
  */
 function add_favourable_to_cart($act_id, $act_name, $amount)
 {
@@ -2526,13 +2714,13 @@ function add_favourable_to_cart($act_id, $act_name, $amount)
 }
 
 /**
- * 取得购物车中某优惠活动范围内的总金额
- * @param   array   $favourable     优惠活动
+ * 鍙栧緱璐?墿杞︿腑鏌愪紭鎯犳椿鍔ㄨ寖鍥村唴鐨勬€婚噾棰
+ * @param   array   $favourable     浼樻儬娲诲姩
  * @return  float
  */
 function cart_favourable_amount($favourable)
 {
-    /* 查询优惠范围内商品总额的sql */
+    /* 鏌ヨ?浼樻儬鑼冨洿鍐呭晢鍝佹€婚?鐨剆ql */
     $sql = "SELECT SUM(c.goods_price * c.goods_number) " .
             "FROM " . $GLOBALS['ecs']->table('cart') . " AS c, " . $GLOBALS['ecs']->table('goods') . " AS g " .
             "WHERE c.goods_id = g.goods_id " .
@@ -2541,14 +2729,14 @@ function cart_favourable_amount($favourable)
             "AND c.is_gift = 0 " .
             "AND c.goods_id > 0 ";
 
-    /* 根据优惠范围修正sql */
+    /* 鏍规嵁浼樻儬鑼冨洿淇??sql */
     if ($favourable['act_range'] == FAR_ALL)
     {
         // sql do not change
     }
     elseif ($favourable['act_range'] == FAR_CATEGORY)
     {
-        /* 取得优惠范围分类的所有下级分类 */
+        /* 鍙栧緱浼樻儬鑼冨洿鍒嗙被鐨勬墍鏈変笅绾у垎绫 */
         $id_list = array();
         $cat_list = explode(',', $favourable['act_range_ext']);
         foreach ($cat_list as $id)
@@ -2571,8 +2759,7 @@ function cart_favourable_amount($favourable)
         $sql .= "AND g.goods_id " . db_create_in($id_list);
     }
 
-    /* 优惠范围内的商品总额 */
+    /* 浼樻儬鑼冨洿鍐呯殑鍟嗗搧鎬婚? */
     return $GLOBALS['db']->getOne($sql);
 }
-
 ?>

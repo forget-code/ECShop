@@ -3,7 +3,7 @@
 /**
  * ECSHOP Virtual card management
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: virtual_card.php 16624 2009-08-27 08:00:00Z liuhui $
+ * $Author: liubo $
+ * $Id: virtual_card.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /*------------------------------------------------------ */
@@ -32,7 +32,7 @@ $_LANG['action_fail'] = 'Operation fail';
 $_LANG['card'] = 'Card list';
 
 $_LANG['batch_card_add'] = 'Batch add products';
-
+$_LANG['download_file'] ='Download batch CSV files.';
 $_LANG['separator'] = 'Separating character';
 $_LANG['uploadfile'] = 'Upload file';
 $_LANG['sql_error'] = 'NO. %s information was wrong:<br /> ';

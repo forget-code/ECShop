@@ -1,4 +1,4 @@
-<!-- $Id: goods_batch_edit.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: goods_batch_edit.htm 16992 2010-01-19 08:45:49Z wangleisvn $ -->
 {include file="pageheader.htm"}
 <ul style="margin: 0pt; padding: 0pt; list-style-type: none; color: rgb(204, 0, 0);">
 <li style="border: 1px solid rgb(204, 0, 0); padding: 10px; background: rgb(255, 255, 204) none repeat scroll 0%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-bottom: 5px;">{$lang.notice_edit}</li>
@@ -40,6 +40,24 @@
       <input name="goods_number[{$goods.goods_id}]" type="text" value="{$goods.goods_number}" size="8" style="text-align:right" {if $goods.is_real eq 0}readonly="readonly"{/if} />    </td>
     <td><select name="brand_id[{$goods.goods_id}]"><option value="0" {if $goods.brand_id eq 0}selected{/if}>{$lang.select_please}</option>{html_options options=$brand_list selected=$goods.brand_id}</select></td>
   </tr>
+    {if product_exists}
+      {foreach from=$product_list[$goods.goods_id] item=products}
+      <tr align="center">
+        <td class="first-cell" scope="row">{$products.product_sn}</td>
+        <td class="first-cell" scope="row">{$products.goods_attr}</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        {foreach from=$rank_list item=rank}
+          <td>&nbsp;</td>
+        {/foreach}
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>
+          <input name="product_number[{$goods.goods_id}][{$products.product_id}]" type="text" value="{$products.product_number}" size="8" style="text-align:right"/>    </td>
+        <td>&nbsp;</td>
+      </tr>
+      {/foreach}
+    {/if}
   {/foreach}
   {else}
   <tr>

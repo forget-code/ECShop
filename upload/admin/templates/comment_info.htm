@@ -1,4 +1,4 @@
-<!-- $Id: comment_info.htm 15144 2008-11-03 01:50:47Z testyang $ -->
+<!-- $Id: comment_info.htm 16854 2009-12-07 06:20:09Z sxc_shop $ -->
 
 {include file="pageheader.htm"}
 <!-- comment content list -->
@@ -54,7 +54,13 @@
 </div>
 {/if}
 
-<div>
+{if $send_fail}
+<ul style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
+<li style="border: 1px solid #CC0000; background: #FFFFCC; padding: 10px; margin-bottom: 5px;" >{$lang.mail_send_fail}</li>
+</ul>
+{/if}
+
+<div class="main-div">
 <form method="post" action="comment_manage.php?act=action" name="theForm" onsubmit="return validate()">
 <table border="0" align="center">
   <tr><th colspan="2">
@@ -70,7 +76,7 @@
   </tr>
   <tr>
     <td>{$lang.reply_content}:</td>
-    <td><textarea name="content" cols="50" rows="4" wrap="VIRTUAL"></textarea></td>
+    <td><textarea name="content" cols="50" rows="4" wrap="VIRTUAL">{$reply_info.content}</textarea></td>
   </tr>
   {if $reply_info.content}
   <tr>
@@ -79,10 +85,15 @@
   </tr>
   {/if}
   <tr>
+    <td></td>
+    <td><input name="send_email_notice" type="checkbox" value='1'/>{$lang.send_email_notice}</td>
+  </tr>
+  <tr>
     <td>&nbsp;</td>
     <td>
       <input name="submit" type="submit" value="{$lang.button_submit}" class="button">
       <input type="reset" value="{$lang.button_reset}" class="button">
+      {if $reply_info.content}<input type="submit" name="remail" value="{$lang.remail}" class="button">{/if}
       <input type="hidden" name="comment_id" value="{$msg.comment_id}">
       <input type="hidden" name="comment_type" value="{$msg.comment_type}">
       <input type="hidden" name="id_value" value="{$msg.id_value}">

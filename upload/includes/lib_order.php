@@ -3,14 +3,14 @@
 /**
  * ECSHOP 购物流程函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_order.php 16899 2009-12-17 07:10:07Z liubo $
+ * $Id: lib_order.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -84,7 +84,7 @@ function available_shipping_list($region_id_list)
                 $GLOBALS['ecs']->table('shipping_area') . ' AS a, ' .
                 $GLOBALS['ecs']->table('area_region') . ' AS r ' .
             'WHERE r.region_id ' . db_create_in($region_id_list) .
-            ' AND r.shipping_area_id = a.shipping_area_id AND a.shipping_id = s.shipping_id AND s.enabled = 1';
+            ' AND r.shipping_area_id = a.shipping_area_id AND a.shipping_id = s.shipping_id AND s.enabled = 1 ORDER BY s.shipping_order';
 
     return $GLOBALS['db']->getAll($sql);
 }
@@ -781,8 +781,10 @@ function order_fee($order, $goods, $consignee)
     /* 保存订单信息 */
     $_SESSION['flow_order'] = $order;
 
+    $se_flow_type = isset($_SESSION['flow_type']) ? $_SESSION['flow_type'] : '';
+    
     /* 支付费用 */
-    if (!empty($order['pay_id']) && ($total['real_goods_count'] > 0 || $_SESSION['flow_type'] != CART_EXCHANGE_GOODS))
+    if (!empty($order['pay_id']) && ($total['real_goods_count'] > 0 || $se_flow_type != CART_EXCHANGE_GOODS))
     {
         $total['pay_fee']      = pay_fee($order['pay_id'], $total['amount'], $shipping_cod_fee);
     }
@@ -1003,13 +1005,14 @@ function cart_weight_price($type = CART_GENERAL_GOODS)
  * @access  public
  * @param   integer $goods_id   商品编号
  * @param   integer $num        商品数量
- * @param   array   $spec       规格
+ * @param   array   $spec       规格值对应的id数组
  * @param   integer $parent     基本件
  * @return  boolean
  */
 function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
 {
     $GLOBALS['err']->clean();
+    $_parent_id = $parent;
 
     /* 取得商品信息 */
     $sql = "SELECT g.goods_name, g.goods_sn, g.is_on_sale, g.is_real, ".
@@ -1035,21 +1038,10 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
     if ($parent > 0)
     {
         $sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('cart') .
-                " WHERE goods_id='$parent' AND session_id='" . SESS_ID . "'";
+                " WHERE goods_id='$parent' AND session_id='" . SESS_ID . "' AND extension_code <> 'package_buy'";
         if ($GLOBALS['db']->getOne($sql) == 0)
         {
             $GLOBALS['err']->add($GLOBALS['_LANG']['no_basic_goods'], ERR_NO_BASIC_GOODS);
-
-            return false;
-        }
-
-        /* 检查该配件是否已经添加过了。 */
-        $sql = "SELECT COUNT(*) FROM " . $GLOBALS['ecs']->table('cart') .
-                " WHERE goods_id = '$goods_id' AND parent_id='$parent' AND session_id='" . SESS_ID . "'";
-
-        if ($GLOBALS['db']->getOne($sql) > 0)
-        {
-            $GLOBALS['err']->add($GLOBALS['_LANG']['fitting_goods_exists'] , ERR_NOT_EXISTS);
 
             return false;
         }
@@ -1071,13 +1063,44 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
         return false;
     }
 
-    /* 检查库存 */
-    if ($GLOBALS['_CFG']['use_storage'] == 1 && $num > $goods['goods_number'])
-    {
-        $num = $goods['goods_number'];
-        $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['shortage'], $num), ERR_OUT_OF_STOCK);
+    /* 如果商品有规格则取规格商品信息 配件除外 */
+    $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('products'). " WHERE goods_id = '$goods_id' LIMIT 0, 1";
+    $prod = $GLOBALS['db']->getRow($sql);
 
-        return false;
+    if (is_spec($spec) && !empty($prod))
+    {
+        $product_info = get_products_info($goods_id, $spec);
+    }
+    if (empty($product_info))
+    {
+        $product_info = array('product_number' => '', 'product_id' => 0);
+    }
+
+    /* 检查：库存 */
+    if ($GLOBALS['_CFG']['use_storage'] == 1)
+    {
+        //检查：商品购买数量是否大于总库存
+        if ($num > $goods['goods_number'])
+        {
+            $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['shortage'], $goods['goods_number']), ERR_OUT_OF_STOCK);
+
+            return false;
+        }
+
+        //商品存在规格 是货品 检查该货品库存
+        if (is_spec($spec) && !empty($prod))
+        {
+            if (!empty($spec))
+            {
+                /* 取规格的货品库存 */
+                if ($num > $product_info['product_number'])
+                {
+                    $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['shortage'], $product_info['product_number']), ERR_OUT_OF_STOCK);
+    
+                    return false;
+                }
+            }
+        }       
     }
 
     /* 计算商品的促销价格 */
@@ -1093,6 +1116,7 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
         'session_id'    => SESS_ID,
         'goods_id'      => $goods_id,
         'goods_sn'      => addslashes($goods['goods_sn']),
+        'product_id'    => $product_info['product_id'],
         'goods_name'    => addslashes($goods['goods_name']),
         'market_price'  => $goods['market_price'],
         'goods_attr'    => addslashes($goods_attr),
@@ -1104,12 +1128,15 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
         'rec_type'      => CART_GENERAL_GOODS
     );
 
-    /* 取得该商品的基本件和该商品作为其配件的价格（条件是价格低） */
+    /* 如果该配件在添加为基本件的配件时，所设置的“配件价格”比原价低，即此配件在价格上提供了优惠， */
+    /* 则按照该配件的优惠价格卖，但是每一个基本件只能购买一个优惠价格的“该配件”，多买的“该配件”不享 */
+    /* 受此优惠 */
     $basic_list = array();
     $sql = "SELECT parent_id, goods_price " .
             "FROM " . $GLOBALS['ecs']->table('group_goods') .
             " WHERE goods_id = '$goods_id'" .
             " AND goods_price < '$goods_price'" .
+            " AND parent_id = '$_parent_id'" .
             " ORDER BY goods_price";
     $res = $GLOBALS['db']->query($sql);
     while ($row = $GLOBALS['db']->fetchRow($res))
@@ -1125,6 +1152,7 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
                 "FROM " . $GLOBALS['ecs']->table('cart') .
                 " WHERE session_id = '" . SESS_ID . "'" .
                 " AND parent_id = 0" .
+                " AND extension_code <> 'package_buy' " .
                 " AND goods_id " . db_create_in(array_keys($basic_list)) .
                 " GROUP BY goods_id";
         $res = $GLOBALS['db']->query($sql);
@@ -1135,12 +1163,14 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
     }
 
     /* 取得购物车中该商品每个基本件已有该商品配件数量，计算出每个基本件还能有几个该商品配件 */
+    /* 一个基本件对应一个该商品配件 */
     if ($basic_count_list)
     {
         $sql = "SELECT parent_id, SUM(goods_number) AS count " .
                 "FROM " . $GLOBALS['ecs']->table('cart') .
                 " WHERE session_id = '" . SESS_ID . "'" .
                 " AND goods_id = '$goods_id'" .
+                " AND extension_code <> 'package_buy' " .
                 " AND parent_id " . db_create_in(array_keys($basic_count_list)) .
                 " GROUP BY parent_id";
         $res = $GLOBALS['db']->query($sql);
@@ -1150,7 +1180,7 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
         }
     }
 
-    /* 循环插入配件 */
+    /* 循环插入配件 如果是配件则用其添加数量依次为购物车中所有属于其的基本件添加足够数量的该配件 */
     foreach ($basic_list as $parent_id => $fitting_price)
     {
         /* 如果已全部插入，退出 */
@@ -1172,9 +1202,11 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
         }
 
         /* 作为该基本件的配件插入 */
-        $parent['goods_price']  = max($fitting_price, 0) + $spec_price;
+        $parent['goods_price']  = max($fitting_price, 0) + $spec_price; //允许该配件优惠价格为0
         $parent['goods_number'] = min($num, $basic_count_list[$parent_id]);
         $parent['parent_id']    = $parent_id;
+
+        /* 添加 */
         $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('cart'), $parent, 'INSERT');
 
         /* 改变数量 */
@@ -1184,24 +1216,34 @@ function addto_cart($goods_id, $num = 1, $spec = array(), $parent = 0)
     /* 如果数量不为0，作为基本件插入 */
     if ($num > 0)
     {
-         /* 检查该商品是否已经存在在购物车中 */
+        /* 检查该商品是否已经存在在购物车中 */
         $sql = "SELECT goods_number FROM " .$GLOBALS['ecs']->table('cart').
                 " WHERE session_id = '" .SESS_ID. "' AND goods_id = '$goods_id' ".
-                "AND parent_id = 0 AND goods_attr = '" .get_goods_attr_info($spec). "' " .
-                "AND rec_type = 'CART_GENERAL_GOODS'";
+                " AND parent_id = 0 AND goods_attr = '" .get_goods_attr_info($spec). "' " .
+                " AND extension_code <> 'package_buy' " .
+                " AND rec_type = 'CART_GENERAL_GOODS'";
 
         $row = $GLOBALS['db']->getRow($sql);
 
         if($row) //如果购物车已经有此物品，则更新
         {
             $num += $row['goods_number'];
-            if ($GLOBALS['_CFG']['use_storage'] == 0 || $num <= $goods['goods_number'])
+            if(is_spec($spec))
+            {
+             $goods_storage=$product_info['goods_number'];
+            }
+            else
+            {
+                $goods_storage=$goods['goods_number'];
+            }
+            if ($GLOBALS['_CFG']['use_storage'] == 0 || $num <= $goods_storage)
             {
                 $goods_price = get_final_price($goods_id, $num, true, $spec);
                 $sql = "UPDATE " . $GLOBALS['ecs']->table('cart') . " SET goods_number = '$num'" .
                        " , goods_price = '$goods_price'".
                        " WHERE session_id = '" .SESS_ID. "' AND goods_id = '$goods_id' ".
-                       "AND parent_id = 0 AND goods_attr = '" .get_goods_attr_info($spec). "' " .
+                       " AND parent_id = 0 AND goods_attr = '" .get_goods_attr_info($spec). "' " .
+                       " AND extension_code <> 'package_buy' " .
                        "AND rec_type = 'CART_GENERAL_GOODS'";
                 $GLOBALS['db']->query($sql);
             }
@@ -1243,11 +1285,13 @@ function clear_cart($type = CART_GENERAL_GOODS)
 /**
  * 获得指定的商品属性
  *
- * @access  public
- * @param   array   $arr
- * @return  string
+ * @access      public
+ * @param       array       $arr        规格、属性ID数组
+ * @param       type        $type       设置返回结果类型：pice，显示价格，默认；no，不显示价格
+ *
+ * @return      string
  */
-function get_goods_attr_info($arr)
+function get_goods_attr_info($arr, $type = 'pice')
 {
     $attr   = '';
 
@@ -1583,7 +1627,7 @@ function get_cart_goods()
         if (trim($row['goods_attr']) != '')
         {
             $sql = "SELECT attr_value FROM " . $GLOBALS['ecs']->table('goods_attr') . " WHERE goods_attr_id " .
-            db_create_in($row['goods_attr_id']);
+            db_create_in($row['goods_attr']);
             $attr_list = $GLOBALS['db']->getCol($sql);
             foreach ($attr_list AS $attr)
             {
@@ -2151,13 +2195,13 @@ function change_order_goods_storage($order_id, $is_dec = true, $storage = 0)
     switch ($storage)
     {
         case 0 :
-            $sql = "SELECT goods_id, SUM(send_number) AS num, max(extension_code) as extension_code FROM " . $GLOBALS['ecs']->table('order_goods') .
-                    " WHERE order_id = '$order_id' AND is_real = 1 GROUP BY goods_id ";
+            $sql = "SELECT goods_id, SUM(send_number) AS num, MAX(extension_code) AS extension_code, product_id FROM " . $GLOBALS['ecs']->table('order_goods') .
+                    " WHERE order_id = '$order_id' AND is_real = 1 GROUP BY goods_id, product_id";
         break;
 
         case 1 :
-            $sql = "SELECT goods_id, SUM(goods_number) AS num, max(extension_code) as extension_code FROM " . $GLOBALS['ecs']->table('order_goods') .
-                    " WHERE order_id = '$order_id' AND is_real = 1 GROUP BY goods_id ";
+            $sql = "SELECT goods_id, SUM(goods_number) AS num, MAX(extension_code) AS extension_code, product_id FROM " . $GLOBALS['ecs']->table('order_goods') .
+                    " WHERE order_id = '$order_id' AND is_real = 1 GROUP BY goods_id, product_id";
         break;
     }
 
@@ -2168,11 +2212,11 @@ function change_order_goods_storage($order_id, $is_dec = true, $storage = 0)
         {
             if ($is_dec)
             {
-                change_goods_storage($row['goods_id'], - $row['num']);
+                change_goods_storage($row['goods_id'], $row['product_id'], - $row['num']);
             }
             else
             {
-                change_goods_storage($row['goods_id'], $row['num']);
+                change_goods_storage($row['goods_id'], $row['product_id'], $row['num']);
             }
             $GLOBALS['db']->query($sql);
         }
@@ -2192,42 +2236,61 @@ function change_order_goods_storage($order_id, $is_dec = true, $storage = 0)
 
                 if ($is_dec)
                 {
-                    change_goods_storage($row_goods['goods_id'], - ($row['num'] * $row_goods['goods_number']));
+                    change_goods_storage($row_goods['goods_id'], $row['product_id'], - ($row['num'] * $row_goods['goods_number']));
                 }
                 elseif ($is_goods['is_real'])
                 {
-                    change_goods_storage($row_goods['goods_id'], ($row['num'] * $row_goods['goods_number']));
+                    change_goods_storage($row_goods['goods_id'], $row['product_id'], ($row['num'] * $row_goods['goods_number']));
                 }
             }
         }
     }
+
 }
 
 /**
- * 商品库存增与减
- * @param   int    $good_id    商品ID
- * @param   int    $number     增减数量，默认0；
+ * 商品库存增与减 货品库存增与减
+ *
+ * @param   int    $good_id         商品ID
+ * @param   int    $product_id      货品ID
+ * @param   int    $number          增减数量，默认0；
+ *
  * @return  bool               true，成功；false，失败；
  */
-function change_goods_storage($good_id, $number = 0)
+function change_goods_storage($good_id, $product_id, $number = 0)
 {
-    if (empty($good_id) || ($number == '' && $number !== 0))
-    {
-        return false;
-    }
-
     if ($number == 0)
     {
         return true; // 值为0即不做、增减操作，返回true
     }
 
+    if (empty($good_id) || empty($number))
+    {
+        return false;
+    }
+
     $number = ($number > 0) ? '+ ' . $number : $number;
+
+    /* 处理货品库存 */
+    $products_query = true;
+    if (!empty($product_id))
+    {
+        $sql = "UPDATE " . $GLOBALS['ecs']->table('products') ."
+                SET product_number = product_number $number
+                WHERE goods_id = '$good_id'
+                AND product_id = '$product_id'
+                LIMIT 1";
+        $products_query = $GLOBALS['db']->query($sql);
+    }
+
+    /* 处理商品库存 */
     $sql = "UPDATE " . $GLOBALS['ecs']->table('goods') ."
             SET goods_number = goods_number $number
             WHERE goods_id = '$good_id'
             LIMIT 1";
     $query = $GLOBALS['db']->query($sql);
-    if ($query)
+
+    if ($query && $products_query)
     {
         return true;
     }
@@ -2275,14 +2338,16 @@ function order_query_sql($type = 'finished', $alias = '')
     /* 待发货订单 */
     elseif ($type == 'await_ship')
     {
-        return " AND   {$alias}order_status " . db_create_in(array(OS_CONFIRMED, OS_SPLITED, OS_SPLITING_PART)) .
-               " AND   {$alias}shipping_status " . db_create_in(array(SS_UNSHIPPED, SS_PREPARING, SS_SHIPPED_PART, SS_SHIPPED_ING)) .
+        return " AND   {$alias}order_status " .
+                 db_create_in(array(OS_CONFIRMED, OS_SPLITED, OS_SPLITING_PART)) .
+               " AND   {$alias}shipping_status " .
+                 db_create_in(array(SS_UNSHIPPED, SS_PREPARING, SS_SHIPPED_ING)) .
                " AND ( {$alias}pay_status " . db_create_in(array(PS_PAYED, PS_PAYING)) . " OR {$alias}pay_id " . db_create_in(payment_id_list(true)) . ") ";
     }
     /* 待付款订单 */
     elseif ($type == 'await_pay')
     {
-        return " AND   {$alias}order_status = '" . OS_CONFIRMED . "'" .
+        return " AND   {$alias}order_status " . db_create_in(array(OS_CONFIRMED, OS_SPLITED)) .
                " AND   {$alias}pay_status = '" . PS_UNPAYED . "'" .
                " AND ( {$alias}shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) . " OR {$alias}pay_id " . db_create_in(payment_id_list(false)) . ") ";
     }
@@ -2308,7 +2373,7 @@ function order_query_sql($type = 'finished', $alias = '')
     /* 已发货订单：不论是否付款 */
     elseif ($type == 'shipped')
     {
-        return " AND {$alias}order_status " . db_create_in(array(OS_CONFIRMED, OS_SPLITED, OS_SPLITING_PART)) .
+        return " AND {$alias}order_status = '" . OS_CONFIRMED . "'" .
                " AND {$alias}shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) . " ";
     }
     else
@@ -2777,7 +2842,7 @@ function add_package_to_cart($package_id, $num = 1)
     }
 
     /* 现有库存是否还能凑齐一个礼包 */
-    if (judge_package_stock($package_id))
+    if ($GLOBALS['_CFG']['use_storage'] == '1' && judge_package_stock($package_id))
     {
         $GLOBALS['err']->add(sprintf($GLOBALS['_LANG']['shortage'], 1), ERR_OUT_OF_STOCK);
 
@@ -2870,19 +2935,62 @@ function get_delivery_sn()
  */
 function judge_package_stock($package_id, $package_num = 1)
 {
-    $sql = "SELECT g.goods_id FROM " . $GLOBALS['ecs']->table('goods') . "AS g, " .
-             $GLOBALS['ecs']->table('package_goods') . " AS pg " .
-           " WHERE pg.goods_id = g.goods_id AND pg.goods_number * $package_num > g.goods_number AND pg.package_id = '" . $package_id . "'";
-
+    $sql = "SELECT goods_id, product_id, goods_number
+            FROM " . $GLOBALS['ecs']->table('package_goods') . "
+            WHERE package_id = '" . $package_id . "'";
     $row = $GLOBALS['db']->getAll($sql);
-
-    if (empty($row[0]))
-    {
-        return false;
-    }
-    else
+    if (empty($row))
     {
         return true;
     }
+
+    /* 分离货品与商品 */
+    $goods = array('product_ids' => '', 'goods_ids' => '');
+    foreach ($row as $value)
+    {
+        if ($value['product_id'] > 0)
+        {
+            $goods['product_ids'] .= ',' . $value['product_id'];
+            continue;
+        }
+
+        $goods['goods_ids'] .= ',' . $value['goods_id'];
+    }
+
+    /* 检查货品库存 */
+    if ($goods['product_ids'] != '')
+    {
+        $sql = "SELECT p.product_id
+                FROM " . $GLOBALS['ecs']->table('products') . " AS p, " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+                WHERE pg.product_id = p.product_id
+                AND pg.package_id = '$package_id'
+                AND pg.goods_number * $package_num > p.product_number
+                AND p.product_id IN (" . trim($goods['product_ids'], ',') . ")";
+        $row = $GLOBALS['db']->getAll($sql);
+
+        if (!empty($row))
+        {
+            return true;
+        }
+    }
+
+    /* 检查商品库存 */
+    if ($goods['goods_ids'] != '')
+    {
+        $sql = "SELECT g.goods_id
+                FROM " . $GLOBALS['ecs']->table('goods') . "AS g, " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+                WHERE pg.goods_id = g.goods_id
+                AND pg.goods_number * $package_num > g.goods_number
+                AND pg.package_id = '" . $package_id . "'
+                AND pg.goods_id IN (" . trim($goods['goods_ids'], ',') . ")";
+        $row = $GLOBALS['db']->getAll($sql);
+
+        if (!empty($row))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 ?>

@@ -1,4 +1,4 @@
-<!-- $Id: privilege_allot.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!-- $Id: role_info.htm 14216 2010-01-08 02:27:21Z liuhui $ -->
 {include file="pageheader.htm"}
 <form method="POST" action="role.php" name="theFrom">
 <div class="list-div">
@@ -24,7 +24,7 @@
   <td>
     {foreach from=$priv.priv key=priv_list item=list}
     <div style="width:200px;float:left;">
-    <label for="{$priv_list}"><input type="checkbox" name="action_code[]" value="{$priv_list}" id="{$priv_list}" class="checkbox" {if $list.cando eq 1} checked="true" {/if} />
+    <label for="{$priv_list}"><input type="checkbox" name="action_code[]" value="{$priv_list}" id="{$priv_list}" class="checkbox" {if $list.cando eq 1} checked="true" {/if} onclick="checkrelevance('{$list.relevance}', '{$priv_list}')" title="{$list.relevance}"/>
     {$lang[$list.action_code]}</label>
     </div>
     {/foreach}
@@ -70,6 +70,28 @@ function check(list, obj)
           if (list.search(regx) > -1) {frm.elements[i].checked = obj.checked;}
       }
     }
+}
+
+function checkrelevance(relevance, priv_list)
+{
+  if(document.getElementById(priv_list).checked && relevance != '')
+  {
+    document.getElementById(relevance).checked=true;
+  }
+  else
+  {
+    var ts=document.getElementsByTagName("input");
+    
+    for (var i=0; i<ts.length;i++)
+    {
+      var text=ts[i].getAttribute("title");
+
+      if( text == priv_list) 
+      {
+        document.getElementById(ts[i].value).checked = false;
+      }
+    }
+  }
 }
 </script>
 {/literal}

@@ -3,7 +3,7 @@
 /**
  * ECSHOP Vote management
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: vote.php 15646 2009-02-23 08:33:00Z zblikai $
+ * $Author: liubo $
+ * $Id: vote.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* to survey field */
@@ -41,6 +41,8 @@ $_LANG['date_error'] = 'Start date should not later than the end date!';
 $_LANG['back_list'] = 'Return to vote list.';
 $_LANG['continue_add_option'] = 'Continue add vote option.';
 $_LANG['continue_add_vote'] = 'Continue add vote';
+$_LANG['edit_option_order'] = 'edit the order of options';
+
 
 /* prompting message */
 $_LANG['vote_name_exist'] = 'Vote name is existed!';
@@ -58,6 +60,7 @@ $_LANG['option_id'] = 'Option ID';
 $_LANG['vote_id'] = 'Vote ID';
 $_LANG['option_name'] = 'Vote option';
 $_LANG['vote_count'] = 'Total votes';
+$_LANG['option_order'] = 'Options Order';
 $_LANG['option_name_empty'] = 'Vote option can\'t be blank!';
 
 ?>

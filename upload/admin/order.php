@@ -3,20 +3,21 @@
 /**
  * ECSHOP 订单管理
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: order.php 16929 2009-12-25 08:28:21Z wangleisvn $
+ * $Author: yehuaixiao $
+ * $Id: order.php 17219 2011-01-27 10:49:19Z yehuaixiao $
  */
 
 define('IN_ECS', true);
 
 require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . 'includes/lib_order.php');
+require_once(ROOT_PATH . 'includes/lib_goods.php');
 
 /*------------------------------------------------------ */
 //-- 订单查询
@@ -304,15 +305,18 @@ elseif ($_REQUEST['act'] == 'info')
         $smarty->assign('address_list', $db->getAll($sql));
     }
 
-    /* 取得订单商品 */
+    /* 取得订单商品及货品 */
     $goods_list = array();
     $goods_attr = array();
-    $sql = "SELECT o.*, g.goods_number AS storage, o.goods_attr, g.suppliers_id, IFNULL(b.brand_name, '') AS
-            brand_name " .
-            "FROM " . $ecs->table('order_goods') . " AS o ".
-            "LEFT JOIN " . $ecs->table('goods') . " AS g ON o.goods_id = g.goods_id " .
-            "LEFT JOIN " . $ecs->table('brand') . " AS b ON g.brand_id = b.brand_id " .
-            "WHERE o.order_id = '$order[order_id]' ";
+    $sql = "SELECT o.*, IF(o.product_id > 0, p.product_number, g.goods_number) AS storage, o.goods_attr, g.suppliers_id, IFNULL(b.brand_name, '') AS brand_name, p.product_sn
+            FROM " . $ecs->table('order_goods') . " AS o
+                LEFT JOIN " . $ecs->table('products') . " AS p
+                    ON p.product_id = o.product_id
+                LEFT JOIN " . $ecs->table('goods') . " AS g
+                    ON o.goods_id = g.goods_id
+                LEFT JOIN " . $ecs->table('brand') . " AS b
+                    ON g.brand_id = b.brand_id
+            WHERE o.order_id = '$order[order_id]'";
     $res = $db->query($sql);
     while ($row = $db->fetchRow($res))
     {
@@ -394,6 +398,7 @@ elseif ($_REQUEST['act'] == 'info')
         $smarty->template_dir = '../' . DATA_DIR;
         $smarty->display('order_print.html');
     }
+    /* 打印快递单 */
     elseif (isset($_GET['shipping_print']))
     {
         //$smarty->assign('print_time',   local_date($_CFG['time_format']));
@@ -412,19 +417,100 @@ elseif ($_REQUEST['act'] == 'info')
             }
         }
         $smarty->assign('shop_name',    $_CFG['shop_name']);
+        $smarty->assign('order_id',    $order_id);
         $smarty->assign('province', $region_array[$_CFG['shop_province']]);
         $smarty->assign('city', $region_array[$_CFG['shop_city']]);
         $smarty->assign('shop_address', $_CFG['shop_address']);
         $smarty->assign('service_phone',$_CFG['service_phone']);
-        $shipping_print = $db->getOne("SELECT shipping_print FROM " . $ecs->table("shipping") . " WHERE shipping_id=" . $order['shipping_id']);
-        if (!empty($shipping_print))
+        $shipping = $db->getRow("SELECT * FROM " . $ecs->table("shipping") . " WHERE shipping_id = " . $order['shipping_id']);
+
+        //打印单模式
+        if ($shipping['print_model'] == 2)
         {
-            echo $smarty->fetch("str:$shipping_print");
+            /* 可视化 */
+            /* 快递单 */
+            $shipping['print_bg'] = empty($shipping['print_bg']) ? '' : get_site_root_url() . $shipping['print_bg'];
+
+            /* 取快递单背景宽高 */
+            if (!empty($shipping['print_bg']))
+            {
+                $_size = @getimagesize($shipping['print_bg']);
+
+                if ($_size != false)
+                {
+                    $shipping['print_bg_size'] = array('width' => $_size[0], 'height' => $_size[1]);
+                }
+            }
+
+            if (empty($shipping['print_bg_size']))
+            {
+                $shipping['print_bg_size'] = array('width' => '1024', 'height' => '600');
+            }
+
+            /* 标签信息 */
+            $lable_box = array();
+            $lable_box['t_shop_country'] = $region_array[$_CFG['shop_country']]; //网店-国家
+            $lable_box['t_shop_city'] = $region_array[$_CFG['shop_city']]; //网店-城市
+            $lable_box['t_shop_province'] = $region_array[$_CFG['shop_province']]; //网店-省份
+            $lable_box['t_shop_name'] = $_CFG['shop_name']; //网店-名称
+            $lable_box['t_shop_district'] = ''; //网店-区/县
+            $lable_box['t_shop_tel'] = $_CFG['service_phone']; //网店-联系电话
+            $lable_box['t_shop_address'] = $_CFG['shop_address']; //网店-地址
+            $lable_box['t_customer_country'] = $region_array[$order['country']]; //收件人-国家
+            $lable_box['t_customer_province'] = $region_array[$order['province']]; //收件人-省份
+            $lable_box['t_customer_city'] = $region_array[$order['city']]; //收件人-城市
+            $lable_box['t_customer_district'] = $region_array[$order['district']]; //收件人-区/县
+            $lable_box['t_customer_tel'] = $order['tel']; //收件人-电话
+            $lable_box['t_customer_mobel'] = $order['mobile']; //收件人-手机
+            $lable_box['t_customer_post'] = $order['zipcode']; //收件人-邮编
+            $lable_box['t_customer_address'] = $order['address']; //收件人-详细地址
+            $lable_box['t_customer_name'] = $order['consignee']; //收件人-姓名
+
+            $gmtime_utc_temp = gmtime(); //获取 UTC 时间戳
+            $lable_box['t_year'] = date('Y', $gmtime_utc_temp); //年-当日日期
+            $lable_box['t_months'] = date('m', $gmtime_utc_temp); //月-当日日期
+            $lable_box['t_day'] = date('d', $gmtime_utc_temp); //日-当日日期
+
+            $lable_box['t_order_no'] = $order['order_sn']; //订单号-订单
+            $lable_box['t_order_postscript'] = $order['postscript']; //备注-订单
+            $lable_box['t_order_best_time'] = $order['best_time']; //送货时间-订单
+            $lable_box['t_pigeon'] = '√'; //√-对号
+            $lable_box['t_custom_content'] = ''; //自定义内容
+
+            //标签替换
+            $temp_config_lable = explode('||,||', $shipping['config_lable']);
+            if (!is_array($temp_config_lable))
+            {
+                $temp_config_lable[] = $shipping['config_lable'];
+            }
+            foreach ($temp_config_lable as $temp_key => $temp_lable)
+            {
+                $temp_info = explode(',', $temp_lable);
+                if (is_array($temp_info))
+                {
+                    $temp_info[1] = $lable_box[$temp_info[0]];
+                }
+                $temp_config_lable[$temp_key] = implode(',', $temp_info);
+            }
+            $shipping['config_lable'] = implode('||,||',  $temp_config_lable);
+
+            $smarty->assign('shipping', $shipping);
+
+            $smarty->display('print.htm');
+        }
+        elseif (!empty($shipping['shipping_print']))
+        {
+            /* 代码 */
+            echo $smarty->fetch("str:" . $shipping['shipping_print']);
         }
         else
         {
             $shipping_code = $db->getOne("SELECT shipping_code FROM " . $ecs->table('shipping') . " WHERE shipping_id=" . $order['shipping_id']);
-            include_once(ROOT_PATH . 'includes/modules/shipping/' . $shipping_code . '.php');
+            if ($shipping_code)
+            {
+                include_once(ROOT_PATH . 'includes/modules/shipping/' . $shipping_code . '.php');
+            }
+
             if (!empty($_LANG['shipping_print']))
             {
                 echo $smarty->fetch("str:$_LANG[shipping_print]");
@@ -527,7 +613,7 @@ elseif ($_REQUEST['act'] == 'delivery_info')
             sys_msg($_LANG['priv_error']);
         }
 
-        /* 取当前办事处信息*/
+        /* 取当前办事处信息 */
         $sql = "SELECT agency_name FROM " . $ecs->table('agency') . " WHERE agency_id = '$agency_id' LIMIT 0, 1";
         $agency_name = $db->getOne($sql);
         $delivery_order['agency_name'] = $agency_name;
@@ -638,30 +724,66 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
 
     /* 检查此单发货商品库存缺货情况 */
     $virtual_goods = array();
-    $delivery_stock_sql = "SELECT DG.goods_id, DG.is_real, SUM(DG.send_number) AS sums, G.goods_number, G.goods_name, DG.send_number
+    $delivery_stock_sql = "SELECT DG.goods_id, DG.is_real, DG.product_id, SUM(DG.send_number) AS sums, IF(DG.product_id > 0, P.product_number, G.goods_number) AS storage, G.goods_name, DG.send_number
+        FROM " . $GLOBALS['ecs']->table('delivery_goods') . " AS DG, " . $GLOBALS['ecs']->table('goods') . " AS G, " . $GLOBALS['ecs']->table('products') . " AS P
+        WHERE DG.goods_id = G.goods_id
+        AND DG.delivery_id = '$delivery_id'
+        AND DG.product_id = P.product_id
+        GROUP BY DG.product_id ";
+
+    $delivery_stock_result = $GLOBALS['db']->getAll($delivery_stock_sql);
+
+    /* 如果商品存在规格就查询规格，如果不存在规格按商品库存查询 */
+    if(!empty($delivery_stock_result))
+    {
+        foreach ($delivery_stock_result as $value)
+        {
+            if (($value['sums'] > $value['storage'] || $value['storage'] <= 0) && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $value['is_real'] == 0)))
+            {
+                /* 操作失败 */
+                $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
+                sys_msg(sprintf($_LANG['act_good_vacancy'], $value['goods_name']), 1, $links);
+                break;
+            }
+
+            /* 虚拟商品列表 virtual_card*/
+            if ($value['is_real'] == 0)
+            {
+                $virtual_goods[] = array(
+                               'goods_id' => $value['goods_id'],
+                               'goods_name' => $value['goods_name'],
+                               'num' => $value['send_number']
+                               );
+            }
+        }
+    }
+    else
+    {
+        $delivery_stock_sql = "SELECT DG.goods_id, DG.is_real, SUM(DG.send_number) AS sums, G.goods_number, G.goods_name, DG.send_number
         FROM " . $GLOBALS['ecs']->table('delivery_goods') . " AS DG, " . $GLOBALS['ecs']->table('goods') . " AS G
         WHERE DG.goods_id = G.goods_id
         AND DG.delivery_id = '$delivery_id'
         GROUP BY DG.goods_id ";
-    $delivery_stock_result = $GLOBALS['db']->getAll($delivery_stock_sql);
-    foreach ($delivery_stock_result as $value)
-    {
-        if (($value['sums'] > $value['goods_number'] || $value['goods_number'] <= 0) && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $value['is_real'] == 0)))
+        $delivery_stock_result = $GLOBALS['db']->getAll($delivery_stock_sql);
+        foreach ($delivery_stock_result as $value)
         {
-            /* 操作失败 */
-            $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
-            sys_msg(sprintf($_LANG['act_good_vacancy'], $value['goods_name']), 1, $links);
-            break;
-        }
+            if (($value['sums'] > $value['goods_number'] || $value['goods_number'] <= 0) && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $value['is_real'] == 0)))
+            {
+                /* 操作失败 */
+                $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
+                sys_msg(sprintf($_LANG['act_good_vacancy'], $value['goods_name']), 1, $links);
+                break;
+            }
 
-        /* 虚拟商品列表 virtual_card*/
-        if ($value['is_real'] == 0)
-        {
-            $virtual_goods[] = array(
-                           'goods_id' => $value['goods_id'],
-                           'goods_name' => $value['goods_name'],
-                           'num' => $value['send_number']
-                           );
+            /* 虚拟商品列表 virtual_card*/
+            if ($value['is_real'] == 0)
+            {
+                $virtual_goods[] = array(
+                               'goods_id' => $value['goods_id'],
+                               'goods_name' => $value['goods_name'],
+                               'num' => $value['send_number']
+                               );
+            }
         }
     }
 
@@ -678,14 +800,26 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
     /* 如果使用库存，且发货时减库存，则修改库存 */
     if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_SHIP)
     {
+
         foreach ($delivery_stock_result as $value)
         {
+
             /* 商品（实货）、超级礼包（实货） */
             if ($value['is_real'] != 0)
             {
+                //（货品）
+                if (!empty($value['product_id']))
+                {
+                    $minus_stock_sql = "UPDATE " . $GLOBALS['ecs']->table('products') . "
+                                        SET product_number = product_number - " . $value['sums'] . "
+                                        WHERE product_id = " . $value['product_id'];
+                    $GLOBALS['db']->query($minus_stock_sql, 'SILENT');
+                }
+
                 $minus_stock_sql = "UPDATE " . $GLOBALS['ecs']->table('goods') . "
                                     SET goods_number = goods_number - " . $value['sums'] . "
                                     WHERE goods_id = " . $value['goods_id'];
+
                 $GLOBALS['db']->query($minus_stock_sql, 'SILENT');
             }
         }
@@ -746,7 +880,7 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
             $smarty->assign('send_date', local_date($_CFG['date_format']));
             $smarty->assign('sent_date', local_date($_CFG['date_format']));
             $smarty->assign('confirm_url', $ecs->url() . 'receive.php?id=' . $order['order_id'] . '&con=' . rawurlencode($order['consignee']));
-            $smarty->assign('send_msg_url',$ecs->url() . 'user.php?message_list&order_id=' . $order['order_id']);
+            $smarty->assign('send_msg_url',$ecs->url() . 'user.php?act=message_list&order_id=' . $order['order_id']);
             $content = $smarty->fetch('str:' . $tpl['template_content']);
             if (!send_mail($order['consignee'], $order['email'], $tpl['template_subject'], $content, $tpl['is_html']))
             {
@@ -768,6 +902,7 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
     clear_cache_files();
 
     /* 操作成功 */
+    $links[] = array('text' => $_LANG['09_delivery_order'], 'href' => 'order.php?act=delivery_list');
     $links[] = array('text' => $_LANG['delivery_sn'] . $_LANG['detail'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
     sys_msg($_LANG['act_ok'], 0, $links);
 }
@@ -848,7 +983,7 @@ elseif ($_REQUEST['act'] == 'delivery_cancel_ship')
     {
         // 检查此单发货商品数量
         $virtual_goods = array();
-        $delivery_stock_sql = "SELECT DG.goods_id, DG.is_real, SUM(DG.send_number) AS sums
+        $delivery_stock_sql = "SELECT DG.goods_id, DG.product_id, DG.is_real, SUM(DG.send_number) AS sums
             FROM " . $GLOBALS['ecs']->table('delivery_goods') . " AS DG
             WHERE DG.delivery_id = '$delivery_id'
             GROUP BY DG.goods_id ";
@@ -859,6 +994,15 @@ elseif ($_REQUEST['act'] == 'delivery_cancel_ship')
             if ($value['is_real'] == 0)
             {
                 continue;
+            }
+
+            //（货品）
+            if (!empty($value['product_id']))
+            {
+                $minus_stock_sql = "UPDATE " . $GLOBALS['ecs']->table('products') . "
+                                    SET product_number = product_number + " . $value['sums'] . "
+                                    WHERE product_id = " . $value['product_id'];
+                $GLOBALS['db']->query($minus_stock_sql, 'SILENT');
             }
 
             $minus_stock_sql = "UPDATE " . $GLOBALS['ecs']->table('goods') . "
@@ -1115,11 +1259,24 @@ elseif ($_REQUEST['act'] == 'step_post')
         {
             foreach ($_POST['rec_id'] AS $key => $rec_id)
             {
+              $sql = "SELECT goods_number ".
+                      'FROM ' . $GLOBALS['ecs']->table('goods') .
+                      "WHERE goods_id =".$_POST['goods_id'][$key];
                 /* 取得参数 */
-                $goods_price = floatval($_POST['goods_price'][$key]);
-                $goods_number = intval($_POST['goods_number'][$key]);
-                $goods_attr = $_POST['goods_attr'][$key];
+              $goods_price = floatval($_POST['goods_price'][$key]);
+              $goods_number = intval($_POST['goods_number'][$key]);
+              $goods_attr = $_POST['goods_attr'][$key];
+              $product_id = intval($_POST['product_id'][$key]);
+              if($product_id)
+                {
 
+                   $sql = "SELECT product_number ".
+                          'FROM ' . $GLOBALS['ecs']->table('products') .
+                          " WHERE product_id =".$_POST['product_id'][$key];
+                }
+              $goods_number_all = $db->getOne($sql);
+              if($goods_number_all>=$goods_number)
+              {
                 /* 修改 */
                 $sql = "UPDATE " . $ecs->table('order_goods') .
                         " SET goods_price = '$goods_price', " .
@@ -1127,6 +1284,13 @@ elseif ($_REQUEST['act'] == 'step_post')
                         "goods_attr = '$goods_attr' " .
                         "WHERE rec_id = '$rec_id' LIMIT 1";
                 $db->query($sql);
+              }
+              else
+              {
+               sys_msg($_LANG['goods_num_err']);
+
+
+              }
             }
 
             /* 更新商品总金额和订单总金额 */
@@ -1166,65 +1330,111 @@ elseif ($_REQUEST['act'] == 'step_post')
                 $temp_array_count = count($_POST['spec_' . $i]);
                 for ($j = 0; $j < $temp_array_count; $j++)
                 {
-                    $goods_attr .= ',' . $temp_array[$j];
+                    if($temp_array[$j]!==NULL)
+                    {
+                        $goods_attr .= ',' . $temp_array[$j];
+                    }
                 }
             }
             else
             {
-                $goods_attr .= ',' . $_POST['spec_' . $i];
+                if($_POST['spec_' . $i]!==NULL)
+                {
+                    $goods_attr .= ',' . $_POST['spec_' . $i];
+                }
             }
         }
         $goods_number = $_POST['add_number'];
+        $attr_list = $goods_attr;
 
-        /* 取得属性 */
-        $attr_list = array();
-        if ($goods_attr != '')
+        $goods_attr = explode(',',$goods_attr);
+        $k   =   array_search(0,$goods_attr);
+        unset($goods_attr[$k]);
+
+
+        $sql = "SELECT attr_value ".
+            'FROM ' . $GLOBALS['ecs']->table('goods_attr') .
+            "WHERE goods_attr_id in($attr_list)";
+       $res = $db->query($sql);
+        while ($row = $db->fetchRow($res))
         {
-            $sql = "SELECT a.attr_name, g.attr_value, g.attr_price " .
-                    "FROM " . $ecs->table('goods_attr') . " AS g, " .
-                        $ecs->table('attribute') . " AS a " .
-                    "WHERE g.attr_id = a.attr_id " .
-                    "AND g.goods_attr_id " . db_create_in($goods_attr);
-            $res = $db->query($sql);
-            while ($row = $db->fetchRow($res))
-            {
-                $attr = $row['attr_name'] . ': ' . $row['attr_value'];
-                $attr_price = floatval($row['attr_price']);
-                if ($attr_price > 0)
-                {
-                    $attr .= ' [+' . $attr_price . ']';
-                }
-                elseif ($attr_price < 0)
-                {
-                    $attr .= ' [-' . abs($attr_price) . ']';
-                }
-                $attr_list[] = $attr;
+            $attr_value[] = $row['attr_value'];
+        }
 
-                /* 更新价格 */
-                $goods_price += $attr_price;
+        $attr_value = implode(",",$attr_value);
+
+        $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('products'). " WHERE goods_id = '$goods_id' LIMIT 0, 1";
+        $prod = $GLOBALS['db']->getRow($sql);
+
+
+        if (is_spec($goods_attr) && !empty($prod))
+        {
+            $product_info = get_products_info($_REQUEST['goodslist'], $goods_attr);
+        }
+
+        //商品存在规格 是货品 检查该货品库存
+        if (is_spec($goods_attr) && !empty($prod))
+        {
+            if (!empty($goods_attr))
+            {
+                /* 取规格的货品库存 */
+                if ($goods_number > $product_info['product_number'])
+                {
+                    $url = "order.php?act=" . $step_act . "&order_id=" . $order_id . "&step=goods";
+
+                    echo '<a href="'.$url.'">'.$_LANG['goods_num_err'] .'</a>';
+                    exit;
+
+                    return false;
+                }
             }
         }
-        $attr_list = addslashes_deep($attr_list);
 
+        if(is_spec($goods_attr) && !empty($prod))
+        {
         /* 插入订单商品 */
-        $sql = "INSERT INTO " . $ecs->table('order_goods') .
+            $sql = "INSERT INTO " . $ecs->table('order_goods') .
+                        "(order_id, goods_id, goods_name, goods_sn, product_id, goods_number, market_price, " .
+                        "goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id) " .
+                    "SELECT '$order_id', goods_id, goods_name, goods_sn, " .$product_info['product_id'].", ".
+                        "'$goods_number', market_price, '$goods_price', '" .$attr_value . "', " .
+                        "is_real, extension_code, 0, 0 , '".implode(',',$goods_attr)."' " .
+                    "FROM " . $ecs->table('goods') .
+                    " WHERE goods_id = '$goods_id' LIMIT 1";
+        }
+        else
+        {
+             $sql = "INSERT INTO " . $ecs->table('order_goods') .
                     " (order_id, goods_id, goods_name, goods_sn, " .
                     "goods_number, market_price, goods_price, goods_attr, " .
                     "is_real, extension_code, parent_id, is_gift)" .
                 "SELECT '$order_id', goods_id, goods_name, goods_sn, " .
-                    "'$goods_number', market_price, '$goods_price', '" . join("\r\n", $attr_list) . "', " .
+                    "'$goods_number', market_price, '$goods_price', '" . $attr_value. "', " .
                     "is_real, extension_code, 0, 0 " .
                 "FROM " . $ecs->table('goods') .
                 " WHERE goods_id = '$goods_id' LIMIT 1";
+        }
         $db->query($sql);
 
         /* 如果使用库存，且下订单时减库存，则修改库存 */
         if ($_CFG['use_storage'] == '1' && $_CFG['stock_dec_time'] == SDT_PLACE)
         {
+
+            //（货品）
+            if (!empty($product_info['product_id']))
+            {
+                $sql = "UPDATE " . $ecs->table('products') . "
+                                    SET product_number = product_number - " . $goods_number . "
+                                    WHERE product_id = " . $product_info['product_id'];
+
+                $db->query($sql);
+            }
+
+
             $sql = "UPDATE " . $ecs->table('goods') .
                     " SET `goods_number` = goods_number - '" . $goods_number . "' " .
                     " WHERE `goods_id` = '" . $goods_id . "' LIMIT 1";
-             $db->query($sql);
+            $db->query($sql);
         }
 
         /* 更新商品总金额和订单总金额 */
@@ -1606,7 +1816,8 @@ elseif ($_REQUEST['act'] == 'step_post')
 
         $order['money_paid']    = $old_order['money_paid'];
         $order['surplus']       = 0;
-        $order['integral']      = 0;
+        //$order['integral']      = 0;
+        $order['integral']=intval($_POST['integral']) >= 0 ? intval($_POST['integral']) : 0;
         $order['integral_money']= 0;
         $order['bonus_id']      = 0;
         $order['bonus']         = 0;
@@ -1638,20 +1849,30 @@ elseif ($_REQUEST['act'] == 'step_post')
                 /* 使用红包之后待付款金额仍大于0 */
                 if ($order['order_amount'] > 0)
                 {
-                    /* 如果设置了积分，再使用积分支付 */
-                    if (isset($_POST['integral']) && intval($_POST['integral']) > 0)
+                    if($old_order['extension_code']!='exchange_goods')
                     {
-                        /* 检查积分是否足够 */
-                        $order['integral']          = intval($_POST['integral']);
-                        $order['integral_money']    = value_of_integral(intval($_POST['integral']));
-                        if ($old_order['integral'] + $user['pay_points'] < $order['integral'])
+                    /* 如果设置了积分，再使用积分支付 */
+                       if (isset($_POST['integral']) && intval($_POST['integral']) > 0)
+                         {
+                           /* 检查积分是否足够 */
+                           $order['integral']          = intval($_POST['integral']);
+                           $order['integral_money']    = value_of_integral(intval($_POST['integral']));
+                           if ($old_order['integral'] + $user['pay_points'] < $order['integral'])
+                                {
+                                   sys_msg($_LANG['pay_points_not_enough']);
+                                }
+
+                           $order['order_amount'] -= $order['integral_money'];
+                         }
+                    }
+                    else
+                    {
+                      if (intval($_POST['integral']) > $user['pay_points']+$old_order['integral'])
                         {
-                            sys_msg($_LANG['pay_points_not_enough']);
+                          sys_msg($_LANG['pay_points_not_enough']);
                         }
 
-                        $order['order_amount'] -= $order['integral_money'];
                     }
-
                     if ($order['order_amount'] > 0)
                     {
                         /* 如果设置了余额，再使用余额支付 */
@@ -2343,13 +2564,13 @@ elseif ($_REQUEST['act'] == 'operate')
     /* 分单 */
     elseif (isset($_POST['ship']))
     {
-        /* 检查权限 */
+        /* 查询：检查权限 */
         admin_priv('order_ss_edit');
 
         $order_id = intval(trim($order_id));
         $action_note = trim($action_note);
 
-        /* 根据订单id查询订单信息 */
+        /* 查询：根据订单id查询订单信息 */
         if (!empty($order_id))
         {
             $order = order_info($order_id);
@@ -2359,7 +2580,7 @@ elseif ($_REQUEST['act'] == 'operate')
             die('order does not exist');
         }
 
-        /* 根据订单是否完成 检查权限 */
+        /* 查询：根据订单是否完成 检查权限 */
         if (order_finished($order))
         {
             admin_priv('order_view_finished');
@@ -2369,7 +2590,7 @@ elseif ($_REQUEST['act'] == 'operate')
             admin_priv('order_view');
         }
 
-        /* 如果管理员属于某个办事处，检查该订单是否也属于这个办事处 */
+        /* 查询：如果管理员属于某个办事处，检查该订单是否也属于这个办事处 */
         $sql = "SELECT agency_id FROM " . $ecs->table('admin_user') . " WHERE user_id = '$_SESSION[admin_id]'";
         $agency_id = $db->getOne($sql);
         if ($agency_id > 0)
@@ -2380,7 +2601,7 @@ elseif ($_REQUEST['act'] == 'operate')
             }
         }
 
-        /* 取得用户名 */
+        /* 查询：取得用户名 */
         if ($order['user_id'] > 0)
         {
             $user = user_info($order['user_id']);
@@ -2390,7 +2611,7 @@ elseif ($_REQUEST['act'] == 'operate')
             }
         }
 
-        /* 取得区域名 */
+        /* 查询：取得区域名 */
         $sql = "SELECT concat(IFNULL(c.region_name, ''), '  ', IFNULL(p.region_name, ''), " .
                     "'  ', IFNULL(t.region_name, ''), '  ', IFNULL(d.region_name, '')) AS region " .
                 "FROM " . $ecs->table('order_info') . " AS o " .
@@ -2401,23 +2622,24 @@ elseif ($_REQUEST['act'] == 'operate')
                 "WHERE o.order_id = '$order[order_id]'";
         $order['region'] = $db->getOne($sql);
 
-        /* 其他处理 */
+        /* 查询：其他处理 */
         $order['order_time']    = local_date($_CFG['time_format'], $order['add_time']);
         $order['invoice_no']    = $order['shipping_status'] == SS_UNSHIPPED || $order['shipping_status'] == SS_PREPARING ? $_LANG['ss'][SS_UNSHIPPED] : $order['invoice_no'];
 
-        /* 是否保价 */
+        /* 查询：是否保价 */
         $order['insure_yn'] = empty($order['insure_fee']) ? 0 : 1;
 
-        /* 查询是否存在实体商品 */
+        /* 查询：是否存在实体商品 */
         $exist_real_goods = exist_real_goods($order_id);
 
-        /* 取得订单商品 */
+        /* 查询：取得订单商品 */
         $_goods = get_order_goods(array('order_id' => $order['order_id'], 'order_sn' =>$order['order_sn']));
+
         $attr = $_goods['attr'];
         $goods_list = $_goods['goods_list'];
         unset($_goods);
 
-        /* 商品已发货数量 此单可发货数量 */
+        /* 查询：商品已发货数量 此单可发货数量 */
         if ($goods_list)
         {
             foreach ($goods_list as $key=>$goods_value)
@@ -2441,6 +2663,7 @@ elseif ($_REQUEST['act'] == 'operate')
                             $goods_list[$key]['package_goods_list'][$pg_key]['send'] = $_LANG['act_good_vacancy'];
                             $goods_list[$key]['package_goods_list'][$pg_key]['readonly'] = 'readonly="readonly"';
                         }
+                        /* 将已经全部发货的商品设置为只读 */
                         elseif ($pg_value['send'] <= 0)
                         {
                             $goods_list[$key]['package_goods_list'][$pg_key]['send'] = $_LANG['act_good_delivery'];
@@ -2455,7 +2678,7 @@ elseif ($_REQUEST['act'] == 'operate')
 
                     $goods_list[$key]['readonly'] = '';
                     /* 是否缺货 */
-                    if ($goods_list[$key]['storage'] <= 0 && $_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP)
+                    if ($goods_value['storage'] <= 0 && $_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP)
                     {
                         $goods_list[$key]['send'] = $_LANG['act_good_vacancy'];
                         $goods_list[$key]['readonly'] = 'readonly="readonly"';
@@ -2487,7 +2710,7 @@ elseif ($_REQUEST['act'] == 'operate')
         $smarty->assign('ur_here', $_LANG['order_operate'] . $_LANG['op_split']);
         assign_query_info();
         $smarty->display('order_delivery_info.htm');
-        exit; //
+        exit;
     }
     /* 未发货 */
     elseif (isset($_POST['unship']))
@@ -2620,27 +2843,39 @@ elseif ($_REQUEST['act'] == 'operate')
             sys_msg($_LANG['order_removed'], 0, array(array('href'=>'order.php?act=list&' . list_link_postfix(), 'text' => $_LANG['return_list'])));
         }
     }
-     /* 发货单删除 */
+    /* 发货单删除 */
     elseif (isset($_REQUEST['remove_invoice']))
     {
-        $delivery_id = $_REQUEST['delivery_id'];
+        // 删除发货单
+        $delivery_id=$_REQUEST['delivery_id'];
+        $delivery_id = is_array($delivery_id) ? $delivery_id : array($delivery_id);
 
-        /* 删除发货单 */
-        if(is_array($delivery_id))
+        foreach($delivery_id as $value_is)
         {
-            foreach($delivery_id as $value_is)
+            $value_is = intval(trim($value_is));
+
+            // 查询：发货单信息
+            $delivery_order = delivery_order_info($value_is);
+
+            // 如果status不是退货
+            if ($delivery_order['status'] != 1)
             {
-                delivery_return_goods($value_is);
-                $sql = "DELETE FROM ".$ecs->table('delivery_order'). " WHERE delivery_id = '$value_is'";
-                $db->query($sql);
+                /* 处理退货 */
+                delivery_return_goods($value_is, $delivery_order);
             }
-        }
-        else
-        {
-            delivery_return_goods($delivery_id);
-            $sql = "DELETE FROM ".$ecs->table('delivery_order'). " WHERE delivery_id = '$delivery_id'";
+
+            // 如果status是已发货并且发货单号不为空
+            if ($delivery_order['status'] == 0 && $delivery_order['invoice_no'] != '')
+            {
+                /* 更新：删除订单中的发货单号 */
+                del_order_invoice_no($delivery_order['order_id'], $delivery_order['invoice_no']);
+            }
+
+            // 更新：删除发货单
+            $sql = "DELETE FROM ".$ecs->table('delivery_order'). " WHERE delivery_id = '$value_is'";
             $db->query($sql);
         }
+
         /* 返回 */
         sys_msg($_LANG['tips_delivery_del'], 0, array(array('href'=>'order.php?act=delivery_list' , 'text' => $_LANG['return_list'])));
     }
@@ -2815,7 +3050,7 @@ elseif ($_REQUEST['act'] == 'operate')
     /* 去发货 */
     elseif (isset($_POST['to_delivery']))
     {
-        $url = 'order.php?act=delivery_list';
+        $url = 'order.php?act=delivery_list&order_sn='.$_REQUEST['order_sn'];
 
         ecs_header("Location: $url\n");
         exit;
@@ -3297,7 +3532,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
         $_goods = get_order_goods(array('order_id' => $order_id, 'order_sn' => $delivery['order_sn']));
         $goods_list = $_goods['goods_list'];
 
-        /* 检查此单发货数量填写是否正确 */
+        /* 检查此单发货数量填写是否正确 合并计算相同商品和货品 */
         if (!empty($send_number) && !empty($goods_list))
         {
             $goods_no_package = array();
@@ -3306,16 +3541,20 @@ elseif ($_REQUEST['act'] == 'operate_post')
                 /* 去除 此单发货数量 等于 0 的商品 */
                 if (!isset($value['package_goods_list']) || !is_array($value['package_goods_list']))
                 {
-                    // 统计此单商品总发货数 相同ID产品的发货数之和
-                    if (empty($goods_no_package[$value['goods_id']]))
+                    // 如果是货品则键值为商品ID与货品ID的组合
+                    $_key = empty($value['product_id']) ? $value['goods_id'] : ($value['goods_id'] . '_' . $value['product_id']);
+
+                    // 统计此单商品总发货数 合并计算相同ID商品或货品的发货数
+                    if (empty($goods_no_package[$_key]))
                     {
-                        $goods_no_package[$value['goods_id']] = $send_number[$value['rec_id']];
+                        $goods_no_package[$_key] = $send_number[$value['rec_id']];
                     }
                     else
                     {
-                        $goods_no_package[$value['goods_id']] += $send_number[$value['rec_id']];
+                        $goods_no_package[$_key] += $send_number[$value['rec_id']];
                     }
 
+                    //去除
                     if ($send_number[$value['rec_id']] <= 0)
                     {
                         unset($send_number[$value['rec_id']], $goods_list[$key]);
@@ -3330,21 +3569,27 @@ elseif ($_REQUEST['act'] == 'operate_post')
                     /* 超值礼包 */
                     foreach ($value['package_goods_list'] as $pg_key => $pg_value)
                     {
-                        // 统计此单商品总发货数 相同ID产品的发货数之和
-                        if (empty($goods_no_package[$pg_value['goods_id']]))
+                        // 如果是货品则键值为商品ID与货品ID的组合
+                        $_key = empty($pg_value['product_id']) ? $pg_value['goods_id'] : ($pg_value['goods_id'] . '_' . $pg_value['product_id']);
+
+                        //统计此单商品总发货数 合并计算相同ID产品的发货数
+                        if (empty($goods_no_package[$_key]))
                         {
-                            $goods_no_package[$pg_value['goods_id']] = $send_number[$value['rec_id']][$pg_value['goods_id']];
+                            $goods_no_package[$_key] = $send_number[$value['rec_id']][$pg_value['g_p']];
                         }
+                        //否则已经存在此键值
                         else
                         {
-                            $goods_no_package[$pg_value['goods_id']] += $send_number[$value['rec_id']][$pg_value['goods_id']];
+                            $goods_no_package[$_key] += $send_number[$value['rec_id']][$pg_value['g_p']];
                         }
 
-                        if ($send_number[$value['rec_id']][$pg_value['goods_id']] <= 0)
+                        //去除
+                        if ($send_number[$value['rec_id']][$pg_value['g_p']] <= 0)
                         {
-                            unset($send_number[$value['rec_id']][$pg_value['goods_id']], $goods_list[$key]['package_goods_list'][$pg_key]);
+                            unset($send_number[$value['rec_id']][$pg_value['g_p']], $goods_list[$key]['package_goods_list'][$pg_key]);
                         }
                     }
+
                     if (count($goods_list[$key]['package_goods_list']) <= 0)
                     {
                         unset($send_number[$value['rec_id']], $goods_list[$key]);
@@ -3355,7 +3600,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
                 /* 发货数量与总量不符 */
                 if (!isset($value['package_goods_list']) || !is_array($value['package_goods_list']))
                 {
-                    $sended = order_delivery_num($order_id, $value['goods_id']);
+                    $sended = order_delivery_num($order_id, $value['goods_id'], $value['product_id']);
                     if (($value['goods_number'] - $sended - $send_number[$value['rec_id']]) < 0)
                     {
                         /* 操作失败 */
@@ -3368,7 +3613,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
                     /* 超值礼包 */
                     foreach ($goods_list[$key]['package_goods_list'] as $pg_key => $pg_value)
                     {
-                        if (($pg_value['order_send_number'] - $pg_value['sended'] - $send_number[$value['rec_id']][$pg_value['goods_id']]) < 0)
+                        if (($pg_value['order_send_number'] - $pg_value['sended'] - $send_number[$value['rec_id']][$pg_value['g_p']]) < 0)
                         {
                             /* 操作失败 */
                             $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=info&order_id=' . $order_id);
@@ -3397,7 +3642,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
             {
                 foreach ($value['package_goods_list'] as $pg_key => $pg_value)
                 {
-                    if ($pg_value['goods_number'] < $goods_no_package[$pg_value['goods_id']] && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $pg_value['is_real'] == 0)))
+                    if ($pg_value['goods_number'] < $goods_no_package[$pg_value['g_p']] && (($_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP) || ($_CFG['use_storage'] == '0' && $pg_value['is_real'] == 0)))
                     {
                         /* 操作失败 */
                         $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=info&order_id=' . $order_id);
@@ -3410,7 +3655,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
                         $package_virtual_goods[] = array(
                                        'goods_id' => $pg_value['goods_id'],
                                        'goods_name' => $pg_value['goods_name'],
-                                       'num' => $send_number[$value['rec_id']][$pg_value['goods_id']]
+                                       'num' => $send_number[$value['rec_id']][$pg_value['g_p']]
                                        );
                     }
                 }
@@ -3433,12 +3678,29 @@ elseif ($_REQUEST['act'] == 'operate_post')
                     $virtual_goods[$value['extension_code']][] = array('goods_id' => $value['goods_id'], 'goods_name' => $value['goods_name'], 'num' => $send_number[$value['rec_id']]);
                 }
             }
-            // 商品（实货）
+            // 商品（实货）、（货品）
             else
             {
-                $sql = "SELECT goods_number FROM " . $GLOBALS['ecs']->table('goods') . " WHERE goods_id = '" . $value['goods_id'] . "' LIMIT 0,1";
+                //如果是货品则键值为商品ID与货品ID的组合
+                $_key = empty($value['product_id']) ? $value['goods_id'] : ($value['goods_id'] . '_' . $value['product_id']);
+
+                /* （实货） */
+                if (empty($value['product_id']))
+                {
+                    $sql = "SELECT goods_number FROM " . $GLOBALS['ecs']->table('goods') . " WHERE goods_id = '" . $value['goods_id'] . "' LIMIT 0,1";
+                }
+                /* （货品） */
+                else
+                {
+                    $sql = "SELECT product_number
+                            FROM " . $GLOBALS['ecs']->table('products') ."
+                            WHERE goods_id = '" . $value['goods_id'] . "'
+                            AND product_id =  '" . $value['product_id'] . "'
+                            LIMIT 0,1";
+                }
                 $num = $GLOBALS['db']->GetOne($sql);
-                if (($num < $goods_no_package[$value['goods_id']]) && $_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP)
+
+                if (($num < $goods_no_package[$_key]) && $_CFG['use_storage'] == '1'  && $_CFG['stock_dec_time'] == SDT_SHIP)
                 {
                     /* 操作失败 */
                     $links[] = array('text' => $_LANG['order_info'], 'href' => 'order.php?act=info&order_id=' . $order_id);
@@ -3456,7 +3718,8 @@ elseif ($_REQUEST['act'] == 'operate_post')
         /* 获取发货单生成时间 */
         $delivery['update_time'] = GMTIME_UTC;
         $delivery_time = $delivery['update_time'];
-        $delivery['add_time'] = local_strtotime($delivery['add_time']);
+        $sql ="select add_time from ". $GLOBALS['ecs']->table('order_info') ." WHERE order_sn = '" . $delivery['order_sn'] . "'";
+        $delivery['add_time'] =  $GLOBALS['db']->GetOne($sql);
         /* 获取发货单所属供应商 */
         $delivery['suppliers_id'] = $suppliers_id;
         /* 设置默认值 */
@@ -3482,7 +3745,7 @@ elseif ($_REQUEST['act'] == 'operate_post')
         {
             $delivery_goods = array();
 
-            /* 发货单商品入库 */
+            //发货单商品入库
             if (!empty($goods_list))
             {
                 foreach ($goods_list as $value)
@@ -3492,14 +3755,24 @@ elseif ($_REQUEST['act'] == 'operate_post')
                     {
                         $delivery_goods = array('delivery_id' => $delivery_id,
                                                 'goods_id' => $value['goods_id'],
-                                                'goods_name' => $value['goods_name'],
-                                                'brand_name' => $value['brand_name'],
+                                                'product_id' => $value['product_id'],
+                                                'product_sn' => $value['product_sn'],
+                                                'goods_id' => $value['goods_id'],
+                                                'goods_name' => addslashes($value['goods_name']),
+                                                'brand_name' => addslashes($value['brand_name']),
                                                 'goods_sn' => $value['goods_sn'],
                                                 'send_number' => $send_number[$value['rec_id']],
                                                 'parent_id' => 0,
                                                 'is_real' => $value['is_real'],
-                                                'goods_attr' => $value['goods_attr']
+                                                'goods_attr' => addslashes($value['goods_attr'])
                                                 );
+
+                        /* 如果是货品 */
+                        if (!empty($value['product_id']))
+                        {
+                            $delivery_goods['product_id'] = $value['product_id'];
+                        }
+
                         $query = $db->autoExecute($ecs->table('delivery_goods'), $delivery_goods, 'INSERT', '', 'SILENT');
                     }
                     // 商品（超值礼包）
@@ -3509,10 +3782,12 @@ elseif ($_REQUEST['act'] == 'operate_post')
                         {
                             $delivery_pg_goods = array('delivery_id' => $delivery_id,
                                                     'goods_id' => $pg_value['goods_id'],
+                                                    'product_id' => $pg_value['product_id'],
+                                                    'product_sn' => $pg_value['product_sn'],
                                                     'goods_name' => $pg_value['goods_name'],
                                                     'brand_name' => '',
                                                     'goods_sn' => $pg_value['goods_sn'],
-                                                    'send_number' => $send_number[$value['rec_id']][$pg_value['goods_id']],
+                                                    'send_number' => $send_number[$value['rec_id']][$pg_value['g_p']],
                                                     'parent_id' => $value['goods_id'], // 礼包ID
                                                     'extension_code' => $value['extension_code'], // 礼包
                                                     'is_real' => $pg_value['is_real']
@@ -3557,9 +3832,8 @@ elseif ($_REQUEST['act'] == 'operate_post')
             $_virtual_goods = isset($virtual_goods['virtual_card']) ? $virtual_goods['virtual_card'] : '';
             update_order_virtual_goods($order_id, $_sended, $_virtual_goods);
 
-            /* 更新订单的非虚拟商品信息 即：商品（实货）、商品（超值礼包）*/
+            /* 更新订单的非虚拟商品信息 即：商品（实货）（货品）、商品（超值礼包）*/
             update_order_goods($order_id, $_sended, $_goods['goods_list']);
-
 
             /* 标记订单为已确认 “发货中” */
             /* 更新发货时间 */
@@ -3826,8 +4100,8 @@ elseif ($_REQUEST['act'] == 'operate_post')
                 $GLOBALS['db']->query($sql_back, 'SILENT');
                 $back_id = $GLOBALS['db']->insert_id();
 
-                $sql_back_goods = "INSERT INTO " . $ecs->table('back_goods') . " (back_id, goods_id, goods_name,goods_sn, is_real, send_number, goods_attr)
-                                   SELECT '$back_id', goods_id, goods_name, goods_sn, is_real, send_number, goods_attr
+                $sql_back_goods = "INSERT INTO " . $ecs->table('back_goods') . " (back_id, goods_id, product_id, product_sn, goods_name,goods_sn, is_real, send_number, goods_attr)
+                                   SELECT '$back_id', goods_id, product_id, product_sn, goods_name, goods_sn, is_real, send_number, goods_attr
                                    FROM " . $ecs->table('delivery_goods') . "
                                    WHERE delivery_id = " . $list['delivery_id'];
                 $GLOBALS['db']->query($sql_back_goods, 'SILENT');
@@ -4707,7 +4981,12 @@ function order_list()
                     $where .= " AND o.pay_status = '$filter[composite_status]' ";
                 }
                 break;
-
+            case OS_SHIPPED_PART :
+                if ($filter['composite_status'] != -1)
+                {
+                    $where .= " AND o.shipping_status  = '$filter[composite_status]'-2 ";
+                }
+                break;
             default:
                 if ($filter['composite_status'] != -1)
                 {
@@ -4873,15 +5152,16 @@ function get_order_goods($order)
 {
     $goods_list = array();
     $goods_attr = array();
-    $sql = "SELECT o.*, g.goods_number AS storage, o.goods_attr, IFNULL(b.brand_name, '') AS brand_name " .
+    $sql = "SELECT o.*, g.suppliers_id AS suppliers_id,IF(o.product_id > 0, p.product_number, g.goods_number) AS storage, o.goods_attr, IFNULL(b.brand_name, '') AS brand_name, p.product_sn " .
             "FROM " . $GLOBALS['ecs']->table('order_goods') . " AS o ".
+            "LEFT JOIN " . $GLOBALS['ecs']->table('products') . " AS p ON o.product_id = p.product_id " .
             "LEFT JOIN " . $GLOBALS['ecs']->table('goods') . " AS g ON o.goods_id = g.goods_id " .
             "LEFT JOIN " . $GLOBALS['ecs']->table('brand') . " AS b ON g.brand_id = b.brand_id " .
             "WHERE o.order_id = '$order[order_id]' ";
     $res = $GLOBALS['db']->query($sql);
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
-        /* 虚拟商品支持 */
+        // 虚拟商品支持
         if ($row['is_real'] == 0)
         {
             /* 取得语言项 */
@@ -4908,6 +5188,9 @@ function get_order_goods($order)
             $row['package_goods_list'] = get_package_goods_list($row['goods_id']);
         }
 
+        //处理货品id
+        $row['product_id'] = empty($row['product_id']) ? 0 : $row['product_id'];
+
         $goods_list[] = $row;
     }
 
@@ -4932,24 +5215,108 @@ function get_order_goods($order)
  */
 function get_package_goods_list($package_id)
 {
-    $sql = "SELECT pg.goods_id, CONCAT(g.goods_name, ' -- [', pg.goods_number, ']') AS goods_name,
-            g.goods_number, pg.goods_number AS order_goods_number, g.goods_sn, g.is_real " .
-            "FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg, " .
-                $GLOBALS['ecs']->table('goods') . " AS g " .
-            "WHERE pg.package_id = '$package_id' " .
-            "AND pg.goods_id = g.goods_id ";
-    $row = $GLOBALS['db']->getAll($sql);
+    $sql = "SELECT pg.goods_id, g.goods_name, (CASE WHEN pg.product_id > 0 THEN p.product_number ELSE g.goods_number END) AS goods_number, p.goods_attr, p.product_id, pg.goods_number AS
+            order_goods_number, g.goods_sn, g.is_real, p.product_sn
+            FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+                LEFT JOIN " .$GLOBALS['ecs']->table('goods') . " AS g ON pg.goods_id = g.goods_id
+                LEFT JOIN " . $GLOBALS['ecs']->table('products') . " AS p ON pg.product_id = p.product_id
+            WHERE pg.package_id = '$package_id'";
+    $resource = $GLOBALS['db']->query($sql);
+    if (!$resource)
+    {
+        return array();
+    }
+
+    $row = array();
+
+    /* 生成结果数组 取存在货品的商品id 组合商品id与货品id */
+    $good_product_str = '';
+    while ($_row = $GLOBALS['db']->fetch_array($resource))
+    {
+        if ($_row['product_id'] > 0)
+        {
+            /* 取存商品id */
+            $good_product_str .= ',' . $_row['goods_id'];
+
+            /* 组合商品id与货品id */
+            $_row['g_p'] = $_row['goods_id'] . '_' . $_row['product_id'];
+        }
+        else
+        {
+            /* 组合商品id与货品id */
+            $_row['g_p'] = $_row['goods_id'];
+        }
+
+        //生成结果数组
+        $row[] = $_row;
+    }
+    $good_product_str = trim($good_product_str, ',');
+
+    /* 释放空间 */
+    unset($resource, $_row, $sql);
+
+    /* 取商品属性 */
+    if ($good_product_str != '')
+    {
+        $sql = "SELECT ga.goods_attr_id, ga.attr_value, ga.attr_price, a.attr_name
+                FROM " .$GLOBALS['ecs']->table('goods_attr'). " AS ga, " .$GLOBALS['ecs']->table('attribute'). " AS a
+                WHERE a.attr_id = ga.attr_id
+                AND a.attr_type = 1
+                AND goods_id IN ($good_product_str)";
+        $result_goods_attr = $GLOBALS['db']->getAll($sql);
+
+        $_goods_attr = array();
+        foreach ($result_goods_attr as $value)
+        {
+            $_goods_attr[$value['goods_attr_id']] = $value;
+        }
+    }
+
+    /* 过滤货品 */
+    $format[0] = "%s:%s[%d] <br>";
+    $format[1] = "%s--[%d]";
+    foreach ($row as $key => $value)
+    {
+        if ($value['goods_attr'] != '')
+        {
+            $goods_attr_array = explode('|', $value['goods_attr']);
+
+            $goods_attr = array();
+            foreach ($goods_attr_array as $_attr)
+            {
+                $goods_attr[] = sprintf($format[0], $_goods_attr[$_attr]['attr_name'], $_goods_attr[$_attr]['attr_value'], $_goods_attr[$_attr]['attr_price']);
+            }
+
+            $row[$key]['goods_attr_str'] = implode('', $goods_attr);
+        }
+
+        $row[$key]['goods_name'] = sprintf($format[1], $value['goods_name'], $value['order_goods_number']);
+    }
 
     return $row;
+
+
+//    $sql = "SELECT pg.goods_id, CONCAT(g.goods_name, ' -- [', pg.goods_number, ']') AS goods_name,
+//            g.goods_number, pg.goods_number AS order_goods_number, g.goods_sn, g.is_real " .
+//            "FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg, " .
+//                $GLOBALS['ecs']->table('goods') . " AS g " .
+//            "WHERE pg.package_id = '$package_id' " .
+//            "AND pg.goods_id = g.goods_id ";
+//    $row = $GLOBALS['db']->getAll($sql);
+//
+//    return $row;
 }
 
 /**
- * 订单已发货数量
- * @param   int     $order_id  订单 id
- * @param   int     $goods_id  商品 id
+ * 订单单个商品或货品的已发货数量
+ *
+ * @param   int     $order_id       订单 id
+ * @param   int     $goods_id       商品 id
+ * @param   int     $product_id     货品 id
+ *
  * @return  int
  */
-function order_delivery_num($order_id, $goods_id)
+function order_delivery_num($order_id, $goods_id, $product_id = 0)
 {
     $sql = 'SELECT SUM(G.send_number) AS sums
             FROM ' . $GLOBALS['ecs']->table('delivery_goods') . ' AS G, ' . $GLOBALS['ecs']->table('delivery_order') . ' AS O
@@ -4958,6 +5325,9 @@ function order_delivery_num($order_id, $goods_id)
             AND O.order_id = ' . $order_id . '
             AND G.extension_code <> "package_buy"
             AND G.goods_id = ' . $goods_id;
+
+    $sql .= ($product_id > 0) ? " AND G.product_id = '$product_id'" : '';
+
     $sum = $GLOBALS['db']->getOne($sql);
 
     if (empty($sum))
@@ -5019,6 +5389,7 @@ function update_order_goods($order_id, $_sended, $goods_list = array())
             {
                 $goods_list = array();
             }
+
             foreach ($goods_list as $goods)
             {
                 if (($key != $goods['rec_id']) || (!isset($goods['package_goods_list']) || !is_array($goods['package_goods_list'])))
@@ -5028,13 +5399,17 @@ function update_order_goods($order_id, $_sended, $goods_list = array())
 
                 $goods['package_goods_list'] = package_goods($goods['package_goods_list'], $goods['goods_number'], $goods['order_id'], $goods['extension_code'], $goods['goods_id']);
                 $pg_is_end = true;
+
                 foreach ($goods['package_goods_list'] as $pg_key => $pg_value)
                 {
                     if ($pg_value['order_send_number'] != $pg_value['sended'])
                     {
                         $pg_is_end = false; // 此超值礼包，此商品未全部发货
+
+                        break;
                     }
                 }
+
                 // 超值礼包商品全部发货后更新订单商品库存
                 if ($pg_is_end)
                 {
@@ -5042,14 +5417,15 @@ function update_order_goods($order_id, $_sended, $goods_list = array())
                             SET send_number = goods_number
                             WHERE order_id = '$order_id'
                             AND goods_id = '" . $goods['goods_id'] . "' ";
+
                     $GLOBALS['db']->query($sql, 'SILENT');
                 }
             }
         }
-        // 商品（实货）
+        // 商品（实货）（货品）
         elseif (!is_array($value))
         {
-            /* 检查是否为商品（实货） */
+            /* 检查是否为商品（实货）（货品） */
             foreach ($goods_list as $goods)
             {
                 if ($goods['rec_id'] == $key && $goods['is_real'] == 1)
@@ -5123,6 +5499,7 @@ function get_order_finish($order_id)
             FROM ' . $GLOBALS['ecs']->table('order_goods') . '
             WHERE order_id = \'' . $order_id . '\'
             AND goods_number > send_number';
+
     $sum = $GLOBALS['db']->getOne($sql);
     if (empty($sum))
     {
@@ -5660,7 +6037,7 @@ function package_goods(&$package_goods, $goods_number, $order_id, $extension_cod
     {
         $return_array[$key] = $value;
         $return_array[$key]['order_send_number'] = $value['order_goods_number'] * $goods_number;
-        $return_array[$key]['sended'] = package_sended($package_id, $value['goods_id'], $order_id, $extension_code);
+        $return_array[$key]['sended'] = package_sended($package_id, $value['goods_id'], $order_id, $extension_code, $value['product_id']);
         $return_array[$key]['send'] = ($value['order_goods_number'] * $goods_number) - $return_array[$key]['sended'];
         $return_array[$key]['storage'] = $value['goods_number'];
 
@@ -5684,13 +6061,16 @@ function package_goods(&$package_goods, $goods_number, $order_id, $extension_cod
 
 /**
  * 获取超级礼包商品已发货数
- * @param   int     礼包ID
- * @param   int     礼包的产品ID
- * @param   int     订单ID
- * @param   varchar 虚拟代码
+ *
+ * @param       int         $package_id         礼包ID
+ * @param       int         $goods_id           礼包的产品ID
+ * @param       int         $order_id           订单ID
+ * @param       varchar     $extension_code     虚拟代码
+ * @param       int         $product_id         货品id
+ *
  * @return  int     数值
  */
-function package_sended($package_id, $goods_id, $order_id, $extension_code)
+function package_sended($package_id, $goods_id, $order_id, $extension_code, $product_id = 0)
 {
     if (empty($package_id) || empty($goods_id) || empty($order_id) || empty($extension_code))
     {
@@ -5705,6 +6085,8 @@ function package_sended($package_id, $goods_id, $order_id, $extension_code)
             AND DG.parent_id = '$package_id'
             AND DG.goods_id = '$goods_id'
             AND DG.extension_code = '$extension_code'";
+    $sql .= ($product_id > 0) ? " AND DG.product_id = '$product_id'" : '';
+
     $send = $GLOBALS['db']->getOne($sql);
 
     return empty($send) ? 0 : $send;
@@ -5877,31 +6259,83 @@ function package_virtual_card_shipping($goods, $order_sn)
 }
 
 /**
- * 删除发货时进行退货
+ * 删除发货单时进行退货
  *
- * @access  public
- * @param   array      $goods      超值礼包虚拟商品列表数组
- * @param   string      $order_sn   本次操作的订单
+ * @access   public
+ * @param    int     $delivery_id      发货单id
+ * @param    array   $delivery_order   发货单信息数组
  *
- * @return  boolen
+ * @return  void
  */
-function delivery_return_goods($delivery_id)
+function delivery_return_goods($delivery_id, $delivery_order)
 {
-        $delivery_order = delivery_order_info($delivery_id);
-        /* 取得发货单商品 */
-        $goods_sql = "SELECT *
-                     FROM " . $GLOBALS['ecs']->table('delivery_goods') . "
-                     WHERE delivery_id = " . $delivery_order['delivery_id'];
-        $goods_list = $GLOBALS['db']->getAll($goods_sql);
-
-        /* 修改 */
+    /* 查询：取得发货单商品 */
+    $goods_sql = "SELECT *
+                 FROM " . $GLOBALS['ecs']->table('delivery_goods') . "
+                 WHERE delivery_id = " . $delivery_order['delivery_id'];
+    $goods_list = $GLOBALS['db']->getAll($goods_sql);
+    /* 更新： */
+    foreach ($goods_list as $key=>$val)
+    {
         $sql = "UPDATE " . $GLOBALS['ecs']->table('order_goods') .
-               " SET send_number = send_number-'".$goods_list[0]['send_number']. "'".
-               " WHERE order_id = '".$delivery_order['order_id']."' AND goods_id = '".$goods_list[0]['goods_id']."' LIMIT 1";
+               " SET send_number = send_number-'".$goods_list[$key]['send_number']. "'".
+               " WHERE order_id = '".$delivery_order['order_id']."' AND goods_id = '".$goods_list[$key]['goods_id']."' LIMIT 1";
         $GLOBALS['db']->query($sql);
-        $sql = "UPDATE " . $GLOBALS['ecs']->table('order_info') .
-               " SET shipping_status = '0' , order_status = 1".
-               " WHERE order_id = '".$delivery_order['order_id']."' LIMIT 1";
-        $GLOBALS['db']->query($sql);
+    }
+    $sql = "UPDATE " . $GLOBALS['ecs']->table('order_info') .
+           " SET shipping_status = '0' , order_status = 1".
+           " WHERE order_id = '".$delivery_order['order_id']."' LIMIT 1";
+    $GLOBALS['db']->query($sql);
+}
+
+/**
+ * 删除发货单时删除其在订单中的发货单号
+ *
+ * @access   public
+ * @param    int      $order_id              定单id
+ * @param    string   $delivery_invoice_no   发货单号
+ *
+ * @return  void
+ */
+function del_order_invoice_no($order_id, $delivery_invoice_no)
+{
+    /* 查询：取得订单中的发货单号 */
+    $sql = "SELECT invoice_no
+            FROM " . $GLOBALS['ecs']->table('order_info') . "
+            WHERE order_id = '$order_id'";
+    $order_invoice_no = $GLOBALS['db']->getOne($sql);
+
+    /* 如果为空就结束处理 */
+    if (empty($order_invoice_no))
+    {
+        return;
+    }
+
+    /* 去除当前发货单号 */
+    $order_array = explode('<br>', $order_invoice_no);
+    $delivery_array = explode('<br>', $delivery_invoice_no);
+
+    foreach ($order_array as $key => $invoice_no)
+    {
+        if ($ii = array_search($invoice_no, $delivery_array))
+        {
+            unset($order_array[$key], $delivery_array[$ii]);
+        }
+    }
+
+    $arr['invoice_no'] = implode('<br>', $order_array);
+    update_order($order_id, $arr);
+}
+
+/**
+ * 获取站点根目录网址
+ *
+ * @access  private
+ * @return  Bool
+ */
+function get_site_root_url()
+{
+    return 'http://' . $_SERVER['HTTP_HOST'] . str_replace('/' . ADMIN_PATH . '/order.php', '', PHP_SELF);
+
 }
 ?>

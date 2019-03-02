@@ -3,20 +3,20 @@
 /**
  * ECSHOP 安裝程序語言文件
  * ============================================================================
- * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2011 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
  * $Author: liubo $
- * $Id: zh_tw.php 16885 2009-12-14 09:38:40Z liubo $
+ * $Id: zh_tw.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 /* 通用語言項 */
 $_LANG['prev_step'] = '上一步：';
 $_LANG['next_step'] = '下一步：';
-$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">上海商派网络科技有限公司</a>。保留所有權利。';
+$_LANG['copyright'] = '&copy; 2005-2011 <a href="http://www.ecshop.com" target="_blank">上海商派网络科技有限公司</a>。保留所有權利。';
 
 
 /* 歡迎頁 */
@@ -28,6 +28,7 @@ $_LANG['americanese'] = 'English';
 $_LANG['agree_license'] = '我已仔細閱讀，並同意上述條款中的所有內容';
 $_LANG['check_system_environment'] = '檢測系統環境';
 $_LANG['setup_environment'] = '配置安裝環境';
+$_LANG['loading'] = '正在加載，請稍等...';
 
 /* UCenter 安裝配置 */
 $_LANG['setup_title'] = '請選擇用戶接口方式';
@@ -110,6 +111,7 @@ $_LANG['cosmetics'] = '化妝品';
 $_LANG['install_at_once'] = '立即安裝';
 $_LANG['default_friend_link'] = 'ECSHOP 網上商店管理系統';
 $_LANG['maifou_friend_link'] = '免費申請網店';
+$_LANG['wdwd_friend_link']='免費開獨立網店';
 $_LANG['monitor_title'] = '安裝程序監視器';
 $_LANG['admin_user'][] = '商品列表|goods.php?act=list';
 $_LANG['admin_user'][] = '訂單列表|order.php?act=list';

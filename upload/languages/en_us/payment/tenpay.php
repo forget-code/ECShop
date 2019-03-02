@@ -3,7 +3,7 @@
 /**
  * ECSHOP Tenpay Payment Plug-in language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,14 +11,14 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: tenpay.php 16327 2009-06-24 02:22:31Z liuhui $
+ * $Author: liubo $
+ * $Id: tenpay.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 global $_LANG;
 
 $_LANG['tenpay']            = 'Tenpay';
-$_LANG['tenpay_desc']       = '<b>Tenpay（www.tenpay.com） -Tencent\'s online payment platform, by authority of the state security certification, support for all major banks in online payment, pay the processing fees.</b><br /><a href="http://union.tenpay.com/mch/mch_register_b2c.shtml?sp_suggestuser=1202822001" target="_blank">Immediately apply for: a single rate:1%</a><br /><a href="http://union.tenpay.com/mch/mch_register_b2c.shtml?sp_suggestuser=2289480" target="_blank">Buy Now package quantity package: a single rate of post-conversion
+$_LANG['tenpay_desc']       = '<b>Tenpay（www.tenpay.com） -Tencent\'s online payment platform, by authority of the state security certification, support for all major banks in online payment, pay the processing fees.</b><br /><a href="http://union.tenpay.com/mch/mch_register_b2c.shtml?sp_suggestuser=1202822001" target="_blank">Immediately apply for: a single rate:1%</a><br /><a href="http://union.tenpay.com/set_meal_charge/?referrer=1442037873" target="_blank">Buy Now package quantity package: a single rate of post-conversion
 :0.6-1%</a>';
 $_LANG['tenpay_account']    = 'Tenpay accounts';
 $_LANG['tenpay_key']        = 'MD5 key';

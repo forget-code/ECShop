@@ -3,14 +3,14 @@
 /**
  * UCenter 会员数据处理类
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: ucenter.php 16906 2009-12-18 08:00:15Z liubo $
+ * $Id: ucenter.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -132,9 +132,25 @@ class ucenter extends integrate
         if($uid > 0)
         {
             //检查用户是否存在,不存在直接放入用户表
-            $user_exist = $this->db->getOne("SELECT user_id FROM " . $GLOBALS['ecs']->table("users") . " WHERE user_name='$username' AND password = '" . MD5($password) ."'");
+            $result = $this->db->getRow("SELECT user_id,ec_salt FROM " . $GLOBALS['ecs']->table("users") . " WHERE user_name='$username'");
+            $name_exist =$result['user_id'];
+            if(empty($result['ec_salt']))
+            {
+                $user_exist = $this->db->getOne("SELECT user_id FROM " . $GLOBALS['ecs']->table("users") . " WHERE user_name='$username' AND password = '" . MD5($password) ."'");
+                if(!empty($user_exist))
+                {
+                    $ec_salt=rand(1,9999);
+                    $this->db->query('UPDATE ' . $GLOBALS['ecs']->table("users") . "SET `password`='".MD5(MD5($password). $ec_salt)."',`ec_salt`='". $ec_salt."' WHERE user_id = '" . $uid . "'");
 
-            $name_exist = $this->db->getOne("SELECT user_id FROM " . $GLOBALS['ecs']->table("users") . " WHERE user_name='$username'");
+                }
+            }
+            else
+            {
+                $user_exist = $this->db->getOne("SELECT user_id FROM " . $GLOBALS['ecs']->table("users") . " WHERE user_name='$username' AND password = '" . MD5(MD5($password). $result['ec_salt'])."'");
+            }
+
+
+
             if (empty($user_exist))
             {
                 if(empty($name_exist))
@@ -146,7 +162,11 @@ class ucenter extends integrate
                 }
                 else 
                 {
-                    $this->db->query('UPDATE ' . $GLOBALS['ecs']->table("users") . "SET `password`='".MD5($password)."' WHERE user_id = '" . $uid . "'");
+                    if(empty($result['ec_salt']))
+                    {
+                         $result['ec_salt']=0;
+                    }
+                    $this->db->query('UPDATE ' . $GLOBALS['ecs']->table("users") . "SET `password`='".MD5(MD5($password). $result['ec_salt'])."',`ec_salt`='". $result['ec_salt']."' WHERE user_id = '" . $uid . "'");
                 }
             }
             $this->set_session($uname);
@@ -348,7 +368,7 @@ class ucenter extends integrate
                 return false;
             }
         }
-        if (strlen($cfg['old_password']) > 0 && strlen($cfg['password']) > 0 && $forget_pwd == 0)
+        if (!empty($cfg['old_password']) && !empty($cfg['password']) && $forget_pwd == 0)
         {
             $ucresult = uc_call("uc_user_edit", array($real_username, $cfg['old_password'], $cfg['password'], ''));
             if ($ucresult > 0 )
@@ -444,8 +464,8 @@ class ucenter extends integrate
         {
             /* 摧毁cookie */
             $time = time() - 3600;
-            setcookie('ECS[user_id]',  '', $time);
-            setcookie('ECS[password]', '', $time);
+            setcookie("ECS[user_id]",  '', $time, $this->cookie_path);            
+            setcookie("ECS[password]", '', $time, $this->cookie_path);
         }
         else
         {

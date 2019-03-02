@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel authorization manage module language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: privilege.php 16551 2009-08-17 07:31:49Z liuhui $
+ * $Author: liubo $
+ * $Id: privilege.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* Field information */

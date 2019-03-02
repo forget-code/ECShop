@@ -3,14 +3,14 @@
 /**
  * ECSHOP 文章分类
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: article_cat.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: article_cat.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 
@@ -47,7 +47,7 @@ else
 }
 
 /* 获得当前页码 */
-$page = !empty($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
+$page   = !empty($_REQUEST['page'])  && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
 
 /*------------------------------------------------------ */
 //-- PROCESSOR
@@ -100,14 +100,16 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
     }
     $pager['search']['id'] = $cat_id;
     $keywords = '';
-    /* 获得文章列表 */
-    if (isset($_GET['keywords']))
-    {
-        $keywords = addslashes(urldecode(trim($_GET['keywords'])));
-        $pager['search']['keywords'] = $keywords;
-        $search_url = $_SERVER['REQUEST_URI'];
+    $goon_keywords = ''; //继续传递的搜索关键词
 
-        $smarty->assign('search_value',     $keywords);
+    /* 获得文章列表 */
+    if (isset($_REQUEST['keywords']))
+    {
+        $keywords = addslashes(htmlspecialchars(urldecode(trim($_REQUEST['keywords']))));
+        $pager['search']['keywords'] = $keywords;
+        $search_url = substr(strrchr($_POST['cur_url'], '/'), 1);
+
+        $smarty->assign('search_value',    stripslashes(stripslashes($keywords)));
         $smarty->assign('search_url',       $search_url);
         $count  = get_article_count($cat_id, $keywords);
         $pages  = ($count > 0) ? ceil($count / $size) : 1;
@@ -115,13 +117,13 @@ if (!$smarty->is_cached('article_cat.dwt', $cache_id))
         {
             $page = $pages;
         }
+
+        $goon_keywords = urlencode($_REQUEST['keywords']);
     }
     $smarty->assign('artciles_list',    get_cat_articles($cat_id, $page, $size ,$keywords));
     $smarty->assign('cat_id',    $cat_id);
     /* 分页 */
-    $pager = get_pager('article_cat.php', $pager['search'], $count, $page, $size);
-
-    $smarty->assign('pager', $pager);
+    assign_pager('article_cat', $cat_id, $count, $size, '', '', $page, $goon_keywords);
     assign_dynamic('article_cat');
 }
 

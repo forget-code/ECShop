@@ -1,4 +1,4 @@
-<!-- $Id: start.htm 16405 2009-06-30 03:47:07Z liuhui $ -->
+<!-- $Id: start.htm 17216 2011-01-19 06:03:12Z liubo $ -->
 {include file="pageheader.htm"}
 <!-- directory install start -->
 <ul id="lilist" style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
@@ -54,6 +54,12 @@
     <td><strong>{$booking_goods}</strong></td>
     <td><a href="user_account.php?act=list&process_type=1&is_paid=0">{$lang.new_reimburse}</a></td>
     <td><strong>{$new_repay}</strong></td>
+  </tr>
+  <tr>
+    <td><a href="order.php?act=list&composite_status={$status.shipped_part}">{$lang.shipped_part}</a></td>
+    <td><strong>{$order.shipped_part}</strong></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
   </tr>
 </table>
 </div>
@@ -193,7 +199,7 @@
 </table>
 </div>
 {literal}
-
+{insert_scripts files="../js/utils.js"}
 <script type="Text/Javascript" language="JavaScript">
 <!--
 onload = function()
@@ -207,16 +213,36 @@ onload = function()
     {
       apilist = document.getElementById("lilist").innerHTML;
       document.getElementById("lilist").innerHTML =result+apilist;
-      api_styel();
+      if(document.getElementById("Marquee") != null)
+      {
+        var Mar = document.getElementById("Marquee");
+        lis = Mar.getElementsByTagName('div');
+        //alert(lis.length); //显示li元素的个数
+        if(lis.length>1)
+        {
+          api_styel();
+        }      
+      }
+
+
     }
       function api_styel()
       {
         if(document.getElementById("Marquee") != null)
         {
             var Mar = document.getElementById("Marquee");
-            Mar.style.height = "30px";
+            if (Browser.isIE)
+            {
+              Mar.style.height = "52px";
+            }
+            else
+            {
+              Mar.style.height = "36px";
+            }
+            
             var child_div=Mar.getElementsByTagName("div");
-        var picH = 20;//移动高度
+
+        var picH = 16;//移动高度
         var scrollstep=2;//移动步幅,越大越快
         var scrolltime=30;//移动频度(毫秒)越大越慢
         var stoptime=4000;//间断时间(毫秒)

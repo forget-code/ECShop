@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理员信息以及权限管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: privilege.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: privilege.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -82,10 +82,22 @@ elseif ($_REQUEST['act'] == 'signin')
     $_POST['username'] = isset($_POST['username']) ? trim($_POST['username']) : '';
     $_POST['password'] = isset($_POST['password']) ? trim($_POST['password']) : '';
 
-    /* 检查密码是否正确 */
-    $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login, suppliers_id".
+    $sql="SELECT `ec_salt` FROM ". $ecs->table('admin_user') ."WHERE user_name = '" . $_POST['username']."'";
+	$ec_salt =$db->getOne($sql);
+    if(!empty($ec_salt))
+    {
+         /* 检查密码是否正确 */
+         $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login".
+            " FROM " . $ecs->table('admin_user') .
+            " WHERE user_name = '" . $_POST['username']. "' AND password = '" . md5(md5($_POST['password']).$ec_salt) . "'";
+	}
+	else
+	{
+         /* 检查密码是否正确 */
+         $sql = "SELECT user_id, user_name, password, last_login, action_list, last_login".
             " FROM " . $ecs->table('admin_user') .
             " WHERE user_name = '" . $_POST['username']. "' AND password = '" . md5($_POST['password']) . "'";
+	}
     $row = $db->getRow($sql);
 
     if ($row)
@@ -103,6 +115,14 @@ elseif ($_REQUEST['act'] == 'signin')
         // 登录成功
         set_admin_session($row['user_id'], $row['user_name'], $row['action_list'], $row['last_login']);
         $_SESSION['suppliers_id'] = $row['suppliers_id'];
+		if(empty($row['ec_salt']))
+	    {
+			$ec_salt=rand(1,9999);
+			$new_possword=md5(md5($_POST['password']).$ec_salt);
+             $db->query("UPDATE " .$ecs->table('admin_user').
+                 " SET ec_salt='" . $ec_salt . "', password='" .$new_possword . "'".
+                 " WHERE user_id='$_SESSION[admin_id]'");
+		}
 
         if($row['action_list'] == 'all' && empty($row['last_login']))
         {
@@ -211,6 +231,7 @@ elseif ($_REQUEST['act'] == 'insert')
 
     /* 获取添加日期及密码 */
     $add_time = gmtime();
+    
     $password  = md5($_POST['password']);
     $role_id = '';
     $action_list = '';
@@ -270,7 +291,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $sql = "SELECT user_id, user_name, email, password, agency_id, role_id FROM " .$ecs->table('admin_user').
            " WHERE user_id = '".$_REQUEST['id']."'";
     $user_info = $db->getRow($sql);
-    
+
 
     /* 取得该管理员负责的办事处名称 */
     if ($user_info['agency_id'] > 0)
@@ -283,7 +304,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $smarty->assign('ur_here',     $_LANG['admin_edit']);
     $smarty->assign('action_link', array('text' => $_LANG['admin_list'], 'href'=>'privilege.php?act=list'));
     $smarty->assign('user',        $user_info);
-    
+
     /* 获得该管理员的权限 */
     $priv_str = $db->getOne("SELECT action_list FROM " .$ecs->table('admin_user'). " WHERE user_id = '$_GET[id]'");
 
@@ -309,8 +330,8 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
     $admin_id    = !empty($_REQUEST['id'])        ? intval($_REQUEST['id'])      : 0;
     $admin_name  = !empty($_REQUEST['user_name']) ? trim($_REQUEST['user_name']) : '';
     $admin_email = !empty($_REQUEST['email'])     ? trim($_REQUEST['email'])     : '';
-
-    $password = !empty($_POST['new_password']) ? ", password = '".md5($_POST['new_password'])."'"    : '';
+    $ec_salt=rand(1,9999);
+    $password = !empty($_POST['new_password']) ? ", password = '".md5(md5($_POST['new_password']).$ec_salt)."'"    : '';
     if ($_REQUEST['act'] == 'update')
     {
         /* 查看是否有权限编辑其他管理员的信息 */
@@ -330,7 +351,7 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
     /* 判断管理员是否已经存在 */
     if (!empty($admin_name))
     {
-        $is_only = $exc->num('user_name', stripslashes($admin_name), $admin_id);
+        $is_only = $exc->num('user_name', $admin_name, $admin_id);
         if ($is_only == 1)
         {
             sys_msg(sprintf($_LANG['user_name_exist'], stripslashes($admin_name)), 1);
@@ -340,7 +361,7 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
     /* Email地址是否有重复 */
     if (!empty($admin_email))
     {
-        $is_only = $exc->num('email', stripslashes($admin_email), $admin_id);
+        $is_only = $exc->num('email', $admin_email, $admin_id);
 
         if ($is_only == 1)
         {
@@ -356,7 +377,17 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
         /* 查询旧密码并与输入的旧密码比较是否相同 */
         $sql = "SELECT password FROM ".$ecs->table('admin_user')." WHERE user_id = '$admin_id'";
         $old_password = $db->getOne($sql);
-        if ($old_password <> (md5($_POST['old_password'])))
+		$sql ="SELECT ec_salt FROM ".$ecs->table('admin_user')." WHERE user_id = '$admin_id'";
+        $old_ec_salt= $db->getOne($sql);
+		if(empty($old_ec_salt))
+	    {
+			$old_ec_password=md5($_POST['old_password']);
+		}
+		else
+	    {
+			$old_ec_password=md5(md5($_POST['old_password']).$old_ec_salt);
+		}
+        if ($old_password <> $old_ec_password)
         {
            $link[] = array('text' => $_LANG['go_back'], 'href'=>'javascript:history.back(-1)');
            sys_msg($_LANG['pwd_error'], 0, $link);
@@ -386,7 +417,8 @@ elseif ($_REQUEST['act'] == 'update' || $_REQUEST['act'] == 'update_self')
     //更新管理员信息
     $sql = "UPDATE " .$ecs->table('admin_user'). " SET ".
            "user_name = '$admin_name', ".
-           "email = '$admin_email' ".
+           "email = '$admin_email' ,".
+           "ec_salt = '$ec_salt' ".
            $action_list.
            $role_id.
            $password.
@@ -427,6 +459,7 @@ elseif ($_REQUEST['act'] == 'modif')
     }
 
     include_once('includes/inc_menu.php');
+    include_once('includes/inc_priv.php');
 
     /* 包含插件菜单语言项 */
     $sql = "SELECT code FROM ".$ecs->table('plugins');
@@ -454,18 +487,27 @@ elseif ($_REQUEST['act'] == 'modif')
 
     foreach ($modules AS $key => $val)
     {
-        $menus[$key]['label'] = $_LANG[$key];
         if (is_array($val))
         {
             foreach ($val AS $k => $v)
             {
-                $menus[$key]['children'][$k]['label']  = $_LANG[$k];
-                $menus[$key]['children'][$k]['action'] = $v;
+                if (is_array($purview[$k]))
+                {
+                    $boole = false;
+                    foreach ($purview[$k] as $action)
+                    {
+                         $boole = $boole || admin_priv($action, '', false);
+                    }
+                    if (!$boole)
+                    {
+                        unset($modules[$key][$k]);
+                    }
+                }
+                elseif (! admin_priv($purview[$k], '', false))
+                {
+                    unset($modules[$key][$k]);
+                }
             }
-        }
-        else
-        {
-            $menus[$key]['action'] = $val;
         }
     }
 
@@ -523,7 +565,7 @@ elseif ($_REQUEST['act'] == 'allot')
     }
 
     /* 获取权限的分组数据 */
-    $sql_query = "SELECT action_id, parent_id, action_code FROM " .$ecs->table('admin_action').
+    $sql_query = "SELECT action_id, parent_id, action_code,relevance FROM " .$ecs->table('admin_action').
                  " WHERE parent_id = 0";
     $res = $db->query($sql_query);
     while ($rows = $db->FetchRow($res))
@@ -532,7 +574,7 @@ elseif ($_REQUEST['act'] == 'allot')
     }
 
     /* 按权限组查询底级的权限名称 */
-    $sql = "SELECT action_id, parent_id, action_code FROM " .$ecs->table('admin_action').
+    $sql = "SELECT action_id, parent_id, action_code,relevance FROM " .$ecs->table('admin_action').
            " WHERE parent_id " .db_create_in(array_keys($priv_arr));
     $result = $db->query($sql);
     while ($priv = $db->FetchRow($result))

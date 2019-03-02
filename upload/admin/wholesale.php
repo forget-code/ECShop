@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心批发管理
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: wholesale.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: wholesale.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -487,8 +487,29 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
         $attr = array();
         foreach ($attr_id_list as $attr_id)
         {
-            $attr[$attr_id] = $_POST['attr_' . $attr_id][$key];
+            if($_POST['attr_' . $attr_id][$key]!=0)
+            {
+                $attr[$attr_id] = $_POST['attr_' . $attr_id][$key];
+            }
         }
+
+        //判断商品的货品表是否存在此规格的货品
+        $attr_error = false;
+        if (!empty($attr))
+        {
+            $_attr = $attr;
+            ksort($_attr);
+            $goods_attr = implode('|', $_attr);
+
+            $sql = "SELECT product_id FROM " . $ecs->table('products') . " WHERE goods_attr = '$goods_attr' AND goods_id = '$goods_id'";
+            if (!$db->getOne($sql))
+            {
+                $attr_error = true;
+                continue;
+            }
+        }
+
+        //
         $qp_list = array();
         foreach ($_POST['quantity'][$key] as $index => $quantity)
         {
@@ -551,6 +572,14 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     clear_cache_files();
 
     /* 提示信息 */
+    if ($attr_error)
+    {
+        $links = array(
+            array('href' => 'wholesale.php?act=list', 'text' => $_LANG['back_wholesale_list'])
+        );
+        sys_msg(sprintf($_LANG['save_wholesale_falid'], $wholesale['goods_name']), 1, $links);
+    }
+
     if ($is_add)
     {
         $links = array(

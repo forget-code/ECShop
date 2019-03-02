@@ -123,7 +123,7 @@ body {
 </div>
 <div id="main-div">
 <div id="menu-list">
-<ul>
+<ul id="menu-ul">
 {foreach from=$menus item=menu key=k}
 {if $menu.action}
   <li class="explode"><a href="{$menu.action}" target="main-frame">{$menu.label}</a></li>
@@ -381,7 +381,7 @@ Object.extend(ToggleHanlder ,{
       var items = document.getElementsByTagName('LI');
       for (var i = 0; i < items.length; i++)
       {
-        if ( items[0].getAttribute("name") == "menu")
+        if ( items[0].getAttribute("name") == "menu" && items[0].getAttribute("id") != '20_yun')
         {
           for (var k in this.SourceObject)
           {
@@ -405,7 +405,14 @@ Object.extend(ToggleHanlder ,{
 ToggleHanlder.CookieName += "_{$admin_id}";
 //初始化菜单状态
 ToggleHanlder.Load();
-
+Ajax.call('index.php?is_ajax=1&act=menu_api','', start_menu_api, 'GET', 'TEXT','FLASE');
+function start_menu_api(result)
+{
+  if(result)
+  {
+    document.getElementById("menu-ul").innerHTML = document.getElementById("menu-ul").innerHTML + result;     
+  }
+}
 //-->
 </script>
 

@@ -4,33 +4,41 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $lang['welcome_title'];?></title>
 <link href="styles/general.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="./js/common.js"></script>
-<script type="text/javascript" src="./js/welcome.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/transport.js"></script>
 </head>
 <body id="welcome">
 <?php include ROOT_PATH . 'install/templates/header.php';?>
-<form method="post">
-<table border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-<tr>
-<td valign="top"><div id="wrapper" style="padding:30px 0;">
-  <iframe id="iframe" src="templates/license_<?php echo $installer_lang;?>.htm" width="730" height="350"></iframe>
-</div></td>
-<td width="227" valign="top" background="images/install-step1-<?php echo $installer_lang;?>.gif">&nbsp;</td>
-</tr>
-<tr>
-<td align="center" style="padding-top:10px;"><input type="checkbox" id="js-agree" class="p" />
-  <label for="js-agree"> <?php echo $lang['agree_license'];?></label><br />
-  <span id="install-btn"><input class="button" type="submit" id="js-submit" class="p" value="<?php echo $lang['next_step'];?><?php echo $lang['setup_environment'];?>" /></span>
-</td>
-<td>&nbsp;</td>
-</tr>
-</table>
+<div id="content">
+<p style="font-size:30px;text-align: center;margin-top:50px;">
+<?php echo $lang['loading'];?>
+</p>
+<img id="js-monitor-loading" src='images/loading.gif' style="margin:30px 0 50px 0;"/>
+</div>
 <div id="copyright">
     <div id="copyright-inside">
      <?php include ROOT_PATH . 'install/templates/copyright.php';?></div>
 </div>
-<input name="ucapi" type="hidden" value="<?php echo $ucapi; ?>" />
-<input name="ucfounderpw" type="hidden" value="<?php echo $ucfounderpw; ?>" />
-</form>
+<script type="text/javascript">
+Ajax.call('cloud.php?step=welcome','', welcome_api, 'GET', 'TEXT','FLASE');
+function welcome_api(result)
+{
+  if(result)
+  {
+    setInnerHTML('content',result);
+    setInputCheckedStatus();
+
+    var agree = $("js-agree");
+    var submit = $("js-submit");
+    submit.disabled=!agree.checked;
+    agree.onclick = function () {
+        submit.disabled=!this.checked;
+    };
+    submit.onclick=function () {
+        this.form.action = "./index.php?lang=" + getAddressLang() +"&step=check";
+    };
+  }
+}
+</script>
 </body>
 </html>

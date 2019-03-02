@@ -1,4 +1,4 @@
-<!-- $Id: goods_info.htm 16593 2009-08-21 09:20:58Z liuhui $ -->
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
 <script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
@@ -28,10 +28,10 @@
 
     <!-- tab body -->
     <div id="tabbody-div">
-      <form enctype="multipart/form-data" action="" method="post" name="theForm" onsubmit="return validate();">
-        <!-- 最大文件限制 -->
+      <form enctype="multipart/form-data" action="" method="post" name="theForm" >
+        <!-- 鏈€澶ф枃浠堕檺鍒 -->
         <input type="hidden" name="MAX_FILE_SIZE" value="2097152" />
-        <!-- 通用信息 -->
+        <!-- 閫氱敤淇℃伅 -->
         <table width="90%" id="general-table" align="center">
           <tr>
             <td class="label">{$lang.lab_goods_name}</td>
@@ -115,7 +115,7 @@
           </tr>
           {/if}
 
-          <!--商品优惠价格-->
+          <!--鍟嗗搧浼樻儬浠锋牸-->
           <tr>
             <td class="label"><a href="javascript:showNotice('volumePrice');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a>{$lang.lab_volume_price}</td>
             <td>
@@ -137,7 +137,7 @@
               <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="volumePrice">{$lang.notice_volume_price}</span>
             </td>
           </tr>
-          <!--商品优惠价格 end -->
+          <!--鍟嗗搧浼樻儬浠锋牸 end -->
 
           <tr>
             <td class="label">{$lang.lab_market_price}</td>
@@ -199,14 +199,14 @@
           </tr>
         </table>
 
-        <!-- 详细描述 -->
+        <!-- 璇︾粏鎻忚堪 -->
         <table width="90%" id="detail-table" style="display:none">
           <tr>
             <td>{$FCKeditor}</td>
           </tr>
         </table>
 
-        <!-- 其他信息 -->
+        <!-- 鍏朵粬淇℃伅 -->
         <table width="90%" id="mix-table" style="display:none" align="center">
           {if $code eq ''}
           <tr>
@@ -216,8 +216,10 @@
           {/if}
           {if $cfg.use_storage}
           <tr>
-            <td class="label">{$lang.lab_goods_number}</td>
-            <td><input type="text" name="goods_number" value="{$goods.goods_number}" size="20" {if $code neq ''}readonly="readonly"{/if} /></td>
+            <td class="label"><a href="javascript:showNotice('noticeStorage');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a> {$lang.lab_goods_number}</td>
+<!--            <td><input type="text" name="goods_number" value="{$goods.goods_number}" size="20" {if $code neq '' || $goods._attribute neq ''}readonly="readonly"{/if} /><br />-->
+            <td><input type="text" name="goods_number" value="{$goods.goods_number}" size="20" /><br />
+            <span class="notice-span" {if $help_open}style="display:block" {else} style="display:none" {/if} id="noticeStorage">{$lang.notice_storage}</span></td>
           </tr>
           <tr>
             <td class="label">{$lang.lab_warn_number}</td>
@@ -256,7 +258,7 @@
           </tr>
         </table>
 
-        <!-- 属性与规格 -->
+        <!-- 灞炴€т笌瑙勬牸 -->
         {if $goods_type_list}
         <table width="90%" id="properties-table" style="display:none" align="center">
           <tr>
@@ -274,9 +276,9 @@
         </table>
         {/if}
 
-        <!-- 商品相册 -->
+        <!-- 鍟嗗搧鐩稿唽 -->
         <table width="90%" id="gallery-table" style="display:none" align="center">
-          <!-- 图片列表 -->
+          <!-- 鍥剧墖鍒楄〃 -->
           <tr>
             <td>
               {foreach from=$img_list item=img key=i}
@@ -291,19 +293,20 @@
             </td>
           </tr>
           <tr><td>&nbsp;</td></tr>
-          <!-- 上传图片 -->
+          <!-- 涓婁紶鍥剧墖 -->
           <tr>
             <td>
               <a href="javascript:;" onclick="addImg(this)">[+]</a>
               {$lang.img_desc} <input type="text" name="img_desc[]" size="20" />
               {$lang.img_url} <input type="file" name="img_url[]" />
+              <input type="text" size="40" value="{$lang.img_file}" style="color:#aaa;" onfocus="if (this.value == '{$lang.img_file}'){this.value='http://';this.style.color='#000';}" name="img_file[]"/>
             </td>
           </tr>
         </table>
 
-        <!-- 关联商品 -->
+        <!-- 鍏宠仈鍟嗗搧 -->
         <table width="90%" id="linkgoods-table" style="display:none" align="center">
-          <!-- 商品搜索 -->
+          <!-- 鍟嗗搧鎼滅储 -->
           <tr>
             <td colspan="3">
               <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
@@ -314,7 +317,7 @@
                 onclick="searchGoods(sz1, 'cat_id1','brand_id1','keyword1')" />
             </td>
           </tr>
-          <!-- 商品列表 -->
+          <!-- 鍟嗗搧鍒楄〃 -->
           <tr>
             <th>{$lang.all_goods}</th>
             <th>{$lang.handler}</th>
@@ -342,9 +345,9 @@
           </tr>
         </table>
 
-        <!-- 配件 -->
+        <!-- 閰嶄欢 -->
         <table width="90%" id="groupgoods-table" style="display:none" align="center">
-          <!-- 商品搜索 -->
+          <!-- 鍟嗗搧鎼滅储 -->
           <tr>
             <td colspan="3">
               <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
@@ -354,7 +357,7 @@
               <input type="button" value="{$lang.button_search}" onclick="searchGoods(sz2, 'cat_id2', 'brand_id2', 'keyword2')" class="button" />
             </td>
           </tr>
-          <!-- 商品列表 -->
+          <!-- 鍟嗗搧鍒楄〃 -->
           <tr>
             <th>{$lang.all_goods}</th>
             <th>{$lang.handler}</th>
@@ -381,9 +384,9 @@
           </tr>
         </table>
 
-        <!-- 关联文章 -->
+        <!-- 鍏宠仈鏂囩珷 -->
         <table width="90%" id="article-table" style="display:none" align="center">
-          <!-- 文章搜索 -->
+          <!-- 鏂囩珷鎼滅储 -->
           <tr>
             <td colspan="3">
               <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
@@ -391,7 +394,7 @@
               <input type="button" value="{$lang.button_search}" onclick="searchArticle()" class="button" />
             </td>
           </tr>
-          <!-- 文章列表 -->
+          <!-- 鏂囩珷鍒楄〃 -->
           <tr>
             <th>{$lang.all_article}</th>
             <th>{$lang.handler}</th>
@@ -423,7 +426,7 @@
           {if $code neq ''}
           <input type="hidden" name="extension_code" value="{$code}" />
           {/if}
-          <input type="submit" value="{$lang.button_submit}" class="button" />
+          <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
           <input type="reset" value="{$lang.button_reset}" class="button" />
         </div>
         <input type="hidden" name="act" value="{$form_act}" />
@@ -452,7 +455,7 @@
           handleAutoThumb(document.forms['theForm'].elements['auto_thumb'].checked);
       }
 
-      // 检查新订单
+      // 妫€鏌ユ柊璁㈠崟
       startCheckOrder();
       {/literal}
       {foreach from=$user_rank_list item=item}
@@ -462,9 +465,11 @@
       document.forms['theForm'].reset();
   }
 
-  function validate()
+  function validate(goods_id)
   {
       var validator = new Validator('theForm');
+      var goods_sn  = document.forms['theForm'].elements['goods_sn'].value;
+
       validator.required('goods_name', goods_name_not_null);
       if (document.forms['theForm'].elements['cat_id'].value == 0)
       {
@@ -489,13 +494,25 @@
           validator.isInt('warn_number', warn_number_not_int, false);
       }
 
-
-
-      return validator.passed();
+      var callback = function(res)
+     {
+      if (res.error > 0)
+      {
+        alert("{$lang.goods_sn_exists}");
+      }
+      else
+      {
+         if(validator.passed())
+         {
+         document.forms['theForm'].submit();
+         }
+      }
   }
+    Ajax.call('goods.php?is_ajax=1&act=check_goods_sn', "goods_sn=" + goods_sn + "&goods_id=" + goods_id, callback, "GET", "JSON");
+}
 
   /**
-   * 切换商品类型
+   * 鍒囨崲鍟嗗搧绫诲瀷
    */
   function getAttrList(goodsId)
   {
@@ -515,10 +532,10 @@
   }
 
   /**
-   * 按比例计算价格
-   * @param   string  inputName   输入框名称
-   * @param   float   rate        比例
-   * @param   string  priceName   价格输入框名称（如果没有，取shop_price）
+   * 鎸夋瘮渚嬭?绠椾环鏍
+   * @param   string  inputName   杈撳叆妗嗗悕绉
+   * @param   float   rate        姣斾緥
+   * @param   string  priceName   浠锋牸杈撳叆妗嗗悕绉帮紙濡傛灉娌℃湁锛屽彇shop_price锛
    */
   function computePrice(inputName, rate, priceName)
   {
@@ -547,7 +564,7 @@
   }
 
   /**
-   * 设置了一个商品价格，改变市场价格、积分以及会员价格
+   * 璁剧疆浜嗕竴涓?晢鍝佷环鏍硷紝鏀瑰彉甯傚満浠锋牸銆佺Н鍒嗕互鍙婁細鍛樹环鏍
    */
   function priceSetted()
   {
@@ -561,7 +578,7 @@
   }
 
   /**
-   * 设置会员价格注释
+   * 璁剧疆浼氬憳浠锋牸娉ㄩ噴
    */
   function set_price_note(rank_id)
   {
@@ -591,7 +608,7 @@
   }
 
   /**
-   * 根据市场价格，计算并改变商店价格、积分以及会员价格
+   * 鏍规嵁甯傚満浠锋牸锛岃?绠楀苟鏀瑰彉鍟嗗簵浠锋牸銆佺Н鍒嗕互鍙婁細鍛樹环鏍
    */
   function marketPriceSetted()
   {
@@ -605,7 +622,7 @@
   }
 
   /**
-   * 新增一个规格
+   * 鏂板?涓€涓??鏍
    */
   function addSpec(obj)
   {
@@ -623,7 +640,7 @@
   }
 
   /**
-   * 删除规格值
+   * 鍒犻櫎瑙勬牸鍊
    */
   function removeSpec(obj)
   {
@@ -634,7 +651,7 @@
   }
 
   /**
-   * 处理规格
+   * 澶勭悊瑙勬牸
    */
   function handleSpec()
   {
@@ -652,7 +669,7 @@
               }
 
               var hiddenSpec = document.getElementById('hidden_' + element.id);
-              hiddenSpec.value = value.join(String.fromCharCode(13)); // 用回车键隔开每个规格
+              hiddenSpec.value = value.join(String.fromCharCode(13)); // 鐢ㄥ洖杞﹂敭闅斿紑姣忎釜瑙勬牸
           }
       }
       return true;
@@ -672,7 +689,7 @@
   }
 
   /**
-   * 快速添加品牌
+   * 蹇?€熸坊鍔犲搧鐗
    */
   function rapidBrandAdd(conObj)
   {
@@ -806,7 +823,7 @@
       opt.selected = true;
       opt.innerHTML = response.cat;
 
-      //获取子分类的空格数
+      //鑾峰彇瀛愬垎绫荤殑绌烘牸鏁
       var str = selCat.options[selCat.selectedIndex].text;
       var temp = str.replace(/^\s+/g, '');
       var lengOfSpace = str.length - temp.length;
@@ -861,7 +878,7 @@
 
 
   /**
-   * 删除快速分类
+   * 鍒犻櫎蹇?€熷垎绫
    */
   function removeCat()
   {
@@ -878,7 +895,7 @@
   }
 
   /**
-   * 删除快速品牌
+   * 鍒犻櫎蹇?€熷搧鐗
    */
   function removeBrand()
   {
@@ -892,7 +909,7 @@
   }
 
   /**
-   * 添加扩展分类
+   * 娣诲姞鎵╁睍鍒嗙被
    */
   function addOtherCat(conObj)
   {
@@ -918,7 +935,7 @@
       sel.onChange = function() {checkIsLeaf(this);};
   }
 
-  /* 关联商品函数 */
+  /* 鍏宠仈鍟嗗搧鍑芥暟 */
   function searchGoods(szObject, catId, brandId, keyword)
   {
       var filters = new Object;
@@ -932,7 +949,7 @@
   }
 
   /**
-   * 关联文章函数
+   * 鍏宠仈鏂囩珷鍑芥暟
    */
   function searchArticle()
   {
@@ -944,7 +961,7 @@
   }
 
   /**
-   * 新增一个图片
+   * 鏂板?涓€涓?浘鐗
    */
   function addImg(obj)
   {
@@ -957,7 +974,7 @@
   }
 
   /**
-   * 删除图片上传
+   * 鍒犻櫎鍥剧墖涓婁紶
    */
   function removeImg(obj)
   {
@@ -968,7 +985,7 @@
   }
 
   /**
-   * 删除图片
+   * 鍒犻櫎鍥剧墖
    */
   function dropImg(imgId)
   {
@@ -984,7 +1001,7 @@
   }
 
   /**
-   * 将市场价格取整
+   * 灏嗗競鍦轰环鏍煎彇鏁
    */
   function integral_market_price()
   {
@@ -992,7 +1009,7 @@
   }
 
    /**
-   * 将积分购买额度取整
+   * 灏嗙Н鍒嗚喘涔伴?搴﹀彇鏁
    */
   function parseint_integral()
   {
@@ -1001,7 +1018,7 @@
 
 
   /**
-  * 检查货号是否存在
+  * 妫€鏌ヨ揣鍙锋槸鍚﹀瓨鍦
   */
   function checkGoodsSn(goods_sn, goods_id)
   {
@@ -1027,7 +1044,7 @@
   }
 
   /**
-   * 新增一个优惠价格
+   * 鏂板?涓€涓?紭鎯犱环鏍
    */
   function addVolumePrice(obj)
   {
@@ -1053,7 +1070,7 @@
   }
 
   /**
-   * 删除优惠价格
+   * 鍒犻櫎浼樻儬浠锋牸
    */
   function removeVolumePrice(obj)
   {
@@ -1064,7 +1081,7 @@
   }
 
   /**
-   * 校验优惠数据是否正确
+   * 鏍￠獙浼樻儬鏁版嵁鏄?惁姝ｇ‘
    */
   function checkVolumeData(isSubmit,validator)
   {

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 财付通插件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: tenpay.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: tenpay.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -134,14 +134,14 @@ class tenpay
         /* 货币类型 */
         $fee_type = '1';
 
-        /* 重写自定义签名 */
-        //$payment['magic_string'] = abs(crc32($payment['magic_string']));
+        /* 财付通风险防范参数 */
+        $spbill_create_ip = $_SERVER['REMOTE_ADDR'];
 
         /* 数字签名 */
         $sign_text = "cmdno=" . $cmd_no . "&date=" . $today . "&bargainor_id=" . $payment['tenpay_account'] .
           "&transaction_id=" . $transaction_id . "&sp_billno=" . $sp_billno .
           "&total_fee=" . $total_fee . "&fee_type=" . $fee_type . "&return_url=" . $return_url .
-          "&attach=" . $attach . "&key=" . $payment['tenpay_key'];
+          "&attach=" . $attach . "&spbill_create_ip=" . $spbill_create_ip . "&key=" . $payment['tenpay_key'];
         $sign = strtoupper(md5($sign_text));
 
         /* 交易参数 */
@@ -159,6 +159,7 @@ class tenpay
             'return_url'        => $return_url,                 // 接收财付通返回结果的URL
             'attach'            => $attach,                     // 用户自定义签名
             'sign'              => $sign,                       // MD5签名
+            'spbill_create_ip'  => $spbill_create_ip,           //财付通风险防范参数
             'sys_id'            => '542554970',                 //ecshop C账号 不参与签名
             'sp_suggestuser'    => '1202822001'                 //财付通分配的商户号
 

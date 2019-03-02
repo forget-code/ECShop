@@ -3,14 +3,14 @@
 /**
  * ECSHOP 客户留言
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: user_msg.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: user_msg.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -184,11 +184,58 @@ elseif ($_REQUEST['act'] == 'remove')
         make_json_error($GLOBALS['db']->error());
     }
 }
+
+/*------------------------------------------------------ */
+//-- 批量操作删除、允许显示、禁止显示用户评论
+/*------------------------------------------------------ */
+if ($_REQUEST['act'] == 'batch')
+{
+    admin_priv('feedback_priv');
+    $action = isset($_POST['sel_action']) ? trim($_POST['sel_action']) : 'def';
+
+    if (isset($_POST['checkboxes']))
+    {
+        switch ($action)
+        {
+           case 'remove':
+                $db->query("DELETE FROM " . $ecs->table('feedback') . " WHERE " . db_create_in($_POST['checkboxes'], 'msg_id'));
+                $db->query("DELETE FROM " . $ecs->table('feedback') . " WHERE " . db_create_in($_POST['checkboxes'], 'parent_id'));
+                break;
+
+           case 'allow' :
+               $db->query("UPDATE " . $ecs->table('feedback') . " SET msg_status = 1  WHERE " . db_create_in($_POST['checkboxes'], 'msg_id'));
+               break;
+
+           case 'deny' :
+               $db->query("UPDATE " . $ecs->table('feedback') . " SET msg_status = 0,msg_area =1  WHERE " . db_create_in($_POST['checkboxes'], 'msg_id'));
+               break;
+
+           default :
+               break;
+        }
+
+        clear_cache_files();
+        $action = ($action == 'remove') ? 'remove' : 'edit';
+        admin_log('', $action, 'adminlog');
+
+        $link[] = array('text' => $_LANG['back_list'], 'href' => 'user_msg.php?act=list_all');
+        sys_msg(sprintf($_LANG['batch_drop_success'], count($_POST['checkboxes'])), 0, $link);
+    }
+    else
+    {
+        /* 提示信息 */
+        $link[] = array('text' => $_LANG['back_list'], 'href' => 'user_msg.php?act=list_all');
+        sys_msg($_LANG['no_select_comment'], 0, $link);
+    }
+}
+
+
 /*------------------------------------------------------ */
 //-- 回复留言
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act']=='view')
 {
+    $smarty->assign('send_fail',   !empty($_REQUEST['send_ok']));
     $smarty->assign('msg',         get_feedback_detail(intval($_REQUEST['id'])));
     $smarty->assign('ur_here',     $_LANG['reply']);
     $smarty->assign('action_link', array('text' => $_LANG['08_unreply_msg'], 'href'=>'user_msg.php?act=list_all'));
@@ -206,17 +253,48 @@ elseif ($_REQUEST['act']=='action')
                     "'".$_SESSION['admin_name']."', '".$_POST['user_email']."', ".
                     "'".$_REQUEST['msg_id']."', '".$_POST['msg_content']."') ";
         $db->query($sql);
-        ecs_header("Location: ?act=view&id=".$_REQUEST['msg_id']);
-        exit;
-
     }
     else
     {
         $sql = "UPDATE ".$ecs->table('feedback')." SET user_email = '".$_POST['user_email']."', msg_content='".$_POST['msg_content']."', msg_time = '".gmtime()."' WHERE msg_id = '".$_REQUEST['parent_id']."'";
         $db->query($sql);
-        ecs_header("Location: ?act=view&id=".$_REQUEST['msg_id']."\n");
-        exit;
     }
+
+    /* 邮件通知处理流程 */
+    if (!empty($_POST['send_email_notice']) or isset($_POST['remail']))
+    {
+        //获取邮件中的必要内容
+        $sql = 'SELECT user_name, user_email, msg_title, msg_content ' .
+               'FROM ' .$ecs->table('feedback') .
+               " WHERE msg_id ='$_REQUEST[msg_id]'";
+        $message_info = $db->getRow($sql);
+
+        /* 设置留言回复模板所需要的内容信息 */
+        $template    = get_mail_template('user_message');
+        $message_content = $message_info['msg_title'] . "\r\n" . $message_info['msg_content'];
+
+        $smarty->assign('user_name',   $message_info['user_name']);
+        $smarty->assign('message_note', $_POST['msg_content']);
+        $smarty->assign('message_content', $message_content);
+        $smarty->assign('shop_name',   "<a href='".$ecs->url()."'>" . $_CFG['shop_name'] . '</a>');
+        $smarty->assign('send_date',   date('Y-m-d'));
+
+        $content = $smarty->fetch('str:' . $template['template_content']);
+
+        /* 发送邮件 */
+        if (send_mail($message_info['user_name'], $message_info['user_email'], $template['template_subject'], $content, $template['is_html']))
+        {
+            $send_ok = 0;
+        }
+        else
+        {
+            $send_ok = 1;
+        }
+    }
+
+    ecs_header("Location: ?act=view&id=".$_REQUEST['msg_id']."&send_ok=$send_ok\n");
+    exit;
+
 }
 
 /*------------------------------------------------------ */
@@ -247,7 +325,7 @@ function msg_list()
 {
     /* 过滤条件 */
     $filter['keywords']   = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
-    if ($_REQUEST['is_ajax'] == 1)
+    if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
     {
         $filter['keywords'] = json_str_iconv($filter['keywords']);
     }

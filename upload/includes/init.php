@@ -3,14 +3,14 @@
 /**
  * ECSHOP 前台公用文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liuhui $
- * $Id: init.php 16897 2009-12-16 05:01:48Z liuhui $
+ * $Author: liubo $
+ * $Id: init.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -54,10 +54,6 @@ else
 }
 
 require(ROOT_PATH . 'data/config.php');
-if(!defined('ADMIN_PATH'))
-{
-    define('ADMIN_PATH','admin');
-}
 
 if (defined('DEBUG_MODE') == false)
 {
@@ -160,7 +156,10 @@ if (!defined('INIT_NO_USERS'))
 
     define('SESS_ID', $sess->get_session_id());
 }
-
+if(isset($_SERVER['PHP_SELF']))
+{
+    $_SERVER['PHP_SELF']=htmlspecialchars($_SERVER['PHP_SELF']);
+}
 if (!defined('INIT_NO_SMARTY'))
 {
     header('Cache-control: private');
@@ -250,6 +249,32 @@ if (!defined('INIT_NO_USERS'))
     {
         set_affiliate();
     }
+
+    /* session 不存在，检查cookie */
+    if (!empty($_COOKIE['ECS']['user_id']) && !empty($_COOKIE['ECS']['password']))
+    {
+        // 找到了cookie, 验证cookie信息
+        $sql = 'SELECT user_id, user_name, password ' .
+                ' FROM ' .$ecs->table('users') .
+                " WHERE user_id = '" . intval($_COOKIE['ECS']['user_id']) . "' AND password = '" .$_COOKIE['ECS']['password']. "'";
+
+        $row = $db->GetRow($sql);
+
+        if (!$row)
+        {
+            // 没有找到这个记录
+           $time = time() - 3600;
+           setcookie("ECS[user_id]",  '', $time, '/');
+           setcookie("ECS[password]", '', $time, '/');
+        }
+        else
+        {
+            $_SESSION['user_id'] = $row['user_id'];
+            $_SESSION['user_name'] = $row['user_name'];
+            update_user_info();
+        }
+    }
+
     if (isset($smarty))
     {
         $smarty->assign('ecs_session', $_SESSION);

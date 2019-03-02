@@ -70,7 +70,7 @@ function addToCartResponse(result)
     {
       if (confirm(result.message))
       {
-        location.href = 'user.php?act=add_booking&id=' + result.goods_id;
+        location.href = 'user.php?act=add_booking&id=' + result.goods_id + '&spec=' + result.product_spec;
       }
     }
     // 没选规格，弹出属性选择框
@@ -163,6 +163,19 @@ function gotoPage(page, id, type)
 function gotoPageResponse(result)
 {
   document.getElementById("ECS_COMMENT").innerHTML = result.content;
+}
+
+/* *
+ * 商品购买记录的翻页函数
+ */
+function gotoBuyPage(page, id)
+{
+  Ajax.call('goods.php?act=gotopage', 'page=' + page + '&id=' + id, gotoBuyPageResponse, 'GET', 'JSON');
+}
+
+function gotoBuyPageResponse(result)
+{
+  document.getElementById("ECS_BOUGHT").innerHTML = result.result;
 }
 
 /* *

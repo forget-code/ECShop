@@ -3,7 +3,7 @@
 /**
  * ECSHOP Advertisement management language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: ads.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Id: ads.php 17217 2011-01-19 06:29:08Z liubo $
 */
 /* AD-position field information */
 $_LANG['position_name'] = 'Name';
@@ -119,7 +119,10 @@ $_LANG['enter_code'] = 'Please enter AD code.';
 /* JS language item */
 $_LANG['js_languages']['ad_name_empty'] = 'Please enter AD name!';
 $_LANG['js_languages']['ad_link_empty'] = 'Please enter AD link URL!';
-$_LANG['js_languages']['ad_code_empty'] = 'AD content can\'t be blank!';
+$_LANG['js_languages']['ad_text_empty'] = 'AD content can\'t be blank!';
+$_LANG['js_languages']['ad_photo_empty'] = 'Advertising images can not be empty!';
+$_LANG['js_languages']['ad_flash_empty'] = 'Flash ads can not be empty!';
+$_LANG['js_languages']['ad_code_empty'] = 'Ad code can not be empty!';
 $_LANG['js_languages']['empty_position_style'] = 'AD-position\'s template can\'t be blank!';
 
 /* Prompting message */

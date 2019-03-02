@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户帐号相关函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_passport.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_passport.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -322,7 +322,7 @@ function send_regiter_hash ($user_id)
 
     $content = $GLOBALS['smarty']->fetch('str:' . $template['template_content']);
 
-    /* 发送确认重置密码的确认邮件 */
+    /* 发送激活验证邮件 */
     if (send_mail($row['user_name'], $row['email'], $template['template_subject'], $content, $template['is_html']))
     {
         return true;

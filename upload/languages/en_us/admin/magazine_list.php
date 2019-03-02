@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel administrator operate content language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: magazine_list.php 15588 2009-02-10 08:46:38Z zblikai $
+ * $Author: liubo $
+ * $Id: magazine_list.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['add_new'] = 'Add a new magazine';

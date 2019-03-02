@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品详情
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: goods.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: goods.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -67,6 +67,71 @@ if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'price')
 
     die($json->encode($res));
 }
+
+
+/*------------------------------------------------------ */
+//-- 商品购买记录ajax处理
+/*------------------------------------------------------ */
+
+if (!empty($_REQUEST['act']) && $_REQUEST['act'] == 'gotopage')
+{
+    include('includes/cls_json.php');
+
+    $json   = new JSON;
+    $res    = array('err_msg' => '', 'result' => '');
+
+    $goods_id   = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+    $page    = (isset($_REQUEST['page'])) ? intval($_REQUEST['page']) : 1;
+
+    if (!empty($goods_id))
+    {
+        $need_cache = $GLOBALS['smarty']->caching;
+        $need_compile = $GLOBALS['smarty']->force_compile;
+
+        $GLOBALS['smarty']->caching = false;
+        $GLOBALS['smarty']->force_compile = true;
+
+        /* 商品购买记录 */
+        $sql = 'SELECT u.user_name, og.goods_number, oi.add_time, IF(oi.order_status IN (2, 3, 4), 0, 1) AS order_status ' .
+               'FROM ' . $ecs->table('order_info') . ' AS oi LEFT JOIN ' . $ecs->table('users') . ' AS u ON oi.user_id = u.user_id, ' . $ecs->table('order_goods') . ' AS og ' .
+               'WHERE oi.order_id = og.order_id AND ' . time() . ' - oi.add_time < 2592000 AND og.goods_id = ' . $goods_id . ' ORDER BY oi.add_time DESC LIMIT ' . (($page > 1) ? ($page-1) : 0) * 5 . ',5';
+        $bought_notes = $db->getAll($sql);
+
+        foreach ($bought_notes as $key => $val)
+        {
+            $bought_notes[$key]['add_time'] = local_date("Y-m-d G:i:s", $val['add_time']);
+        }
+
+        $sql = 'SELECT count(*) ' .
+               'FROM ' . $ecs->table('order_info') . ' AS oi LEFT JOIN ' . $ecs->table('users') . ' AS u ON oi.user_id = u.user_id, ' . $ecs->table('order_goods') . ' AS og ' .
+               'WHERE oi.order_id = og.order_id AND ' . time() . ' - oi.add_time < 2592000 AND og.goods_id = ' . $goods_id;
+        $count = $db->getOne($sql);
+
+
+        /* 商品购买记录分页样式 */
+        $pager = array();
+        $pager['page']         = $page;
+        $pager['size']         = $size = 5;
+        $pager['record_count'] = $count;
+        $pager['page_count']   = $page_count = ($count > 0) ? intval(ceil($count / $size)) : 1;;
+        $pager['page_first']   = "javascript:gotoBuyPage(1,$goods_id)";
+        $pager['page_prev']    = $page > 1 ? "javascript:gotoBuyPage(" .($page-1). ",$goods_id)" : 'javascript:;';
+        $pager['page_next']    = $page < $page_count ? 'javascript:gotoBuyPage(' .($page + 1) . ",$goods_id)" : 'javascript:;';
+        $pager['page_last']    = $page < $page_count ? 'javascript:gotoBuyPage(' .$page_count. ",$goods_id)"  : 'javascript:;';
+
+        $smarty->assign('notes', $bought_notes);
+        $smarty->assign('pager', $pager);
+
+
+        $res['result'] = $GLOBALS['smarty']->fetch('library/bought_notes.lbi');
+
+        $GLOBALS['smarty']->caching = $need_cache;
+        $GLOBALS['smarty']->force_compile = $need_compile;
+    }
+
+    die($json->encode($res));
+}
+
 
 /*------------------------------------------------------ */
 //-- PROCESSOR
@@ -185,7 +250,6 @@ if (!$smarty->is_cached('goods.dwt', $cache_id))
         assign_dynamic('goods');
         $volume_price_list = get_volume_price_list($goods['goods_id'], '1');
         $smarty->assign('volume_price_list',$volume_price_list);    // 商品优惠价格区间
-
     }
 }
 
@@ -208,6 +272,7 @@ else
 {
     setcookie('ECS[history]', $goods_id, gmtime() + 3600 * 24 * 30);
 }
+
 
 /* 更新点击次数 */
 $db->query('UPDATE ' . $ecs->table('goods') . " SET click_count = click_count + 1 WHERE goods_id = '$_REQUEST[id]'");
@@ -410,8 +475,8 @@ function get_goods_rank($goods_id)
         'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
             $GLOBALS['ecs']->table('order_goods') . ' AS g ' .
         "WHERE o.order_id = g.order_id " .
-        " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
-        " AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
+        "AND o.order_status = '" . OS_CONFIRMED . "' " .
+        "AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
         " AND o.pay_status " . db_create_in(array(PS_PAYED, PS_PAYING)) .
         " AND g.goods_id = '$goods_id'" . $ext;
     $sales_count = $GLOBALS['db']->getOne($sql);
@@ -423,8 +488,8 @@ function get_goods_rank($goods_id)
                 'FROM ' . $GLOBALS['ecs']->table('order_info') . ' AS o, ' .
                     $GLOBALS['ecs']->table('order_goods') . ' AS g ' .
                 "WHERE o.order_id = g.order_id " .
-                " AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
-                " AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
+                "AND o.order_status = '" . OS_CONFIRMED . "' " .
+                "AND o.shipping_status " . db_create_in(array(SS_SHIPPED, SS_RECEIVED)) .
                 " AND o.pay_status " . db_create_in(array(PS_PAYED, PS_PAYING)) . $ext .
                 " GROUP BY g.goods_id HAVING num > $sales_count";
         $res = $GLOBALS['db']->query($sql);
@@ -470,13 +535,15 @@ function get_attr_amount($goods_id, $attr)
 function get_package_goods_list($goods_id)
 {
     $now = gmtime();
-    $sql = "SELECT ga.act_id, ga.act_name, ga.act_desc, ga.goods_id, ga.goods_name, ga.start_time, ".
-           " ga.end_time, ga.is_finished, ga.ext_info ".
-           " FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS ga".
-           ", " . $GLOBALS['ecs']->table('package_goods') . " AS pg".
-           " WHERE pg.package_id = ga.act_id AND ga.start_time <= '" . $now . "' AND ga.end_time >= '" . $now . "' AND pg.goods_id = " . $goods_id .
-           " ORDER BY ga.act_id";
-
+    $sql = "SELECT pg.goods_id, ga.act_id, ga.act_name, ga.act_desc, ga.goods_name, ga.start_time,
+                   ga.end_time, ga.is_finished, ga.ext_info
+            FROM " . $GLOBALS['ecs']->table('goods_activity') . " AS ga, " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+            WHERE pg.package_id = ga.act_id
+            AND ga.start_time <= '" . $now . "'
+            AND ga.end_time >= '" . $now . "'
+            AND pg.goods_id = " . $goods_id . "
+            GROUP BY ga.act_id
+            ORDER BY ga.act_id ";
     $res = $GLOBALS['db']->getAll($sql);
 
     foreach ($res as $tempkey => $value)
@@ -492,27 +559,59 @@ function get_package_goods_list($goods_id)
             }
         }
 
-        $sql = "SELECT pg.package_id, pg.goods_id, pg.goods_number, pg.admin_id, ".
-               " g.goods_sn, g.goods_name, g.market_price, g.goods_thumb, ".
-               " IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS rank_price " .
-               " FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg ".
-               "   LEFT JOIN ". $GLOBALS['ecs']->table('goods') . " AS g ".
-               "   ON g.goods_id = pg.goods_id ".
-               " LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
-                    "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
-               " WHERE pg.package_id = " . $value['act_id']. " ".
-               " ORDER BY pg.package_id, pg.goods_id";
+        $sql = "SELECT pg.package_id, pg.goods_id, pg.goods_number, pg.admin_id, p.goods_attr, g.goods_sn, g.goods_name, g.market_price, g.goods_thumb, IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS rank_price
+                FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+                    LEFT JOIN ". $GLOBALS['ecs']->table('goods') . " AS g
+                        ON g.goods_id = pg.goods_id
+                    LEFT JOIN ". $GLOBALS['ecs']->table('products') . " AS p
+                        ON p.product_id = pg.product_id
+                    LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp
+                        ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]'
+                WHERE pg.package_id = " . $value['act_id']. "
+                ORDER BY pg.package_id, pg.goods_id";
 
         $goods_res = $GLOBALS['db']->getAll($sql);
 
         foreach($goods_res as $key => $val)
         {
+            $goods_id_array[] = $val['goods_id'];
             $goods_res[$key]['goods_thumb']  = get_image_path($val['goods_id'], $val['goods_thumb'], true);
             $goods_res[$key]['market_price'] = price_format($val['market_price']);
             $goods_res[$key]['rank_price']   = price_format($val['rank_price']);
             $subtotal += $val['rank_price'] * $val['goods_number'];
         }
 
+        /* 取商品属性 */
+        $sql = "SELECT ga.goods_attr_id, ga.attr_value
+                FROM " .$GLOBALS['ecs']->table('goods_attr'). " AS ga, " .$GLOBALS['ecs']->table('attribute'). " AS a
+                WHERE a.attr_id = ga.attr_id
+                AND a.attr_type = 1
+                AND " . db_create_in($goods_id_array, 'goods_id');
+        $result_goods_attr = $GLOBALS['db']->getAll($sql);
+
+        $_goods_attr = array();
+        foreach ($result_goods_attr as $value)
+        {
+            $_goods_attr[$value['goods_attr_id']] = $value['attr_value'];
+        }
+
+        /* 处理货品 */
+        $format = '[%s]';
+        foreach($goods_res as $key => $val)
+        {
+            if ($val['goods_attr'] != '')
+            {
+                $goods_attr_array = explode('|', $val['goods_attr']);
+
+                $goods_attr = array();
+                foreach ($goods_attr_array as $_attr)
+                {
+                    $goods_attr[] = $_goods_attr[$_attr];
+                }
+
+                $goods_res[$key]['goods_attr_str'] = sprintf($format, implode('，', $goods_attr));
+            }
+        }
 
         $res[$tempkey]['goods_list']    = $goods_res;
         $res[$tempkey]['subtotal']      = price_format($subtotal);

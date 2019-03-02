@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+
 header('Content-type: text/html; charset=utf-8');
 
 // The following variables values must reflect your installation needs.
@@ -130,14 +132,14 @@ function print_checker_results() {
                 }
             }
             if( $aspell_err ) {
-                $aspell_err = "Error executing `$cmd`\\n$aspell_err";
+                $aspell_err = "Error executing";
                 error_handler( $aspell_err );
             }
         } else {
-            error_handler( "System error: Aspell program execution failed (`$cmd`)" );
+            error_handler( "System error" );
         }
     } else {
-        error_handler( "System error: Could not open file '$tempfile' for writing" );
+        error_handler( "System error" );
     }
 
     # close temp file, delete file

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 订单统计
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: order_stats.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: order_stats.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -139,7 +139,7 @@ if ($_REQUEST['act'] == 'list')
         {
              $sql = 'SELECT i.pay_id, p.pay_name, i.pay_time, COUNT(i.order_id) AS order_num ' .
                 'FROM ' .$ecs->table('payment'). ' AS p, ' .$ecs->table('order_info'). ' AS i '.
-                "WHERE p.pay_id = i.pay_id AND (i.order_status = '" . OS_CONFIRMED . "' OR i.order_status >= '" . OS_SPLITED . "') " .
+                "WHERE p.pay_id = i.pay_id AND i.order_status = '" .OS_CONFIRMED. "' ".
                 "AND i.pay_status > '" .PS_UNPAYED. "' AND i.shipping_status > '" .SS_UNSHIPPED. "' ".
                 "AND i.add_time >= '$start_date_arr[$k]' AND i.add_time <= '$end_date_arr[$k]'".
                 "GROUP BY i.pay_id ORDER BY order_num DESC";
@@ -325,8 +325,8 @@ elseif ($act = 'download')
 
     header("Content-type: application/vnd.ms-excel; charset=utf-8");
     header("Content-Disposition: attachment; filename=$filename.xls");
-    $start_date = $_REQUEST['start_date'];
-    $end_date   = $_REQUEST['end_date'];
+    $start_date = empty($_REQUEST['start_date']) ? strtotime('-20 day') : intval($_REQUEST['start_date']);
+    $end_date   = empty($_REQUEST['end_date']) ? time() : intval($_REQUEST['end_date']);
     /* 订单概况 */
     $order_info = get_orderinfo($start_date, $end_date);
     $data = $_LANG['order_circs'] . "\n";
@@ -397,7 +397,7 @@ elseif ($act = 'download')
 
     /* 已确认订单数 */
     $sql = 'SELECT COUNT(*) AS confirmed_num FROM ' .$GLOBALS['ecs']->table('order_info').
-           " WHERE (order_status = '" . OS_CONFIRMED . "' OR order_status >= '" . OS_SPLITED . "') AND shipping_status NOT ". db_create_in(array(SS_SHIPPED, SS_RECEIVED)) . " AND pay_status NOT" . db_create_in(array(PS_PAYED, PS_PAYING)) ." AND add_time >= '$start_date'".
+           " WHERE order_status = '" .OS_CONFIRMED. "' AND shipping_status NOT ". db_create_in(array(SS_SHIPPED, SS_RECEIVED)) . " AND pay_status NOT" . db_create_in(array(PS_PAYED, PS_PAYING)) ." AND add_time >= '$start_date'".
            " AND add_time < '" . ($end_date + 86400) . "'";
     $order_info['confirmed_num'] = $GLOBALS['db']->getOne($sql);
 
@@ -409,7 +409,7 @@ elseif ($act = 'download')
 
     /* 无效或已取消订单数 */
     $sql = "SELECT COUNT(*) AS invalid_num FROM " .$GLOBALS['ecs']->table('order_info').
-           " WHERE (order_status > '" .OS_CONFIRMED. "' AND order_status < '" .OS_SPLITED. "' )".
+           " WHERE order_status > '" .OS_CONFIRMED. "'".
            " AND add_time >= '$start_date' AND add_time < '" . ($end_date + 86400) . "'";
     $order_info['invalid_num'] = $GLOBALS['db']->getOne($sql);
     return $order_info;

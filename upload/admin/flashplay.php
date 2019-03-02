@@ -3,14 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: liubo $
- * $Id: flashplay.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: flashplay.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -863,9 +863,19 @@ function set_flash_data($tplname, &$msg)
     if (empty($flashdata))
     {
         $flashdata[] = array(
-                                'src' => 'data/images/ecshop_slagon.jpg',
+                                'src' => 'data/afficheimg/20081027angsif.jpg',
                                 'text' => 'ECShop',
                                 'url' =>'http://www.ecshop.com'
+                            );
+        $flashdata[] = array(
+                                'src' => 'data/afficheimg/20081027xuorxj.jpg',
+                                'text' => 'maifou',
+                                'url' =>'http://www.maifou.net'
+                            );
+        $flashdata[] = array(
+                                'src' => 'data/afficheimg/20081027wdwd.jpg',
+                                'text' => 'ECShop',
+                                'url' =>'http://www.wdwd.com'
                             );
     }
     switch($tplname)

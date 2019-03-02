@@ -31,7 +31,7 @@
   </tr>
   <tr>
     <td class="label">{$lang.desc}</td>
-    <td><textarea  name="desc" cols="60" rows="4"  >{$package.act_desc}</textarea></td>
+    <td><textarea  name="desc" cols="60" rows="4">{$package.act_desc}</textarea></td>
   </tr>
   <!-- 商品搜索 -->
   <tr>
@@ -42,7 +42,7 @@
       <select name="cat_id"><option value="0">{$lang.all_category}</caption>{$cat_list}</select>
       <select name="brand_id"><option value="0">{$lang.all_brand}</caption>{html_options options=$brand_list}</select>
       <input type="text" name="keyword" />
-      <input type="button" value="{$lang.button_search}" onclick="searchGoods_list(sz, 'cat_id', 'brand_id', 'keyword')" class="button" />
+      <input type="button" value="{$lang.button_search}" onclick="javascript:searchGoods();" class="button" />
     </td>
   </tr>
   <tr>
@@ -69,7 +69,7 @@
           <td width="42%">
             <select name="target_select" size="15" style="width:100%" multiple ondblclick="sz.dropItem(false, 'drop_package_goods', this.form.elements['id'].value)">
               {foreach from=$package_goods_list item=package_goods}
-              <option value="{$package_goods.goods_id}">{$package_goods.goods_name}</option>
+              <option value="{$package_goods.g_p}">{$package_goods.goods_name}</option>
               {/foreach}
             </select>
           </td>
@@ -125,7 +125,9 @@ function validate()
 function searchGoods()
 {
     var filter = new Object;
-    filter.keyword = document.forms['theForm'].elements['keywords'].value;
+    filter.keyword    = document.forms['theForm'].elements['keyword'].value;
+    filter.cat_id     = document.forms['theForm'].elements['cat_id'].value;
+    filter.brand_id   = document.forms['theForm'].elements['brand_id'].value;
 
     Ajax.call('package.php?is_ajax=1&act=search_goods', filter, searchGoodsResponse, 'GET', 'JSON')
 }
@@ -133,7 +135,7 @@ function searchGoods()
 function searchGoodsResponse(result)
 {
   var frm = document.forms['theForm'];
-  var sel = frm.elements['goods_id'];
+  var sel = frm.elements['source_select'];
 
   if (result.error == 0)
   {
@@ -146,10 +148,24 @@ function searchGoodsResponse(result)
     {
         for (i = 0; i < goods.length; i++)
         {
-            var opt = document.createElement("OPTION");
-            opt.value = goods[i].goods_id;
-            opt.text  = goods[i].goods_name;
-            sel.options.add(opt);
+            /* 货品 options */
+            if (goods[i].products.length > 0)
+            {
+              for (var j = 0; goods[i].products[j]; j++)
+              {
+                var opt = document.createElement("OPTION");
+                opt.value = goods[i].value + '_' + goods[i].products[j].product_id;
+                opt.text  = goods[i].text + '[' + goods[i].products[j].goods_attr_str + ']';
+                sel.options.add(opt);
+              }
+            }
+            else
+            {
+              var opt = document.createElement("OPTION");
+              opt.value = goods[i].value;
+              opt.text  = goods[i].text;
+              sel.options.add(opt);
+            }
         }
     }
     else
@@ -168,16 +184,16 @@ function searchGoodsResponse(result)
 }
 
 /* 关联商品函数 */
-function searchGoods_list(szObject, catId, brandId, keyword)
-{
-  var filters = new Object;
-
-  filters.cat_id = elements[catId].value;
-  filters.brand_id = elements[brandId].value;
-  filters.keyword = Utils.trim(elements[keyword].value);
-
-  szObject.loadOptions('get_goods_list', filters);
-}
+//function searchGoods_list(szObject, catId, brandId, keyword)
+//{
+//  var filters = new Object;
+//
+//  filters.cat_id = elements[catId].value;
+//  filters.brand_id = elements[brandId].value;
+//  filters.keyword = Utils.trim(elements[keyword].value);
+//
+//  szObject.loadOptions('get_goods_list', filters);
+//}
 //-->
 {/literal}
 </script>

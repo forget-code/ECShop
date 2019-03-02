@@ -3,7 +3,7 @@
 /**
  * ECSHOP Bank transfer (Virement) language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology 
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology 
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for 
  * commercial purposes.
  * ============================================================================
- * $Author: testyang $
- * $Id: bank.php 14227 2008-03-10 06:37:24Z testyang $
+ * $Author: liubo $
+ * $Id: bank.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 global $_LANG;

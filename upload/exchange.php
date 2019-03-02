@@ -3,14 +3,14 @@
 /**
  * ECSHOP 积分商城
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: exchange.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: exchange.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -54,7 +54,7 @@ if ($_REQUEST['act'] == 'list')
     $sort    = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'exchange_integral', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
     $order   = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
     $display = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
-
+    $display  = in_array($display, array('list', 'grid', 'text')) ? $display : 'text';
     setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
 
     /* 页面的缓存ID */
@@ -217,18 +217,19 @@ elseif ($_REQUEST['act'] == 'view')
 
 elseif ($_REQUEST['act'] == 'buy')
 {
+    /* 查询：判断是否登录 */
     if (!isset($back_act) && isset($GLOBALS['_SERVER']['HTTP_REFERER']))
     {
-        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'exchange.php?') ? $GLOBALS['_SERVER']['HTTP_REFERER'] : './index.php';
+        $back_act = strpos($GLOBALS['_SERVER']['HTTP_REFERER'], 'exchange') ? $GLOBALS['_SERVER']['HTTP_REFERER'] : './index.php';
     }
 
-    /* 判断是否登录 */
+    /* 查询：判断是否登录 */
     if ($_SESSION['user_id'] <= 0)
     {
         show_message($_LANG['eg_error_login'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
 
-    /* 取得参数：商品id */
+    /* 查询：取得参数：商品id */
     $goods_id = isset($_POST['goods_id']) ? intval($_POST['goods_id']) : 0;
     if ($goods_id <= 0)
     {
@@ -236,19 +237,19 @@ elseif ($_REQUEST['act'] == 'buy')
         exit;
     }
 
-    /* 取得兑换商品信息 */
+    /* 查询：取得兑换商品信息 */
     $goods = get_exchange_goods_info($goods_id);
     if (empty($goods))
     {
         ecs_header("Location: ./\n");
         exit;
     }
-    /* 检查兑换商品是否有库存 */
+    /* 查询：检查兑换商品是否有库存 */
     if($goods['goods_number'] == 0 && $_CFG['use_storage'] == 1)
     {
         show_message($_LANG['eg_error_number'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
-    /* 检查兑换商品是否是取消 */
+    /* 查询：检查兑换商品是否是取消 */
     if ($goods['is_exchange'] == 0)
     {
         show_message($_LANG['eg_error_status'], array($_LANG['back_up_page']), array($back_act), 'error');
@@ -261,8 +262,8 @@ elseif ($_REQUEST['act'] == 'buy')
         show_message($_LANG['eg_error_integral'], array($_LANG['back_up_page']), array($back_act), 'error');
     }
 
-    /* 取得规格 */
-    $specs = '0';
+    /* 查询：取得规格 */
+    $specs = '';
     foreach ($_POST as $key => $value)
     {
         if (strpos($key, 'spec_') !== false)
@@ -270,8 +271,27 @@ elseif ($_REQUEST['act'] == 'buy')
             $specs .= ',' . intval($value);
         }
     }
+    $specs = trim($specs, ',');
 
-    /* 查询规格名称和值，不考虑价格 */
+    /* 查询：如果商品有规格则取规格商品信息 配件除外 */
+    if (!empty($specs))
+    {
+        $_specs = explode(',', $specs);
+
+        $product_info = get_products_info($goods_id, $_specs);
+    }
+    if (empty($product_info))
+    {
+        $product_info = array('product_number' => '', 'product_id' => 0);
+    }
+
+    //查询：商品存在规格 是货品 检查该货品库存
+    if((!empty($specs)) && ($product_info['product_number'] == 0) && ($_CFG['use_storage'] == 1))
+    {
+        show_message($_LANG['eg_error_number'], array($_LANG['back_up_page']), array($back_act), 'error');
+    }
+
+    /* 查询：查询规格名称和值，不考虑价格 */
     $attr_list = array();
     $sql = "SELECT a.attr_name, g.attr_value " .
             "FROM " . $ecs->table('goods_attr') . " AS g, " .
@@ -285,16 +305,17 @@ elseif ($_REQUEST['act'] == 'buy')
     }
     $goods_attr = join(chr(13) . chr(10), $attr_list);
 
-    /* 清空购物车中所有团购商品 */
+    /* 更新：清空购物车中所有团购商品 */
     include_once(ROOT_PATH . 'includes/lib_order.php');
     clear_cart(CART_EXCHANGE_GOODS);
 
-    /* 加入购物车 */
+    /* 更新：加入购物车 */
     $number = 1;
     $cart = array(
         'user_id'        => $_SESSION['user_id'],
         'session_id'     => SESS_ID,
         'goods_id'       => $goods['goods_id'],
+        'product_id'     => $product_info['product_id'],
         'goods_sn'       => addslashes($goods['goods_sn']),
         'goods_name'     => addslashes($goods['goods_name']),
         'market_price'   => $goods['market_price'],

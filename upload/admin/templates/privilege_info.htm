@@ -83,7 +83,7 @@
         <td>
           <select id="all_menu_list" name="all_menu_list" size="15" multiple="true" style="width:150px; height: 180px" onchange="toggleAddButton()">
             {foreach from=$menus item=menu key=key}
-              {if $key neq "admin_home"}
+              {if $key neq "admin_home" && $menus.$key}
               <option value="" style="font-weight:bold;">{$lang.$key}</option>
               {foreach from=$menus.$key item=item key=k}
               <option value="{$item}">&nbsp;&nbsp;&nbsp;&nbsp;{$lang.$k}</option>

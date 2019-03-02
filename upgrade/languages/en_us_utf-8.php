@@ -2,7 +2,7 @@
 /**
  * ECSHOP Upgrade program language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ $_LANG['readme_title'] = 'ECSHOP upgrade program, the 2 step / 3 steps, readme p
 $_LANG['checking_title'] = 'ECShop upgrade program, the 3 step / 3steps, check environment';
 $_LANG['check_system_environment'] = 'Check system environment';
 
-$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a>. All right reserved';
+$_LANG['copyright'] = '&copy; 2005-2011 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a>. All right reserved';
 $_LANG['is_last_version'] = 'Your ECSHOP has been the newest version, needn\'t upgrade.';
 
 $_LANG['readme_page'] = 'Readme page';
@@ -126,6 +126,7 @@ $_LANG['lang_description'] = 'Announce';
 $_LANG['lang_charset']['zh_cn_gbk'] = 'Simplified Chinese GBK';
 $_LANG['lang_charset']['zh_cn_utf-8'] = 'Simplified Chinese UTF-8';
 $_LANG['lang_charset']['zh_tw_utf-8'] = 'Traditional Chinese UTF-8';
+$_LANG['lang_charset']['en_us_utf-8'] = 'English UTF-8';
 $_LANG['lang_desc']['desc1'] = 'Make sure ECShop\'s language and charset are same as your choice;';
 $_LANG['lang_desc']['desc2'] = 'If your database\'s charset is different with ECShop program\'s charset,please covert database \'s charset first';
 $_LANG['lang_desc']['desc3'] = '<font color="red">If you upgrade from ECShop v2.6.0 version, and select ECShop interface mode, first import the data to members, or former member will not be able to login.</font>';

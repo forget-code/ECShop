@@ -3,14 +3,14 @@
 /**
  * ECSHOP 首页文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: index.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -21,7 +21,22 @@ if ((DEBUG_MODE & 2) != 2)
 {
     $smarty->caching = true;
 }
+$ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 
+$uachar = "/(nokia|sony|ericsson|mot|samsung|sgh|lg|philips|panasonic|alcatel|lenovo|cldc|midp|mobile)/i";
+
+if(($ua == '' || preg_match($uachar, $ua))&& !strpos(strtolower($_SERVER['REQUEST_URI']),'wap'))
+{
+    $Loaction = 'mobile/';
+
+    if (!empty($Loaction))
+    {
+        ecs_header("Location: $Loaction\n");
+
+        exit;
+    }
+
+}
 /*------------------------------------------------------ */
 //-- Shopex系统地址转换
 /*------------------------------------------------------ */

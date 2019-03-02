@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心商店设置
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: shop_config.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: shop_config.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -57,6 +57,16 @@ if ($_REQUEST['act'] == 'list_edit')
     $smarty->assign('ur_here',      $_LANG['01_shop_config']);
     $smarty->assign('group_list',   get_settings(null, array('5')));
     $smarty->assign('countries',    get_regions());
+
+    if (strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'iis') !== false)
+    {
+        $rewrite_confirm = $_LANG['rewrite_confirm_iis'];
+    }
+    else
+    {
+        $rewrite_confirm = $_LANG['rewrite_confirm_apache'];
+    }
+    $smarty->assign('rewrite_confirm', $rewrite_confirm);
 
     if ($_CFG['shop_country'] > 0)
     {
@@ -367,7 +377,7 @@ function get_settings($groups=null, $excludes=null)
         $item['name'] = isset($_LANG['cfg_name'][$item['code']]) ? $_LANG['cfg_name'][$item['code']] : $item['code'];
         $item['desc'] = isset($_LANG['cfg_desc'][$item['code']]) ? $_LANG['cfg_desc'][$item['code']] : '';
 
-        if ($item['code'] == 'sms_shop_mobile') 
+        if ($item['code'] == 'sms_shop_mobile')
         {
             $item['url'] = 1;
         }
@@ -395,7 +405,7 @@ function get_settings($groups=null, $excludes=null)
                     }
                 }
                 $group_list[$pid]['vars'][] = $item;
-            }   
+            }
         }
 
     }

@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel administrator operate content language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: log_action.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Id: log_action.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /*------------------------------------------------------ */

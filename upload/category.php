@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品分类
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: category.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: category.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -43,14 +43,18 @@ else
     exit;
 }
 
+
 /* 初始化分页信息 */
 $page = isset($_REQUEST['page'])   && intval($_REQUEST['page'])  > 0 ? intval($_REQUEST['page'])  : 1;
 $size = isset($_CFG['page_size'])  && intval($_CFG['page_size']) > 0 ? intval($_CFG['page_size']) : 10;
 $brand = isset($_REQUEST['brand']) && intval($_REQUEST['brand']) > 0 ? intval($_REQUEST['brand']) : 0;
 $price_max = isset($_REQUEST['price_max']) && intval($_REQUEST['price_max']) > 0 ? intval($_REQUEST['price_max']) : 0;
 $price_min = isset($_REQUEST['price_min']) && intval($_REQUEST['price_min']) > 0 ? intval($_REQUEST['price_min']) : 0;
-$filter_attr_str = isset($_REQUEST['filter_attr']) ? trim($_REQUEST['filter_attr']) : '0';
-$filter_attr = empty($filter_attr_str) ? '' : explode('.', trim($filter_attr_str));
+$filter_attr_str = isset($_REQUEST['filter_attr']) ? htmlspecialchars(trim($_REQUEST['filter_attr'])) : '0';
+
+$filter_attr_str = trim(urldecode($filter_attr_str));
+$filter_attr_str = preg_match('/^[\d\.]+$/',$filter_attr_str) ? $filter_attr_str : '';
+$filter_attr = empty($filter_attr_str) ? '' : explode('.', $filter_attr_str);
 
 
 /* 排序、显示方式以及类型 */
@@ -61,7 +65,7 @@ $default_sort_order_type   = $_CFG['sort_order_type'] == '0' ? 'goods_id' : ($_C
 $sort  = (isset($_REQUEST['sort'])  && in_array(trim(strtolower($_REQUEST['sort'])), array('goods_id', 'shop_price', 'last_update'))) ? trim($_REQUEST['sort'])  : $default_sort_order_type;
 $order = (isset($_REQUEST['order']) && in_array(trim(strtoupper($_REQUEST['order'])), array('ASC', 'DESC')))                              ? trim($_REQUEST['order']) : $default_sort_order_method;
 $display  = (isset($_REQUEST['display']) && in_array(trim(strtolower($_REQUEST['display'])), array('list', 'grid', 'text'))) ? trim($_REQUEST['display'])  : (isset($_COOKIE['ECS']['display']) ? $_COOKIE['ECS']['display'] : $default_display_type);
-
+$display  = in_array($display, array('list', 'grid', 'text')) ? $display : 'text';
 setcookie('ECS[display]', $display, gmtime() + 86400 * 7);
 /*------------------------------------------------------ */
 //-- PROCESSOR
@@ -307,15 +311,15 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
         /* 扩展商品查询条件 */
         if (!empty($filter_attr))
         {
-            $ext_sql = "SELECT DISTINCT(b.goods_id) FROM " . $ecs->table('goods_attr') . " AS a, " . $ecs->table('goods_attr') . " AS b, " . $ecs->table('goods') . " AS g " . "WHERE ";
+            $ext_sql = "SELECT DISTINCT(b.goods_id) FROM " . $ecs->table('goods_attr') . " AS a, " . $ecs->table('goods_attr') . " AS b " .  "WHERE ";
             $ext_group_goods = array();
 
             foreach ($filter_attr AS $k => $v)                      // 查出符合所有筛选属性条件的商品id */
             {
-                if ($v != 0)
+                if (is_numeric($v) && $v !=0 )
                 {
                     $sql = $ext_sql . "b.attr_value = a.attr_value AND b.attr_id = " . $cat_filter_attr[$k] ." AND a.goods_attr_id = " . $v;
-                    $ext_group_goods = $db->getCol($sql);
+                    $ext_group_goods = $db->getColCached($sql);
                     $ext .= ' AND ' . db_create_in($ext_group_goods, 'g.goods_id');
                 }
             }
@@ -388,7 +392,7 @@ if (!$smarty->is_cached('category.dwt', $cache_id))
     }
     $smarty->assign('goods_list',       $goodslist);
     $smarty->assign('category',         $cat_id);
-
+    $smarty->assign('script_name', 'category');
 
     assign_pager('category',            $cat_id, $count, $size, $sort, $order, $page, '', $brand, $price_min, $price_max, $display, $filter_attr_str); // 分页
     assign_dynamic('category'); // 动态内容

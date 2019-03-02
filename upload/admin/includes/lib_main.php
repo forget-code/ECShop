@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心公用函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_main.php 16912 2009-12-21 06:01:08Z liubo $
+ * $Id: lib_main.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -297,7 +297,7 @@ function get_position_list()
 
     while ($row = $GLOBALS['db']->fetchRow($res))
     {
-        $position_list[$row['position_id']] = $row['position_name']. ' [' .$row['ad_width']. 'x' .$row['ad_height']. ']';
+        $position_list[$row['position_id']] = addslashes($row['position_name']). ' [' .$row['ad_width']. 'x' .$row['ad_height']. ']';
     }
 
     return $position_list;
@@ -389,7 +389,7 @@ function get_where_sql($filter)
         ' WHERE is_delete = 1 ' : ' WHERE is_delete = 0 ';
     $where .= (isset($filter->real_goods) && ($filter->real_goods > -1)) ? ' AND is_real = ' . intval($filter->real_goods) : '';
     $where .= isset($filter->cat_id) && $filter->cat_id > 0 ? ' AND ' . get_children($filter->cat_id) : '';
-    $where .= isset($filter->brand_id) && $filter->brand_id > 0 ? " AND g.brand_id = '" . $filter->brand_id . "'" : '';
+    $where .= isset($filter->brand_id) && $filter->brand_id > 0 ? " AND brand_id = '" . $filter->brand_id . "'" : '';
     $where .= isset($filter->intro_type) && $filter->intro_type != '0' ? ' AND ' . $filter->intro_type . " = '1'" : '';
     $where .= isset($filter->intro_type) && $filter->intro_type == 'is_promote' ?
         " AND promote_start_date <= '$time' AND promote_end_date >= '$time' " : '';

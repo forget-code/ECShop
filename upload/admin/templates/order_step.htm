@@ -47,7 +47,8 @@
     {/if}
     </td>
     <td>{$goods.goods_sn}<input name="rec_id[]" type="hidden" value="{$goods.rec_id}" /></td>
-    <td><input name="goods_price[]" type="text" style="text-align:right" value="{$goods.goods_price}" size="10" /></td>
+    <td><input name="goods_price[]" type="text" style="text-align:right" value="{$goods.goods_price}" size="10" />
+        <input name="goods_id[]" type="hidden" style="text-align:right" value="{$goods.goods_id}" size="10" /></td>
     <td><input name="goods_number[]" type="text" style="text-align:right" value="{$goods.goods_number}" size="6" /></td>
     <td><textarea name="goods_attr[]" cols="30" rows="{$goods.rows}">{$goods.goods_attr}</textarea></td>
     <td align="right">{$goods.subtotal}</td>

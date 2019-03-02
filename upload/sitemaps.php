@@ -3,14 +3,14 @@
 /**
  * ECSHOP google sitemap 文件
  * ===========================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: liubo $
- * $Id: sitemaps.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: sitemaps.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 class sitemap
@@ -63,7 +63,7 @@ else
     while ($row = $db->fetchRow($res))
     {
         $item = array(
-            'loc'        =>  "$site_url" . build_uri('category', array('cid' => $row['cat_id']), $row['cat_name']),
+            'loc'        =>  "$site_url/" . build_uri('category', array('cid' => $row['cat_id']), $row['cat_name']),
             'lastmod'     =>  local_date('Y-m-d'),
             'changefreq' => $config['category_changefreq'],
             'priority' => $config['category_priority'],
@@ -99,7 +99,7 @@ else
         $sitemap->item($item);
     }
     /* 文章 */
-    $sql = "SELECT article_id,title,file_url,open_type  add_time FROM " .$ecs->table('article'). " WHERE is_open=1";
+    $sql = "SELECT article_id,title,file_url,open_type, add_time FROM " .$ecs->table('article'). " WHERE is_open=1";
     $res = $db->query($sql);
 
     while ($row = $db->fetchRow($res))

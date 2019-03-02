@@ -1,4 +1,4 @@
-<!-- $Id: category_list.htm 14911 2008-09-23 05:18:39Z testyang $ -->
+<!-- $Id: category_list.htm 17019 2010-01-29 10:10:34Z liuhui $ -->
 {if $full_page}
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
@@ -20,14 +20,17 @@
     <th>{$lang.handler}</th>
   </tr>
   {foreach from=$cat_info item=cat}
-  <tr align="center" class="{$cat.level}">
+  <tr align="center" class="{$cat.level}" id="{$cat.level}_{$cat.cat_id}">
     <td align="left" class="first-cell" >
       {if $cat.is_leaf neq 1}
-      <img src="images/menu_minus.gif" width="9" height="9" border="0" style="margin-left:{$cat.level}em" onclick="rowClicked(this)" />
+      <img src="images/menu_minus.gif" id="icon_{$cat.level}_{$cat.cat_id}" width="9" height="9" border="0" style="margin-left:{$cat.level}em" onclick="rowClicked(this)" />
       {else}
       <img src="images/menu_arrow.gif" width="9" height="9" border="0" style="margin-left:{$cat.level}em" />
       {/if}
       <span><a href="goods.php?act=list&cat_id={$cat.cat_id}">{$cat.cat_name}</a></span>
+    {if $cat.cat_image}
+      <img src="../{$cat.cat_image}" border="0" style="vertical-align:middle;" width="60px" height="21px">
+    {/if}
     </td>
     <td width="10%">{$cat.goods_num}</td>
     <td width="10%"><span onclick="listTable.edit(this, 'edit_measure_unit', {$cat.cat_id})"><!-- {if $cat.measure_unit} -->{$cat.measure_unit}<!-- {else} -->&nbsp;&nbsp;&nbsp;&nbsp;<!-- {/if} --></span></td>
@@ -43,7 +46,6 @@
   </tr>
   {/foreach}
 </table>
-
 {if $full_page}
 </div>
 </form>
@@ -66,28 +68,41 @@ imgPlus.src = "images/menu_plus.gif";
  */
 function rowClicked(obj)
 {
+  // 当前图像
+  img = obj;
+  // 取得上二级tr>td>img对象
   obj = obj.parentNode.parentNode;
-
+  // 整个分类列表表格
   var tbl = document.getElementById("list-table");
+  // 当前分类级别
   var lvl = parseInt(obj.className);
+  // 是否找到元素
   var fnd = false;
-
+  var sub_display = img.src.indexOf('menu_minus.gif') > 0 ? 'none' : (Browser.isIE) ? 'block' : 'table-row' ;
+  // 遍历所有的分类
   for (i = 0; i < tbl.rows.length; i++)
   {
       var row = tbl.rows[i];
-
-      if (tbl.rows[i] == obj)
+      if (row == obj)
       {
+          // 找到当前行
           fnd = true;
+          //document.getElementById('result').innerHTML += 'Find row at ' + i +"<br/>";
       }
       else
       {
           if (fnd == true)
           {
               var cur = parseInt(row.className);
+              var icon = 'icon_' + row.id;
               if (cur > lvl)
               {
-                  row.style.display = (row.style.display != 'none') ? 'none' : (Browser.isIE) ? 'block' : 'table-row';
+                  row.style.display = sub_display;
+                  if (sub_display != 'none')
+                  {
+                      var iconimg = document.getElementById(icon);
+                      iconimg.src = iconimg.src.replace('plus.gif', 'minus.gif');
+                  }
               }
               else
               {

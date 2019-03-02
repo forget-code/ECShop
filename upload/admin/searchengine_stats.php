@@ -3,14 +3,14 @@
 /**
  * ECSHOP 搜索引擎关键字统计
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: searchengine_stats.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: searchengine_stats.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -73,6 +73,7 @@ if ($_REQUEST['act'] == 'view')
         $key = str_replace('&','＆',$key);
         $key = str_replace('>','＞',$key);
         $key = str_replace('<','＜',$key);
+        $key =htmlspecialchars($key);
         $general_xml .= "<category label='".str_replace('\'','',$key)."' />";
     }
     $general_xml .= "</categories>\n";
@@ -132,8 +133,8 @@ if ($_REQUEST['act'] == 'view')
 }
 elseif ($_REQUEST['act'] == 'download')
 {
-    $start_date =  $_REQUEST['start_date'];
-    $end_date   =  $_REQUEST['end_date'];
+    $start_date = empty($_REQUEST['start_date']) ? strtotime('-20 day') : intval($_REQUEST['start_date']);
+    $end_date   = empty($_REQUEST['end_date']) ? time() : intval($_REQUEST['end_date']);
 
     $filename = $start_date . '_' . $end_date;
     $sql = "SELECT keyword, count,searchengine ".

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 前台公用函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_main.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_main.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -33,7 +33,7 @@ function update_user_info()
 
     /* 查询会员信息 */
     $time = date('Y-m-d');
-    $sql = 'SELECT u.user_money, u.pay_points, u.user_rank, u.rank_points, '.
+    $sql = 'SELECT u.user_money,u.email, u.pay_points, u.user_rank, u.rank_points, '.
             ' IFNULL(b.type_money, 0) AS user_bonus, u.last_login, u.last_ip'.
             ' FROM ' .$GLOBALS['ecs']->table('users'). ' AS u ' .
             ' LEFT JOIN ' .$GLOBALS['ecs']->table('user_bonus'). ' AS ub'.
@@ -47,6 +47,19 @@ function update_user_info()
         $_SESSION['last_time']   = $row['last_login'];
         $_SESSION['last_ip']     = $row['last_ip'];
         $_SESSION['login_fail']  = 0;
+        $_SESSION['email']       = $row['email'];
+
+        /*判断是否是特殊等级，可能后台把特殊会员组更改普通会员组*/
+        if($row['user_rank'] >0)
+        {
+            $sql="SELECT special_rank from ".$GLOBALS['ecs']->table('user_rank')."where rank_id='$row[user_rank]'";
+            if($GLOBALS['db']->getOne($sql)==='0' || $GLOBALS['db']->getOne($sql)===null)
+            {   
+                $sql="update ".$GLOBALS['ecs']->table('users')."set user_rank='0' where user_id='$_SESSION[user_id]'";
+                $GLOBALS['db']->query($sql);
+                $row['user_rank']=0;
+            }
+        }
 
         /* 取得用户等级和折扣 */
         if ($row['user_rank'] == 0)
@@ -524,10 +537,10 @@ function assign_pager($app, $cat, $record_count, $size, $sort, $order, $page = 1
         }
         else
         {
-            $pager['page_first'] = build_uri($app, $uri_args, '', 1, $sch);
-            $pager['page_prev']  = build_uri($app, $uri_args, '', $page_prev);
-            $pager['page_next']  = build_uri($app, $uri_args, '', $page_next);
-            $pager['page_last']  = build_uri($app, $uri_args, '', $page_count);
+            $pager['page_first'] = build_uri($app, $uri_args, '', 1, $keywords);
+            $pager['page_prev']  = build_uri($app, $uri_args, '', $page_prev, $keywords);
+            $pager['page_next']  = build_uri($app, $uri_args, '', $page_next, $keywords);
+            $pager['page_last']  = build_uri($app, $uri_args, '', $page_count, $keywords);
         }
         $pager['array']      = array();
 
@@ -580,15 +593,15 @@ function assign_pager($app, $cat, $record_count, $size, $sort, $order, $page = 1
         }
         else
         {
-            $pager['page_first'] = ($page - $_offset > 1 && $_pagenum < $page_count) ? build_uri($app, $uri_args, '', 1) : '';
-            $pager['page_prev']  = ($page > 1) ? build_uri($app, $uri_args, '', $page_prev) : '';
-            $pager['page_next']  = ($page < $page_count) ? build_uri($app, $uri_args, '', $page_next) : '';
-            $pager['page_last']  = ($_to < $page_count) ? build_uri($app, $uri_args, '', $page_count) : '';
+            $pager['page_first'] = ($page - $_offset > 1 && $_pagenum < $page_count) ? build_uri($app, $uri_args, '', 1, $keywords) : '';
+            $pager['page_prev']  = ($page > 1) ? build_uri($app, $uri_args, '', $page_prev, $keywords) : '';
+            $pager['page_next']  = ($page < $page_count) ? build_uri($app, $uri_args, '', $page_next, $keywords) : '';
+            $pager['page_last']  = ($_to < $page_count) ? build_uri($app, $uri_args, '', $page_count, $keywords) : '';
             $pager['page_kbd']  = ($_pagenum < $page_count) ? true : false;
             $pager['page_number'] = array();
             for ($i=$_from;$i<=$_to;++$i)
             {
-                $pager['page_number'][$i] = build_uri($app, $uri_args, '', $i);
+                $pager['page_number'][$i] = build_uri($app, $uri_args, '', $i, $keywords);
             }
         }
     }
@@ -752,7 +765,7 @@ function get_vote($id = '')
         $sql_option = 'SELECT v.*, o.option_id, o.vote_id, o.option_name, o.option_count ' .
                       'FROM ' . $GLOBALS['ecs']->table('vote') . ' AS v, ' .
                             $GLOBALS['ecs']->table('vote_option') . ' AS o ' .
-                      "WHERE o.vote_id = v.vote_id AND o.vote_id = '$vote_arr[vote_id]'";
+                      "WHERE o.vote_id = v.vote_id AND o.vote_id = '$vote_arr[vote_id]' ORDER BY o.option_order ASC, o.option_id DESC";
         $res = $GLOBALS['db']->getAll($sql_option);
 
         /* 总票数 */
@@ -1389,7 +1402,7 @@ function upload_file($upload, $type)
 {
     if (!empty($upload['tmp_name']))
     {
-        $ftype = check_file_type($upload['tmp_name'], $upload['name'], '|png|jpg|jpeg|gif|doc|xls|txt|zip|ppt|pdf|rar|');
+        $ftype = check_file_type($upload['tmp_name'], $upload['name'], '|png|jpg|jpeg|gif|doc|xls|txt|zip|ppt|pdf|rar|docx|xlsx|pptx|');
         if (!empty($ftype))
         {
             $name = date('Ymd');

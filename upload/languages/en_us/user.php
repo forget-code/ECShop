@@ -3,7 +3,7 @@
 /**
  * ECSHOP User Center language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: user.php 16786 2009-11-10 03:04:51Z sxc_shop $
+ * $Author: liubo $
+ * $Id: user.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['require_login'] = 'Illegal entry.<br />You can\'t finish the operation until login.';
@@ -390,6 +390,7 @@ $_LANG['other_qq'] = 'QQ';
 $_LANG['other_office_phone'] = 'Office phone';
 $_LANG['other_home_phone'] = 'Home phone';
 $_LANG['other_mobile_phone'] = 'Mobile phone';
+$_LANG['remember'] = 'Remember my login information.';
 
 $_LANG['msg_un_blank'] = 'Username is blank';
 $_LANG['msg_un_length'] = 'Username cannot exceed 7 Chinese charaters';
@@ -620,6 +621,9 @@ $_LANG['expire_unit']['week'] = 'Week';
 
 $_LANG['recommend_webcode'] = 'Recommended webcode';
 $_LANG['recommend_bbscode'] = 'Recommended bbscode';
+$_LANG['im_code'] = 'Share Chat';
+$_LANG['code_copy'] = 'copy codes';
+$_LANG['show_good_to_you'] = 'show you a good thing';
 
 /* 积分兑换 */
 $_LANG['transform_points'] = 'Points transformation';

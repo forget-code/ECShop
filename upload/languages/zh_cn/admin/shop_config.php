@@ -2,14 +2,14 @@
 /**
  * ECSHOP 管理中心商店设置语言文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: shop_config.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: shop_config.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 require(ROOT_PATH.ADMIN_PATH.'/sms_url.php');
@@ -75,6 +75,7 @@ $_LANG['cfg_name']['send_mail_on'] = '是否开启自动发送邮件';
 $_LANG['cfg_name']['auto_generate_gallery'] = '上传商品是否自动生成相册图';
 $_LANG['cfg_name']['retain_original_img'] = '上传商品时是否保留原图';
 $_LANG['cfg_name']['member_email_validate'] = '是否开启会员邮件验证';
+$_LANG['cfg_name']['send_verify_email'] = '用户注册时自动发送验证邮件';
 $_LANG['cfg_name']['message_board'] = '是否启用留言板功能';
 $_LANG['cfg_name']['message_check'] = '用户留言是否需要审核';
 //$_LANG['cfg_name']['use_package'] = '是否使用包装';
@@ -172,6 +173,7 @@ $_LANG['cfg_desc']['smtp_user'] = '发送邮件所需的认证帐号，如果没
 $_LANG['cfg_desc']['bought_goods'] = '显示多少个购买此商品的人还买过哪些商品';
 $_LANG['cfg_desc']['currency_format'] = '显示商品价格的格式，%s将被替换为相应的价格数字。';
 $_LANG['cfg_desc']['image_height'] = '如果您的服务器支持GD，在您上传商品图片的时候将自动将图片缩小到指定的尺寸。';
+$_LANG['cfg_desc']['watermark'] = '水印文件须为gif格式才可支持透明度设置。';
 $_LANG['cfg_desc']['watermark_alpha'] = '水印的透明度，可选值为0-100。当设置为100时则为不透明。';
 $_LANG['cfg_desc']['invoice_content'] = '客户要求开发票时可以选择的内容。例如：办公用品。每一行代表一个选项。';
 $_LANG['cfg_desc']['stats_code'] = '您可以将其他访问统计服务商提供的代码添加到每一个页面。';
@@ -195,6 +197,7 @@ $_LANG['cfg_desc']['use_how_oos'] = '使用缺货处理时前台订单确认页�
 $_LANG['cfg_desc']['send_service_email'] = '网店信息中的客服邮件地址不为空时，该选项有效。';
 $_LANG['cfg_desc']['send_mail_on'] = '启用该选项登录后台时，会自动发送邮件队列中尚未发送的邮件';
 $_LANG['cfg_desc']['sms_shop_mobile'] = '请先注册手机短信服务再填写手机号码';
+$_LANG['cfg_desc']['send_verify_email'] = '“是否开启会员邮件验证”设为开启时才可使用此功能';
 
 $_LANG['cfg_range']['cart_confirm'][1] = '提示用户，点击“确定”进购物车';
 $_LANG['cfg_range']['cart_confirm'][2] = '提示用户，点击“取消”进购物车';
@@ -208,6 +211,8 @@ $_LANG['cfg_range']['send_mail_on']['on'] = '开启';
 $_LANG['cfg_range']['send_mail_on']['off'] = '关闭';
 $_LANG['cfg_range']['member_email_validate']['1'] = '开启';
 $_LANG['cfg_range']['member_email_validate']['0'] = '关闭';
+$_LANG['cfg_range']['send_verify_email']['1'] = '开启';
+$_LANG['cfg_range']['send_verify_email']['0'] = '关闭';
 $_LANG['cfg_range']['message_board']['1'] = '开启';
 $_LANG['cfg_range']['message_board']['0'] = '关闭';
 $_LANG['cfg_range']['auto_generate_gallery']['1'] = '是';
@@ -384,7 +389,8 @@ $_LANG['cfg_range']['upload_size_limit']['4096'] = '4MB';
 $_LANG['cfg_range']['visit_stats']['on'] = '开启';
 $_LANG['cfg_range']['visit_stats']['off'] = '关闭';
 
-$_LANG['rewrite_confirm'] = "URL Rewrite 功能要求您的 Web Server 必须是 Apache，\\n并且起用了 rewrite 模块。\\n同时请您确认是否已经将htaccess.txt文件重命名为.htaccess。\\n如果服务器上还有其他的重写规则请去掉注释,请将RewriteBase行的注释去掉,并将路径设置为服务器请求的绝对路径";
+$_LANG['rewrite_confirm_apache'] = "URL Rewrite 功能要求您的 Web Server 必须是 Apache，\\n并且起用了 rewrite 模块。\\n同时请您确认是否已经将htaccess.txt文件重命名为.htaccess。\\n如果服务器上还有其他的重写规则请去掉注释,请将RewriteBase行的注释去掉,并将路径设置为服务器请求的绝对路径";
+$_LANG['rewrite_confirm_iis'] = "URL Rewrite 功能要求您的 Web Server 必须安装IIS，\\n并且起用了 ISAPI Rewrite 模块。\\n如果您使用的是ISAPI Rewrite商业版，请您确认是否已经将httpd.txt文件重命名为httpd.ini。如果您使用的是ISAPI Rewrite免费版，请您确认是否已经将httpd.txt文件内的内容复制到ISAPI Rewrite安装目录中httpd.ini里。";
 $_LANG['gzip_confirm'] = "GZip 功能需要您的服务器支持 zlib 扩展库。\\n如果您发现开启Gzip后页面出现乱码，可能是您的服务器已经开启了Gzip，您不需要在 ECSHOP 中再次开启。";
 $_LANG['retain_original_confirm'] = "如果您不保留商品原图，在“图片批量处理”的时候，\\n将不会重新生成不包含原图的商品图片。请慎重使用该功能！";
 $_LANG['msg_invalid_file'] = '您上传了一个非法的文件类型。该文件名为：%s';

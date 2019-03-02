@@ -1,4 +1,4 @@
-<!-- $Id: msg_info.htm 15626 2009-02-19 07:58:36Z sunxiaodong $ -->
+<!-- $Id: msg_info.htm 16854 2009-12-07 06:20:09Z sxc_shop $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
   <table width="98%">
@@ -44,6 +44,12 @@
 </div>
 {/if}
 
+{if $send_fail}
+<ul style="padding:0; margin: 0; list-style-type:none; color: #CC0000;">
+<li style="border: 1px solid #CC0000; background: #FFFFCC; padding: 10px; margin-bottom: 5px;" >{$lang.mail_send_fail}</li>
+</ul>
+{/if}
+
 <div class="main-div">
 <form method="post" action="user_msg.php?act=action" name="theForm"  onsubmit="return validate()">
 <table border="0" width="98%">
@@ -59,6 +65,10 @@
     <td>&nbsp;</td>
     <td>&nbsp;</td>
   </tr>
+  <tr>
+    <td></td>
+    <td><input name="send_email_notice" type="checkbox" value='1'/>{$lang.send_email_notice}</td>
+  </tr>
   {if $msg.reply_id}
   <tr>
     <td>&nbsp;</td>
@@ -68,9 +78,11 @@
   <tr>
     <td>&nbsp;</td>
     <td>
-      <input type="hidden" name="msg_id" value="{$msg.msg_id}">
+      <input type="hidden" name="msg_id" value="{$msg.msg_id}">      
       <input type="hidden" name="parent_id" value="{$msg.reply_id}">
       <input name="Submit" value="{$lang.button_submit}" type="submit" class="button">
+      <input type="reset" value="{$lang.button_reset}" class="button">
+      {if $msg.reply_id}<input type="submit" name="remail" value="{$lang.remail}" class="button">{/if}
     </td>
   </tr>
 </table>

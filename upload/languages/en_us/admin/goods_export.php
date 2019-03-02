@@ -3,7 +3,7 @@
 /**
  * ECSHOP Vote management
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: goods_export.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Id: goods_export.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['user_guide'] =
@@ -22,6 +22,8 @@ $_LANG['user_guide'] =
           '<li>If the user required to export certain categories of merchandise all under the conditions choose to triage, no click search, the direct choice of data formats and encoding can be derived.</li>' .
         '</ol>';
 $_LANG['export_taobao'] = 'Export Taobao Assistant Supporting data formats';
+$_LANG['export_taobao_v43'] = 'Export Taobao AssistantV4.3 upporting data formats';
+$_LANG['export_taobao_v46'] = 'Export Taobao AssistantV4.6 upporting data formats';
 $_LANG['good_cat'] = 'Merchandise categories';
 $_LANG['select_please'] = 'Please select Export Classification';
 $_LANG['select_charset'] = 'Please choose to export charset';
@@ -73,7 +75,53 @@ $_LANG['taobao']['discount'] = '会员打折';
 $_LANG['taobao']['modify_time'] = '修改时间';
 $_LANG['taobao']['upload_status'] = '上传状态';
 $_LANG['taobao']['img_status'] = '图片状态';
+/* 淘宝 */
+$_LANG['taobao46']['goods_name'] = '宝贝名称';
+$_LANG['taobao46']['goods_class'] = '宝贝类目';
+$_LANG['taobao46']['shop_class'] = '店铺类目';
+$_LANG['taobao46']['new_level'] = '新旧程度';
+$_LANG['taobao46']['province'] = '省';
+$_LANG['taobao46']['city'] = '城市';
+$_LANG['taobao46']['sell_type'] = '出售方式';
+$_LANG['taobao46']['shop_price'] = '宝贝价格';
+$_LANG['taobao46']['add_price'] = '加价幅度';
+$_LANG['taobao46']['goods_number'] = '宝贝数量';
+$_LANG['taobao46']['die_day'] = '有效期';
+$_LANG['taobao46']['load_type'] = '运费承担';
+$_LANG['taobao46']['post_express'] = '平邮';
+$_LANG['taobao46']['ems'] = 'EMS';
+$_LANG['taobao46']['express'] = '快递';
+$_LANG['taobao46']['pay_type'] = '付款方式';
+$_LANG['taobao46']['allow_alipay'] = '支付宝';
+$_LANG['taobao46']['invoice'] = '发票';
+$_LANG['taobao46']['repair'] = '保修';
+$_LANG['taobao46']['resend'] = '自动重发';
+$_LANG['taobao46']['is_store'] = '放入仓库';
+$_LANG['taobao46']['window'] = '橱窗推荐';
+$_LANG['taobao46']['add_time'] = '发布时间';
+$_LANG['taobao46']['story'] = '心情故事';
+$_LANG['taobao46']['goods_desc'] = '宝贝描述';
+$_LANG['taobao46']['goods_img'] = '宝贝图片';
+$_LANG['taobao46']['goods_attr'] = '宝贝属性';
+$_LANG['taobao46']['group_buy'] = '团购价';
+$_LANG['taobao46']['group_buy_num'] = '最小团购件数';
+$_LANG['taobao46']['template'] = '邮费模版ID';
+$_LANG['taobao46']['discount'] = '会员打折';
+$_LANG['taobao46']['modify_time'] = '修改时间';
+$_LANG['taobao46']['upload_status'] = '上传状态';
+$_LANG['taobao46']['img_status'] = '图片状态';
 
+$_LANG['taobao46']['img_status'] = '返点比例';
+$_LANG['taobao46']['img_status'] = '新图片';
+$_LANG['taobao46']['img_status'] = '视频';
+$_LANG['taobao46']['img_status'] = '销售属性组合';
+$_LANG['taobao46']['img_status'] = '用户输入ID串';
+$_LANG['taobao46']['img_status'] = '用户输入名-值对';
+$_LANG['taobao46']['img_status'] = '商家编码';
+$_LANG['taobao46']['img_status'] = '销售属性别名';
+$_LANG['taobao46']['img_status'] = '代充类型';
+$_LANG['taobao46']['img_status'] = '宝贝编号';
+$_LANG['taobao46']['img_status'] = '数字ID';
 
 $_LANG['export_paipai'] = 'Export to patted Assistant Supporting data formats';
 $_LANG['paipai']['id'] = 'id';

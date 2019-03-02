@@ -3,14 +3,14 @@
 /**
  * ECSHOP Front language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology Development Ltd.
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
  * This is a free/open source software；it means that you can modify, use and
  * republish the program code, on the premise of that your behavior is not for commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: common.php 16924 2009-12-25 06:13:29Z sxc_shop $
+ * $Author: liubo $
+ * $Id: common.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* 用户登录语言项 */
@@ -32,7 +32,7 @@ $_LANG['icp_number'] = 'ICP';
 $_LANG['plugins_not_found'] = "Plug-in %s not found";
 $_LANG['home']  = 'Home';
 $_LANG['back_up_page'] = 'Previous';
-$_LANG['close_window'] = 'Close';
+$_LANG['close_window'] = 'superman wear the underwear out of the trousers';
 $_LANG['back_home'] = 'Home';
 $_LANG['ur_here'] = 'Your Position:';
 $_LANG['all_goods'] = 'All products';
@@ -52,6 +52,11 @@ $_LANG['gzip_disabled'] = '，Gzip disabled';
 $_LANG['memory_info'] = '，take up memory %0.3f MB';
 $_LANG['cart_info'] = '%d products in your cart, total money %s.';
 $_LANG['shopping_and_other'] = 'Customers who bought this item also bought.';
+$_LANG['bought_notes'] = 'Bought notes';
+$_LANG['later_bought_amounts'] = 'bought amounts latest';
+$_LANG['bought_time'] = 'bought time';
+$_LANG['turnover'] = 'turnover';
+$_LANG['no_notes'] = 'No one bought this product';
 $_LANG['shop_price'] = 'Shop price:';
 $_LANG['market_price'] = 'Market price:';
 $_LANG['goods_brief'] = 'Goods Brief:';
@@ -119,7 +124,7 @@ $_LANG['goods_weight'] = 'Weight:';
 $_LANG['goods_number'] = 'Quantity:';
 $_LANG['goods_give_integral'] = 'gifts for buying:';
 $_LANG['goods_integral'] = 'Limit points for buying:';
-$_LANG['goods_free_shipping'] = 'This goods is <font class="shop">Free shipping</font>, it is not included in the total fee distribution when calculating the distribution amount';
+$_LANG['goods_free_shipping'] = 'This goods is Free shipping, it is not included in the total fee distribution when calculating the distribution amount';
 $_LANG['goods_bonus'] = 'Bonus for buying:';
 $_LANG['goods_rank'] = 'Rank:';
 $_LANG['goods_compare'] = 'Compare products';
@@ -639,6 +644,8 @@ $_LANG['print_quotation'] = "Quotation Print";
 $_LANG['goods_inventory'] = "Inventory";
 $_LANG['goods_category'] = "Goods category";
 $_LANG['shopman_reply'] = 'Admin Replay';
+$_LANG['specifications'] = 'products';
+
 
 /* 相册JS语言项 */
 $_LANG['gallery_js']['close_window'] = 'Close Window';

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 广告管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: ads.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: ads.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -151,7 +151,7 @@ elseif ($_REQUEST['act'] == 'insert')
         if (((isset($_FILES['ad_img']['error']) && $_FILES['ad_img']['error'] > 0) || (!isset($_FILES['ad_img']['error']) && isset($_FILES['ad_img']['tmp_name']) && $_FILES['ad_img']['tmp_name'] == 'none')) && empty($_POST['img_url']))
         {
             $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
-            sys_msg($_LANG['js_languages']['ad_code_empty'], 0, $link);
+            sys_msg($_LANG['js_languages']['ad_photo_empty'], 0, $link);
         }
     }
 
@@ -201,7 +201,7 @@ elseif ($_REQUEST['act'] == 'insert')
         if (((isset($_FILES['upfile_flash']['error']) && $_FILES['upfile_flash']['error'] > 0) || (!isset($_FILES['upfile_flash']['error']) && isset($_FILES['upfile_flash']['tmp_name']) && $_FILES['upfile_flash']['tmp_name'] == 'none')) && empty($_POST['flash_url']))
         {
             $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
-            sys_msg($_LANG['js_languages']['ad_code_empty'], 0, $link);
+            sys_msg($_LANG['js_languages']['ad_flash_empty'], 0, $link);
         }
     }
     /* 如果广告类型为代码广告 */
@@ -228,7 +228,7 @@ elseif ($_REQUEST['act'] == 'insert')
         else
         {
             $link[] = array('text' => $_LANG['go_back'], 'href' => 'javascript:history.back(-1)');
-            sys_msg($_LANG['js_languages']['ad_code_empty'], 0, $link);
+            sys_msg($_LANG['js_languages']['ad_text_empty'], 0, $link);
         }
     }
 

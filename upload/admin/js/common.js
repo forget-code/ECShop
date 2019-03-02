@@ -227,3 +227,22 @@ function $import(path,type,title){
   head.appendChild(s);
   return s;
 }
+
+/**
+ * 返回随机数字符串
+ *
+ * @param : prefix  前缀字符
+ *
+ * @return : string
+ */
+function rand_str(prefix)
+{
+  var dd = new Date();
+  var tt = dd.getTime();
+  tt = prefix + tt;
+
+  var rand = Math.random();
+  rand = Math.floor(rand * 100);
+
+  return (tt + rand);
+}

@@ -3,7 +3,7 @@
 /**
  * ECSHOP 批发前台文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -12,8 +12,8 @@
  * @author:     scott ye <scott.yell@gmail.com>
  * @version:    v2.x
  * ---------------------------------------------
- * $Author: wangleisvn $
- * $Id: wholesale.php 16927 2009-12-25 07:27:09Z wangleisvn $
+ * $Author: yehuaixiao $
+ * $Id: wholesale.php 17218 2011-01-24 04:10:41Z yehuaixiao $
  */
 
 define('IN_ECS', true);
@@ -39,7 +39,6 @@ if (empty($_REQUEST['act']))
 /*------------------------------------------------------ */
 if ($_REQUEST['act'] == 'list')
 {
-
     $search_category = empty($_REQUEST['search_category']) ? 0 : intval($_REQUEST['search_category']);
     $search_keywords = isset($_REQUEST['search_keywords']) ? trim($_REQUEST['search_keywords']) : '';
     $param = array(); // 翻页链接所带参数列表
@@ -381,10 +380,27 @@ elseif ($_REQUEST['act'] == 'submit_order')
     /* 插入订单商品 */
     foreach ($_SESSION['wholesale_goods'] as $goods)
     {
+        //如果存在货品
+        $product_id = 0;
+        if (!empty($goods['goods_attr_id']))
+        {
+            $goods_attr_id = array();
+            foreach ($goods['goods_attr_id'] as $value)
+            {
+                $goods_attr_id[$value['attr_id']] = $value['attr_val_id'];
+            }
+
+            ksort($goods_attr_id);
+            $goods_attr = implode('|', $goods_attr_id);
+
+            $sql = "SELECT product_id FROM " . $ecs->table('products') . " WHERE goods_attr = '$goods_attr' AND goods_id = '" . $goods['goods_id'] . "'";
+            $product_id = $db->getOne($sql);
+        }
+
         $sql = "INSERT INTO " . $ecs->table('order_goods') . "( " .
-                    "order_id, goods_id, goods_name, goods_sn, goods_number, market_price, ".
+                    "order_id, goods_id, goods_name, goods_sn, product_id, goods_number, market_price, ".
                     "goods_price, goods_attr, is_real, extension_code, parent_id, is_gift) ".
-                " SELECT '$new_order_id', goods_id, goods_name, goods_sn, '$goods[goods_number]', market_price, ".
+                " SELECT '$new_order_id', goods_id, goods_name, goods_sn, '$product_id','$goods[goods_number]', market_price, ".
                     "'$goods[goods_price]', '$goods[goods_attr]', is_real, extension_code, 0, 0 ".
                 " FROM " .$ecs->table('goods') .
                 " WHERE goods_id = '$goods[goods_id]'";
@@ -408,7 +424,7 @@ elseif ($_REQUEST['act'] == 'submit_order')
         include_once('includes/cls_sms.php');
         $sms = new sms();
         $msg = $_LANG['order_placed_sms'];
-        $sms->send($_CFG['sms_shop_mobile'], sprintf($msg, $order['consignee'], $order['tel']), 0);
+        $sms->send($_CFG['sms_shop_mobile'], sprintf($msg, $order['consignee'], $order['tel']),'', 13,1);
     }
 
     /* 清空购物车 */

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 会员帐目管理(包括预付款，余额)
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: user_account.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: user_account.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -486,7 +486,7 @@ function account_list()
         /* 过滤列表 */
         $filter['user_id'] = !empty($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
         $filter['keywords'] = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keywords'] = json_str_iconv($filter['keywords']);
         }
@@ -521,7 +521,6 @@ function account_list()
             $where .= " AND ua.is_paid = '$filter[is_paid]' ";
         }
 
-        $where .= " AND ua.user_id = u.user_id ";
         if ($filter['keywords'])
         {
             $where .= " AND u.user_name LIKE '%" . mysql_like_quote($filter['keywords']) . "%'";
@@ -543,8 +542,8 @@ function account_list()
 
         /* 查询数据 */
         $sql  = 'SELECT ua.*, u.user_name FROM ' .
-            $GLOBALS['ecs']->table('user_account'). ' AS ua, ' .
-            $GLOBALS['ecs']->table('users'). ' AS u '.
+            $GLOBALS['ecs']->table('user_account'). ' AS ua LEFT JOIN ' .
+            $GLOBALS['ecs']->table('users'). ' AS u ON ua.user_id = u.user_id'.
             $where . "ORDER by " . $filter['sort_by'] . " " .$filter['sort_order']. " LIMIT ".$filter['start'].", ".$filter['page_size'];
 
         $filter['keywords'] = stripslashes($filter['keywords']);

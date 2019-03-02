@@ -621,16 +621,16 @@ if ( ! Object.prototype.toJSONString) {
                 // typeof null is 'object', so watch out for that case.
 
                 case 'object':
-					if (this !== window)
-					{
-					  if (v) {
-						  if (typeof v.toJSONString === 'function') {
-							  p(v.toJSONString());
-						  }
-					  } else {
-						  p("null");
-					  }
-					}
+                    if (this !== window)
+                    {
+                      if (v) {
+                          if (typeof v.toJSONString === 'function') {
+                              p(v.toJSONString());
+                          }
+                      } else {
+                          p("null");
+                      }
+                    }
                     break;
                 default:
                     p(v.toJSONString());
@@ -743,17 +743,19 @@ Ajax.onComplete = hideLoader;
  */
 function showLoader()
 {
+
   document.getElementsByTagName('body').item(0).style.cursor = "wait";
 
-  if (top.frames['header-frame'])
-  {
+  if (top.frames['header-frame'] && top.frames['header-frame'].document.getElementById("load-div"))
+  { 
     top.frames['header-frame'].document.getElementById("load-div").style.display = "block";
+
   }
   else
-  {
+  { 
     var obj = document.getElementById('loader');
 
-    if ( ! obj && process_request)
+    if ( ! obj && typeof(process_request) != 'undefined')
     {
       obj = document.createElement("DIV");
       obj.id = "loader";
@@ -770,7 +772,7 @@ function showLoader()
 function hideLoader()
 {
   document.getElementsByTagName('body').item(0).style.cursor = "auto";
-  if (top.frames['header-frame'])
+  if (top.frames['header-frame'] && top.frames['header-frame'].document.getElementById("load-div"))
   {
     setTimeout(function(){top.frames['header-frame'].document.getElementById("load-div").style.display = "none"}, 10);
   }

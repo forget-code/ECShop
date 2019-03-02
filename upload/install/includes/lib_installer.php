@@ -3,14 +3,14 @@
 /**
  * ECSHOP 安装程序 之 模型
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_installer.php 16885 2009-12-14 09:38:40Z liubo $
+ * $Id: lib_installer.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -333,6 +333,7 @@ function create_config_file($db_host, $db_port, $db_user, $db_pass, $db_name, $p
     $content .= "define('ADMIN_PATH','admin');\n\n";
     $content .= "define('AUTH_KEY', 'this is a key');\n\n";
     $content .= "define('OLD_AUTH_KEY', '');\n\n";
+    $content .= "define('API_TIME', '');\n\n";
     $content .= '?>';
 
 
@@ -535,6 +536,7 @@ function copy_files($source, $target)
         }
         @chmod($target, 0777);
     }
+
     $dir = opendir($source);
     while (($file = @readdir($dir)) !== false)
     {
@@ -578,50 +580,50 @@ function do_others($system_lang, $captcha, $goods_types, $install_demo, $integra
     /* 安装测试数据 */
     if (intval($install_demo))
     {
-        if (file_exists(ROOT_PATH . 'install/data/demo/'. $system_lang . '.sql'))
+        if (file_exists(ROOT_PATH . 'demo/'. $system_lang . '.sql'))
         {
-            $sql_files = array(ROOT_PATH . 'install/data/demo/'. $system_lang . '.sql');
+            $sql_files = array(ROOT_PATH . 'demo/'. $system_lang . '.sql');
         }
         else
         {
-            $sql_files = array(ROOT_PATH . 'install/data/demo/zh_cn.sql');
+            $sql_files = array(ROOT_PATH . 'demo/zh_cn.sql');
         }
         if (!install_data($sql_files))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/brandlogo/', ROOT_PATH . 'data/brandlogo/'))
+        if (!copy_files(ROOT_PATH . 'demo/brandlogo/', ROOT_PATH . 'data/brandlogo/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/200905/goods_img/', ROOT_PATH . 'images/200905/goods_img/'))
+        if (!copy_files(ROOT_PATH . 'demo/200905/goods_img/', ROOT_PATH . 'images/200905/goods_img/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/200905/thumb_img/', ROOT_PATH . 'images/200905/thumb_img/'))
+        if (!copy_files(ROOT_PATH . 'demo/200905/thumb_img/', ROOT_PATH . 'images/200905/thumb_img/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/200905/source_img/', ROOT_PATH . 'images/200905/source_img/'))
+        if (!copy_files(ROOT_PATH . 'demo/200905/source_img/', ROOT_PATH . 'images/200905/source_img/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/afficheimg/', ROOT_PATH . 'data/afficheimg/'))
+        if (!copy_files(ROOT_PATH . 'demo/afficheimg/', ROOT_PATH . 'data/afficheimg/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/packimg/', ROOT_PATH . 'data/packimg/'))
+        if (!copy_files(ROOT_PATH . 'demo/packimg/', ROOT_PATH . 'data/packimg/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
         }
-        if (!copy_files(ROOT_PATH . 'install/data/demo/cardimg/', ROOT_PATH . 'data/cardimg/'))
+        if (!copy_files(ROOT_PATH . 'demo/cardimg/', ROOT_PATH . 'data/cardimg/'))
         {
             $err->add(implode('', $err->last_message()));
             return false;
@@ -711,7 +713,14 @@ function deal_aftermath()
     {
         $err->add($db->errno() .' '. $db->error());
     }
-
+    $sql = "INSERT INTO $prefix"."friend_link ".
+                "(link_name, link_url, show_order)".
+            "VALUES ".
+                "('".$_LANG['wdwd_friend_link']."', 'http://www.wdwd.com/','52')";
+    if (!$db->query($sql, 'SILENT'))
+    {
+        $err->add($db->errno() .' '. $db->error());
+    }
     /* 更新 ECSHOP 安装日期 */
     $sql = "UPDATE $prefix"."shop_config SET value='" .time(). "' WHERE code='install_date'";
     if (!$db->query($sql, 'SILENT'))

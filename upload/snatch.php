@@ -3,14 +3,14 @@
 /**
  * ECSHOP 夺宝奇兵前台页面
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: snatch.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: snatch.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -63,6 +63,21 @@ if ($_REQUEST['act'] == 'main')
         $smarty->assign('id',          $id);
         $smarty->assign('snatch_goods',       $goods); // 竞价商品
         $smarty->assign('myprice',     get_myprice($id));
+        if ($goods['product_id'] > 0)
+        {
+            $goods_specifications = get_specifications_list($goods['goods_id']);
+
+            $good_products = get_good_products($goods['goods_id'], 'AND product_id = ' . $goods['product_id']);
+
+            $_good_products = explode('|', $good_products[0]['goods_attr']);
+            $products_info = '';
+            foreach ($_good_products as $value)
+            {
+                $products_info .= ' ' . $goods_specifications[$value]['attr_name'] . '：' . $goods_specifications[$value]['attr_value'];
+            }
+            $smarty->assign('products_info',     $products_info);
+            unset($goods_specifications, $good_products, $_good_products,  $products_info);
+        }
     }
     else
     {
@@ -233,6 +248,33 @@ if ($_REQUEST['act'] == 'buy')
         show_message($_LANG['order_placed']);
     }
 
+    /* 处理规格属性 */
+    $goods_attr = '';
+    $goods_attr_id = '';
+    if ($snatch['product_id'] > 0)
+    {
+        $product_info = get_good_products($snatch['goods_id'], 'AND product_id = ' . $snatch['product_id']);
+
+        $goods_attr_id = str_replace('|', ',', $product_info[0]['goods_attr']);
+
+        $attr_list = array();
+        $sql = "SELECT a.attr_name, g.attr_value " .
+                "FROM " . $ecs->table('goods_attr') . " AS g, " .
+                    $ecs->table('attribute') . " AS a " .
+                "WHERE g.attr_id = a.attr_id " .
+                "AND g.goods_attr_id " . db_create_in($goods_attr_id);
+        $res = $db->query($sql);
+        while ($row = $db->fetchRow($res))
+        {
+            $attr_list[] = $row['attr_name'] . ': ' . $row['attr_value'];
+        }
+        $goods_attr = join('', $attr_list);
+    }
+    else
+    {
+        $snatch['product_id'] = 0;
+    }
+
     /* 清空购物车中所有商品 */
     include_once(ROOT_PATH . 'includes/lib_order.php');
     clear_cart(CART_SNATCH_GOODS);
@@ -242,12 +284,14 @@ if ($_REQUEST['act'] == 'buy')
         'user_id'        => $_SESSION['user_id'],
         'session_id'     => SESS_ID,
         'goods_id'       => $snatch['goods_id'],
+        'product_id'     => $snatch['product_id'],
         'goods_sn'       => addslashes($snatch['goods_sn']),
         'goods_name'     => addslashes($snatch['goods_name']),
         'market_price'   => $snatch['market_price'],
         'goods_price'    => $result['buy_price'],
         'goods_number'   => 1,
-        'goods_attr'     => '',
+        'goods_attr'     => $goods_attr,
+        'goods_attr_id'  => $goods_attr_id,
         'is_real'        => $snatch['is_real'],
         'extension_code' => addslashes($snatch['extension_code']),
         'parent_id'      => 0,
@@ -381,7 +425,7 @@ function get_snatch_list($num = 10)
  */
 function get_snatch($id)
 {
-    $sql = "SELECT g.goods_id, g.goods_sn, g.is_real, g.goods_name, g.extension_code, g.market_price, g.shop_price AS org_price, " .
+    $sql = "SELECT g.goods_id, g.goods_sn, g.is_real, g.goods_name, g.extension_code, g.market_price, g.shop_price AS org_price, product_id, " .
                     "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, " .
                     "g.promote_price, g.promote_start_date, g.promote_end_date, g.goods_brief, g.goods_thumb, " .
                     "ga.act_name AS snatch_name, ga.start_time, ga.end_time, ga.ext_info, ga.act_desc AS `desc` ".

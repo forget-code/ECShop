@@ -3,7 +3,7 @@
 /**
  * ECSHOP wholesale language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: wholesale.php 16576 2009-08-19 07:33:13Z wangleisvn $
+ * $Author: liubo $
+ * $Id: wholesale.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* menu */

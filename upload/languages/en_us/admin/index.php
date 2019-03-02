@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel start page language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: index.php 16931 2009-12-28 02:36:45Z liubo $
+ * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['shop_guide'] = 'Shop guide';
@@ -69,9 +69,10 @@ $_LANG['await_pay'] ='Unpaid orders:';
 $_LANG['finished'] ='Finished orders:';
 $_LANG['new_booking'] ='Booking [New]:';
 $_LANG['new_reimburse'] ='Refund application:';
+$_LANG['shipped_part'] = 'Parts delivery order:';
 
 $_LANG['goods_stat'] ='Products Statistics Information';
-$_LANG['virtual_card_stat'] = 'Virtual Goods Statistics Information';
+$_LANG['virtual_card_stat'] = 'Virtual Card Statistics Information';
 $_LANG['goods_count'] ='Products quantity:';
 $_LANG['sales_count'] ='Promotion products:';
 $_LANG['new_goods'] ='New products:';
@@ -109,6 +110,7 @@ $_LANG['ec_charset'] = 'Coding:';
 
 $_LANG['remove_install'] ='You haven\'t yet delete the install directory, we suggest you delete the install file for the system safety.';
 $_LANG['remove_upgrade'] ='You haven\'t yet delete the upgrade directory, we suggest you delete the upgrade file for the system safety.';
+$_LANG['remove_demo'] ='You haven\'t yet delete the demo directory, we suggest you delete the demo file for the system safety.';
 $_LANG['temp_dir_cannt_read'] = 'Your server has set open_base_dir without %s, the file will can\'t be uploaded.';
 $_LANG['not_writable'] = '%s directory can\'t be wrote in，%s';
 $_LANG['data_cannt_write'] = 'You will not update packing, card, brand picture and so on.';
@@ -140,7 +142,6 @@ $_LANG['official_site'] ='Official website';
 $_LANG['site_url'] ='Website:';
 $_LANG['support_center'] ='Support center:';
 $_LANG['support_forum'] ='Technical support:';
-$_LANG['help_center'] = 'Help Center:';
 // 邮件群发
 $_LANG['mailsend_fail'] = 'Send e-mail %s failed!';
 $_LANG['mailsend_ok'] = 'Send e-mail %s success! There are %s message was not sent!';

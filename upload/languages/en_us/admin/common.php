@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel common language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,13 +11,13 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: common.php 16616 2009-08-27 01:56:35Z liuhui $
+ * $Author: liubo $
+ * $Id: common.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
 $_LANG['cp_home'] = 'ECSHOP Management';
-$_LANG['copyright'] = ' &copy; 2005-2009 ECSHOP Copyright, <br> All Right Reserved.';
+$_LANG['copyright'] = ' &copy; 2005-2011 ECSHOP Copyright, <br> All Right Reserved.';
 $_LANG['query_info'] = 'Run %d queries, spend %s seconds';
 $_LANG['memory_info'] = ',memory occupied:%0.3f MB';
 $_LANG['gzip_enabled'] = ',Gzip enabled';
@@ -77,6 +77,7 @@ $_LANG['drop_confirm'] = 'Are you sure delete this record?';
 $_LANG['form_notice'] = 'View notices';
 $_LANG['upfile_type_error'] = 'Upload file type error!';
 $_LANG['upfile_error'] = 'Upload file error!';
+$_LANG['no_operation'] = 'You do not choose any action';
 
 $_LANG['go_back'] = 'Previous';
 $_LANG['back'] = 'Back';
@@ -91,6 +92,7 @@ $_LANG['update_sort'] = 'Update sort';
 $_LANG['modify_failure'] = 'Modify failure!';
 $_LANG['attradd_succed'] = 'Operate successfully!';
 $_LANG['todolist'] = 'To do list';
+$_LANG['n_a'] = 'N/A';
 
 /* Coding */
 $_LANG['charset']['utf8'] = 'Internationalization coding(utf8)';
@@ -159,6 +161,7 @@ $_LANG['13_batch_add'] = 'Upload Products';
 $_LANG['15_batch_edit'] = 'Batch Edit';
 $_LANG['16_goods_script'] = 'Product Code';
 $_LANG['17_tag_manage'] = 'Tag';
+$_LANG['52_attribute_add'] = 'Edit Attribute';
 $_LANG['53_suppliers_goods'] = 'Management of suppliers of goods';
 
 $_LANG['14_goods_export'] = 'Merchandise export volume';

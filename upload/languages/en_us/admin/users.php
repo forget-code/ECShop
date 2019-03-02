@@ -3,7 +3,7 @@
 /**
  * ECSHOP Member ID management language files
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: users.php 16786 2009-11-10 03:04:51Z sxc_shop $
+ * $Author: liubo $
+ * $Id: users.php 17217 2011-01-19 06:29:08Z liubo $
 */
 /* List page */
 $_LANG['label_user_name'] = 'Username:';
@@ -53,6 +53,15 @@ $_LANG['not_special_rank'] = 'Nonspecial rank';
 $_LANG['view_detail_account']='View details.';
 $_LANG['parent_user'] = 'Recommend people';
 $_LANG['parent_remove'] = 'From relations recommend';
+$_LANG['affiliate_user'] = 'Recommended Member';
+$_LANG['show_affiliate_users'] = 'See a detailed list of recommended';
+$_LANG['show_affiliate_orders'] = 'See Recommended Order Details';
+$_LANG['affiliate_lever'] = 'Level';
+$_LANG['affiliate_num'] = 'Number of user';
+$_LANG['page_note'] = 'This list shows the user all the recommended membership information,';
+$_LANG['how_many_user'] = 'users.';
+$_LANG['back_note'] = 'Return to the user-edited page';
+$_LANG['affiliate_level'] = 'Recommended Level';
 
 $_LANG['msn'] = 'MSN';
 $_LANG['qq'] = 'QQ';
@@ -70,7 +79,10 @@ $_LANG['email_exists'] = 'The email address has existed.';
 $_LANG['edit_user_failed'] = 'Edit user data failed.';
 $_LANG['invalid_email'] = 'The email address is invalid.';
 $_LANG['update_success'] = 'Edit user data successfully.';
+$_LANG['still_accounts'] = 'This member have balance or arrears\n';
 $_LANG['remove_confirm'] = 'Are you sure delete the user\\\'s account?';
+$_LANG['list_still_accounts'] = 'Some user selected still have balance or arrears\n';
+$_LANG['list_remove_confirm'] = 'Are you sure delete all user\\\'s account selected?';
 $_LANG['remove_order_confirm'] = 'The user\'s account already exists, if you delete the user account, then the order data will be deleted. <br />Are you sure delete it?';
 $_LANG['remove_order'] = 'Yes, I will delete the user account and orders.';
 $_LANG['remove_cancel'] = 'No, I won\'t delete the user account.';

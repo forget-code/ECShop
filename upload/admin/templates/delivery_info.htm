@@ -86,6 +86,7 @@
   <tr>
     <td scope="col"><div align="center"><strong>{$lang.goods_name_brand}</strong></div></td>
     <td scope="col"><div align="center"><strong>{$lang.goods_sn}</strong></div></td>
+    <td scope="col"><div align="center"><strong>{$lang.product_sn}</strong></div></td>
     <td scope="col"><div align="center"><strong>{$lang.goods_attr}</strong></div></td>
     <td scope="col"><div align="center"><strong>{$lang.label_send_number}</strong></div></td>
   </tr>
@@ -95,6 +96,7 @@
     <a href="../goods.php?id={$goods.goods_id}" target="_blank">{$goods.goods_name} {if $goods.brand_name}[ {$goods.brand_name} ]{/if}
     </td>
     <td><div align="left">{$goods.goods_sn}</div></td>
+    <td><div align="left">{$goods.product_sn}</div></td>
     <td><div align="left">{$goods.goods_attr|nl2br}</div></td>
     <td><div align="left">{$goods.send_number}</div></td>
   </tr>

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 基础函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_base.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_base.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -205,7 +205,7 @@ function send_mail($name, $email, $subject, $content, $type = 0, $notification=f
         $name      = ecs_iconv(EC_CHARSET, $GLOBALS['_CFG']['mail_charset'], $name);
         $subject   = ecs_iconv(EC_CHARSET, $GLOBALS['_CFG']['mail_charset'], $subject);
         $content   = ecs_iconv(EC_CHARSET, $GLOBALS['_CFG']['mail_charset'], $content);
-        $GLOBALS['_CFG']['shop_name'] = ecs_iconv(EC_CHARSET, $GLOBALS['_CFG']['mail_charset'], $GLOBALS['_CFG']['shop_name']);
+        $shop_name = ecs_iconv(EC_CHARSET, $GLOBALS['_CFG']['mail_charset'], $GLOBALS['_CFG']['shop_name']);
     }
     $charset   = $GLOBALS['_CFG']['mail_charset'];
     /**
@@ -216,11 +216,11 @@ function send_mail($name, $email, $subject, $content, $type = 0, $notification=f
         /* 邮件的头部信息 */
         $content_type = ($type == 0) ? 'Content-Type: text/plain; charset=' . $charset : 'Content-Type: text/html; charset=' . $charset;
         $headers = array();
-        $headers[] = 'From: "' . '=?' . $charset . '?B?' . base64_encode($GLOBALS['_CFG']['shop_name']) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
+        $headers[] = 'From: "' . '=?' . $charset . '?B?' . base64_encode($shop_name) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
         $headers[] = $content_type . '; format=flowed';
         if ($notification)
         {
-            $headers[] = 'Disposition-Notification-To: ' . '=?' . $charset . '?B?' . base64_encode($GLOBALS['_CFG']['shop_name']) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
+            $headers[] = 'Disposition-Notification-To: ' . '=?' . $charset . '?B?' . base64_encode($shop_name) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
         }
 
         $res = @mail($email, '=?' . $charset . '?B?' . base64_encode($subject) . '?=', $content, implode("\r\n", $headers));
@@ -249,14 +249,14 @@ function send_mail($name, $email, $subject, $content, $type = 0, $notification=f
         $headers = array();
         $headers[] = 'Date: ' . gmdate('D, j M Y H:i:s') . ' +0000';
         $headers[] = 'To: "' . '=?' . $charset . '?B?' . base64_encode($name) . '?=' . '" <' . $email. '>';
-        $headers[] = 'From: "' . '=?' . $charset . '?B?' . base64_encode($GLOBALS['_CFG']['shop_name']) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
+        $headers[] = 'From: "' . '=?' . $charset . '?B?' . base64_encode($shop_name) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
         $headers[] = 'Subject: ' . '=?' . $charset . '?B?' . base64_encode($subject) . '?=';
         $headers[] = $content_type . '; format=flowed';
         $headers[] = 'Content-Transfer-Encoding: base64';
         $headers[] = 'Content-Disposition: inline';
         if ($notification)
         {
-            $headers[] = 'Disposition-Notification-To: ' . '=?' . $charset . '?B?' . base64_encode($GLOBALS['_CFG']['shop_name']) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
+            $headers[] = 'Disposition-Notification-To: ' . '=?' . $charset . '?B?' . base64_encode($shop_name) . '?='.'" <' . $GLOBALS['_CFG']['smtp_mail'] . '>';
         }
 
         /* 获得邮件服务器的参数设置 */
@@ -807,7 +807,8 @@ function check_file_type($filename, $realname = '', $limit_ext_types = '')
             if ($extname == 'jpg' || $extname == 'jpeg' || $extname == 'gif' || $extname == 'png' || $extname == 'doc' ||
                 $extname == 'xls' || $extname == 'txt'  || $extname == 'zip' || $extname == 'rar' || $extname == 'ppt' ||
                 $extname == 'pdf' || $extname == 'rm'   || $extname == 'mid' || $extname == 'wav' || $extname == 'bmp' ||
-                $extname == 'swf' || $extname == 'chm'  || $extname == 'sql' || $extname == 'cert')
+                $extname == 'swf' || $extname == 'chm'  || $extname == 'sql' || $extname == 'cert'|| $extname == 'pptx' || 
+                $extname == 'xlsx' || $extname == 'docx')
             {
                 $format = $extname;
             }
@@ -863,7 +864,20 @@ function check_file_type($filename, $realname = '', $limit_ext_types = '')
             }
         } elseif (substr($str ,0, 4) == "PK\x03\x04")
         {
-            $format = 'zip';
+            if (substr($str,0x200,4) == "\xEC\xA5\xC1\x00" || $extname == 'docx')
+            {
+                $format = 'docx';
+            }
+            elseif (substr($str,0x200,2) == "\x09\x08" || $extname == 'xlsx')
+            {
+                $format = 'xlsx';
+            } elseif (substr($str,0x200,4) == "\xFD\xFF\xFF\xFF" || $extname == 'pptx')
+            {
+                $format = 'pptx';
+            }else
+            {
+                $format = 'zip';
+            }
         } elseif (substr($str ,0, 4) == 'Rar!' && $extname != 'txt')
         {
             $format = 'rar';

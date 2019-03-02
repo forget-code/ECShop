@@ -3,14 +3,14 @@
 /**
  * ECSHOP 拍卖前台文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: auction.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: auction.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -130,6 +130,23 @@ elseif ($_REQUEST['act'] == 'view')
     /* 如果没有缓存，生成缓存 */
     if (!$smarty->is_cached('auction.dwt', $cache_id))
     {
+        //取货品信息
+        if ($auction['product_id'] > 0)
+        {
+            $goods_specifications = get_specifications_list($auction['goods_id']);
+
+            $good_products = get_good_products($auction['goods_id'], 'AND product_id = ' . $auction['product_id']);
+
+            $_good_products = explode('|', $good_products[0]['goods_attr']);
+            $products_info = '';
+            foreach ($_good_products as $value)
+            {
+                $products_info .= ' ' . $goods_specifications[$value]['attr_name'] . '：' . $goods_specifications[$value]['attr_value'];
+            }
+            $smarty->assign('products_info',     $products_info);
+            unset($goods_specifications, $good_products, $_good_products,  $products_info);
+        }
+
         $auction['gmt_end_time'] = local_strtotime($auction['end_time']);
         $smarty->assign('auction', $auction);
 
@@ -305,7 +322,7 @@ elseif ($_REQUEST['act'] == 'bid')
 /*------------------------------------------------------ */
 elseif ($_REQUEST['act'] == 'buy')
 {
-    /* 取得参数：拍卖活动id */
+    /* 查询：取得参数：拍卖活动id */
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     if ($id <= 0)
     {
@@ -313,7 +330,7 @@ elseif ($_REQUEST['act'] == 'buy')
         exit;
     }
 
-    /* 取得拍卖活动信息 */
+    /* 查询：取得拍卖活动信息 */
     $auction = auction_info($id);
     if (empty($auction))
     {
@@ -321,39 +338,66 @@ elseif ($_REQUEST['act'] == 'buy')
         exit;
     }
 
-    /* 活动是否已结束 */
+    /* 查询：活动是否已结束 */
     if ($auction['status_no'] != FINISHED)
     {
         show_message($_LANG['au_not_finished'], '', '', 'error');
     }
 
-    /* 有人出价吗 */
+    /* 查询：有人出价吗 */
     if ($auction['bid_user_count'] <= 0)
     {
         show_message($_LANG['au_no_bid'], '', '', 'error');
     }
 
-    /* 是否已经有订单 */
+    /* 查询：是否已经有订单 */
     if ($auction['order_count'] > 0)
     {
         show_message($_LANG['au_order_placed']);
     }
 
-    /* 是否登录 */
+    /* 查询：是否登录 */
     $user_id = $_SESSION['user_id'];
     if ($user_id <= 0)
     {
         show_message($_LANG['au_buy_after_login']);
     }
 
-    /* 最后出价的是该用户吗 */
+    /* 查询：最后出价的是该用户吗 */
     if ($auction['last_bid']['bid_user'] != $user_id)
     {
         show_message($_LANG['au_final_bid_not_you'], '', '', 'error');
     }
 
-    /* 取得商品信息 */
+    /* 查询：取得商品信息 */
     $goods = goods_info($auction['goods_id']);
+
+    /* 查询：处理规格属性 */
+    $goods_attr = '';
+    $goods_attr_id = '';
+    if ($auction['product_id'] > 0)
+    {
+        $product_info = get_good_products($auction['goods_id'], 'AND product_id = ' . $auction['product_id']);
+
+        $goods_attr_id = str_replace('|', ',', $product_info[0]['goods_attr']);
+
+        $attr_list = array();
+        $sql = "SELECT a.attr_name, g.attr_value " .
+                "FROM " . $ecs->table('goods_attr') . " AS g, " .
+                    $ecs->table('attribute') . " AS a " .
+                "WHERE g.attr_id = a.attr_id " .
+                "AND g.goods_attr_id " . db_create_in($goods_attr_id);
+        $res = $db->query($sql);
+        while ($row = $db->fetchRow($res))
+        {
+            $attr_list[] = $row['attr_name'] . ': ' . $row['attr_value'];
+        }
+        $goods_attr = join(chr(13) . chr(10), $attr_list);
+    }
+    else
+    {
+        $auction['product_id'] = 0;
+    }
 
     /* 清空购物车中所有拍卖商品 */
     include_once(ROOT_PATH . 'includes/lib_order.php');
@@ -369,7 +413,8 @@ elseif ($_REQUEST['act'] == 'buy')
         'market_price'   => $goods['market_price'],
         'goods_price'    => $auction['last_bid']['bid_price'],
         'goods_number'   => 1,
-        'goods_attr'     => '',
+        'goods_attr'     => $goods_attr,
+        'goods_attr_id'  => $goods_attr_id,
         'is_real'        => $goods['is_real'],
         'extension_code' => addslashes($goods['extension_code']),
         'parent_id'      => 0,

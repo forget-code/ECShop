@@ -3,14 +3,14 @@
 /**
  * ECSHOP 整合插件类的基类
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
  * 进行修改、使用和再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: integrate.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: integrate.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 class integrate
@@ -142,7 +142,7 @@ class integrate
      *
      * @return void
      */
-    function login($username, $password)
+    function login($username, $password, $remember = null)
     {
         if ($this->check_user($username, $password) > 0)
         {
@@ -151,7 +151,7 @@ class integrate
                 $this->sync($username,$password);
             }
             $this->set_session($username);
-            $this->set_cookie($username);
+            $this->set_cookie($username, $remember);
 
             return true;
         }
@@ -562,19 +562,20 @@ class integrate
      *
      * @return void
      */
-    function set_cookie($username='')
+    function set_cookie($username='', $remember= null )
     {
         if (empty($username))
         {
             /* 摧毁cookie */
             $time = time() - 3600;
-            setcookie('ECS[user_id]',  '', $time);
-            setcookie('ECS[password]', '', $time);
+            setcookie("ECS[user_id]",  '', $time, $this->cookie_path);            
+            setcookie("ECS[password]", '', $time, $this->cookie_path);
+
         }
-        else
+        elseif ($remember)
         {
             /* 设置cookie */
-            $time = time() + 3600 * 24 * 30;
+            $time = time() + 3600 * 24 * 15;
 
             setcookie("ECS[username]", $username, $time, $this->cookie_path, $this->cookie_domain);
             $sql = "SELECT user_id, password FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_name='$username' LIMIT 1";
@@ -651,7 +652,14 @@ class integrate
        switch ($cfg['type'])
        {
            case PWD_MD5 :
-               return $cfg['md5password'];
+              	if(!empty($cfg['ec_salt']))
+		       {
+			       return md5($cfg['md5password'].$cfg['ec_salt']);
+		       }
+			   else
+		       {
+                    return $cfg['md5password'];
+			   }
 
            case PWD_PRE_SALT :
                if (empty($cfg['salt']))

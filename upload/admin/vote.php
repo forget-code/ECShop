@@ -3,14 +3,14 @@
 /**
  * ECSHOP  调查管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: vote.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: vote.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -309,6 +309,26 @@ elseif ($_REQUEST['act'] == 'edit_option_name')
     }
 }
 
+
+/*------------------------------------------------------ */
+//-- 编辑调查选项排序值
+/*------------------------------------------------------ */
+elseif ($_REQUEST['act'] == 'edit_option_order')
+{
+    check_authz_json('vote_priv');
+
+    $id        = intval($_POST['id']);
+    $option_order = json_str_iconv(trim($_POST['val']));
+
+    if ($exc_opn->edit("option_order = '$option_order'", $id))
+    {
+        admin_log($_LANG['edit_option_order'], 'edit', 'vote');
+        make_json_result(stripslashes($option_order));
+    }
+
+}
+
+
 /*------------------------------------------------------ */
 //-- 删除在线调查主题
 /*------------------------------------------------------ */
@@ -384,9 +404,9 @@ function get_votelist()
 function get_optionlist($id)
 {
     $list = array();
-    $sql  = 'SELECT option_id, vote_id, option_name, option_count'.
+    $sql  = 'SELECT option_id, vote_id, option_name, option_count, option_order'.
             ' FROM ' .$GLOBALS['ecs']->table('vote_option').
-            " WHERE vote_id = '$id' ORDER BY option_id DESC";
+            " WHERE vote_id = '$id' ORDER BY option_order ASC, option_id DESC";
     $res  = $GLOBALS['db']->query($sql);
     while ($rows = $GLOBALS['db']->fetchRow($res))
     {

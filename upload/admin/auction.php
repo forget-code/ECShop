@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心拍卖活动管理
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: auction.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: auction.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -196,6 +196,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
             'act_name'      => '',
             'act_desc'      => '',
             'goods_id'      => 0,
+            'product_id'    => 0,
             'goods_name'    => $_LANG['pls_search_goods'],
             'start_time'    => date('Y-m-d', time() + 86400),
             'end_time'      => date('Y-m-d', time() + 4 * 86400),
@@ -224,6 +225,9 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
 
     /* 赋值时间控件的语言 */
     $smarty->assign('cfg_lang', $_CFG['lang']);
+
+    /* 商品货品表 */
+    $smarty->assign('good_products_select', get_good_products_select($auction['goods_id']));
 
     /* 显示模板 */
     if ($is_add)
@@ -272,6 +276,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
         'act_desc'      => $_POST['act_desc'],
         'act_type'      => GAT_AUCTION,
         'goods_id'      => $goods_id,
+        'product_id'    => empty($_POST['product_id']) ? 0 : $_POST['product_id'],
         'goods_name'    => $goods_name,
         'start_time'    => local_strtotime($_POST['start_time']),
         'end_time'      => local_strtotime($_POST['end_time']),
@@ -393,13 +398,30 @@ elseif ($_REQUEST['act'] == 'search_goods')
 
     $json   = new JSON;
     $filter = $json->decode($_GET['JSON']);
-    $arr    = get_goods_list($filter);
-    if (empty($arr))
+    $arr['goods']    = get_goods_list($filter);
+
+    if (!empty($arr['goods'][0]['goods_id']))
     {
-        $arr[0] = array(
-            'goods_id'   => 0,
-            'goods_name' => $_LANG['search_result_empty']
-        );
+        $arr['products'] = get_good_products($arr['goods'][0]['goods_id']);
+    }
+
+    make_json_result($arr);
+}
+
+/*------------------------------------------------------ */
+//-- 搜索货品
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'search_products')
+{
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON;
+
+    $filters = $json->decode($_GET['JSON']);
+
+    if (!empty($filters->goods_id))
+    {
+        $arr['products'] = get_good_products($filters->goods_id);
     }
 
     make_json_result($arr);
@@ -416,7 +438,7 @@ function auction_list()
     {
         /* 过滤条件 */
         $filter['keyword']    = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keyword'] = json_str_iconv($filter['keyword']);
         }

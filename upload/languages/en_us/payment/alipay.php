@@ -3,7 +3,7 @@
 /**
  * ECSHOP Alipay language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,14 +11,14 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: alipay.php 16569 2009-08-19 02:19:10Z liuhui $
+ * $Author: liubo $
+ * $Id: alipay.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 global $_LANG;
 
 $_LANG['alipay']            = 'Alipay';
-$_LANG['alipay_desc']       = 'Alipay web (www.alipay.com) is an advanced platform for online payment. Bao <br/> ECShop pay packages offered by United Package: No pre-paid/annual fee, single rate of 1.5%, no flow restrictions.<br/><a href="https://www.alipay.com/himalayas/practicality_customer.htm?customer_external_id=C4335319945672464113&market_type=from_agent_contract&pro_codes=6AECD60F4D75A7FB" target="_blank"><font color="red">Immediately online application</font></a>';
+$_LANG['alipay_desc']       = 'Alipay web (www.alipay.com) is an advanced platform for online payment. <br/> ECShop pay packages offered by United Package: No pre-paid/annual fee, single rate of 1.5%, no flow restrictions.<br/><a href="http://act.life.alipay.com/systembiz/shopex/" target="_blank"><font color="red">Immediately online application</font></a>';
 $_LANG['alipay_account']    = 'Alipay accounts';
 $_LANG['alipay_key']        = 'Verification code for safe dealings';
 $_LANG['alipay_partner']    = 'Partner ID';

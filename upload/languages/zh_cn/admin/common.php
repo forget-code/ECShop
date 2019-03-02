@@ -3,19 +3,19 @@
 /**
  * ECSHOP 管理中心共用语言文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: common.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: common.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['app_name'] = 'ECSHOP';
 $_LANG['cp_home'] = 'ECSHOP 管理中心';
-$_LANG['copyright'] = '版权所有 &copy; 2005-2009 上海商派网络科技有限公司，并保留所有权利。';
+$_LANG['copyright'] = '版权所有 &copy; 2005-2011 上海商派网络科技有限公司，并保留所有权利。';
 $_LANG['query_info'] = '共执行 %d 个查询，用时 %s 秒';
 $_LANG['memory_info'] = '，内存占用 %0.3f MB';
 $_LANG['gzip_enabled'] = '，Gzip 已启用';
@@ -75,6 +75,7 @@ $_LANG['drop_confirm'] = '您确认要删除这条记录吗?';
 $_LANG['form_notice'] = '点击此处查看提示信息';
 $_LANG['upfile_type_error'] = '上传文件的类型不正确!';
 $_LANG['upfile_error'] = '上传文件失败!';
+$_LANG['no_operation'] = '您没有选择任何操作';
 
 $_LANG['go_back'] = '返回上一页';
 $_LANG['back'] = '返回';
@@ -89,6 +90,10 @@ $_LANG['update_sort'] = '更新排序';
 $_LANG['modify_failure'] = '修改失败!';
 $_LANG['attradd_succed'] = '操作成功!';
 $_LANG['todolist'] = '记事本';
+$_LANG['n_a'] = 'N/A';
+
+/* 提示 */
+$_LANG['sys']['wrong'] = '错误：';
 
 /* 编码 */
 $_LANG['charset']['utf8'] = '国际化编码（utf8）';
@@ -157,6 +162,8 @@ $_LANG['13_batch_add'] = '商品批量上传';
 $_LANG['15_batch_edit'] = '商品批量修改';
 $_LANG['16_goods_script'] = '生成商品代码';
 $_LANG['17_tag_manage'] = '标签管理';
+$_LANG['18_product_list'] = '货品列表';
+$_LANG['52_attribute_add'] = '编辑属性';
 $_LANG['53_suppliers_goods'] = '供货商商品管理';
 
 $_LANG['14_goods_export'] = '商品批量导出';

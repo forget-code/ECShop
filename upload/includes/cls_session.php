@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP SESSION 公用类库
+ * ECSHOP SESSION 鍏?敤绫诲簱
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 鐗堟潈鎵€鏈 2005-2011 涓婃捣鍟嗘淳缃戠粶绉戞妧鏈夐檺鍏?徃锛屽苟淇濈暀鎵€鏈夋潈鍒┿€
+ * 缃戠珯鍦板潃: http://www.ecshop.com锛
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 杩欎笉鏄?竴涓?嚜鐢辫蒋浠讹紒鎮ㄥ彧鑳藉湪涓嶇敤浜庡晢涓氱洰鐨勭殑鍓嶆彁涓嬪?绋嬪簭浠ｇ爜杩涜?淇?敼鍜
+ * 浣跨敤锛涗笉鍏佽?瀵圭▼搴忎唬鐮佷互浠讳綍褰㈠紡浠讳綍鐩?殑鐨勫啀鍙戝竷銆
  * ============================================================================
  * $Author: liubo $
- * $Id: cls_session.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: cls_session.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -23,7 +23,7 @@ class cls_session
     var $db             = NULL;
     var $session_table  = '';
 
-    var $max_life_time  = 1800; // SESSION 过期时间
+    var $max_life_time  = 1800; // SESSION 杩囨湡鏃堕棿
 
     var $session_name   = '';
     var $session_id     = '';
@@ -135,7 +135,7 @@ class cls_session
             $ip = substr($this->_ip, 0, strrpos($this->_ip, '.'));
         }
 
-        return sprintf('%08x', crc32(!empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] . ROOT_PATH . $ip . $session_id : ROOT_PATH . $ip . $session_id));
+        return sprintf('%08x', crc32(ROOT_PATH . $ip . $session_id));
     }
 
     function insert_session()
@@ -220,7 +220,7 @@ class cls_session
 
         if (isset($data{255}))
         {
-            $this->db->autoReplace($this->session_data_table, array('sesskey' => $this->session_id, 'expiry' => $this->_time, 'data' => $data), array('data' => $data));
+            $this->db->autoReplace($this->session_data_table, array('sesskey' => $this->session_id, 'expiry' => $this->_time, 'data' => $data), array('expiry' => $this->_time,'data' => $data));
 
             $data = '';
         }
@@ -232,7 +232,7 @@ class cls_session
     {
         $this->update_session();
 
-        /* 随机对 sessions_data 的库进行删除操作 */
+        /* 闅忔満瀵 sessions_data 鐨勫簱杩涜?鍒犻櫎鎿嶄綔 */
         if (mt_rand(0, 2) == 2)
         {
             $this->db->query('DELETE FROM ' . $this->session_data_table . ' WHERE expiry < ' . ($this->_time - $this->max_life_time));
@@ -264,12 +264,12 @@ class cls_session
 
         setcookie($this->session_name, $this->session_id, 1, $this->session_cookie_path, $this->session_cookie_domain, $this->session_cookie_secure);
 
-        /* ECSHOP 自定义执行部分 */
+        /* ECSHOP 鑷?畾涔夋墽琛岄儴鍒 */
         if (!empty($GLOBALS['ecs']))
         {
             $this->db->query('DELETE FROM ' . $GLOBALS['ecs']->table('cart') . " WHERE session_id = '$this->session_id'");
         }
-        /* ECSHOP 自定义执行部分 */
+        /* ECSHOP 鑷?畾涔夋墽琛岄儴鍒 */
 
         $this->db->query('DELETE FROM ' . $this->session_data_table . " WHERE sesskey = '" . $this->session_id . "' LIMIT 1");
 

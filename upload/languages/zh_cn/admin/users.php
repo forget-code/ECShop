@@ -3,14 +3,14 @@
 /**
  * ECSHOP 会员账号管理语言文件
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: users.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: users.php 17217 2011-01-19 06:29:08Z liubo $
 */
 /* 列表页面 */
 $_LANG['label_user_name'] = '会员名称';
@@ -51,6 +51,15 @@ $_LANG['not_special_rank'] = '非特殊等级';
 $_LANG['view_detail_account'] = '查看明细';
 $_LANG['parent_user'] = '推荐人';
 $_LANG['parent_remove'] = '脱离推荐关系';
+$_LANG['affiliate_user'] = '推荐会员';
+$_LANG['show_affiliate_users'] = '查看推荐详细名单';
+$_LANG['show_affiliate_orders'] = '查看推荐订单详情';
+$_LANG['affiliate_lever'] = '等级';
+$_LANG['affiliate_num'] = '人数';
+$_LANG['page_note'] = '此列表显示用户推荐的全部会员信息，';
+$_LANG['how_many_user'] = '个会员。';
+$_LANG['back_note'] = '返回会员编辑页面';
+$_LANG['affiliate_level'] = '推荐等级';
 
 $_LANG['msn'] = 'MSN';
 $_LANG['qq'] = 'QQ';
@@ -68,7 +77,10 @@ $_LANG['email_exists'] = '该邮件地址已经存在。';
 $_LANG['edit_user_failed'] = '修改会员资料失败。';
 $_LANG['invalid_email'] = '输入了非法的邮件地址。';
 $_LANG['update_success'] = '编辑用户信息已经成功。';
+$_LANG['still_accounts'] = '该会员有余额或欠款\n';
 $_LANG['remove_confirm'] = '您确定要删除该会员账号吗？';
+$_LANG['list_still_accounts'] = '选中的会员账户中仍有余额或欠款\n';
+$_LANG['list_remove_confirm'] = '您确定要删除所有选中的会员账号吗？';
 $_LANG['remove_order_confirm'] = '该会员账号已经有订单存在，删除该会员账号的同时将清除订单数据。<br />您确定要删除吗？';
 $_LANG['remove_order'] = '是，我确定要删除会员账号及其订单数据';
 $_LANG['remove_cancel'] = '不，我不想删除该会员账号了。';

@@ -3,7 +3,7 @@
 /**
  * ECSHOP auction language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: auction.php 15646 2009-02-23 08:33:00Z zblikai $
+ * $Author: liubo $
+ * $Id: auction.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* menu */
@@ -82,6 +82,7 @@ $_LANG['js_languages']['end_gt_start'] = 'A price greater than the starting pric
 $_LANG['js_languages']['amplitude_not_number'] = 'The rate of increase is not formatted correctly (figure)';
 $_LANG['js_languages']['deposit_not_number'] = 'Margin is not formatted correctly (figure)';
 $_LANG['js_languages']['start_lt_end'] = 'Auction start time should not exceed the end of time';
+$_LANG['js_languages']['search_is_null'] = 'Did not search any products, please re-search';
 
 /* log */
 $_LANG['bid_user'] = 'Buyer';

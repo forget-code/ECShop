@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel shipping method language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: shipping_area.php 16308 2009-06-23 03:25:34Z liubo $
+ * $Id: shipping_area.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['shipping_area_name'] = 'Shipping area name';
@@ -54,6 +54,7 @@ $_LANG['disable_shipping_success'] = 'Appointed shipping region has be removed.'
 $_LANG['js_languages']['no_area_name'] = 'Please enter name of shipping region.';
 $_LANG['js_languages']['del_shipping_area'] = 'Please delete the regional distribution, and then re-add.';
 $_LANG['js_languages']['invalid_free_mondy'] = 'Please enter a free allowance and it must be an integer.';
+$_LANG['js_languages']['blank_shipping_area'] = 'The regional distribution can`t is blank.';
 $_LANG['js_languages']['lang_remove'] = 'Remove';
 $_LANG['js_languages']['lang_remove_confirm'] = 'Are you sure remove the region?';
 $_LANG['js_languages']['lang_disabled'] = 'Disabled';

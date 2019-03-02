@@ -1,16 +1,16 @@
 <?php
 
 /**
- * ECSHOP 生成商品列表
+ * ECSHOP 鐢熸垚鍟嗗搧鍒楄〃
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
- * 网站地址: http://www.ecshop.com；
+ * 鐗堟潈鎵€鏈 2005-2011 涓婃捣鍟嗘淳缃戠粶绉戞妧鏈夐檺鍏?徃锛屽苟淇濈暀鎵€鏈夋潈鍒┿€
+ * 缃戠珯鍦板潃: http://www.ecshop.com锛
  * ----------------------------------------------------------------------------
- * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
- * 使用；不允许对程序代码以任何形式任何目的的再发布。
+ * 杩欎笉鏄?竴涓?嚜鐢辫蒋浠讹紒鎮ㄥ彧鑳藉湪涓嶇敤浜庡晢涓氱洰鐨勭殑鍓嶆彁涓嬪?绋嬪簭浠ｇ爜杩涜?淇?敼鍜
+ * 浣跨敤锛涗笉鍏佽?瀵圭▼搴忎唬鐮佷互浠讳綍褰㈠紡浠讳綍鐩?殑鐨勫啀鍙戝竷銆
  * ============================================================================
  * $Author: liubo $
- * $Id: affiliate.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: affiliate.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -27,13 +27,18 @@ $display_mode = empty($_GET['display_mode']) ? 'javascript' : $_GET['display_mod
 
 if ( $display_mode == 'javascript' )
 {
+    $charset_array=array('UTF8','GBK','gbk','utf8','GB2312','gb2312');
+    if(!in_array($charset,$charset_array))
+    {
+         $charset='UTF8';
+    }
     header('content-type: application/x-javascript; charset=' . ($charset == 'UTF8' ? 'utf-8' : $charset));
 }
 
 /*------------------------------------------------------ */
-//-- 判断是否存在缓存，如果存在则调用缓存，反之读取相应内容
+//-- 鍒ゆ柇鏄?惁瀛樺湪缂撳瓨锛屽?鏋滃瓨鍦ㄥ垯璋冪敤缂撳瓨锛屽弽涔嬭?鍙栫浉搴斿唴瀹
 /*------------------------------------------------------ */
-/* 缓存编号 */
+/* 缂撳瓨缂栧彿 */
 $cache_id = sprintf('%X', crc32($_SERVER['QUERY_STRING']));
 
 $goodsid = intval($_GET['gid']);
@@ -45,7 +50,7 @@ $tpl = ROOT_PATH . DATA_DIR . '/affiliate.html';
 if (!$smarty->is_cached($tpl, $cache_id))
 {
     $time = gmtime();
-   /* 根据参数生成查询语句 */
+   /* 鏍规嵁鍙傛暟鐢熸垚鏌ヨ?璇?彞 */
 
     $goods_url = $ecs->url() . "goods.php?u=$userid&id=";
     $goods = get_goods_info($goodsid);

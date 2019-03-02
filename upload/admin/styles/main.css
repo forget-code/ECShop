@@ -2,6 +2,16 @@
 $Id: main.css 13991 2008-01-17 06:17:23Z maruitao $
 */
 
+.dis{
+  display:block;
+}
+.inline{
+  display:inline;
+}
+.none{
+  display:none;
+}
+
 body {
   background: #DDEEF2;
   padding: 10px;
@@ -86,7 +96,7 @@ h1 .action-span1 {
   background: #FFF;
   border-top: 10px solid #FFF;
   border-bottom: 10px solid #FFF;
-  width: 100%;
+  width: 99%;
 }
 
 .form-div {
@@ -242,6 +252,26 @@ td.label {
   font-weight: bold;
   padding: 5px 1em;
   width: 30%;
+}
+
+td.label_2 {
+  text-align: right;
+  vertical-align: top;
+  font-weight: bold;
+  padding: 5px 1em;
+}
+
+td.td_1 {
+  text-align: right;
+  vertical-align: top;
+  padding: 5px 1em;
+}
+
+td.label_left {
+  text-align: left;
+  vertical-align: top;
+  font-weight: bold;
+  padding: 5px 1em;
 }
 
 td.narrow-label {

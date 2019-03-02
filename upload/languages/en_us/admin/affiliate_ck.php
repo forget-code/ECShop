@@ -3,14 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: liubo $
- * $Id: affiliate_ck.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: affiliate_ck.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 
@@ -21,7 +21,7 @@ $_LANG['affiliate_rollback'] = 'Revocation';
 $_LANG['log_info'] = 'Operation information';
 $_LANG['edit_ok'] = 'Successful operation';
 $_LANG['edit_fail'] = 'Operation failed';
-$_LANG['separate_info'] = 'Order No. %s, user ID %s (%s), divided into: money %s points %s';
+$_LANG['separate_info'] = 'Order No. %s, divided into: money %s points %s';
 $_LANG['separate_info2'] = 'User ID %s (%s), divided into: money %s points %s';
 $_LANG['sch_order'] = 'Search Order No.';
 
@@ -51,4 +51,7 @@ $_LANG['separate_by'][0] = 'Recommend register is divided into';
 $_LANG['separate_by'][1] = 'Recommend orders into';
 $_LANG['separate_by'][-1] = 'Recommend register is divided into';
 $_LANG['separate_by'][-2] = 'Recommend orders into';
+
+$_LANG['show_affiliate_orders'] = 'This list shows the recommended order information for this user.';
+$_LANG['back_note'] = 'Return to the user-edited page';
 ?>

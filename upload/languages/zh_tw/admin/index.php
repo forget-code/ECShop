@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心起始頁語言文件
  * ============================================================================
- * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2011 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
  * $Author: liubo $
- * $Id: index.php 16931 2009-12-28 02:36:45Z liubo $
+ * $Id: index.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['shop_guide'] = '開店嚮導';
@@ -67,9 +67,10 @@ $_LANG['await_pay'] = '待支付訂單:';
 $_LANG['finished'] = '已成交訂單數:';
 $_LANG['new_booking'] = '新缺貨登記:';
 $_LANG['new_reimburse'] = '退款申請:';
+$_LANG['shipped_part'] = '部分發貨訂單:';
 
 $_LANG['goods_stat'] = '實體商品統計信息';
-$_LANG['virtual_card_stat'] = '虛擬商品統計';
+$_LANG['virtual_card_stat'] = '虛擬卡商品統計';
 $_LANG['goods_count'] = '商品總數:';
 $_LANG['sales_count'] = '促銷商品數:';
 $_LANG['new_goods'] = '新品推薦數:';
@@ -107,6 +108,7 @@ $_LANG['ec_charset'] = '編碼:';
 
 $_LANG['remove_install'] = '您還沒有刪除 install 文件夾，出於安全的考慮，我們建議您刪除 install 文件夾。';
 $_LANG['remove_upgrade'] = '您還沒有刪除 upgrade 文件夾，出於安全的考慮，我們建議您刪除 upgrade 文件夾。';
+$_LANG['remove_demo'] = '您還沒有刪除 demo 文件夾，出於安全的考慮，我們建議您刪除 demo 文件夾。';
 $_LANG['temp_dir_cannt_read'] = '您的服務器設置了 open_base_dir 且沒有包含 %s，您將無法上傳文件。';
 $_LANG['not_writable'] = '%s 目錄不可寫入，%s';
 $_LANG['data_cannt_write'] = '您將無法上傳包裝、賀卡、品牌等等圖片文件。';
@@ -138,7 +140,6 @@ $_LANG['official_site'] = '官方網站';
 $_LANG['site_url'] = '網站地址:';
 $_LANG['support_center'] = '支持中心:';
 $_LANG['support_forum'] = '支持論壇:';
-$_LANG['help_center'] = '幫助中心:';
 // 郵件群發
 $_LANG['mailsend_fail'] = '郵件 %s 發送失敗!';
 $_LANG['mailsend_ok'] = '郵件 %s 發送成功!還有 %s 郵件未發送!';

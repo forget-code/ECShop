@@ -3,14 +3,14 @@
 /**
  * ECSHOP 支付接口函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2010 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
- * $Author: liubo $
- * $Id: lib_payment.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Author: yehuaixiao $
+ * $Id: lib_payment.php 17218 2011-01-24 04:10:41Z yehuaixiao $
  */
 
 if (!defined('IN_ECS'))
@@ -59,7 +59,14 @@ function get_order_id_by_sn($order_sn, $voucher = 'false')
 {
     if ($voucher == 'true')
     {
-        return $GLOBALS['db']->getOne("SELECT log_id FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE order_id=" . $order_sn . ' AND order_type=1');
+        if(is_numeric($order_sn))
+        {
+              return $GLOBALS['db']->getOne("SELECT log_id FROM " . $GLOBALS['ecs']->table('pay_log') . " WHERE order_id=" . $order_sn . ' AND order_type=1');
+        }
+        else
+        {
+            return "";
+        }
     }
     else
     {
@@ -172,7 +179,7 @@ function order_paid($log_id, $pay_status = PS_PAYED, $note = '')
                     include_once(ROOT_PATH.'includes/cls_sms.php');
                     $sms = new sms();
                     $sms->send($GLOBALS['_CFG']['sms_shop_mobile'],
-                        sprintf($GLOBALS['_LANG']['order_payed_sms'], $order_sn, $order['consignee'], $order['tel']), 0);
+                        sprintf($GLOBALS['_LANG']['order_payed_sms'], $order_sn, $order['consignee'], $order['tel']),'', 13,1);
                 }
 
                 /* 对虚拟商品的支持 */

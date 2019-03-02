@@ -3,14 +3,14 @@
 /**
  * ECSHOP 超值礼包管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: package.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: package.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -255,32 +255,44 @@ elseif ($_REQUEST['act'] == 'search_goods')
 
     $arr = get_goods_list($filters);
 
-    make_json_result($arr);
+    $opt = array();
+    foreach ($arr AS $key => $val)
+    {
+        $opt[$key] = array('value' => $val['goods_id'],
+                        'text' => $val['goods_name'],
+                        'data' => $val['shop_price']);
+
+        $opt[$key]['products'] = get_good_products($val['goods_id']);
+    }
+
+    make_json_result($opt);
 }
 
 /*------------------------------------------------------ */
 //-- 搜索商品，仅返回名称及ID
 /*------------------------------------------------------ */
 
-elseif ($_REQUEST['act'] == 'get_goods_list')
-{
-    include_once(ROOT_PATH . 'includes/cls_json.php');
-    $json = new JSON;
-
-    $filters = $json->decode($_GET['JSON']);
-
-    $arr = get_goods_list($filters);
-    $opt = array();
-
-    foreach ($arr AS $key => $val)
-    {
-        $opt[] = array('value' => $val['goods_id'],
-                        'text' => $val['goods_name'],
-                        'data' => $val['shop_price']);
-    }
-
-    make_json_result($opt);
-}
+//elseif ($_REQUEST['act'] == 'get_goods_list')
+//{
+//    include_once(ROOT_PATH . 'includes/cls_json.php');
+//    $json = new JSON;
+//
+//    $filters = $json->decode($_GET['JSON']);
+//
+//    $arr = get_goods_list($filters);
+//
+//    $opt = array();
+//    foreach ($arr AS $key => $val)
+//    {
+//        $opt[$key] = array('value' => $val['goods_id'],
+//                        'text' => $val['goods_name'],
+//                        'data' => $val['shop_price']);
+//
+//        $opt[$key]['products'] = get_good_products($val['goods_id']);
+//    }
+//
+//    make_json_result($opt);
+//}
 
 /*------------------------------------------------------ */
 //-- 增加一个商品
@@ -300,8 +312,14 @@ elseif ($_REQUEST['act'] == 'add_package_goods')
 
     foreach ($fittings AS $val)
     {
-        $sql = "INSERT INTO " . $ecs->table('package_goods') . " (package_id, goods_id, goods_number, admin_id) " .
-                "VALUES ('$package_id', '$val', '$number', '$_SESSION[admin_id]')";
+        $val_array = explode('_', $val);
+        if (!isset($val_array[1]) || $val_array[1] <= 0)
+        {
+            $val_array[1] = 0;
+        }
+
+        $sql = "INSERT INTO " . $ecs->table('package_goods') . " (package_id, goods_id, product_id, goods_number, admin_id) " .
+                "VALUES ('$package_id', '" . $val_array[0] . "', '" . $val_array[1] . "', '$number', '$_SESSION[admin_id]')";
         $db->query($sql, 'SILENT');
     }
 
@@ -310,7 +328,7 @@ elseif ($_REQUEST['act'] == 'add_package_goods')
 
     foreach ($arr AS $val)
     {
-        $opt[] = array('value'      => $val['goods_id'],
+        $opt[] = array('value'      => $val['g_p'],
                         'text'      => $val['goods_name'],
                         'data'      => '');
     }
@@ -334,13 +352,43 @@ elseif ($_REQUEST['act'] == 'drop_package_goods')
     $arguments  = $json->decode($_GET['JSON']);
     $package_id = $arguments[0];
 
-    $sql = "DELETE FROM " .$ecs->table('package_goods') .
-            " WHERE package_id='$package_id' AND " .db_create_in($fittings, 'goods_id');
-    if ($package_id == 0)
+    $goods  = array();
+    $g_p    = array();
+    foreach ($fittings AS $val)
     {
-        $sql .= " AND admin_id = '$_SESSION[admin_id]'";
+        $val_array = explode('_', $val);
+        if (isset($val_array[1]) && $val_array[1] > 0)
+        {
+            $g_p['product_id'][] = $val_array[1];
+            $g_p['goods_id'][] = $val_array[0];
+        }
+        else
+        {
+            $goods[] = $val_array[0];
+        }
     }
-    $db->query($sql);
+
+    if (!empty($goods))
+    {
+        $sql = "DELETE FROM " .$ecs->table('package_goods') .
+                " WHERE package_id='$package_id' AND " .db_create_in($goods, 'goods_id');
+        if ($package_id == 0)
+        {
+            $sql .= " AND admin_id = '$_SESSION[admin_id]'";
+        }
+        $db->query($sql);
+    }
+
+    if (!empty($g_p))
+    {
+        $sql = "DELETE FROM " .$ecs->table('package_goods') .
+                " WHERE package_id='$package_id' AND " .db_create_in($g_p['goods_id'], 'goods_id') . " AND " . db_create_in($g_p['product_id'], 'product_id');
+        if ($package_id == 0)
+        {
+            $sql .= " AND admin_id = '$_SESSION[admin_id]'";
+        }
+        $db->query($sql);
+    }
 
     $arr = get_package_goods($package_id);
     $opt = array();
@@ -371,7 +419,7 @@ function get_packagelist()
     {
         /* 查询条件 */
         $filter['keywords']   = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keywords'] = json_str_iconv($filter['keywords']);
         }

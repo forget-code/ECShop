@@ -3,7 +3,7 @@
 /**
  * ECSHOP
  * ============================================================================
- * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2011 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
@@ -11,7 +11,7 @@
  * ============================================================================
  *
  * $Author: liubo $
- * $Id: goods_export.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: goods_export.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['user_guide'] =
@@ -21,10 +21,11 @@ $_LANG['user_guide'] =
           '<li>如果用户需要导出某分类下的所有的商品，在条件中选择分类后，不需点击搜索，直接选择数据格式和编码导出即可。</li>' .
         '</ol>';
 $_LANG['export_taobao'] = '導出淘寶助理支持數據格式';
+$_LANG['export_taobao_v43'] = '導出淘寶助理V4.3支持數據格式';
 $_LANG['good_cat'] = '商品分類';
 $_LANG['select_please'] = '請選擇要導出的分類';
 $_LANG['select_charset'] = '請選擇要導出的編碼';
-
+$_LANG['export_taobao_v46'] = '導出淘寶助理V4.6支持數據格式';
 $_LANG['goods_class'] = '寶貝欄目ID';
 $_LANG['tabobao_shipping'] = '淘寶配送';
 $_LANG['post_express'] = '平郵價格';
@@ -72,6 +73,53 @@ $_LANG['taobao']['modify_time'] = '修改時間';
 $_LANG['taobao']['upload_status'] = '上傳狀態';
 $_LANG['taobao']['img_status'] = '圖片狀態';
 
+/*淘宝4.6*/
+$_LANG['taobao46']['goods_name'] = '寶貝名稱';
+$_LANG['taobao46']['goods_class'] = '寶貝類目';
+$_LANG['taobao46']['shop_class'] = '店鋪類目';
+$_LANG['taobao46']['new_level'] = '新舊程度';
+$_LANG['taobao46']['province'] = '省';
+$_LANG['taobao46']['city'] = '城市';
+$_LANG['taobao46']['sell_type'] = '出售方式';
+$_LANG['taobao46']['shop_price'] = '寶貝價格';
+$_LANG['taobao46']['add_price'] = '加價幅度';
+$_LANG['taobao46']['goods_number'] = '寶貝數量';
+$_LANG['taobao46']['die_day'] = '有效期';
+$_LANG['taobao46']['load_type'] = '運費承擔';
+$_LANG['taobao46']['post_express'] = '平郵';
+$_LANG['taobao46']['ems'] = 'EMS';
+$_LANG['taobao46']['express'] = '快遞';
+$_LANG['taobao46']['pay_type'] = '付款方式';
+$_LANG['taobao46']['allow_alipay'] = '支付寶';
+$_LANG['taobao46']['invoice'] = '發票';
+$_LANG['taobao46']['repair'] = '保修';
+$_LANG['taobao46']['resend'] = '自動重發';
+$_LANG['taobao46']['is_store'] = '放入倉庫';
+$_LANG['taobao46']['window'] = '櫥窗推薦';
+$_LANG['taobao46']['add_time'] = '發布時間';
+$_LANG['taobao46']['story'] = '心情故事';
+$_LANG['taobao46']['goods_desc'] = '寶貝描述';
+$_LANG['taobao46']['goods_img'] = '寶貝圖片';
+$_LANG['taobao46']['goods_attr'] = '寶貝屬性';
+$_LANG['taobao46']['group_buy'] = '團購價';
+$_LANG['taobao46']['group_buy_num'] = '最小團購件數';
+$_LANG['taobao46']['template'] = '郵費模版ID';
+$_LANG['taobao46']['discount'] = '會員打折';
+$_LANG['taobao46']['modify_time'] = '修改時間';
+$_LANG['taobao46']['upload_status'] = '上傳狀態';
+$_LANG['taobao46']['img_status'] = '圖片狀態';
+
+$_LANG['taobao46']['rebate_proportion'] = '返點比例';
+$_LANG['taobao46']['new_picture'] = '新圖片';
+$_LANG['taobao46']['video'] = '視頻';
+$_LANG['taobao46']['marketing_property_mix'] = '銷售屬性組合';
+$_LANG['taobao46']['user_input_ID_numbers'] = '用戶輸入ID串';
+$_LANG['taobao46']['input_user_name_value'] = '用戶輸入名-值對';
+$_LANG['taobao46']['sellers_code'] = '商家編碼';
+$_LANG['taobao46']['another_of_marketing_property'] = '銷售屬性別名';
+$_LANG['taobao46']['charge_type'] = '代充類型';
+$_LANG['taobao46']['treasure_number'] = '寶貝編號';
+$_LANG['taobao46']['ID_number'] = '數字ID';
 
 $_LANG['export_paipai'] = '導出到拍拍助理支持數據格式';
 $_LANG['paipai']['id'] = 'id';

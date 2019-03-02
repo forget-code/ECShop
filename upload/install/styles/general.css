@@ -33,6 +33,7 @@ h2,h3,h4 {
   font-family:Arial, Helvetica, sans-serif;
   color:#333;
   margin:15px 0 5px 0;
+  font-size:14px;
 }
 
 h4 {
@@ -84,7 +85,6 @@ h4 {
   background:#f4fafb;
   margin:0px auto;
   border:1px solid #bbdde5;
-  border-right: 0;
 }
 
 #copyright {
@@ -162,3 +162,12 @@ a:active {
   padding: 0;
   display:block;
 }
+.Contact{ width:198px; height:92px; background:url(../images/telbg.gif) no-repeat; margin-left:10px; margin-top:15px;}
+.Contact h2{ color:#0e6578; line-height:20px; padding-left:10px; font-size:12px; text-align:left; padding-top:10px;*padding-top:2px;}
+.Contact a,.Contact a:visited{ color:#f86e09; font-weight:normal; text-decoration:underline;}
+.Contact .TelS{ color:#000; position:relative; font-weight:normal; font-size:12px; text-align:left; padding-left:10px; margin-top:8px;}
+.Contact .TelS span a{position:absolute; right:8px; top:-10px;background:url(../images/QQT.gif) no-repeat; width:32px; height:31px; overflow:hidden; text-indent:-9999px;}
+.InstallationAD{ width:196px; margin:10px 0 0 10px;}
+.InstallationAD img{ border:1px solid #d6d6d6;}
+.OnLine{ height:38px; line-height:38px;}
+.OnLine a,.OnLine a:visited{ color:#FF0000; text-decoration:underline;cursor:pointer;}

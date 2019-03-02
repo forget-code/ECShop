@@ -3,14 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: liubo $
- * $Id: affiliate_ck.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: affiliate_ck.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -36,6 +36,10 @@ if ($_REQUEST['act'] == 'list')
     $smarty->assign('filter',       $logdb['filter']);
     $smarty->assign('record_count', $logdb['record_count']);
     $smarty->assign('page_count',   $logdb['page_count']);
+    if (!empty($_GET['auid']))
+    {
+        $smarty->assign('action_link',  array('text' => $_LANG['back_note'], 'href'=>"users.php?act=edit&id=$_GET[auid]"));
+    }
     assign_query_info();
     $smarty->display('affiliate_ck_list.htm');
 }
@@ -92,7 +96,7 @@ elseif ($_REQUEST['act'] == 'rollback')
             //推荐注册分成
             $flag = -1;
         }
-        log_account_change($stat['user_id'], -$stat['money'], 0, 0, -$stat['point'], $_LANG['loginfo']['cancel']);
+        log_account_change($stat['user_id'], -$stat['money'], 0, -$stat['point'], 0, $_LANG['loginfo']['cancel']);
         $sql = "UPDATE " . $GLOBALS['ecs']->table('affiliate_log') .
                " SET separate_type = '$flag'" .
                " WHERE log_id = '$logid'";
@@ -165,8 +169,8 @@ elseif ($_REQUEST['act'] == 'separate')
                 }
                 else
                 {
-                    $info = sprintf($_LANG['separate_info'], $order_sn, $up_uid, $row['user_name'], $setmoney, $setpoint);
-                    log_account_change($up_uid, $setmoney, 0, 0, $setpoint, $info);
+                    $info = sprintf($_LANG['separate_info'], $order_sn, $setmoney, $setpoint);
+                    log_account_change($up_uid, $setmoney, 0, $setpoint, 0, $info);
                     write_affiliate_log($oid, $up_uid, $row['user_name'], $setmoney, $setpoint, $separate_by);
                 }
             }
@@ -181,8 +185,8 @@ elseif ($_REQUEST['act'] == 'separate')
             $up_uid = $row['parent_id'];
             if(!empty($up_uid) && $up_uid > 0)
             {
-                $info = sprintf($_LANG['separate_info'], $order_sn, $up_uid, $row['user_name'], $money, $point);
-                log_account_change($up_uid, $money, 0, 0, $point, $info);
+                $info = sprintf($_LANG['separate_info'], $order_sn, $money, $point);
+                log_account_change($up_uid, $money, 0, $point, 0, $info);
                 write_affiliate_log($oid, $up_uid, $row['user_name'], $money, $point, $separate_by);
             }
             else
@@ -216,6 +220,10 @@ function get_affiliate_ck()
     {
         $sqladd = ' AND o.order_sn LIKE \'%' . trim($_REQUEST['order_sn']) . '%\'';
         $filter['order_sn'] = $_REQUEST['order_sn'];
+    }
+    if (isset($_GET['auid']))
+    {
+        $sqladd = ' AND a.user_id=' . $_GET['auid'];
     }
 
     if(!empty($affiliate['on']))

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 综合流量统计
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: flow_stats.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: flow_stats.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -364,8 +364,8 @@ elseif ($act = 'download')
 
     header("Content-type: application/vnd.ms-excel; charset=utf-8");
     header("Content-Disposition: attachment; filename=$filename.xls");
-    $start_date = $_GET['start_date'];
-    $end_date   = $_GET['end_date'];
+    $start_date = empty($_GET['start_date']) ? strtotime('-20 day') : intval($_GET['start_date']);
+    $end_date   = empty($_GET['end_date']) ? time() : intval($_GET['end_date']);
     $sql = "SELECT FLOOR((access_time - $start_date) / (24 * 3600)) AS sn, access_time, COUNT(*) AS access_count".
                 " FROM " . $GLOBALS['ecs']->table('stats') .
                 " WHERE access_time >= '$start_date' AND access_time <= " .($end_date + 86400).

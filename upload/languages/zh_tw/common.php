@@ -3,14 +3,14 @@
 /**
  * ECSHOP 前台語言文件
  * ============================================================================
- * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2011 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: common.php 16924 2009-12-25 06:13:29Z sxc_shop $
+ * $Author: liubo $
+ * $Id: common.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* 用戶登錄語言項 */
@@ -52,6 +52,11 @@ $_LANG['gzip_disabled'] = '，Gzip 已禁用';
 $_LANG['memory_info'] = '，佔用內存 %0.3f MB';
 $_LANG['cart_info'] = '您的購物車中有 %d 件商品，總計金額 %s。';
 $_LANG['shopping_and_other'] = '購買過此商品的人還購買過';
+$_LANG['bought_notes'] = '購買記錄';
+$_LANG['later_bought_amounts'] = '近期成交數量';
+$_LANG['bought_time'] = '購買時間';
+$_LANG['turnover'] = '成交';
+$_LANG['no_notes'] = '還沒有人購買過此商品';
 $_LANG['shop_price'] = '本店售價：';
 $_LANG['market_price'] = '市場價格：';
 $_LANG['goods_brief'] = '商品描述：';
@@ -119,7 +124,7 @@ $_LANG['goods_weight'] = '商品重量：';
 $_LANG['goods_number'] = '商品庫存：';
 $_LANG['goods_give_integral'] = '購買此商品贈送：';
 $_LANG['goods_integral'] = '購買此商品可使用：';
-$_LANG['goods_free_shipping'] = '此商品為<font class="shop">免運費</font>商品，計算配送金額時將不計入配送費用';
+$_LANG['goods_free_shipping'] = '此商品為免運費商品，計算配送金額時將不計入配送費用';
 $_LANG['goods_bonus'] = '購買此商品可獲得紅包：';
 $_LANG['goods_rank'] = '用戶評價：';
 $_LANG['goods_compare'] = '商品比較';
@@ -638,6 +643,8 @@ $_LANG['print_quotation'] = "打印報價單";
 $_LANG['goods_inventory'] = "庫存";
 $_LANG['goods_category'] = "商品分類";
 $_LANG['shopman_reply'] = '管理員回復';
+$_LANG['specifications'] = '规格';
+
 
 /* 相冊JS語言項 */
 $_LANG['gallery_js']['close_window'] = '您是否關閉當前窗口';

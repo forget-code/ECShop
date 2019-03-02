@@ -3,14 +3,14 @@
 /**
  * ECSHOP 短信模块 之 控制器
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: sms.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: sms.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -128,12 +128,13 @@ switch ($action)
         {
             $phone = $send_num.',';
         }
-        
+
         $send_rank = isset($_POST['send_rank'])     ? $_POST['send_rank'] : 0;
-        
+
         if ($send_rank != 0)
         {
             $rank_array = explode('_', $send_rank);
+
             if($rank_array['0'] == 1)
             {
                 $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' ";
@@ -147,8 +148,19 @@ switch ($action)
             {
                 $rank_sql = "SELECT * FROM " . $ecs->table('user_rank') . " WHERE rank_id = '" . $rank_array['1'] . "'";
                 $rank_row = $db->getRow($rank_sql);
-                $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' AND rank_points > " .$rank_row['min_points']." AND rank_points < ".$rank_row['max_points']." ";
+                //$sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' AND rank_points > " .$rank_row['min_points']." AND rank_points < ".$rank_row['max_points']." ";
+
+                if($rank_row['special_rank']==1) 
+                {
+                    $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . " WHERE mobile_phone <>'' AND user_rank = '" . $rank_array['1'] . "'";
+                }
+                else
+                {
+                    $sql = 'SELECT mobile_phone FROM ' . $ecs->table('users') . "WHERE mobile_phone <>'' AND rank_points > " .$rank_row['min_points']." AND rank_points < ".$rank_row['max_points']." ";
+                }
+                
                 $row = $db->query($sql);
+                
                 while ($rank_rs = $db->fetch_array($row))
                 {
                     $value[] = $rank_rs['mobile_phone'];
@@ -161,6 +173,8 @@ switch ($action)
         }       
                 
         $msg       = isset($_POST['msg'])       ? $_POST['msg']         : '';
+        
+
         $send_date = isset($_POST['send_date']) ? $_POST['send_date']   : '';   
                
         $result = $sms->send($phone, $msg, $send_date, $send_num = 13);

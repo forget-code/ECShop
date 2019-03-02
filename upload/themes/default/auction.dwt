@@ -60,7 +60,7 @@
       </li>
       <li style="width:555px; line-height:23px;">
       <form name="theForm" action="auction.php" method="post">
-      {$lang.goods_name}：<font class="f5">{$auction.goods_name|escape:html}</font><br>
+      {$lang.goods_name}：<font class="f5">{$auction.goods_name|escape:html}</font>{if $auction.product_id > 0}&nbsp;[{$products_info}]{/if}<br>
       {$lang.au_current_price}：{$auction.formated_current_price}<br>
       起止时间：{$auction.start_time} -- {$auction.end_time}<br>
       {$lang.au_start_price}：{$auction.formated_start_price}<br>

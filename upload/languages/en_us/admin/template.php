@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel template manage language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,7 +12,7 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: template.php 16465 2009-07-15 05:11:00Z liubo $
+ * $Id: template.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['template_manage']='Template Management';
@@ -73,6 +73,7 @@ $_LANG['template_libs']['recommend_promotion'] = 'Recommend promotion';
 $_LANG['template_libs']['recommend_hot'] = 'Hot';
 $_LANG['template_libs']['recommend_new'] = 'New';
 $_LANG['template_libs']['bought_goods'] = 'Customers who bought items like this also bought.';
+$_LANG['template_libs']['bought_note_guide'] = 'Bought notes';
 $_LANG['template_libs']['brand_goods'] = 'Brand product';
 $_LANG['template_libs']['brands'] = 'Brands';
 $_LANG['template_libs']['cart'] = 'Cart';

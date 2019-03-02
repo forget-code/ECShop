@@ -219,6 +219,18 @@ function FileUpload( $resourceType, $currentFolder, $sCommand )
                 {
                     move_uploaded_file( $oFile['tmp_name'], $sFilePath ) ;
 
+                    //判断并给符合条件图片加上水印
+                    if ($sExtension == 'jpg' || $sExtension == 'jpeg' || $sExtension == 'png' || $sExtension == 'gif' || $sExtension == 'bmp' )
+                    {
+                        require_once(ROOT_PATH . '/includes/cls_image.php');
+                        $image = new cls_image($GLOBALS['_CFG']['bgcolor']);
+
+                        if (intval($GLOBALS['_CFG']['watermark_place']) > 0 && !empty($GLOBALS['_CFG']['watermark']))
+                        {
+                            $image->add_watermark($sFilePath,'','../../../../../'.$GLOBALS['_CFG']['watermark'], $GLOBALS['_CFG']['watermark_place'], $GLOBALS['_CFG']['watermark_alpha']);
+                        }
+                    }
+
                     if ( is_file( $sFilePath ) )
                     {
                         if ( isset( $Config['ChmodOnUpload'] ) && !$Config['ChmodOnUpload'] )
@@ -336,6 +348,18 @@ function MoreFileUpload( $resourceType, $currentFolder, $sCommand )
                         else
                         {
                             move_uploaded_file( $_FILES['NewFile']['tmp_name'][$key], $sFilePath ) ;
+
+                            //判断并给符合条件图片加上水印
+                            if ($sExtension == 'jpg' || $sExtension == 'jpeg' || $sExtension == 'png' || $sExtension == 'gif' || $sExtension == 'bmp' )
+                            {
+                                require_once(ROOT_PATH . '/includes/cls_image.php');
+                                $image = new cls_image($GLOBALS['_CFG']['bgcolor']);
+
+                                if (intval($GLOBALS['_CFG']['watermark_place']) > 0 && !empty($GLOBALS['_CFG']['watermark']))
+                                {
+                                    $image->add_watermark($sFilePath,'','../../../../../'.$GLOBALS['_CFG']['watermark'], $GLOBALS['_CFG']['watermark_place'], $GLOBALS['_CFG']['watermark_alpha']);
+                                }
+                            }
 
                             if ( is_file( $sFilePath ) )
                             {

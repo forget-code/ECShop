@@ -2,7 +2,7 @@
 /**
  * ECSHOP Control panel shop cinfig language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -10,8 +10,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: shop_config.php 16710 2009-09-28 03:02:36Z liuhui $
+ * $Author: liubo $
+ * $Id: shop_config.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 require(ROOT_PATH.ADMIN_PATH.'/sms_url.php');
@@ -77,6 +77,7 @@ $_LANG['cfg_name']['send_mail_on'] = 'Whether or not to open automatically send 
 $_LANG['cfg_name']['auto_generate_gallery'] = 'Merchandise is automatically upload album chart';
 $_LANG['cfg_name']['retain_original_img'] = 'Upload goods whether to retain image';
 $_LANG['cfg_name']['member_email_validate'] = 'E-mail to verify whether or not to open membership';
+$_LANG['cfg_name']['send_verify_email'] = 'Send registration verification email automatically';
 $_LANG['cfg_name']['message_board'] = 'Whether the opening of the message board function';
 $_LANG['cfg_name']['message_check'] = 'Users need to examine whether the message';
 //$_LANG['cfg_name']['use_package'] = 'Whether use packing';
@@ -174,6 +175,7 @@ $_LANG['cfg_desc']['smtp_user'] = 'Send out attestation number for mails, it is 
 $_LANG['cfg_desc']['bought_goods'] = 'How many records are displayed, that customers who bought this item also bought products?';
 $_LANG['cfg_desc']['currency_format'] = 'Display product price format, the %s will be replaced corresponding price figure.';
 $_LANG['cfg_desc']['image_height'] = 'If your server support GD, the system will auto appointed picture size when you upload the picture.';
+$_LANG['cfg_desc']['watermark'] = 'Gif format, watermark documents should be support for the transparency settings.';
 $_LANG['cfg_desc']['watermark_alpha'] = 'Diaphaneity of watermark, choice value range is 0 to 100. It is opacity when the value is 100.';
 $_LANG['cfg_desc']['invoice_content'] = 'Customer can choose contents in invoice. For example:Office equipment. Every line represent an options.';
 $_LANG['cfg_desc']['stats_code'] = 'You can add the code that other interviews statistics service company to provide to each page.';
@@ -197,6 +199,7 @@ $_LANG['cfg_desc']['cart_confirm'] = 'Allows users click on the "Add to Cart" af
 $_LANG['cfg_desc']['send_service_email'] = 'If service email is empty,the option is invalid.';
 $_LANG['cfg_desc']['send_mail_on'] = 'Enable this option, it will automatically send mail in the maillist';
 $_LANG['cfg_desc']['sms_shop_mobile'] = 'Please register your mobile SMS or mobile phone number and then';
+$_LANG['cfg_desc']['send_verify_email'] = 'If you want to use "Send registration verification email automatically","E-mail to verify whether or not to open membership" must be open.';
 
 $_LANG['cfg_range']['cart_confirm'][1] = 'Prompts the user, click "OK" into the Shopping Cart
 ';
@@ -211,6 +214,8 @@ $_LANG['cfg_range']['send_mail_on']['on'] = 'Open';
 $_LANG['cfg_range']['send_mail_on']['off'] = 'Off';
 $_LANG['cfg_range']['member_email_validate']['1'] = 'Open';
 $_LANG['cfg_range']['member_email_validate']['0'] = 'Off';
+$_LANG['cfg_range']['send_verify_email']['1'] = 'Open';
+$_LANG['cfg_range']['send_verify_email']['0'] = 'Off';
 $_LANG['cfg_range']['message_board']['1'] = 'Open';
 $_LANG['cfg_range']['message_board']['0'] = 'Off';
 $_LANG['cfg_range']['auto_generate_gallery']['1'] = 'Yes';
@@ -388,7 +393,8 @@ $_LANG['cfg_range']['upload_size_limit']['4096'] = '4MB';
 $_LANG['cfg_range']['visit_stats']['on'] = 'Open';
 $_LANG['cfg_range']['visit_stats']['off'] = 'Off';
 
-$_LANG['rewrite_confirm'] ="The function of URL rewrite request your Web Server to must be Apache, and enable rewrite module. \\nPlease confirm the htaccess.txt file has already named .htaccess.";
+$_LANG['rewrite_confirm_apache'] ="The function of URL rewrite request your Web Server to must be Apache, and enable rewrite module. \\nPlease confirm the htaccess.txt file has already named .htaccess.";
+$_LANG['rewrite_confirm_iis'] ="The function of URL rewrite request your Web Server to must be installed IIS, and enable ISAPI Rewrite module. \\nIf you are using a commercial version of ISAPI Rewrite, please confirm whether you have httpd.txt rename the file to httpd.ini.If you are using a free version of ISAPI Rewrite, please confirm whether you have httpd.txt and copy the contents of the document to the ISAPI Rewrite installation directory httpd.ini.";
 $_LANG['gzip_confirm'] ="The GZip function needs your server support zlib expand database. \\nIf your found junk after open the Gzip page, may be your server has already openned Gzip, you needn\'t open again in the ECSHOP.";
 $_LANG['retain_original_confirm'] = 'If you do not retain the image of goods, in the "image batch processing"\\n will not be re-generated image of the product does not contain a picture.\\n Please use this feature carefully!';
 $_LANG['msg_invalid_file'] = 'You upload an illegal file type. That file name is: %s.';

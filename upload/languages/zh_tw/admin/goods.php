@@ -3,15 +3,15 @@
 /**
  * ECSHOP 管理中心起始頁語言文件
  * ============================================================================
- * 版權所有 2005-2009 上海商派網絡科技有限公司，並保留所有權利。
+ * 版權所有 2005-2011 上海商派網絡科技有限公司，並保留所有權利。
  * 網站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
  * 使用；不允許對程序代碼以任何形式任何目的的再發佈。
  * ============================================================================
  * $Author: liubo $
- * $Id: goods.php 16881 2009-12-14 09:19:16Z liubo $
-*/
+ * $Id: goods.php 17217 2011-01-19 06:29:08Z liubo $
+ */
 
 $_LANG['edit_goods'] = '編輯商品信息';
 $_LANG['copy_goods'] = '複製商品信息';
@@ -27,6 +27,7 @@ $_LANG['drop_goods_confirm'] = '您確實要刪除該商品嗎？';
 $_LANG['batch_drop_confirm'] = '徹底刪除商品將刪除與該商品有關的所有信息。\n您確實要刪除選中的商品嗎？';
 $_LANG['trash_goods_confirm'] = '您確實要把該商品放入回收站嗎？';
 $_LANG['batch_trash_confirm'] = '您確實要把選中的商品放入回收站嗎？';
+$_LANG['trash_product_confirm'] = '您確認要把該商品刪除嗎？';
 $_LANG['restore_goods_confirm'] = '您確實要把該商品還原嗎？';
 $_LANG['batch_restore_confirm'] = '您確實要把選中的商品還原嗎？';
 $_LANG['batch_on_sale_confirm'] = '您確實要把選中的商品上架嗎？';
@@ -40,7 +41,6 @@ $_LANG['batch_not_hot_confirm'] = '您確實要把選中的商品取消熱銷嗎
 $_LANG['cannot_found_goods'] = '找不到指定的商品。';
 $_LANG['sel_goods_type'] = '請選擇商品類型';
 $_LANG['sel_goods_suppliers'] = '請選擇供貨商';
-
 /*------------------------------------------------------ */
 //-- 圖片處理相關提示信息
 /*------------------------------------------------------ */
@@ -72,6 +72,7 @@ $_LANG['is_on_sale'] = '上架';
 $_LANG['goods_number'] = '庫存';
 
 $_LANG['copy'] = '複製';
+$_LANG['item_list'] = '貨品列表';
 
 $_LANG['integral'] = '積分額度';
 $_LANG['on_sale'] = '上架';
@@ -136,7 +137,6 @@ $_LANG['lab_is_on_sale'] = '上架：';
 $_LANG['lab_is_alone_sale'] = '能作為普通商品銷售：';
 $_LANG['lab_is_free_shipping'] = '是否為免運費商品：';
 
-
 $_LANG['compute_by_mp'] = '按市場價計算';
 
 $_LANG['notice_goods_sn'] = '如果您不輸入商品貨號，系統將自動生成一個唯一的貨號。';
@@ -144,6 +144,7 @@ $_LANG['notice_integral'] = '（此處需填寫金額）購買該商品時最多
 $_LANG['notice_give_integral'] = '購買該商品時贈送消費積分數,-1表示按商品價格贈送';
 $_LANG['notice_rank_integral'] = '購買該商品時贈送等級積分數,-1表示按商品價格贈送';
 $_LANG['notice_seller_note'] = '僅供商家自己看的信息';
+$_LANG['notice_storage'] = '庫存在商品為虛貨或商品存在貨品時為不可編輯狀態，庫存數只取決于其虛貨數量或貨品數量';
 $_LANG['notice_keywords'] = '用空格分隔';
 $_LANG['notice_user_price'] = '會員價格為-1時表示會員價格按會員等級折扣率計算。你也可以為每個等級指定一個固定價格';
 $_LANG['notice_goods_type'] = '請選擇商品的所屬類型，進而完善此商品的屬性';
@@ -210,6 +211,7 @@ $_LANG['price'] = '價格';
 
 $_LANG['img_desc'] = '圖片描述';
 $_LANG['img_url'] = '上傳文件';
+$_LANG['img_file'] = '或者輸入外部圖片鏈接地址';
 
 /*------------------------------------------------------ */
 //-- 關聯文章
@@ -250,6 +252,8 @@ $_LANG['js_languages']['volume_num_not_number'] = '優惠數量不是數字';
 $_LANG['js_languages']['volume_price_not_null'] = '請輸入優惠價格';
 $_LANG['js_languages']['volume_price_not_number'] = '優惠價格不是數字';
 
+$_LANG['js_languages']['cancel_color'] = '無樣式';
+
 /* 虛擬卡 */
 $_LANG['card'] = '查看虛擬卡信息';
 $_LANG['replenish'] = '補貨';
@@ -258,4 +262,30 @@ $_LANG['add_replenish'] = '添加虛擬卡卡密';
 
 $_LANG['goods_number_error'] = '商品庫存數量錯誤';
 
+/*------------------------------------------------------ */
+//-- 貨品
+/*------------------------------------------------------ */
+$_LANG['product'] = '貨品';
+$_LANG['product_info'] = '貨品信息';
+$_LANG['specifications'] = '規格';
+$_LANG['total'] = '合計：';
+$_LANG['add_products'] = '添加貨品';
+$_LANG['save_products'] = '保存貨品成功';
+$_LANG['product_id_null'] = '貨品id為空';
+$_LANG['cannot_found_products'] = '未找到指定貨品';
+$_LANG['product_batch_del_success'] = '貨品批量刪除成功';
+$_LANG['product_batch_del_failure'] = '貨品批量刪除失敗';
+$_LANG['batch_product_add'] = '批量添加';
+$_LANG['batch_product_edit'] = '批量編輯';
+$_LANG['products_title'] = '商品名稱：%s';
+$_LANG['products_title_2'] = '貨品：%s';
+$_LANG['good_shop_price'] = '（商品價格：%d）';
+$_LANG['good_goods_sn'] = '（商品貨號：%s）';
+$_LANG['exist_same_goods_sn'] = '貨品貨號不允許與產品貨號重復';
+$_LANG['exist_same_product_sn'] = '貨品貨號重復';
+$_LANG['cannot_add_products'] = '貨品添加失敗';
+$_LANG['exist_same_goods_attr'] = '貨品規格屬性重復';
+$_LANG['cannot_goods_number'] = '此商品存在貨品，不能修改商品庫存';
+$_LANG['not_exist_goods_attr'] = '此商品不存在規格，請為其添加規格';
+$_LANG['goods_sn_exists'] = '您输入的货号已存在，请换一个';
 ?>

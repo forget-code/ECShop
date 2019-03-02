@@ -3,7 +3,7 @@
 /**
  * ECSHOP Orders management language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: wangleisvn $
- * $Id: order.php 16763 2009-10-29 06:04:29Z wangleisvn $
+ * $Author: liubo $
+ * $Id: order.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 /* Order search*/
@@ -28,6 +28,7 @@ $_LANG['cs'][PS_PAYING] = 'Payment';
 $_LANG['cs'][OS_CANCELED] = 'Returned';
 $_LANG['cs'][OS_INVALID] = 'Invalid';
 $_LANG['cs'][OS_RETURNED] = 'Returned';
+$_LANG['cs'][OS_SHIPPED_PART] = 'Partial shipment';
 
 /* Order status */
 $_LANG['os'][OS_UNCONFIRMED] = 'Unconfirmed';
@@ -160,6 +161,7 @@ $_LANG['label_suppliers'] ='Choose suppliers:';
 $_LANG['label_agency'] = 'Agency:';
 $_LANG['suppliers_name'] = 'Suppliers';
 
+$_LANG['product_sn'] = 'Item No';
 $_LANG['goods_info'] = 'Product information';
 $_LANG['goods_name'] = 'Product name';
 $_LANG['goods_name_brand'] = 'Product name [ Brand ]';
@@ -396,4 +398,6 @@ $_LANG['label_return_time'] = 'Returned Time';
 
 /* 退货单提示 */
 $_LANG['tips_back_del'] = 'Return a single deletion of success!';
+
+$_LANG['goods_num_err'] = 'Stocks, please re-select!';
 ?>

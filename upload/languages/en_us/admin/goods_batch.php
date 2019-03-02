@@ -3,7 +3,7 @@
 /**
  * ECSHOP Batch upload products,modification language item
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: goods_batch.php 16777 2009-11-09 07:56:49Z liuhui $
+ * $Author: liubo $
+ * $Id: goods_batch.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 $_LANG['select_method'] ='Product method:';
@@ -47,6 +47,7 @@ $_LANG['brand'] ='Brand';
 $_LANG['export_format'] = 'Data formats';
 $_LANG['export_ecshop'] = 'ecshop to support data formats';
 $_LANG['export_taobao'] = 'taobao Assistant to support data formats';
+$_LANG['export_taobao46'] = 'taobao Assistant4.6 to support data formats';
 $_LANG['export_paipai'] = 'paipai Assistant to support data formats';
 $_LANG['export_paipai3'] = 'paipai 3.0 Assistant to support data formats';
 $_LANG['batch_edit_ok'] ='Batch modify successfully.';

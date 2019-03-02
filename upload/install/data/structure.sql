@@ -52,6 +52,7 @@ CREATE TABLE `ecs_admin_action` (
   `action_id` tinyint(3) unsigned NOT NULL auto_increment,
   `parent_id` tinyint(3) unsigned NOT NULL default '0',
   `action_code` varchar(20) NOT NULL default '',
+  `relevance` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`action_id`),
   KEY `parent_id` (`parent_id`)
 )  TYPE=MyISAM;
@@ -108,6 +109,7 @@ CREATE TABLE `ecs_admin_user` (
   `user_name` varchar(60) NOT NULL default '',
   `email` varchar(60) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
+  `ec_salt` VARCHAR( 10 )  NULL,
   `add_time` int(11) NOT NULL default '0',
   `last_login` int(11) NOT NULL default '0',
   `last_ip` varchar(15) NOT NULL default '',
@@ -316,6 +318,7 @@ CREATE TABLE `ecs_cart` (
   `session_id` char(32) binary NOT NULL default '',
   `goods_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_sn` varchar(60) NOT NULL default '',
+  `product_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_name` varchar(120) NOT NULL default '',
   `market_price` decimal(10,2) unsigned NOT NULL default '0.00',
   `goods_price` decimal(10,2) NOT NULL default '0.00',
@@ -747,6 +750,7 @@ CREATE TABLE `ecs_order_goods` (
   `goods_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_name` varchar(120) NOT NULL default '',
   `goods_sn` varchar(60) NOT NULL default '',
+  `product_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_number` smallint(5) unsigned NOT NULL default '1',
   `market_price` decimal(10,2) NOT NULL default '0.00',
   `goods_price` decimal(10,2) NOT NULL default '0.00',
@@ -1017,6 +1021,10 @@ CREATE TABLE `ecs_shipping` (
   `support_cod` tinyint(1) unsigned NOT NULL default '0',
   `enabled` tinyint(1) unsigned NOT NULL default '0',
   `shipping_print` text NOT NULL,
+  `print_bg` varchar(255) default NULL,
+  `config_lable` text,
+  `print_model` tinyint(1) default '0',
+  `shipping_order` tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`shipping_id`),
   KEY `shipping_code` (`shipping_code`,`enabled`)
 )  TYPE=MyISAM;
@@ -1244,6 +1252,7 @@ CREATE TABLE `ecs_users` (
   `visit_count` smallint(5) unsigned NOT NULL default '0',
   `user_rank` tinyint(3) unsigned NOT NULL default '0',
   `is_special` tinyint(3) unsigned NOT NULL default '0',
+  `ec_salt` VARCHAR( 10 )  NULL ,
   `salt` varchar(10) NOT NULL default '0',
   `parent_id` mediumint(9) NOT NULL default '0',
   `flag` TINYINT UNSIGNED NOT NULL DEFAULT '0',
@@ -1309,6 +1318,7 @@ CREATE TABLE `ecs_vote_option` (
   `vote_id` smallint unsigned NOT NULL default '0',
   `option_name` varchar(250) NOT NULL default '',
   `option_count` int(8) unsigned NOT NULL default '0',
+  `option_order` tinyint(3) unsigned NOT NULL default '100',
   PRIMARY KEY  (`option_id`),
   KEY `vote_id` (`vote_id`)
 )  TYPE=MyISAM;
@@ -1374,6 +1384,7 @@ CREATE TABLE `ecs_goods_activity` (
   `act_desc` text NOT NULL,
   `act_type` tinyint(3) unsigned NOT NULL,
   `goods_id` mediumint(8) unsigned NOT NULL,
+  `product_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_name` varchar(255) NOT NULL,
   `start_time` int(10) unsigned NOT NULL,
   `end_time` int(10) unsigned NOT NULL,
@@ -1503,7 +1514,7 @@ CREATE TABLE `ecs_virtual_card` (
     `end_date` int(11) NOT NULL default '0',
     `is_saled` tinyint(1) NOT NULL default '0',
     `order_sn` varchar(20) NOT NULL default '',
-    `crc32` int(11) NOT NULL default '0',
+    `crc32` varchar(12) NOT NULL default '0',
     PRIMARY KEY  (`card_id`),
     KEY `goods_id` (`goods_id`),
     KEY `car_sn` (`card_sn`),
@@ -1603,9 +1614,10 @@ DROP TABLE IF EXISTS `ecs_package_goods`;
 CREATE TABLE `ecs_package_goods` (
   `package_id` mediumint( 8 ) unsigned NOT NULL DEFAULT '0',
   `goods_id` mediumint( 8 ) unsigned NOT NULL DEFAULT '0',
+  `product_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_number` smallint( 5 ) unsigned NOT NULL DEFAULT '1',
   `admin_id` tinyint( 3 ) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY ( `package_id` , `goods_id` , `admin_id` )
+  PRIMARY KEY  (`package_id`,`goods_id`,`admin_id`,`product_id`)
 ) TYPE = MYISAM;
 
 -- 增加积分商城商品表
@@ -1624,6 +1636,8 @@ CREATE TABLE `ecs_delivery_goods` (
   `rec_id` mediumint(8) unsigned NOT NULL auto_increment,
   `delivery_id` mediumint(8) unsigned NOT NULL default '0',
   `goods_id` mediumint(8) unsigned NOT NULL default '0',
+  `product_id` mediumint(8) unsigned default '0',
+  `product_sn` varchar(60) default NULL,
   `goods_name` varchar(120) default NULL,
   `brand_name` varchar(60) default NULL,
   `goods_sn` varchar(60) default NULL,
@@ -1681,6 +1695,8 @@ CREATE TABLE `ecs_back_goods` (
   `rec_id` mediumint(8) unsigned NOT NULL auto_increment,
   `back_id` mediumint(8) unsigned default '0',
   `goods_id` mediumint(8) unsigned NOT NULL default '0',
+  `product_id` mediumint(8) unsigned NOT NULL default '0',
+  `product_sn` varchar(60) default NULL,
   `goods_name` varchar(120) default NULL,
   `brand_name` varchar(60) default NULL,
   `goods_sn` varchar(60) default NULL,
@@ -1764,4 +1780,16 @@ CREATE TABLE `ecs_role` (
   `role_describe` text,
   PRIMARY KEY  (`role_id`),
   KEY `user_name` (`role_name`)
+) ENGINE=MyISAM;
+
+-- 货品表
+
+DROP TABLE IF EXISTS `ecs_products`;
+CREATE TABLE `ecs_products` (
+  `product_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `goods_id` mediumint(8) unsigned NOT NULL default '0',
+  `goods_attr` varchar(50) default NULL,
+  `product_sn` varchar(60) default NULL,
+  `product_number` smallint(5) unsigned default '0',
+  PRIMARY KEY  (`product_id`)
 ) ENGINE=MyISAM;

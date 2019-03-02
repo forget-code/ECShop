@@ -32,6 +32,32 @@ function setInputCheckedStatus() {
         langOptions[i].onclick = function () {
             var selectedLang =  this.getAttribute("id").slice(3);
             location.href = "./index.php?lang=" + selectedLang + "&step=" + getCurStep();
-        };
+        }
     }
-};
+}
+function setInnerHTML(id, html) {
+    var id = document.getElementById(id);
+    var userAgent = navigator.userAgent.toLowerCase();
+    if (userAgent.indexOf('msie') >= 0 && userAgent.indexOf('opera') < 0)
+    {
+        html = '<div style="display:none">for IE</div>' + html;
+        html = html.replace(/<script([^>]*)>/gi,'<script$1 defer="true">');
+        id.innerHTML = html;
+        id.removeChild(id.firstChild);
+    }
+    else 
+    {
+        var id_next = id.nextSibling;
+        var id_parent = id.parentNode;
+        id_parent.removeChild(id);
+        id.innerHTML = html;
+        if (id_next)
+        {
+            id_parent.insertBefore(id, id_next);
+        }
+        else
+        {
+            id_parent.appendChild(id);
+        }
+    }
+}

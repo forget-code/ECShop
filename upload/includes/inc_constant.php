@@ -3,14 +3,14 @@
 /**
  * ECSHOP 常量
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: inc_constant.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: inc_constant.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -83,6 +83,7 @@ define('SS_RECEIVED',               2); // 已收货
 define('SS_PREPARING',              3); // 备货中
 define('SS_SHIPPED_PART',           4); // 已发货(部分商品)
 define('SS_SHIPPED_ING',            5); // 发货中(处理分单)
+define('OS_SHIPPED_PART',           6); // 已发货(部分商品)
 
 /* 支付状态 */
 define('PS_UNPAYED',                0); // 未付款
@@ -233,5 +234,8 @@ define('SEND_RANK', 2);
 
 /* license接口 */
 define('LICENSE_VERSION', '1.0');
+
+/* 配送方式 */
+define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|presswork|sf_express|sto_express|yto|zto');
 
 ?>

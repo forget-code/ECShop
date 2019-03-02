@@ -3,14 +3,14 @@
 /**
  * ECSHOP 虚拟卡商品管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: virtual_card.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: virtual_card.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -354,8 +354,8 @@ elseif ($_REQUEST['act'] == 'submit_change')
         {
             sys_msg($_LANG['same_string'], 1);
         }
-        
-        
+
+
 
         // 重新加密卡号和密码
         $old_crc32 = crc32($_POST['old_string']);
@@ -451,11 +451,11 @@ elseif ($_REQUEST['act'] == 'start_change')
     {
         make_json_error($GLOBALS['_LANG']['invalid_old_string']);
     }
-    else 
+    else
     {
-        $f=ROOT_PATH . 'data/config.php'; 
-        file_put_contents($f,str_replace("'AUTH_KEY', '".AUTH_KEY."'","'AUTH_KEY', '".$new_key."'",file_get_contents($f))); 
-        file_put_contents($f,str_replace("'OLD_AUTH_KEY', '".OLD_AUTH_KEY."'","'OLD_AUTH_KEY', '".$old_key."'",file_get_contents($f))); 
+        $f=ROOT_PATH . 'data/config.php';
+        file_put_contents($f,str_replace("'AUTH_KEY', '".AUTH_KEY."'","'AUTH_KEY', '".$new_key."'",file_get_contents($f)));
+        file_put_contents($f,str_replace("'OLD_AUTH_KEY', '".OLD_AUTH_KEY."'","'OLD_AUTH_KEY', '".$old_key."'",file_get_contents($f)));
         @fclose($fp);
     }
 
@@ -558,7 +558,7 @@ function get_replenish_list()
     $filter['search_type'] = empty($_REQUEST['search_type']) ? 0 : trim($_REQUEST['search_type']);
     $filter['order_sn']    = empty($_REQUEST['order_sn'])    ? 0 : trim($_REQUEST['order_sn']);
     $filter['keyword']     = empty($_REQUEST['keyword'])     ? 0 : trim($_REQUEST['keyword']);
-    if ($_REQUEST['is_ajax'] == 1)
+    if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
     {
         $filter['keyword'] = json_str_iconv($filter['keyword']);
     }

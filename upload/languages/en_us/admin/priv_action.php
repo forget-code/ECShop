@@ -3,7 +3,7 @@
 /**
  * ECSHOP Authorization  name language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: liuhui $
- * $Id: priv_action.php 16707 2009-09-27 08:25:22Z liuhui $
+ * $Author: liubo $
+ * $Id: priv_action.php 17217 2011-01-19 06:29:08Z liubo $
 */
 /* Authorization management\'s the first grouping */
 $_LANG['goods'] = 'Product';

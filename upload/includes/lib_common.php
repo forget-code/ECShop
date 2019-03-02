@@ -3,14 +3,14 @@
 /**
  * ECSHOP 公用函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_common.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_common.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -364,7 +364,7 @@ function cat_list($cat_id = 0, $selected = 0, $re_type = true, $level = 0, $is_s
             {
                 $select .= str_repeat('&nbsp;', $var['level'] * 4);
             }
-            $select .= htmlspecialchars($var['cat_name'], ENT_QUOTES) . '</option>';
+            $select .= htmlspecialchars(addslashes($var['cat_name']), ENT_QUOTES) . '</option>';
         }
 
         return $select;
@@ -641,7 +641,7 @@ function get_brand_list()
     $brand_list = array();
     foreach ($res AS $row)
     {
-        $brand_list[$row['brand_id']] = $row['brand_name'];
+        $brand_list[$row['brand_id']] = addslashes($row['brand_name']);
     }
 
     return $brand_list;
@@ -925,6 +925,10 @@ function order_action($order_sn, $order_status, $shipping_status, $pay_status, $
  */
 function price_format($price, $change_price = true)
 {
+    if($price==='')
+    {
+     $price=0;
+    }
     if ($change_price && defined('ECS_ADMIN') === false)
     {
         switch ($GLOBALS['_CFG']['price_format'])
@@ -1463,13 +1467,14 @@ function smarty_create_pages($params)
  * 重写 URL 地址
  *
  * @access  public
- * @param   string  $app    执行程序
- * @param   array   $params 参数数组
- * @param   string  $append 附加字串
- * @param   integer $page   页数
+ * @param   string  $app        执行程序
+ * @param   array   $params     参数数组
+ * @param   string  $append     附加字串
+ * @param   integer $page       页数
+ * @param   string  $keywords   搜索关键词字符串
  * @return  void
  */
-function build_uri($app, $params, $append = '', $page = 0, $size = 0)
+function build_uri($app, $params, $append = '', $page = 0, $keywords = '', $size = 0)
 {
     static $rewrite = NULL;
 
@@ -1653,6 +1658,10 @@ function build_uri($app, $params, $append = '', $page = 0, $size = 0)
                     {
                         $uri .= '-' . $order;
                     }
+                    if (!empty($keywords))
+                    {
+                        $uri .= '-' . $keywords;
+                    }
                 }
                 else
                 {
@@ -1668,6 +1677,10 @@ function build_uri($app, $params, $append = '', $page = 0, $size = 0)
                     if (!empty($order))
                     {
                         $uri .= '&amp;order=' . $order;
+                    }
+                    if (!empty($keywords))
+                    {
+                        $uri .= '&amp;keywords=' . $keywords;
                     }
                 }
             }
@@ -1958,7 +1971,7 @@ function article_cat_list($cat_id = 0, $selected = 0, $re_type = true, $level = 
             {
                 $select .= str_repeat('&nbsp;', $var['level'] * 4);
             }
-            $select .= htmlspecialchars($var['cat_name']) . '</option>';
+            $select .= htmlspecialchars(addslashes($var['cat_name'])) . '</option>';
         }
 
         return $select;
@@ -2336,6 +2349,89 @@ function get_final_price($goods_id, $goods_num = '1', $is_spec_price = false, $s
 }
 
 /**
+ * 将 goods_attr_id 的序列按照 attr_id 重新排序
+ *
+ * 注意：非规格属性的id会被排除
+ *
+ * @access      public
+ * @param       array       $goods_attr_id_array        一维数组
+ * @param       string      $sort                       序号：asc|desc，默认为：asc
+ *
+ * @return      string
+ */
+function sort_goods_attr_id_array($goods_attr_id_array, $sort = 'asc')
+{
+    if (empty($goods_attr_id_array))
+    {
+        return $goods_attr_id_array;
+    }
+
+    //重新排序
+    $sql = "SELECT a.attr_type, v.attr_value, v.goods_attr_id
+            FROM " .$GLOBALS['ecs']->table('attribute'). " AS a
+            LEFT JOIN " .$GLOBALS['ecs']->table('goods_attr'). " AS v
+                ON v.attr_id = a.attr_id
+                AND a.attr_type = 1
+            WHERE v.goods_attr_id " . db_create_in($goods_attr_id_array) . "
+            ORDER BY a.attr_id $sort";
+    $row = $GLOBALS['db']->GetAll($sql);
+
+    $return_arr = array();
+    foreach ($row as $value)
+    {
+        $return_arr['sort'][]   = $value['goods_attr_id'];
+
+        $return_arr['row'][$value['goods_attr_id']]    = $value;
+    }
+
+    return $return_arr;
+}
+
+/**
+ *
+ * 是否存在规格
+ *
+ * @access      public
+ * @param       array       $goods_attr_id_array        一维数组
+ *
+ * @return      string
+ */
+function is_spec($goods_attr_id_array, $sort = 'asc')
+{
+    if (empty($goods_attr_id_array))
+    {
+        return $goods_attr_id_array;
+    }
+
+    //重新排序
+    $sql = "SELECT a.attr_type, v.attr_value, v.goods_attr_id
+            FROM " .$GLOBALS['ecs']->table('attribute'). " AS a
+            LEFT JOIN " .$GLOBALS['ecs']->table('goods_attr'). " AS v
+                ON v.attr_id = a.attr_id
+                AND a.attr_type = 1
+            WHERE v.goods_attr_id " . db_create_in($goods_attr_id_array) . "
+            ORDER BY a.attr_id $sort";
+    $row = $GLOBALS['db']->GetAll($sql);
+
+    $return_arr = array();
+    foreach ($row as $value)
+    {
+        $return_arr['sort'][]   = $value['goods_attr_id'];
+
+        $return_arr['row'][$value['goods_attr_id']]    = $value;
+    }
+
+    if(!empty($return_arr))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
  * 获取指定id package 的信息
  *
  * @access  public
@@ -2346,7 +2442,7 @@ function get_final_price($goods_id, $goods_num = '1', $is_spec_price = false, $s
 function get_package_info($id)
 {
     global $ecs, $db,$_CFG;
-
+    $id = is_numeric($id)?intval($id):0;
     $now = gmtime();
 
     $sql = "SELECT act_id AS id,  act_name AS package_name, goods_id , goods_name, start_time, end_time, act_desc, ext_info".
@@ -2436,18 +2532,251 @@ function get_package_info($id)
  */
 function get_package_goods($package_id)
 {
-    $sql = "SELECT pg.goods_id, CONCAT(g.goods_name, ' -- [', pg.goods_number, ']') AS goods_name " .
-            "FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg, " .
-                $GLOBALS['ecs']->table('goods') . " AS g " .
-            "WHERE pg.package_id = '$package_id' " .
-            "AND pg.goods_id = g.goods_id ";
+    $sql = "SELECT pg.goods_id, g.goods_name, pg.goods_number, p.goods_attr, p.product_number, p.product_id
+            FROM " . $GLOBALS['ecs']->table('package_goods') . " AS pg
+                LEFT JOIN " .$GLOBALS['ecs']->table('goods') . " AS g ON pg.goods_id = g.goods_id
+                LEFT JOIN " . $GLOBALS['ecs']->table('products') . " AS p ON pg.product_id = p.product_id
+            WHERE pg.package_id = '$package_id'";
     if ($package_id == 0)
     {
         $sql .= " AND pg.admin_id = '$_SESSION[admin_id]'";
     }
-    $row = $GLOBALS['db']->getAll($sql);
+    $resource = $GLOBALS['db']->query($sql);
+    if (!$resource)
+    {
+        return array();
+    }
+
+    $row = array();
+
+    /* 生成结果数组 取存在货品的商品id 组合商品id与货品id */
+    $good_product_str = '';
+    while ($_row = $GLOBALS['db']->fetch_array($resource))
+    {
+        if ($_row['product_id'] > 0)
+        {
+            /* 取存商品id */
+            $good_product_str .= ',' . $_row['goods_id'];
+
+            /* 组合商品id与货品id */
+            $_row['g_p'] = $_row['goods_id'] . '_' . $_row['product_id'];
+        }
+        else
+        {
+            /* 组合商品id与货品id */
+            $_row['g_p'] = $_row['goods_id'];
+        }
+
+        //生成结果数组
+        $row[] = $_row;
+    }
+    $good_product_str = trim($good_product_str, ',');
+
+    /* 释放空间 */
+    unset($resource, $_row, $sql);
+
+    /* 取商品属性 */
+    if ($good_product_str != '')
+    {
+        $sql = "SELECT goods_attr_id, attr_value FROM " .$GLOBALS['ecs']->table('goods_attr'). " WHERE goods_id IN ($good_product_str)";
+        $result_goods_attr = $GLOBALS['db']->getAll($sql);
+
+        $_goods_attr = array();
+        foreach ($result_goods_attr as $value)
+        {
+            $_goods_attr[$value['goods_attr_id']] = $value['attr_value'];
+        }
+    }
+
+    /* 过滤货品 */
+    $format[0] = '%s[%s]--[%d]';
+    $format[1] = '%s--[%d]';
+    foreach ($row as $key => $value)
+    {
+        if ($value['goods_attr'] != '')
+        {
+            $goods_attr_array = explode('|', $value['goods_attr']);
+
+            $goods_attr = array();
+            foreach ($goods_attr_array as $_attr)
+            {
+                $goods_attr[] = $_goods_attr[$_attr];
+            }
+
+            $row[$key]['goods_name'] = sprintf($format[0], $value['goods_name'], implode('，', $goods_attr), $value['goods_number']);
+        }
+        else
+        {
+            $row[$key]['goods_name'] = sprintf($format[1], $value['goods_name'], $value['goods_number']);
+        }
+    }
 
     return $row;
+}
+
+/**
+ * 取商品的货品列表
+ *
+ * @param       mixed       $goods_id       单个商品id；多个商品id数组；以逗号分隔商品id字符串
+ * @param       string      $conditions     sql条件
+ *
+ * @return  array
+ */
+function get_good_products($goods_id, $conditions = '')
+{
+    if (empty($goods_id))
+    {
+        return array();
+    }
+
+    switch (gettype($goods_id))
+    {
+        case 'integer':
+
+            $_goods_id = "goods_id = '" . intval($goods_id) . "'";
+
+        break;
+
+        case 'string':
+        case 'array':
+
+            $_goods_id = db_create_in($goods_id, 'goods_id');
+
+        break;
+    }
+
+    /* 取货品 */
+    $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('products'). " WHERE $_goods_id $conditions";
+    $result_products = $GLOBALS['db']->getAll($sql);
+
+    /* 取商品属性 */
+    $sql = "SELECT goods_attr_id, attr_value FROM " .$GLOBALS['ecs']->table('goods_attr'). " WHERE $_goods_id";
+    $result_goods_attr = $GLOBALS['db']->getAll($sql);
+
+    $_goods_attr = array();
+    foreach ($result_goods_attr as $value)
+    {
+        $_goods_attr[$value['goods_attr_id']] = $value['attr_value'];
+    }
+
+    /* 过滤货品 */
+    foreach ($result_products as $key => $value)
+    {
+        $goods_attr_array = explode('|', $value['goods_attr']);
+        if (is_array($goods_attr_array))
+        {
+            $goods_attr = array();
+            foreach ($goods_attr_array as $_attr)
+            {
+                $goods_attr[] = $_goods_attr[$_attr];
+            }
+
+            $goods_attr_str = implode('，', $goods_attr);
+        }
+
+        $result_products[$key]['goods_attr_str'] = $goods_attr_str;
+    }
+
+    return $result_products;
+}
+
+/**
+ * 取商品的下拉框Select列表
+ *
+ * @param       int      $goods_id    商品id
+ *
+ * @return  array
+ */
+function get_good_products_select($goods_id)
+{
+    $return_array = array();
+    $products = get_good_products($goods_id);
+
+    if (empty($products))
+    {
+        return $return_array;
+    }
+
+    foreach ($products as $value)
+    {
+        $return_array[$value['product_id']] = $value['goods_attr_str'];
+    }
+
+    return $return_array;
+}
+
+/**
+ * 取商品的规格列表
+ *
+ * @param       int      $goods_id    商品id
+ * @param       string   $conditions  sql条件
+ *
+ * @return  array
+ */
+function get_specifications_list($goods_id, $conditions = '')
+{
+    /* 取商品属性 */
+    $sql = "SELECT ga.goods_attr_id, ga.attr_id, ga.attr_value, a.attr_name
+            FROM " .$GLOBALS['ecs']->table('goods_attr'). " AS ga, " .$GLOBALS['ecs']->table('attribute'). " AS a
+            WHERE ga.attr_id = a.attr_id
+            AND ga.goods_id = '$goods_id'
+            $conditions";
+    $result = $GLOBALS['db']->getAll($sql);
+
+    $return_array = array();
+    foreach ($result as $value)
+    {
+        $return_array[$value['goods_attr_id']] = $value;
+    }
+
+    return $return_array;
+}
+
+/**
+ * 调用array_combine函数
+ *
+ * @param   array  $keys
+ * @param   array  $values
+ *
+ * @return  $combined
+ */
+if (!function_exists('array_combine')) {
+    function array_combine($keys, $values)
+    {
+        if (!is_array($keys)) {
+            user_error('array_combine() expects parameter 1 to be array, ' .
+                gettype($keys) . ' given', E_USER_WARNING);
+            return;
+        }
+
+        if (!is_array($values)) {
+            user_error('array_combine() expects parameter 2 to be array, ' .
+                gettype($values) . ' given', E_USER_WARNING);
+            return;
+        }
+
+        $key_count = count($keys);
+        $value_count = count($values);
+        if ($key_count !== $value_count) {
+            user_error('array_combine() Both parameters should have equal number of elements', E_USER_WARNING);
+            return false;
+        }
+
+        if ($key_count === 0 || $value_count === 0) {
+            user_error('array_combine() Both parameters should have number of elements at least 0', E_USER_WARNING);
+            return false;
+        }
+
+        $keys    = array_values($keys);
+        $values  = array_values($values);
+
+        $combined = array();
+        for ($i = 0; $i < $key_count; $i++) {
+            $combined[$keys[$i]] = $values[$i];
+        }
+
+        return $combined;
+    }
 }
 
 ?>

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 夺宝奇兵管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: snatch.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: snatch.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -64,7 +64,6 @@ elseif ($_REQUEST['act'] =='insert')
         sys_msg(sprintf($_LANG['snatch_name_exist'],  $_POST['snatch_name']) , 1);
     }
 
-
     /* 将时间转换成整数 */
     $_POST['start_time'] = local_strtotime($_POST['start_time']);
     $_POST['end_time']   = local_strtotime($_POST['end_time']);
@@ -86,6 +85,10 @@ elseif ($_REQUEST['act'] =='insert')
     {
         $_POST['cost_points'] = 0;
     }
+    if (isset($_POST['product_id']) && empty($_POST['product_id']))
+    {
+        $_POST['product_id'] = 0;
+    }
 
     $info = array('start_price'=>$_POST['start_price'], 'end_price'=>$_POST['end_price'], 'max_price'=>$_POST['max_price'], 'cost_points'=>$_POST['cost_points']);
 
@@ -93,6 +96,7 @@ elseif ($_REQUEST['act'] =='insert')
     $record = array('act_name'=>$_POST['snatch_name'], 'act_desc'=>$_POST['desc'],
                     'act_type'=>GAT_SNATCH, 'goods_id'=>$_POST['goods_id'], 'goods_name'=>$_POST['goods_name'],
                     'start_time'=>$_POST['start_time'], 'end_time'=>$_POST['end_time'],
+                    'product_id'=>$_POST['product_id'],
                     'is_finished'=>0, 'ext_info'=>serialize($info));
 
     $db->AutoExecute($ecs->table('goods_activity'),$record,'INSERT');
@@ -199,14 +203,16 @@ elseif ($_REQUEST['act'] == 'edit')
     $snatch        = get_snatch_info($_REQUEST['id']);
 
     $snatch['option'] = '<option value="'.$snatch['goods_id'].'">'.$snatch['goods_name'].'</option>';
-    $smarty->assign('snatch',       $snatch);
-    $smarty->assign('ur_here',      $_LANG['snatch_edit']);
-    $smarty->assign('action_link',  array('text' => $_LANG['02_snatch_list'], 'href'=>'snatch.php?act=list&' . list_link_postfix()));
-    $smarty->assign('form_action',   'update');
+    $smarty->assign('snatch',               $snatch);
+    $smarty->assign('ur_here',              $_LANG['snatch_edit']);
+    $smarty->assign('action_link',          array('text' => $_LANG['02_snatch_list'], 'href'=>'snatch.php?act=list&' . list_link_postfix()));
+    $smarty->assign('form_action',        'update');
+
+    /* 商品货品表 */
+    $smarty->assign('good_products_select', get_good_products_select($snatch['goods_id']));
 
     assign_query_info();
     $smarty->display('snatch_info.htm');
-
 }
 elseif ($_REQUEST['act'] =='update')
 {
@@ -246,6 +252,10 @@ elseif ($_REQUEST['act'] =='update')
     {
         $_POST['cost_points'] = 0;
     }
+    if (isset($_POST['product_id']) && empty($_POST['product_id']))
+    {
+        $_POST['product_id'] = 0;
+    }
 
     /* 检查活动重名 */
     $sql = "SELECT COUNT(*) ".
@@ -256,12 +266,13 @@ elseif ($_REQUEST['act'] =='update')
         sys_msg(sprintf($_LANG['snatch_name_exist'],  $_POST['snatch_name']) , 1);
     }
 
-
     $info = array('start_price'=>$_POST['start_price'], 'end_price'=>$_POST['end_price'], 'max_price'=>$_POST['max_price'], 'cost_points'=>$_POST['cost_points']);
 
     /* 更新数据 */
-    $record = array('act_name' => $_POST['snatch_name'], 'goods_id' => $_POST['goods_id'], 'goods_name' =>$_POST['goods_name'],
-                    'start_time' => $_POST['start_time'], 'end_time' => $_POST['end_time'], 'act_desc' => $_POST['desc'],
+    $record = array('act_name' => $_POST['snatch_name'], 'goods_id' => $_POST['goods_id'],
+                    'goods_name' =>$_POST['goods_name'], 'start_time' => $_POST['start_time'],
+                    'end_time' => $_POST['end_time'], 'act_desc' => $_POST['desc'],
+                    'product_id'=>$_POST['product_id'],
                     'ext_info'=>serialize($info));
     $db->autoExecute($ecs->table('goods_activity'), $record, 'UPDATE', "act_id = '" . $_POST['id'] . "' AND act_type = " . GAT_SNATCH );
 
@@ -329,7 +340,31 @@ elseif ($_REQUEST['act'] == 'search_goods')
 
     $filters = $json->decode($_GET['JSON']);
 
-    $arr = get_goods_list($filters);
+    $arr['goods'] = get_goods_list($filters);
+
+    if (!empty($arr['goods'][0]['goods_id']))
+    {
+        $arr['products'] = get_good_products($arr['goods'][0]['goods_id']);
+    }
+
+    make_json_result($arr);
+}
+
+/*------------------------------------------------------ */
+//-- 搜索货品
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'search_products')
+{
+    include_once(ROOT_PATH . 'includes/cls_json.php');
+    $json = new JSON;
+
+    $filters = $json->decode($_GET['JSON']);
+
+    if (!empty($filters->goods_id))
+    {
+        $arr['products'] = get_good_products($filters->goods_id);
+    }
 
     make_json_result($arr);
 }
@@ -348,7 +383,7 @@ function get_snatchlist()
     {
         /* 查询条件 */
         $filter['keywords']   = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keywords'] = json_str_iconv($filter['keywords']);
         }
@@ -364,7 +399,7 @@ function get_snatchlist()
         $filter = page_and_size($filter);
 
         /* 获活动数据 */
-        $sql = "SELECT act_id, act_name AS snatch_name, goods_name, start_time, end_time, is_finished, ext_info ".
+        $sql = "SELECT act_id, act_name AS snatch_name, goods_name, start_time, end_time, is_finished, ext_info, product_id ".
                " FROM " . $GLOBALS['ecs']->table('goods_activity') .
                " WHERE act_type = " . GAT_SNATCH . $where .
                " ORDER by $filter[sort_by] $filter[sort_order] LIMIT ". $filter['start'] .", " . $filter['page_size'];
@@ -412,7 +447,7 @@ function get_snatch_info($id)
 {
     global $ecs, $db,$_CFG;
 
-    $sql = "SELECT act_id,  act_name AS snatch_name, goods_id , goods_name, start_time, end_time, act_desc, ext_info".
+    $sql = "SELECT act_id, act_name AS snatch_name, goods_id, product_id, goods_name, start_time, end_time, act_desc, ext_info" .
            " FROM " . $GLOBALS['ecs']->table('goods_activity') .
            " WHERE act_id='$id' AND act_type = " . GAT_SNATCH;
 

@@ -3,7 +3,7 @@
 /**
  * ECSHOP Install program language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -12,13 +12,13 @@
  * commercial purposes.
  * ============================================================================
  * $Author: liubo $
- * $Id: en_us.php 16885 2009-12-14 09:38:40Z liubo $
+ * $Id: en_us.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 /* Common language item */
 $_LANG['prev_step'] = 'Previous:';
 $_LANG['next_step'] = 'Next:';
-$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a> <br> All right reserved.';
+$_LANG['copyright'] = '&copy; 2005-2011 <a href="http://www.ecshop.com" target="_blank">Shanghai ShopEx Network Technology Co,.Ltd. </a> <br> All right reserved.';
 
 
 /* Welcome page */
@@ -30,7 +30,7 @@ $_LANG['americanese'] = 'English';
 $_LANG['agree_license'] = 'I have read carefully，I accept the terms of the License Agreement';
 $_LANG['check_system_environment'] = 'Checking system environment';
 $_LANG['setup_environment'] = 'Configuration installation environment';
-
+$_LANG['loading'] = 'Loading,please wait...';
 
 /* Check environment page */
 $_LANG['checking_title'] = 'ECShop install program, the 2 step / 3 steps, check enviroment';
@@ -103,6 +103,7 @@ $_LANG['cosmetics'] = 'Cosmetics';
 $_LANG['install_at_once'] = 'Install at once';
 $_LANG['default_friend_link'] = 'ECSHOP e-commerce management system';
 $_LANG['maifou_friend_link'] = 'Shop free';
+$_LANG['wdwd_friend_link']='Free independent online store';
 $_LANG['monitor_title'] = 'Installer Monitor';
 $_LANG['admin_user'][] = 'Goods list|goods.php?act=list';
 $_LANG['admin_user'][] = 'Order list|order.php?act=list';

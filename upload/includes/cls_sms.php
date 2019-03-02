@@ -3,14 +3,14 @@
 /**
  * ECSHOP 短信模块 之 模型（类库）
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: cls_sms.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: cls_sms.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 if (!defined('IN_ECS'))
@@ -480,7 +480,7 @@ class sms
      * @param   string  $send_date      定时发送时间
      * @return  boolean                 发送成功返回true，失败返回false。
      */
-    function send($phone, $msg, $send_date = '', $send_num = 1)
+    function send($phone, $msg, $send_date = '', $send_num = 1,$sms_type='')
     {
         /* 检查发送信息的合法性 */
         if (!$this->check_send_sms($phone, $msg, $send_date))
@@ -514,6 +514,10 @@ class sms
         $submit_str['ac'] = md5($GLOBALS['_CFG']['certificate_id'].$GLOBALS['_CFG']['token']);
         $submit_str['version']=$version;
         
+        if($sms_type==1)
+        {
+           $submit_str['sms_type']=1;
+        }
         /* 发送HTTP请求 */
         $response = $this->t->request($url, $submit_str);
         $result = explode('|',$response['body']);
@@ -529,15 +533,26 @@ class sms
         if($result[0] == '2'){
             $sms_url = '';
         }
-        
+        if (EC_CHARSET != 'utf-8')
+        {
         $send_arr =    Array(
+            0 => Array(
+                    0 => $phone,    //发送的手机号码
+                    1 => iconv('gb2312','utf-8',$msg),      //发送信息
+                    2 => 'Now' //发送的时间
+                )
+        );
+        }
+        else
+        {
+            $send_arr =    Array(
             0 => Array(
                     0 => $phone,    //发送的手机号码
                     1 => $msg,      //发送信息
                     2 => 'Now' //发送的时间
                 )
         );
-   
+        }
         $send_str['certi_id'] = $GLOBALS['_CFG']['certificate_id'];
         $send_str['ex_type'] = $send_num;
         $send_str['content'] = json_encode($send_arr);
@@ -551,7 +566,11 @@ class sms
 
             return false;
         }
-        
+
+        if($sms_type==1)
+        {
+           $send_str['sms_type']=1;
+        }
         /* 发送HTTP请求 */
         $response = $this->t->request($sms_url, $send_str);
 

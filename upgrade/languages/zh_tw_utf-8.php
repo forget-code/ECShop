@@ -3,7 +3,7 @@
 /**
   * ECSHOP升級程序語言文件
   * ================================================= ===========================
-  *版權所有2005-2009上海商派網絡科技有限公司，並保留所有權利。
+  *版權所有2005-2011上海商派網絡科技有限公司，並保留所有權利。
   *網站地址: http://www.ecshop.com
   * ------------------------------------------------- ---------------------------
   *這不是一個自由軟件！您只能在不用於商業目的的前提下對程序代碼進行修改和
@@ -11,7 +11,7 @@
   * ================================================= ===========================
   * $Author: liubo $
   * $Date: 2008-07-16 14:54:08 +0800$
-  * $Id: zh_tw_utf-8.php 16882 2009-12-14 09:22:19Z liubo $
+  * $Id: zh_tw_utf-8.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['prev_step'] = '上一步：';
@@ -21,7 +21,7 @@ $_LANG['readme_title'] = 'ECSHOP升級程序第2步/共3步說明頁';
 $_LANG['checking_title'] = 'ECShop升級程序第3步/共3步環境檢測';
 $_LANG['check_system_environment'] = '檢測系統環境';
 
-$_LANG['copyright'] = '&copy; 2005-2009 <a href="http://www.ecshop.com" target="_blank">上海商派網絡科技有限公司</a>。保留所有權利。 ';
+$_LANG['copyright'] = '&copy; 2005-2011 <a href="http://www.ecshop.com" target="_blank">上海商派網絡科技有限公司</a>。保留所有權利。 ';
 $_LANG['is_last_version'] = '您的ECSHOP已是最新版本，無需升級。 ';
 
 $_LANG['readme_page'] = '說明頁';
@@ -122,6 +122,7 @@ $_LANG['lang_description'] = '聲明';
 $_LANG['lang_charset']['zh_cn_gbk'] = '簡體中文GBK';
 $_LANG['lang_charset']['zh_cn_utf-8'] = '簡體中文UTF-8';
 $_LANG['lang_charset']['zh_tw_utf-8'] = '繁體中文UTF-8';
+$_LANG['lang_charset']['en_us_utf-8'] = '英語 UTF-8';
 $_LANG['lang_desc']['desc1'] = '請確認您的ECShop程序與您選擇的語言編碼一致；';
 $_LANG['lang_desc']['desc2'] = '如果您的數據庫與ECShop程序編碼不一致，可以先進行數據庫編碼轉換。 ';
 $_LANG['lang_desc']['desc3'] = '<font color="red">如果您是從ECShop v2.6.0版本進行升級，並選擇ECShop接口方式，請先進行會員數據的導入，否則原會員將無法登錄。</font> ';

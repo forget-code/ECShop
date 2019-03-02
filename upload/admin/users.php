@@ -3,14 +3,14 @@
 /**
  * ECSHOP 会员管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: users.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: users.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -249,14 +249,16 @@ elseif ($_REQUEST['act'] == 'edit')
     }
     else
     {
-        $user['sex']            = 0;
-        $user['pay_points']     = 0;
-        $user['rank_points']    = 0;
-        $user['user_money']     = 0;
-        $user['frozen_money']   = 0;
-        $user['credit_line']    = 0;
-        $user['formated_user_money'] = price_format(0);
-        $user['formated_frozen_money'] = price_format(0);
+          $link[] = array('text' => $_LANG['go_back'], 'href'=>'users.php?act=list');
+          sys_msg($_LANG['username_invalid'], 0, $links);
+//        $user['sex']            = 0;
+//        $user['pay_points']     = 0;
+//        $user['rank_points']    = 0;
+//        $user['user_money']     = 0;
+//        $user['frozen_money']   = 0;
+//        $user['credit_line']    = 0;
+//        $user['formated_user_money'] = price_format(0);
+//        $user['formated_frozen_money'] = price_format(0);
      }
 
     /* 取出注册扩展字段 */
@@ -288,6 +290,41 @@ elseif ($_REQUEST['act'] == 'edit')
     }
 
     $smarty->assign('extend_info_list', $extend_info_list);
+
+    /* 当前会员推荐信息 */
+    $affiliate = unserialize($GLOBALS['_CFG']['affiliate']);
+    $smarty->assign('affiliate', $affiliate);
+
+    empty($affiliate) && $affiliate = array();
+
+    if(empty($affiliate['config']['separate_by']))
+    {
+        //推荐注册分成
+        $affdb = array();
+        $num = count($affiliate['item']);
+        $up_uid = "'$_GET[id]'";
+        for ($i = 1 ; $i <=$num ;$i++)
+        {
+            $count = 0;
+            if ($up_uid)
+            {
+                $sql = "SELECT user_id FROM " . $ecs->table('users') . " WHERE parent_id IN($up_uid)";
+                $query = $db->query($sql);
+                $up_uid = '';
+                while ($rt = $db->fetch_array($query))
+                {
+                    $up_uid .= $up_uid ? ",'$rt[user_id]'" : "'$rt[user_id]'";
+                    $count++;
+                }
+            }
+            $affdb[$i]['num'] = $count;
+        }
+        if ($affdb[1]['num'] > 0)
+        {
+            $smarty->assign('affdb', $affdb);
+        }
+    }
+
 
     assign_query_info();
     $smarty->assign('ur_here',          $_LANG['users_edit']);
@@ -329,7 +366,11 @@ elseif ($_REQUEST['act'] == 'update')
         }
         sys_msg($msg, 1);
     }
-
+    if(!empty($password))
+    {
+			$sql="UPDATE ".$ecs->table('users'). "SET `ec_salt`='0' WHERE user_name= '".$username."'";
+			$db->query($sql);
+	}
     /* 更新用户扩展字段的数据 */
     $sql = 'SELECT id FROM ' . $ecs->table('reg_fields') . ' WHERE type = 0 AND display = 1 ORDER BY dis_order, id';   //读出所有扩展字段的id
     $fields_arr = $db->getAll($sql);
@@ -558,6 +599,68 @@ elseif ($_REQUEST['act'] == 'remove_parent')
     sys_msg(sprintf($_LANG['update_success'], $username), 0, $link);
 }
 
+/*------------------------------------------------------ */
+//-- 查看用户推荐会员列表
+/*------------------------------------------------------ */
+
+elseif ($_REQUEST['act'] == 'aff_list')
+{
+    /* 检查权限 */
+    admin_priv('users_manage');
+    $smarty->assign('ur_here',      $_LANG['03_users_list']);
+
+    $auid = $_GET['auid'];
+    $user_list['user_list'] = array();
+
+    $affiliate = unserialize($GLOBALS['_CFG']['affiliate']);
+    $smarty->assign('affiliate', $affiliate);
+
+    empty($affiliate) && $affiliate = array();
+
+    $num = count($affiliate['item']);
+    $up_uid = "'$auid'";
+    $all_count = 0;
+    for ($i = 1; $i<=$num; $i++)
+    {
+        $count = 0;
+        if ($up_uid)
+        {
+            $sql = "SELECT user_id FROM " . $ecs->table('users') . " WHERE parent_id IN($up_uid)";
+            $query = $db->query($sql);
+            $up_uid = '';
+            while ($rt = $db->fetch_array($query))
+            {
+                $up_uid .= $up_uid ? ",'$rt[user_id]'" : "'$rt[user_id]'";
+                $count++;
+            }
+        }
+        $all_count += $count;
+
+        if ($count)
+        {
+            $sql = "SELECT user_id, user_name, '$i' AS level, email, is_validated, user_money, frozen_money, rank_points, pay_points, reg_time ".
+                    " FROM " . $GLOBALS['ecs']->table('users') . " WHERE user_id IN($up_uid)" .
+                    " ORDER by level, user_id";
+            $user_list['user_list'] = array_merge($user_list['user_list'], $db->getAll($sql));
+        }
+    }
+
+    $temp_count = count($user_list['user_list']);
+    for ($i=0; $i<$temp_count; $i++)
+    {
+        $user_list['user_list'][$i]['reg_time'] = local_date($_CFG['date_format'], $user_list['user_list'][$i]['reg_time']);
+    }
+
+    $user_list['record_count'] = $all_count;
+
+    $smarty->assign('user_list',    $user_list['user_list']);
+    $smarty->assign('record_count', $user_list['record_count']);
+    $smarty->assign('full_page',    1);
+    $smarty->assign('action_link',  array('text' => $_LANG['back_note'], 'href'=>"users.php?act=edit&id=$auid"));
+
+    assign_query_info();
+    $smarty->display('affiliate_list.htm');
+}
 
 /**
  *  返回用户列表数据
@@ -574,7 +677,7 @@ function user_list()
     {
         /* 过滤条件 */
         $filter['keywords'] = empty($_REQUEST['keywords']) ? '' : trim($_REQUEST['keywords']);
-        if ($_REQUEST['is_ajax'] == 1)
+        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
         {
             $filter['keywords'] = json_str_iconv($filter['keywords']);
         }

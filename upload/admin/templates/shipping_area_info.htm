@@ -1,4 +1,4 @@
-<!-- $Id: shipping_area_info.htm 15521 2008-12-30 09:58:39Z sunxiaodong $ -->
+<!-- $Id: shipping_area_info.htm 16819 2009-11-25 06:21:17Z sxc_shop $ -->
 {include file="pageheader.htm"}
 {insert_scripts files="validator.js,../js/transport.js,../js/region.js"}
 <div class="main-div">
@@ -129,6 +129,21 @@ function validate()
 
     validator.required('shipping_area_name', no_area_name);
     validator.isInt('free_money', invalid_free_mondy, true);
+
+    var regions_chk_cnt = 0;
+    for (i=0; i<document.getElementsByName('regions[]').length; i++)
+    {
+      if (document.getElementsByName('regions[]')[i].checked == true)
+      {
+        regions_chk_cnt++;
+      }
+    }
+
+    if (regions_chk_cnt == 0)
+    {
+      validator.addErrorMsg(blank_shipping_area);
+    }
+    
     return validator.passed();
 }
 

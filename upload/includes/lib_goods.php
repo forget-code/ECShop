@@ -3,14 +3,14 @@
 /**
  * ECSHOP 商品相关函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_goods.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_goods.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -155,10 +155,11 @@ function get_top10($cats = '')
         $sql .= " AND g.goods_number > 0 ";
     }
     $sql .= ' AND og.order_id = o.order_id AND og.goods_id = g.goods_id ' .
-           "AND (o.order_status = '" . OS_CONFIRMED . "' OR o.order_status >= '" . OS_SPLITED . "') " .
+           "AND (o.order_status = '" . OS_CONFIRMED .  "' OR o.order_status = '" . OS_SPLITED . "') " .
            "AND (o.pay_status = '" . PS_PAYED . "' OR o.pay_status = '" . PS_PAYING . "') " .
            "AND (o.shipping_status = '" . SS_SHIPPED . "' OR o.shipping_status = '" . SS_RECEIVED . "') " .
            'GROUP BY g.goods_id ORDER BY goods_number DESC, g.goods_id DESC LIMIT ' . $GLOBALS['_CFG']['top_number'];
+           
     $arr = $GLOBALS['db']->getAll($sql);
 
     for ($i = 0, $count = count($arr); $i < $count; $i++)
@@ -636,6 +637,8 @@ function get_goods_properties($goods_id)
 
     foreach ($res AS $row)
     {
+        $row['attr_value'] = str_replace("\n", '<br />', $row['attr_value']);
+
         if ($row['attr_type'] == 0)
         {
             $group = (isset($groups[$row['attr_group']])) ? $groups[$row['attr_group']] : $GLOBALS['_LANG']['goods_attr'];
@@ -742,9 +745,10 @@ function get_goods_gallery($goods_id)
  * @param   integer     $cat_id     分类ID
  * @param   integer     $num        数量
  * @param   string      $from       来自web/wap的调用
+ * @param   string      $order_rule 指定商品排序规则
  * @return  array
  */
-function assign_cat_goods($cat_id, $num = 0, $from = 'web')
+function assign_cat_goods($cat_id, $num = 0, $from = 'web', $order_rule = '')
 {
     $children = get_children($cat_id);
 
@@ -755,8 +759,10 @@ function assign_cat_goods($cat_id, $num = 0, $from = 'web')
             "LEFT JOIN " . $GLOBALS['ecs']->table('member_price') . " AS mp ".
                     "ON mp.goods_id = g.goods_id AND mp.user_rank = '$_SESSION[user_rank]' ".
             'WHERE g.is_on_sale = 1 AND g.is_alone_sale = 1 AND '.
-                'g.is_delete = 0 AND (' . $children . 'OR ' . get_extension_goods($children) . ') ' .
-            'ORDER BY g.sort_order, g.goods_id DESC';
+                'g.is_delete = 0 AND (' . $children . 'OR ' . get_extension_goods($children) . ') ';
+
+    $order_rule = empty($order_rule) ? 'ORDER BY g.sort_order, g.goods_id DESC' : $order_rule;
+    $sql .= $order_rule;
     if ($num > 0)
     {
         $sql .= ' LIMIT ' . $num;
@@ -813,9 +819,10 @@ function assign_cat_goods($cat_id, $num = 0, $from = 'web')
  * @param   integer     $brand_id       品牌的ID
  * @param   integer     $num            数量
  * @param   integer     $cat_id         分类编号
+ * @param   string      $order_rule     指定商品排序规则
  * @return  void
  */
-function assign_brand_goods($brand_id, $num = 0, $cat_id = 0)
+function assign_brand_goods($brand_id, $num = 0, $cat_id = 0,$order_rule = '')
 {
     $sql =  'SELECT g.goods_id, g.goods_name, g.market_price, g.shop_price AS org_price, ' .
                 "IFNULL(mp.user_price, g.shop_price * '$_SESSION[discount]') AS shop_price, ".
@@ -830,7 +837,8 @@ function assign_brand_goods($brand_id, $num = 0, $cat_id = 0)
         $sql .= get_children($cat_id);
     }
 
-    $sql .= ' ORDER BY g.sort_order, g.goods_id DESC';
+    $order_rule = empty($order_rule) ? ' ORDER BY g.sort_order, g.goods_id DESC' : $order_rule;
+    $sql .= $order_rule;
     if ($num > 0)
     {
         $res = $GLOBALS['db']->selectLimit($sql, $num);
@@ -857,7 +865,7 @@ function assign_brand_goods($brand_id, $num = 0, $cat_id = 0)
         $goods[$idx]['name']          = $row['goods_name'];
         $goods[$idx]['short_name']    = $GLOBALS['_CFG']['goods_name_length'] > 0 ?
             sub_str($row['goods_name'], $GLOBALS['_CFG']['goods_name_length']) : $row['goods_name'];
-        $goods[$idx]['market_price']  = $row['market_price'];
+        $goods[$idx]['market_price']  = price_format($row['market_price']);
         $goods[$idx]['shop_price']    = price_format($row['shop_price']);
         $goods[$idx]['promote_price'] = $promote_price > 0 ? price_format($promote_price) : '';
         $goods[$idx]['brief']         = $row['goods_brief'];
@@ -1455,4 +1463,32 @@ function get_goods_fittings($goods_list = array())
     return $arr;
 }
 
+/**
+ * 取指定规格的货品信息
+ *
+ * @access      public
+ * @param       string      $goods_id
+ * @param       array       $spec_goods_attr_id
+ * @return      array
+ */
+function get_products_info($goods_id, $spec_goods_attr_id)
+{
+    $return_array = array();
+
+    if (empty($spec_goods_attr_id) || !is_array($spec_goods_attr_id) || empty($goods_id))
+    {
+        return $return_array;
+    }
+
+    $goods_attr_array = sort_goods_attr_id_array($spec_goods_attr_id);
+
+    if(isset($goods_attr_array['sort']))
+    {
+        $goods_attr = implode('|', $goods_attr_array['sort']);
+
+        $sql = "SELECT * FROM " .$GLOBALS['ecs']->table('products'). " WHERE goods_id = '$goods_id' AND goods_attr = '$goods_attr' LIMIT 0, 1";
+        $return_array = $GLOBALS['db']->getRow($sql);
+    }
+    return $return_array;
+}
 ?>

@@ -3,7 +3,7 @@
 /**
  * ECSHOP Control panel associates product language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: zblikai $
- * $Id: group_buy.php 15646 2009-02-23 08:33:00Z zblikai $
+ * $Author: liubo $
+ * $Id: group_buy.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 /* Current page title and useable link name */
@@ -94,6 +94,7 @@ $_LANG['js_languages']['error_goods_null'] = 'Please select product of associate
 $_LANG['js_languages']['error_deposit'] = 'Insurance must be an integer!';
 $_LANG['js_languages']['error_restrict_amount'] = 'Limit quantity must be an integer!';
 $_LANG['js_languages']['error_gift_integral'] = 'Present points must be an integer!';
+$_LANG['js_languages']['search_is_null'] = 'Did not search any products, please re-search';
 
 /* Delete associates */
 $_LANG['js_languages']['batch_drop_confirm'] = 'Are you sure delete the checked associates?';

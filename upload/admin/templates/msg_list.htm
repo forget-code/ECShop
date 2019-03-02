@@ -18,13 +18,16 @@
     {$lang.msg_title}: <input type="text" name="keyword" /> <input type="submit" class="button" value="{$lang.button_search}" />
   </form>
 </div>
-<form method="POST" action="" name="listForm">
+<form method="POST" action="user_msg.php?act=batch_drop" name="listForm" onsubmit="return confirm_bath()">
 <!-- start article list -->
 <div class="list-div" id="listDiv">
 {/if}
 <table cellpadding="3" cellspacing="1">
   <tr>
-    <th><a href="javascript:listTable.sort('msg_id'); ">{$lang.msg_id}</a>{$sort_msg_id}</th>
+    <th>
+      <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox" />
+      <a href="javascript:listTable.sort('msg_id'); ">{$lang.msg_id}</a>{$sort_msg_id}
+    </th>
     <th><a href="javascript:listTable.sort('user_name'); ">{$lang.user_name}</a>{$sort_user_name}</th>
     <th><a href="javascript:listTable.sort('msg_title'); ">{$lang.msg_title}</a>{$sort_msg_title}</th>
     <th><a href="javascript:listTable.sort('msg_type'); ">{$lang.msg_type}</a>{$sort_msg_type}</th>
@@ -35,7 +38,7 @@
   </tr>
   {foreach from =$msg_list item=msg}
   <tr>
-    <td align="center">{$msg.msg_id}</td>
+    <td><input type="checkbox" name="checkboxes[]" value="{$msg.msg_id}" />{$msg.msg_id}</td>
     <td align="center">{$msg.user_name}</td>
     <td align="left">{$msg.msg_title|truncate:40|escape:html}</td>
     <td align="center">{$msg.msg_type}{if $msg.order_id}<br><a href="order.php?act=info&order_id={$msg.order_id}">{$msg.order_sn}{/if}</a></td>
@@ -59,10 +62,17 @@
   <tr><td class="no-records" colspan="7">{$lang.no_records}</td></tr>
   {/foreach}
 </table>
-
 <table id="page-table" cellspacing="0">
 <tr>
-  <td>&nbsp;</td>
+  <td><div>
+      <select name="sel_action">
+	    <option value="">{$lang.select_please}</option>
+        <option value="remove">{$lang.delete}</option>
+        <option value="allow">{$lang.allow}</option>
+        <option value="deny">{$lang.forbid}</option>
+      </select>
+      <input type="hidden" name="act" value="batch" />
+      <input type="submit" name="drop" id="btnSubmit" value="{$lang.button_submit}" class="button" disabled="true" /></div></td>
   <td align="right" nowrap="true">
   {include file="page.htm"}
   </td>
@@ -75,7 +85,10 @@
 <script type="text/javascript" language="JavaScript">
 listTable.recordCount = {$record_count};
 listTable.pageCount = {$page_count};
-
+cfm = new Object();
+cfm['allow'] = '{$lang.cfm_allow}';
+cfm['remove'] = '{$lang.cfm_remove}';
+cfm['deny'] = '{$lang.cfm_deny}';
 {foreach from=$filter item=item key=key}
 listTable.filter.{$key} = '{$item}';
 {/foreach}
@@ -100,6 +113,15 @@ function searchMsg()
     listTable.filter['msg_type'] = document.forms['searchForm'].elements['msg_type'].value;
     listTable.filter['page'] = 1;
     listTable.loadList();
+}
+
+function confirm_bath()
+{
+    var action = document.forms['listForm'].elements['sel_action'].value;
+    if (action == 'allow'||action == 'remove'||action == 'deny')
+      {
+          return confirm(cfm[action]);
+      }
 }
 //-->
 </script>

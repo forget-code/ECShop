@@ -3,7 +3,7 @@
 /**
  * ECSHOP
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -11,7 +11,7 @@
  * ============================================================================
  *
  * $Author: liubo $
- * $Id: goods_export.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: goods_export.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -30,6 +30,8 @@ if ($_REQUEST['act'] == 'goods_export')
     $goods_fields = my_array_merge($_LANG['custom'], get_attributes());
     $data_format_array = array(
                                 'ecshop'    => $_LANG['export_ecshop'],
+                                'taobao V4.3'    => $_LANG['export_taobao_v43'],
+                                'taobao V4.6'    => $_LANG['export_taobao_v46'],
                                 'taobao'    => $_LANG['export_taobao'],
                                 'paipai'    => $_LANG['export_paipai'],
                                 'paipai4'   => $_LANG['export_paipai4'],
@@ -118,6 +120,92 @@ elseif ($_REQUEST['act'] == 'act_export_taobao')
         }
     }
 
+    if (EC_CHARSET != 'utf-8')
+    {
+        $content = ecs_iconv(EC_CHARSET, 'utf-8', $content);
+    }
+    $zip->add_file("\xFF\xFE" . utf82u2($content), 'goods_list.csv');
+
+    header("Content-Disposition: attachment; filename=goods_list.zip");
+    header("Content-Type: application/unknown");
+    die($zip->file());
+}
+elseif ($_REQUEST['act'] == 'act_export_taobao V4.3')
+{
+    /* 检查权限 */
+    admin_priv('goods_export');
+    include_once('includes/cls_phpzip.php');
+    $zip = new PHPZip;
+
+    $where = get_export_where_sql($_POST);
+
+    $goods_class =  intval($_POST['goods_class']);
+    $post_express = floatval($_POST['post_express']);
+    $express = floatval($_POST['express']);
+    $ems = floatval($_POST['ems']);
+
+    $shop_province = '""';
+    $shop_city = '""';
+    if ($_CFG['shop_province'] || $_CFG['shop_city'])
+    {
+        $sql = "SELECT region_id,  region_name FROM " . $ecs->table('region') . " WHERE region_id IN ('$_CFG[shop_province]',  '$_CFG[shop_city]')";
+        $arr = $db->getAll($sql);
+
+        if ($arr)
+        {
+            if (count($arr) == 1)
+            {
+                if ($arr[0]['region_id'] == $_CFG['shop_province'])
+                {
+                    $shop_province = '"' . $arr[0]['region_name'] . '"' ;
+                }
+                else
+                {
+                    $shop_city = '"' . $arr[0]['region_name'] . '"' ;
+                }
+            }
+            else
+            {
+                if ($arr[0]['region_id'] == $_CFG['shop_province'])
+                {
+                    $shop_province = '"' . $arr[0]['region_name'] . '"' ;
+                    $shop_city = '"' . $arr[1]['region_name'] . '"';
+                }
+                else
+                {
+                    $shop_province = '"' . $arr[1]['region_name'] . '"' ;
+                    $shop_city = '"' . $arr[0]['region_name'] . '"';
+                }
+            }
+        }
+    }
+
+    $sql = "SELECT g.goods_id, g.goods_name, g.shop_price, g.goods_number, g.goods_desc, g.goods_img ".
+    " FROM " . $ecs->table('goods') . " AS g ". $where;
+
+    $res = $db->query($sql);
+
+    /* csv文件数组 */
+    $goods_value = array('goods_name'=>'""', 'goods_class'=>$goods_class, 'shop_class'=>0, 'new_level'=>5, 'province'=>$shop_province, 'city'=>$shop_city, 'sell_type'=>'"b"', 'shop_price'=>0, 'add_price'=>0, 'goods_number'=>0, 'die_day'=>14, 'load_type'=>1, 'post_express'=>$post_express, 'ems'=>$ems, 'express'=>$express, 'pay_type'=>2, 'allow_alipay'=>1, 'invoice'=>0, 'repair'=>0, 'resend'=>1, 'is_store'=>0, 'window'=>0, 'add_time'=>'"1980-1-1  0:00:00"', 'story'=>'""', 'goods_desc'=>'""', 'goods_img'=>'""', 'goods_attr'=>'""', 'group_buy'=>0, 'group_buy_num'=>0, 'template'=>0, 'discount'=>0, 'modify_time'=>'""', 'upload_status'=>100, 'img_status'=>1);
+
+    $content = implode("\t", $_LANG['taobao']) . "\n";
+
+    while ($row = $db->fetchRow($res))
+    {
+        $goods_value['goods_name'] = '"' . $row['goods_name'] . '"';
+        $goods_value['shop_price'] = $row['shop_price'];
+        $goods_value['goods_number'] = $row['goods_number'];
+        $goods_value['goods_desc'] = replace_special_char($row['goods_desc']);
+        $goods_value['goods_img'] = '"' . $row['goods_img'] . '"';
+
+        $content .= implode("\t", $goods_value) . "\n";
+
+        /* 压缩图片 */
+        if (!empty($row['goods_img']) && is_file(ROOT_PATH . $row['goods_img']))
+        {
+            $zip->add_file(file_get_contents(ROOT_PATH . $row['goods_img']), $row['goods_img']);
+        }
+    }
     if (EC_CHARSET != 'utf-8')
     {
         $content = ecs_iconv(EC_CHARSET, 'utf-8', $content);
@@ -607,7 +695,104 @@ elseif ($_REQUEST['act'] == 'get_goods_list')
     make_json_result($opt);
 }
 
+elseif ($_REQUEST['act'] == 'act_export_taobao V4.6')
+{
+    /* 检查权限 */
+    admin_priv('goods_export');
+    include_once('includes/cls_phpzip.php');
+    $zip = new PHPZip;
 
+    $where = get_export_where_sql($_POST);
+
+    $goods_class =  intval($_POST['goods_class']);
+    $post_express = floatval($_POST['post_express']);
+    $express = floatval($_POST['express']);
+    $ems = floatval($_POST['ems']);
+
+    $shop_province = '""';
+    $shop_city = '""';
+    if ($_CFG['shop_province'] || $_CFG['shop_city'])
+    {
+        $sql = "SELECT region_id,  region_name FROM " . $ecs->table('region') . " WHERE region_id IN ('$_CFG[shop_province]',  '$_CFG[shop_city]')";
+        $arr = $db->getAll($sql);
+
+        if ($arr)
+        {
+            if (count($arr) == 1)
+            {
+                if ($arr[0]['region_id'] == $_CFG['shop_province'])
+                {
+                    $shop_province = '"' . $arr[0]['region_name'] . '"' ;
+                }
+                else
+                {
+                    $shop_city = '"' . $arr[0]['region_name'] . '"' ;
+                }
+            }
+            else
+            {
+                if ($arr[0]['region_id'] == $_CFG['shop_province'])
+                {
+                    $shop_province = '"' . $arr[0]['region_name'] . '"' ;
+                    $shop_city = '"' . $arr[1]['region_name'] . '"';
+                }
+                else
+                {
+                    $shop_province = '"' . $arr[1]['region_name'] . '"' ;
+                    $shop_city = '"' . $arr[0]['region_name'] . '"';
+                }
+            }
+        }
+    }
+
+    $sql = "SELECT g.goods_id, g.goods_name, g.shop_price, g.goods_number, g.goods_desc, g.goods_img ".
+    " FROM " . $ecs->table('goods') . " AS g ". $where;
+
+    $res = $db->query($sql);
+
+    /* csv文件数组 */
+    $goods_value = array('goods_name'=>'', 'goods_class'=>$goods_class, 'shop_class'=>0, 'new_level'=>0, 'province'=>$shop_province, 'city'=>$shop_city, 'sell_type'=>'"b"', 'shop_price'=>0, 'add_price'=>0, 'goods_number'=>0, 'die_day'=>14, 'load_type'=>1, 'post_express'=>$post_express, 'ems'=>$ems, 'express'=>$express, 'pay_type'=>'', 'allow_alipay'=>'', 'invoice'=>0, 'repair'=>0, 'resend'=>1, 'is_store'=>0, 'window'=>0, 'add_time'=>'"1980-1-1  0:00:00"', 'story'=>'', 'goods_desc'=>'', 'goods_img'=>'', 'goods_attr'=>'', 'group_buy'=>'', 'group_buy_num'=>'', 'template'=>0, 'discount'=>0, 'modify_time'=>'"2011-5-1  0:00:00"', 'upload_status'=>100, 'img_status'=>1,'img_status'=>'','rebate_proportion'=>0,'new_goods_img'=>'','video'=>'','marketing_property_mix'=>'','user_input_ID_numbers'=>'','input_user_name_value'=>'','sellers_code'=>'','another_of_marketing_property'=>'','charge_type'=>'0','treasure_number'=>'','ID_number'=>'',);
+
+    $content = implode("\t", $_LANG['taobao46']) . "\n";
+
+    while ($row = $db->fetchRow($res))
+    {
+        
+        /* 压缩图片 */
+        if (!empty($row['goods_img']) && is_file(ROOT_PATH . $row['goods_img']))
+        {
+            $row['new_goods_img']=preg_replace("/(^images\/)+(.*)(.gif|.jpg|.jpeg|.png)$/", "\${2}.tbi", $row['goods_img']);
+            @copy(ROOT_PATH .$row['goods_img'],ROOT_PATH ."images\/".$row['new_goods_img']);
+            if(is_file(ROOT_PATH ."images\/". $row['new_goods_img']))
+            {
+                 $zip->add_file(file_get_contents(ROOT_PATH ."images\/". $row['new_goods_img']), $row['new_goods_img']);
+                 unlink(ROOT_PATH ."images\/".$row['new_goods_img']);
+            }
+        }
+        $goods_value['goods_name'] = '"' . $row['goods_name'] . '"';
+        $goods_value['shop_price'] = $row['shop_price'];
+        $goods_value['goods_number'] = $row['goods_number'];
+        $goods_value['goods_desc'] = replace_special_char($row['goods_desc']);
+        if(!empty($row['new_goods_img']))
+        {
+            $row['new_goods_img']=str_ireplace('/','\\',$row['new_goods_img'],$row['new_goods_img']);
+            $row['new_goods_img']=str_ireplace('.tbi','',$row['new_goods_img'],$row['new_goods_img']);
+           $goods_value['new_goods_img'] = '"' . $row['new_goods_img'] . ':0:0:|;'.'"';
+        }
+
+        $content .= implode("\t", $goods_value) . "\n";
+
+    }
+    if (EC_CHARSET != 'utf-8')
+    {
+        $content = ecs_iconv(EC_CHARSET, 'utf-8', $content);
+    }
+    $zip->add_file("\xFF\xFE" . utf82u2($content), 'goods_list.csv');
+
+    header("Content-Disposition: attachment; filename=goods_list.zip");
+    header("Content-Type: application/unknown");
+    die($zip->file());
+}
 
 /**
  *

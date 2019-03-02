@@ -1,7 +1,7 @@
 /* *
  * ECSHOP 表单验证类
  * ============================================================================
- * 版权所有 (C) 2005-2007 康盛创想（北京）科技有限公司，并保留所有权利。
+ * 版权所有 (C) 2005-2011 康盛创想（北京）科技有限公司，并保留所有权利。
  * 网站地址 : http : // www.ecshop.com
  * ----------------------------------------------------------------------------
  * 这是一个免费开源的软件；这意味着您可以在不用于商业目的的前提下对程序代码
@@ -87,8 +87,8 @@ var Validator = function(name)
   * 检查前一个表单元素是否大于后一个表单元素
   *
   * @param : fstControl   表单元素的ID
-  * @param : sndControl	  表单元素的ID
-  * @param : msg			    错误提示信息
+  * @param : sndControl   表单元素的ID
+  * @param : msg                错误提示信息
   */
   this.gt = function(fstControl, sndControl, msg)
   {
@@ -213,7 +213,7 @@ var Validator = function(name)
   * 检查前一个表单元素是否小于后一个表单元素(日期判断)
   *
   * @param : controlIdStart   表单元素的ID
-  * @param : controlIdEnd	  表单元素的ID
+  * @param : controlIdEnd     表单元素的ID
   * @param : msg              错误提示信息
   */
   this.islt = function(controlIdStart, controlIdEnd, msg)

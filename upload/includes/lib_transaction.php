@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户交易相关函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_transaction.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_transaction.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -579,7 +579,7 @@ function update_address($address)
     if ($address_id > 0)
     {
          /* 更新指定记录 */
-        $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('user_address'), $address, 'UPDATE', 'address_id = ' .$address_id);
+        $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('user_address'), $address, 'UPDATE', 'address_id = ' .$address_id . ' AND user_id = ' . $address['user_id']);
     }
     else
     {
@@ -857,7 +857,7 @@ function return_to_cart($order_id)
     $basic_number = array();
 
     /* 查订单商品：不考虑赠品 */
-    $sql = "SELECT goods_id, goods_number, goods_attr, parent_id, goods_attr_id" .
+    $sql = "SELECT goods_id, product_id,goods_number, goods_attr, parent_id, goods_attr_id" .
             " FROM " . $GLOBALS['ecs']->table('order_goods') .
             " WHERE order_id = '$order_id' AND is_gift = 0 AND extension_code <> 'package_buy'" .
             " ORDER BY parent_id ASC";
@@ -881,19 +881,31 @@ function return_to_cart($order_id)
         {
             continue;
         }
-
-        // 如果使用库存，且库存不足，修改数量
-        if ($GLOBALS['_CFG']['use_storage'] == 1 && $goods['goods_number'] < $row['goods_number'])
+        if($row['product_id'])
         {
-            if ($goods['goods_number'] == 0)
+            $order_goods_product_id=$row['product_id'];
+            $sql="SELECT product_number from ".$GLOBALS['ecs']->table('products')."where product_id='$order_goods_product_id'";
+            $product_number=$GLOBALS['db']->getOne($sql);
+        }
+        // 如果使用库存，且库存不足，修改数量
+        if ($GLOBALS['_CFG']['use_storage'] == 1 && ($row['product_id']?($product_number<$row['goods_number']):($goods['goods_number'] < $row['goods_number'])))
+        {
+            if ($goods['goods_number'] == 0 || $product_number=== 0)
             {
                 // 如果库存为0，处理下一个商品
                 continue;
             }
             else
             {
+                if($row['product_id'])
+                {
+                 $row['goods_number']=$product_number;
+                }
+                else
+                {
                 // 库存不为0，修改数量
                 $row['goods_number'] = $goods['goods_number'];
+                }
             }
         }
 

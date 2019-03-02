@@ -3,7 +3,7 @@
 /**
  * ECSHOP 角色管理信息以及权限管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
@@ -101,7 +101,7 @@ elseif ($_REQUEST['act'] == 'add')
     $priv_str = '';
 
     /* 获取权限的分组数据 */
-    $sql_query = "SELECT action_id, parent_id, action_code FROM " .$ecs->table('admin_action').
+    $sql_query = "SELECT action_id, parent_id, action_code, relevance FROM " .$ecs->table('admin_action').
                  " WHERE parent_id = 0";
     $res = $db->query($sql_query);
     while ($rows = $db->FetchRow($res))
@@ -111,7 +111,7 @@ elseif ($_REQUEST['act'] == 'add')
 
 
     /* 按权限组查询底级的权限名称 */
-    $sql = "SELECT action_id, parent_id, action_code FROM " .$ecs->table('admin_action').
+    $sql = "SELECT action_id, parent_id, action_code, relevance FROM " .$ecs->table('admin_action').
            " WHERE parent_id " .db_create_in(array_keys($priv_arr));
     $result = $db->query($sql);
     while ($priv = $db->FetchRow($result))
@@ -194,7 +194,7 @@ elseif ($_REQUEST['act'] == 'edit')
     $user_info = $db->getRow($sql);
 
     /* 获取权限的分组数据 */
-    $sql_query = "SELECT action_id, parent_id, action_code FROM " .$ecs->table('admin_action').
+    $sql_query = "SELECT action_id, parent_id, action_code,relevance FROM " .$ecs->table('admin_action').
                  " WHERE parent_id = 0";
     $res = $db->query($sql_query);
     while ($rows = $db->FetchRow($res))
@@ -203,7 +203,7 @@ elseif ($_REQUEST['act'] == 'edit')
     }
 
     /* 按权限组查询底级的权限名称 */
-    $sql = "SELECT action_id, parent_id, action_code FROM " .$ecs->table('admin_action').
+    $sql = "SELECT action_id, parent_id, action_code,relevance FROM " .$ecs->table('admin_action').
            " WHERE parent_id " .db_create_in(array_keys($priv_arr));
     $result = $db->query($sql);
     while ($priv = $db->FetchRow($result))

@@ -1,4 +1,4 @@
-<!-- $Id: user_info.htm 16786 2009-11-10 03:04:51Z sxc_shop $ -->
+<!-- $Id: user_info.htm 16854 2009-12-07 06:20:09Z sxc_shop $ -->
 {include file="pageheader.htm"}
 <div class="main-div">
 <form method="post" action="users.php" name="theForm" onsubmit="return validate()">
@@ -68,12 +68,6 @@
     <td class="label">{$lang.credit_line}:</td>
     <td><input name="credit_line" type="text" id="credit_line" value="{$user.credit_line}" size="10" /></td>
   </tr>
-  {if $user.parent_id}
-  <tr>
-    <td class="label">{$lang.parent_user}:</td>
-    <td><a href="users.php?act=edit&id={$user.parent_id}">{$user.parent_username}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="users.php?act=remove_parent&id={$user.user_id}">{$lang.parent_remove}</a></td>
-  </tr>
-  {/if}
   {foreach from=$extend_info_list item=field}
   <tr>
     <td class="label">{$field.reg_field_name}:</td>
@@ -82,6 +76,37 @@
     </td>
   </tr>
   {/foreach}
+  {if $user.parent_id}
+  <tr>
+    <td class="label">{$lang.parent_user}:</td>
+    <td><a href="users.php?act=edit&id={$user.parent_id}">{$user.parent_username}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="users.php?act=remove_parent&id={$user.user_id}">{$lang.parent_remove}</a></td>
+  </tr>
+  {/if}
+  {if $affiliate.on eq 1 && $affdb}
+  <tr>
+    <td class="label">{$lang.affiliate_user}:</td>
+    <td>[<a href="users.php?act=aff_list&auid={$user.user_id}">{$lang.show_affiliate_users}</a>][<a href="affiliate_ck.php?act=list&auid={$user.user_id}">{$lang.show_affiliate_orders}</a>]</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>   
+    <table border="0" cellspacing="1" style="background: #dddddd; width:30%;">
+    <tr>
+    <td bgcolor="#ffffff">{$lang.affiliate_lever}</td>
+    {foreach from=$affdb key=level item=val0}
+    <td bgcolor="#ffffff">{$level}</td>
+    {/foreach}
+    </tr>
+    <tr>
+    <td bgcolor="#ffffff">{$lang.affiliate_num}</td>
+    {foreach from=$affdb item=val}
+    <td bgcolor="#ffffff">{$val.num}</td>
+    {/foreach}
+    </tr>
+    </table>
+    </td>
+  </tr>
+  {/if}
   <tr>
     <td colspan="2" align="center">
       <input type="submit" value="{$lang.button_submit}" class="button" />

@@ -3,14 +3,14 @@
 /**
  * ECSHOP 管理中心模版相关公用函数库
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: lib_template.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: lib_template.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 if (!defined('IN_ECS'))
@@ -152,6 +152,7 @@ $page_libs = array(
         '/library/goods_tags.lbi' => 0,
         '/library/comments.lbi' => 0,
         '/library/bought_goods.lbi' => 0,
+        '/library/bought_note_guide.lbi' => 0,
         '/library/goods_related.lbi' => 0,
         '/library/goods_article.lbi' => 0,
         '/library/relatetag.lbi' => 0,

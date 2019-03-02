@@ -3,7 +3,7 @@
 /**
  * The ECSHOP Control panel member the data integration plug-in management program language file
  * ============================================================================
- * All right reserved (C) 2005-2007 Beijing Yi Shang Interactive Technology
+ * All right reserved (C) 2005-2011 Beijing Yi Shang Interactive Technology
  * Development Ltd.
  * Web site: http://www.ecshop.com
  * ----------------------------------------------------------------------------
@@ -11,8 +11,8 @@
  * republish the program code, on the premise of that your behavior is not for
  * commercial purposes.
  * ============================================================================
- * $Author: sxc_shop $
- * $Id: integrate.php 16320 2009-06-23 09:42:41Z sxc_shop $
+ * $Author: liubo $
+ * $Id: integrate.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 $_LANG['integrate_name'] ='Name';

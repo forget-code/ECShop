@@ -3,14 +3,14 @@
 /**
  * ECSHOP 用户评论管理程序
  * ============================================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ============================================================================
  * $Author: liubo $
- * $Id: comment_manage.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: comment_manage.php 17217 2011-01-19 06:29:08Z liubo $
 */
 
 define('IN_ECS', true);
@@ -128,6 +128,7 @@ if ($_REQUEST['act']=='reply')
     $smarty->assign('admin_info',   $admin_info);   //管理员信息
     $smarty->assign('reply_info',   $reply_info);   //回复的内容
     $smarty->assign('id_value',     $id_value);  //评论的对象
+    $smarty->assign('send_fail',   !empty($_REQUEST['send_ok']));
 
     $smarty->assign('ur_here',      $_LANG['comment_info']);
     $smarty->assign('action_link',  array('text' => $_LANG['05_comment_manage'],
@@ -178,13 +179,44 @@ if ($_REQUEST['act']=='action')
     $sql = "UPDATE " .$ecs->table('comment'). " SET status = 1 WHERE comment_id = '$_POST[comment_id]'";
     $db->query($sql);
 
+    /* 邮件通知处理流程 */
+    if (!empty($_POST['send_email_notice']) or isset($_POST['remail']))
+    {
+        //获取邮件中的必要内容
+        $sql = 'SELECT user_name, email, content ' .
+               'FROM ' .$ecs->table('comment') .
+               " WHERE comment_id ='$_REQUEST[comment_id]'";
+        $comment_info = $db->getRow($sql);
+
+        /* 设置留言回复模板所需要的内容信息 */
+        $template    = get_mail_template('recomment');
+
+        $smarty->assign('user_name',   $comment_info['user_name']);
+        $smarty->assign('recomment', $_POST['content']);
+        $smarty->assign('comment', $comment_info['content']);
+        $smarty->assign('shop_name',   "<a href='".$ecs->url()."'>" . $_CFG['shop_name'] . '</a>');
+        $smarty->assign('send_date',   date('Y-m-d'));
+
+        $content = $smarty->fetch('str:' . $template['template_content']);
+
+        /* 发送邮件 */
+        if (send_mail($comment_info['user_name'], $comment_info['email'], $template['template_subject'], $content, $template['is_html']))
+        {
+            $send_ok = 0;
+        }
+        else
+        {
+            $send_ok = 1;
+        }
+    }
+
     /* 清除缓存 */
     clear_cache_files();
 
     /* 记录管理员操作 */
     admin_log(addslashes($_LANG['reply']), 'edit', 'users_comment');
 
-    ecs_header("Location: comment_manage.php?act=reply&id=$_REQUEST[comment_id]\n");
+    ecs_header("Location: comment_manage.php?act=reply&id=$_REQUEST[comment_id]&send_ok=$send_ok\n");
     exit;
 }
 /*------------------------------------------------------ */
@@ -297,7 +329,7 @@ function get_comment_list()
 {
     /* 查询条件 */
     $filter['keywords']     = empty($_REQUEST['keywords']) ? 0 : trim($_REQUEST['keywords']);
-    if ($_REQUEST['is_ajax'] == 1)
+    if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
     {
         $filter['keywords'] = json_str_iconv($filter['keywords']);
     }

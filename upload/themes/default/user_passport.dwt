@@ -48,6 +48,9 @@
           </tr>
           <!--{/if}-->
           <tr>
+            <td colspan="2"><input type="checkbox" value="1" name="remember" id="remember" /><label for="remember">{$lang.remember}</label></td>
+          </tr>
+          <tr>
             <td>&nbsp;</td>
             <td align="left">
             <input type="hidden" name="act" value="act_login" />

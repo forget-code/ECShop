@@ -3,14 +3,14 @@
 /**
  * ECSHOP 程序说明
  * ===========================================================
- * 版权所有 2005-2009 上海商派网络科技有限公司，并保留所有权利。
+ * 版权所有 2005-2011 上海商派网络科技有限公司，并保留所有权利。
  * 网站地址: http://www.ecshop.com；
  * ----------------------------------------------------------
  * 这不是一个自由软件！您只能在不用于商业目的的前提下对程序代码进行修改和
  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  * ==========================================================
  * $Author: liubo $
- * $Id: magazine_list.php 16881 2009-12-14 09:19:16Z liubo $
+ * $Id: magazine_list.php 17217 2011-01-19 06:29:08Z liubo $
  */
 
 define('IN_ECS', true);
@@ -69,6 +69,7 @@ elseif ($_REQUEST['act'] == 'add')
     {
         $magazine_name = trim($_POST['magazine_name']);
         $magazine_content = trim($_POST['magazine_content']);
+        $magazine_content = str_replace('src=\"','src=\"http://'.$_SERVER['HTTP_HOST'],$magazine_content);
         $time = gmtime();
         $sql = "INSERT INTO " . $ecs->table('mail_templates') . " (template_code, is_html,template_subject, template_content, last_modify, type) VALUES('" . md5($magazine_name.$time) . "',1, '$magazine_name', '$magazine_content', '$time', 'magazine')";
         $db->query($sql);
@@ -95,6 +96,7 @@ elseif ($_REQUEST['act'] == 'edit')
     {
         $magazine_name = trim($_POST['magazine_name']);
         $magazine_content = trim($_POST['magazine_content']);
+        $magazine_content = str_replace('src=\"','src=\"http://'.$_SERVER['HTTP_HOST'],$magazine_content);
         $time = gmtime();
         $db->query("UPDATE " . $ecs->table('mail_templates') . " SET is_html = 1, template_subject = '$magazine_name', template_content = '$magazine_content', last_modify = '$time' WHERE type = 'magazine' AND template_id = '$id'");
         $links[] = array('text' => $_LANG['magazine_list'], 'href' => 'magazine_list.php?act=list');
